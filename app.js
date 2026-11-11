@@ -1,4 +1,4 @@
-const ADMIN_PASS='dht2026'; // ĐỔI mật khẩu này trước khi đưa lên GitHub
+const ADMIN_PASS='dht271203'; // ĐỔI mật khẩu này trước khi đưa lên GitHub
 const $=(s,e=document)=>e.querySelector(s),app=$('#app');
 let admin=sessionStorage.admin==='1';
 const db=new Promise(r=>{const q=indexedDB.open('dht',1);q.onupgradeneeded=()=>['books','posts','lists'].forEach(n=>q.result.createObjectStore(n,{keyPath:'id'}));q.onsuccess=()=>r(q.result)});
@@ -7,7 +7,7 @@ const all=s=>tx(s,'readonly',o=>o.getAll()),put=(s,v)=>tx(s,'readwrite',o=>o.put
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const prog=()=>JSON.parse(localStorage.prog||'{}'),setProg=(id,v)=>{const p=prog();p[id]=v;localStorage.prog=JSON.stringify(p)};
-const cfg=()=>({font:'var(--f1)',size:19,pad:24,bg:'#f6edd2',rate:1,voice:'f',...JSON.parse(localStorage.cfg||'{}')});
+const cfg=()=>({font:'var(--f1)',size:19,pad:24,bg:'#f6edd2',...JSON.parse(localStorage.cfg||'{}')});
 const FONTS={'var(--f1)':'Bookerly (Literata)','var(--f2)':'Caecilia (Bitter)'};
 const fopt=v=>Object.entries(FONTS).map(([k,n])=>`<option value="${k}" ${k==v?'selected':''}>${n}</option>`).join('');
 
@@ -15,7 +15,7 @@ const fopt=v=>Object.entries(FONTS).map(([k,n])=>`<option value="${k}" ${k==v?'s
 $('#adm').onclick=()=>{if(admin){admin=false;delete sessionStorage.admin}else if(prompt('Mật khẩu quản trị:')===ADMIN_PASS){admin=true;sessionStorage.admin='1'}else return alert('Sai mật khẩu');route()};
 // ---- routing
 const R={'':home,ebook,giaitri:()=>app.innerHTML='<div class=c style="text-align:center"><h2 style="color:var(--ink)">Giải trí</h2><p>Sắp ra mắt ❄</p></div>',thuvien:lib,read,viet:edit,bai:view};
-async function route(){speechSynthesis.cancel();$('#adm').classList.toggle('on',admin);const[p,a]=location.hash.slice(2).split('/');await(R[p||'']||home)(a);scrollTo(0,0)}
+async function route(){$('#adm').classList.toggle('on',admin);const[p,a]=location.hash.slice(2).split('/');await(R[p||'']||home)(a);scrollTo(0,0)}
 addEventListener('hashchange',route);route();
 
 // ---- ebook
@@ -36,22 +36,21 @@ async function epub(buf){const z=await JSZip.loadAsync(buf),rd=p=>z.file(decodeU
  for(const r of o.querySelectorAll('spine itemref')){const h=await rd(dir+m[r.getAttribute('idref')]);if(!h)continue;const d=new DOMParser().parseFromString(h,'text/html');d.querySelectorAll('script,style,link,img,svg').forEach(e=>e.remove());const b=d.body.innerHTML.trim();if(b.replace(/<[^>]+>/g,'').trim().length>20)out.push({t:(d.querySelector('h1,h2,h3')?.textContent||'Phần '+(out.length+1)).trim().slice(0,60),h:b})}
  if(!out.length)throw 'Không đọc được nội dung (có thể sách bị DRM)';return out}
 
-async function read(id){const b=await get('books',id);if(!b)return location.hash='#/ebook';let S=cfg(),ci=prog()[id]?.ch||0,speaking=0;
- app.innerHTML=`<div class=rd id=rd><div class=rbar><a href="#/ebook">←</a><b>${esc(b.title)}</b><button id=bt>🔊 Đọc</button><button id=bs>⚙</button></div>
+async function read(id){const b=await get('books',id);if(!b)return location.hash='#/ebook';let S=cfg(),pg=b.type==='DOCX',ci=prog()[id]?.ch||0;
+ app.innerHTML=`<div class=rd id=rd><div class=rbar><a href="#/ebook">←</a><b>${esc(b.title)}</b><button id=bs>⚙</button></div>
  <div id=panel hidden><label>Font<select id=f>${fopt(S.font)}</select></label><label>Cỡ chữ <input type=range id=z min=14 max=34 value=${S.size}></label><label>Lề chữ (sát ↔ thụt) <input type=range id=p min=0 max=120 value=${S.pad}></label>
- <label>Màu nền<select id=bg>${[['#f6edd2','Vàng nhạt'],['#ffffff','Trắng'],['#e4efe0','Xanh dịu'],['#1d2330','Tối']].map(([v,n])=>`<option value="${v}" ${v==S.bg?'selected':''}>${n}</option>`)}</select></label>
- <label>Giọng đọc<select id=v><option value=f ${S.voice=='f'?'selected':''}>Nữ (miền Nam)</option><option value=m ${S.voice=='m'?'selected':''}>Nam (miền Nam)</option></select></label><label>Tốc độ <input type=range id=r min=.5 max=2 step=.1 value=${S.rate}></label></div>
- <article id=art></article><div class=nav><button class=btn id=pv>‹</button><select id=sel>${b.ch.map((c,i)=>`<option value=${i}>${i+1}. ${esc(c.t)}</option>`)}</select><button class=btn id=nx>›</button></div></div>`;
- const rd=$('#rd'),art=$('#art'),save=()=>{localStorage.cfg=JSON.stringify(S);rd.style.setProperty('--f',S.font);rd.style.setProperty('--sz',S.size+'px');rd.style.setProperty('--pad',S.pad+'px');rd.style.background=S.bg;rd.style.color=S.bg=='#1d2330'?'#e8e8e8':'#222'};
- const sc=()=>(scrollY)/Math.max(1,document.body.scrollHeight-innerHeight),rec=()=>setProg(id,{ch:ci,pct:Math.min(1,(ci+sc())/b.ch.length),y:sc()});
- const show=(i,y=0)=>{speechSynthesis.cancel();speaking=0;$('#bt').textContent='🔊 Đọc';ci=Math.max(0,Math.min(b.ch.length-1,i));art.innerHTML=b.ch[ci].h;$('#sel').value=ci;scrollTo(0,y*Math.max(1,document.body.scrollHeight-innerHeight));rec()};
- [['f','font'],['bg','bg'],['v','voice']].forEach(([e,k])=>$('#'+e).onchange=x=>{S[k]=x.target.value;save()});[['z','size'],['p','pad'],['r','rate']].forEach(([e,k])=>$('#'+e).oninput=x=>{S[k]=+x.target.value;save()});
- $('#bs').onclick=()=>$('#panel').hidden^=1;$('#pv').onclick=()=>show(ci-1);$('#nx').onclick=()=>show(ci+1);$('#sel').onchange=e=>show(+e.target.value);
- $('#bt').onclick=()=>{speechSynthesis.cancel();if(speaking){speaking=0;$('#bt').textContent='🔊 Đọc';return}speaking=1;$('#bt').textContent='⏹ Dừng';
-  const vs=speechSynthesis.getVoices().filter(v=>v.lang.startsWith('vi')),ml=/nam|male|minh/i,v=vs.find(x=>S.voice=='m'?ml.test(x.name):!ml.test(x.name))||vs[0];
-  (art.innerText.match(/[^.!?\n]+[.!?]?/g)||[]).forEach(t=>{const u=new SpeechSynthesisUtterance(t);u.lang='vi-VN';if(v)u.voice=v;u.rate=S.rate;speechSynthesis.speak(u)})};
+ <label>Màu nền<select id=bg>${[['#f6edd2','Vàng nhạt'],['#ffffff','Trắng'],['#e4efe0','Xanh dịu'],['#1d2330','Tối']].map(([v,n])=>`<option value="${v}" ${v==S.bg?'selected':''}>${n}</option>`)}</select></label></div>
+ <article id=art></article><div class=nav>${pg?'<button class=btn id=pv>‹</button>':''}<select id=sel>${b.ch.map((c,i)=>`<option value=${i}>${i+1}. ${esc(c.t)}</option>`)}</select>${pg?'<button class=btn id=nx>›</button>':''}</div></div>`;
+ const rd=$('#rd'),art=$('#art'),max=()=>Math.max(1,document.body.scrollHeight-innerHeight),sc=()=>scrollY/max();
+ const save=()=>{localStorage.cfg=JSON.stringify(S);rd.style.setProperty('--f',S.font);rd.style.setProperty('--sz',S.size+'px');rd.style.setProperty('--pad',S.pad+'px');rd.style.background=S.bg;rd.style.color=S.bg=='#1d2330'?'#e8e8e8':'#222'};
+ const rec=()=>{if(!pg){const s=[...art.children];ci=Math.max(0,s.findLastIndex(e=>e.getBoundingClientRect().top<innerHeight/3));$('#sel').value=ci;setProg(id,{ch:ci,pct:sc(),y:sc()})}else setProg(id,{ch:ci,pct:Math.min(1,(ci+sc())/b.ch.length),y:sc()})};
+ const show=(i,y=0)=>{ci=Math.max(0,Math.min(b.ch.length-1,i));art.innerHTML=b.ch[ci].h;$('#sel').value=ci;scrollTo(0,y*max());rec()};
+ [['f','font'],['bg','bg']].forEach(([e,k])=>$('#'+e).onchange=x=>{S[k]=x.target.value;save()});[['z','size'],['p','pad']].forEach(([e,k])=>$('#'+e).oninput=x=>{S[k]=+x.target.value;save()});
+ $('#bs').onclick=()=>$('#panel').hidden^=1;
+ if(pg){$('#pv').onclick=()=>show(ci-1);$('#nx').onclick=()=>show(ci+1);$('#sel').onchange=e=>show(+e.target.value)}
+ else{art.innerHTML=b.ch.map(c=>`<section>${c.h}</section>`).join('');$('#sel').onchange=e=>art.children[+e.target.value]?.scrollIntoView()}
  let tm;onscroll=()=>{clearTimeout(tm);tm=setTimeout(()=>location.hash.startsWith('#/read')&&rec(),300)};
- save();show(ci,prog()[id]?.y||0)}
+ save();if(pg)show(ci,prog()[id]?.y||0);else{scrollTo(0,(prog()[id]?.y||0)*max());rec()}}
 
 // ---- thư viện
 const posts=async()=>{let r={posts:[],lists:[]};try{r=await(await fetch('data/posts.json?'+Date.now())).json()}catch{}const m=(a,b)=>Object.values(Object.fromEntries([...a,...b].map(x=>[x.id,x])));return{posts:m(r.posts,await all('posts')).sort((a,b)=>b.at-a.at),lists:m(r.lists,await all('lists'))}};

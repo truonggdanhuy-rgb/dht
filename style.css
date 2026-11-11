@@ -2,9 +2,6 @@
 *{box-sizing:border-box}body{margin:0;font-family:var(--f1);color:var(--ink);background:linear-gradient(#10213d,#2a4a75 220px,var(--bg) 221px) no-repeat,var(--bg);min-height:100vh}
 #snow{position:fixed;inset:0;pointer-events:none;z-index:50}
 header{text-align:center;padding:26px 12px 0;position:relative}
-.logo{text-decoration:none;display:inline-block}
-.logo span{position:relative;display:inline-block;font:900 64px/1 var(--f2);letter-spacing:6px;padding:14px 18px 0;background:linear-gradient(#fff,#a9d4ff 70%,#6fa8e8);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px #8cc4ff) drop-shadow(0 3px 0 #1b3a66)}
-.logo span::before{content:"";position:absolute;left:6px;right:6px;top:4px;height:22px;background:radial-gradient(circle at 8% 100%,#fff 9px,#0000 10px),radial-gradient(circle at 30% 100%,#fff 12px,#0000 13px),radial-gradient(circle at 55% 100%,#fff 8px,#0000 9px),radial-gradient(circle at 78% 100%,#fff 11px,#0000 12px),radial-gradient(circle at 96% 100%,#fff 8px,#0000 9px)}
 nav{display:flex;justify-content:center;gap:6px;margin-top:14px;flex-wrap:wrap}
 nav a{color:#e6f2ff;text-decoration:none;padding:9px 22px;border-radius:99px;font:700 15px var(--f2);transition:.2s}
 nav a:hover{background:#ffffff26}
@@ -35,3 +32,10 @@ button,.btn,select,input,textarea{font:inherit}
 .tb{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.tb>*{padding:6px 12px;border:0;border-radius:8px;background:#e3edf8;cursor:pointer}
 input[type=text],.post select{width:100%;padding:10px;border:1px solid #cfe0f2;border-radius:10px;margin-bottom:8px}
 .body{font-size:19px;line-height:1.85}.body img{max-width:100%;border-radius:8px}
+
+.logo{display:inline-flex;align-items:flex-end;gap:clamp(8px,2vw,22px);text-decoration:none}
+.logo span{position:relative;font:clamp(30px,9vw,60px)/1 'Press Start 2P',monospace;color:#bff6ff;letter-spacing:4px;padding-top:18px;text-shadow:3px 3px 0 #1b6fa8,0 0 8px #7df9ff,0 0 20px #19c3ff,0 0 38px #ff4fd8;animation:neon 3s infinite;image-rendering:pixelated}
+.logo span::before{content:"";position:absolute;left:0;right:0;top:6px;height:16px;background:linear-gradient(#fff,#fff) 2% 8px/22% 8px no-repeat,linear-gradient(#fff,#fff) 6% 0/12% 8px no-repeat,linear-gradient(#fff,#fff) 38% 8px/20% 8px no-repeat,linear-gradient(#fff,#fff) 42% 0/10% 8px no-repeat,linear-gradient(#fff,#fff) 72% 8px/24% 8px no-repeat,linear-gradient(#fff,#fff) 78% 0/12% 8px no-repeat;filter:drop-shadow(0 0 4px #fff)}
+.tr{width:clamp(34px,8vw,60px);height:clamp(40px,9.5vw,70px);image-rendering:pixelated;filter:drop-shadow(0 0 8px #19c3ff);margin-bottom:-2px}.t2{transform:scaleX(-1)}
+@keyframes neon{0%,18%,22%,62%,64%,100%{opacity:1}20%,63%{opacity:.82}}
+#art section+section{margin-top:2.2em;padding-top:1.6em;border-top:1px dashed #0002}
