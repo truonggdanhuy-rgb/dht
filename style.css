@@ -1,8 +1,8 @@
 :root{--ink:#1f3a30;--bg:#eef8f0;--acc:#4f9f7f;--soft:#d8efe0;--f1:'Literata',Georgia,serif;--f2:'Bitter',Georgia,serif}
-*{box-sizing:border-box}body{margin:0;font-family:var(--f1);color:var(--ink);background:linear-gradient(#1f4337,#5c9d80 230px,var(--bg) 231px) no-repeat,var(--bg);min-height:100vh}
+*{box-sizing:border-box}body{margin:0;font-family:var(--f1);color:var(--ink);background:var(--bg);min-height:100vh}
 body.reading{background:var(--bg)}.reading header{display:none}.reading main{margin:0;padding:0;max-width:none}
 #snow{position:fixed;inset:0;pointer-events:none;z-index:50}
-header{text-align:center;padding:22px 12px 0;position:relative}
+header{text-align:center;padding:22px 12px 16px;position:relative;background:linear-gradient(#1f4337,#5c9d80);border-radius:0 0 28px 28px}
 .logo{display:inline-flex;align-items:flex-end;gap:clamp(6px,2vw,22px);text-decoration:none}
 .lg{width:clamp(150px,38vw,250px);filter:drop-shadow(0 0 3px #b8ffe0) drop-shadow(0 0 10px #35ffb0) drop-shadow(0 0 22px #ff7ad9)}
 .tr{width:clamp(36px,8vw,62px);height:clamp(42px,9.5vw,72px);filter:drop-shadow(0 0 4px #a8ffcf) drop-shadow(0 0 12px #ff7ad9)}
@@ -40,3 +40,4 @@ button,.btn,select,input,textarea{font:inherit}
 .tb{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.tb>*{padding:6px 12px;border:0;border-radius:8px;background:var(--soft);cursor:pointer}
 input[type=text],input[type=password],.c select{width:100%;padding:10px;border:1px solid #bfdccb;border-radius:10px;margin-bottom:8px}
 dialog{border:0;border-radius:16px;padding:22px;box-shadow:0 10px 40px #0005;width:min(340px,92vw)}dialog::backdrop{background:#0006}#er{color:#c0392b;font-size:13px;min-height:18px;margin:0 0 8px}
+#panel[hidden]{display:none}

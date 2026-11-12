@@ -1,6 +1,7 @@
-const ADMIN_PASS='dht271203'; // ĐỔI mật khẩu admin này trước khi đưa lên GitHub
+// Điền 2 dòng dưới theo hướng dẫn Supabase để tài khoản dùng được trên mọi thiết bị (để trống = tài khoản chỉ lưu trên máy)
+const SB_URL='https://opucbxnvlchwqmmjolye.supabase.co',SB_KEY='sb_publishable_Ilx40wsl8EXciRRqPy0WPQ_ejkWl6Ur',ADMIN_USER='huyhuy003333';
 const $=(s,e=document)=>e.querySelector(s),app=$('#app'),dlg=$('#dlg');
-let user=localStorage.user||'',admin=user==='admin';
+let user=localStorage.user||'',admin=user===ADMIN_USER;
 const db=new Promise(r=>{const q=indexedDB.open('dht',1);q.onupgradeneeded=()=>['books','posts','lists'].forEach(n=>q.result.createObjectStore(n,{keyPath:'id'}));q.onsuccess=()=>r(q.result)});
 const tx=async(s,m,f)=>{const d=await db;return new Promise(r=>{const t=d.transaction(s,m),q=f(t.objectStore(s));t.oncomplete=()=>r(q&&q.result)})};
 const all=s=>tx(s,'readonly',o=>o.getAll()),put=(s,v)=>tx(s,'readwrite',o=>o.put(v)),del=(s,k)=>tx(s,'readwrite',o=>o.delete(k)),get=(s,k)=>tx(s,'readonly',o=>o.get(k));
@@ -20,13 +21,18 @@ const hid=bars=>{let y=scrollY;return()=>{const d=scrollY-y;if(Math.abs(d)>6){co
 // ---- tài khoản (lưu trên trình duyệt này)
 const sync=()=>{const b=$('#adm');b.textContent=user?'👤 '+user:'Đăng nhập';b.classList.toggle('on',!!user)};
 const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('dht'+s)))].map(b=>b.toString(16).padStart(2,'0')).join('');
-const er=m=>$('#er').textContent=m;
-async function auth(reg){const n=$('#un').value.trim().toLowerCase(),p=$('#pw').value,U=JSON.parse(localStorage.users||'{}');
- if(!n||p.length<4)return er('Nhập tên và mật khẩu từ 4 ký tự');
- if(reg){if(n=='admin'||U[n])return er('Tên này đã có người dùng');U[n]=await sha(p);localStorage.users=JSON.stringify(U)}
- else if(n=='admin'){if(p!==ADMIN_PASS)return er('Sai mật khẩu')}else if(U[n]!==await sha(p))return er('Sai tên hoặc mật khẩu');
- user=n;localStorage.user=n;admin=n=='admin';er('');$('#pw').value='';dlg.close();route()}
-$('#adm').onclick=()=>{if(user){if(confirm('Đăng xuất '+user+'?')){user='';admin=false;localStorage.removeItem('user');route()}}else dlg.showModal()};
+const er=m=>$('#er').textContent=m,ERR={'User already registered':'Tên này đã có người dùng','Invalid login credentials':'Sai tên hoặc mật khẩu'};
+async function sb(path,body){const r=await fetch(SB_URL+'/auth/v1/'+path,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)}),j=await r.json(),m=j.msg||j.message||j.error_description;if(!r.ok)throw ERR[m]||m||'Lỗi kết nối';return j}
+async function auth(reg){const n=$('#un').value.trim().toLowerCase(),p=$('#pw').value;
+ if(!/^[a-z0-9._-]{3,30}$/.test(n))return er('Tên 3–30 ký tự: chữ thường không dấu, số, . _ -');
+ if(p.length<6)return er('Mật khẩu từ 6 ký tự');
+ try{if(SB_URL){const e=n+'@dht.app',j=reg?await sb('signup',{email:e,password:p}):await sb('token?grant_type=password',{email:e,password:p});if(!j.access_token)throw 'Cần tắt “Confirm email” trong Supabase'}
+  else{const U=JSON.parse(localStorage.users||'{}');if(reg){if(U[n])throw 'Tên này đã có trên máy này';U[n]=await sha(p);localStorage.users=JSON.stringify(U)}else if(U[n]!==await sha(p))throw 'Sai tên hoặc mật khẩu'}}
+ catch(x){return er(String(x))}
+ user=n;admin=n===ADMIN_USER;localStorage.user=n;er('');$('#pw').value='';dlg.close();route()}
+$('#adm').onclick=()=>{if(!user)return dlg.showModal();const d=$('#dlg2'),c=()=>d.close();
+ d.innerHTML=`<h3>👤 ${esc(user)}</h3>${admin?'<p>✅ Quyền quản trị</p><p><a class=btn href="#/viet/new">✎ Viết bài mới</a> <a class="btn g" href="#/diendan">Quản lý Diễn đàn</a></p>':'<p class=muted>Thành viên</p>'}<p><button class="btn g" id=lo>Đăng xuất</button> <button class="btn g" id=cx>Đóng</button></p>`;
+ d.showModal();d.querySelectorAll('a').forEach(a=>a.onclick=c);$('#cx').onclick=c;$('#lo').onclick=()=>{c();user='';admin=false;localStorage.removeItem('user');route()}};
 $('#li').onclick=()=>auth(0);$('#rg').onclick=()=>auth(1);$('#cl').onclick=()=>dlg.close();
 
 // ---- điều hướng
