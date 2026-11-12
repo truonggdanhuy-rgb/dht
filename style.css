@@ -46,3 +46,4 @@ dialog{border:0;border-radius:16px;padding:22px;box-shadow:0 10px 40px #0005;wid
 .del,.add{position:absolute;top:3px;width:26px;height:26px;border:0;background:#fffe;border-radius:50%;cursor:pointer;font-size:13px;padding:0;box-shadow:0 1px 4px #0004;z-index:2}.del{left:3px}.add{right:3px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.gc{text-align:center;font-size:44px;text-decoration:none;color:inherit;display:block}.gc b{display:block;font:700 17px var(--f2);margin-top:6px}.gc small{display:block;font-size:12px}.gc.off{opacity:.55}
 .gf{width:100%;height:calc(100vh - 170px);min-height:480px;border:0;border-radius:12px;background:#faf8ef}
+.grp{top:32px}

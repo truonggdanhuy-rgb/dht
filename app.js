@@ -21,7 +21,7 @@ const hid=bars=>{let y=scrollY;return()=>{const d=scrollY-y;if(Math.abs(d)>6){co
 const OFF=!SB_URL;
 const ses=j=>localStorage.sess=JSON.stringify({a:j.access_token,r:j.refresh_token,e:Date.now()+(j.expires_in||3600)*1000,id:j.user?.id});
 async function tok(){let s=JSON.parse(localStorage.sess||'null');if(!SB_URL||!user||!s)return'';if(Date.now()>s.e-60000){try{ses(await sb('token?grant_type=refresh_token',{refresh_token:s.r}));s=JSON.parse(localStorage.sess)}catch{return''}}return s.a}
-async function api(path,o={}){const t=await tok(),h={apikey:SB_KEY};if(t)h.Authorization='Bearer '+t;if(o.ct)h['Content-Type']=o.ct;else if(o.body)h['Content-Type']='application/json';if(o.prefer)h.Prefer=o.prefer;
+async function api(path,o={}){const t=await tok(),h={apikey:SB_KEY};if(o.method&&user&&!t)throw 'Phiên đăng nhập đã hết. Hãy đăng xuất rồi đăng nhập lại.';if(t)h.Authorization='Bearer '+t;if(o.ct)h['Content-Type']=o.ct;else if(o.body)h['Content-Type']='application/json';if(o.prefer)h.Prefer=o.prefer;
  const r=await fetch(SB_URL+path,{method:o.method||'GET',headers:h,body:o.raw?o.body:o.body&&JSON.stringify(o.body)});if(!r.ok)throw (await r.text()).slice(0,160);const x=await r.text();return x?JSON.parse(x):null}
 const sbooks=async()=>{try{return OFF?[]:await api('/rest/v1/shared_books?select=*&order=at.desc')}catch{return[]}};
 const shared=async id=>{try{const[m]=await api('/rest/v1/shared_books?select=id,title,type,cover&id=eq.'+id),j=await(await fetch(SB_URL+'/storage/v1/object/public/books/'+id+'.json')).json();return{...m,...j}}catch{}};
@@ -44,8 +44,8 @@ $('#adm').onclick=()=>{if(!user)return dlg.showModal();const d=$('#dlg2'),c=()=>
 $('#li').onclick=()=>auth(0);$('#rg').onclick=()=>auth(1);$('#cl').onclick=()=>dlg.close();
 
 // ---- điều hướng
-const R={'':home,ebook,giaitri:()=>app.innerHTML=`<h2>Giải trí</h2><div class=grid2><a class="c gc" href="#/trochoi">🎮<b>Trò chơi</b></a><div class="c gc off">🏘<b>Phố</b><small>Sắp ra mắt</small></div></div>`,trochoi:()=>app.innerHTML=`<div class=top><h2>Trò chơi</h2><a class="btn g" href="#/giaitri">←</a></div><div class=grid2><a class="c gc" href="#/game/2048">🔢<b>2048</b><small>${user?'Tự lưu tiến trình':'Đăng nhập để lưu tiến trình'}</small></a></div>`,game,diendan:lib,read,viet:edit,bai:view};
-async function route(){const[h,q]=location.hash.slice(2).split('?'),[p,a]=h.split('/');onscroll=null;sync();const rd=p=='read'||p=='bai';document.body.classList.toggle('reading',rd);$('#snow').style.display=rd?'none':'';await(R[p||'']||home)(a,q);scrollTo(0,0)}
+const R={'':home,ebook,giaitri:()=>app.innerHTML=`<h2>Giải trí</h2><div class=grid2><a class="c gc" href="#/trochoi">🎮<b>Trò chơi</b></a><div class="c gc off">🏘<b>Phố</b><small>Sắp ra mắt</small></div></div>`,trochoi:()=>app.innerHTML=`<div class=top><h2>Trò chơi</h2><a class="btn g" href="#/giaitri">←</a></div><div class=grid2>${Object.entries(GAMES).map(([k,g])=>`<a class="c gc" href="#/game/${k}">${g.e}<b>${g.n}</b><small>${g.keys.length?(user?'Tự lưu tiến trình':'Đăng nhập để lưu'):'Giải trí nhanh'}</small></a>`).join('')}</div>`,game,diendan:lib,read,viet:edit,bai:view};
+async function route(){const[h,q]=location.hash.slice(2).split('?'),[p,a]=h.split('/');onscroll=null;if(SB_URL&&user&&!localStorage.sess){user='';admin=false;localStorage.removeItem('user')}sync();const rd=p=='read'||p=='bai';document.body.classList.toggle('reading',rd);$('#snow').style.display=rd?'none':'';await(R[p||'']||home)(a,q);scrollTo(0,0)}
 addEventListener('hashchange',route);route();
 
 // ---- trang chủ
@@ -54,17 +54,20 @@ async function home(){const B=[...await all('books'),...await sbooks()],{posts:P
  app.innerHTML=`<div class="c wel"><h1>Chào mừng đến DHT ❄</h1><p class=muted>Nơi đọc sách và đọc truyện.</p></div>${hs.length?`<h2>Lịch sử đọc</h2><div class=grid>${hs.join('')}</div>`:''}${pins.length?`<h2>📌 Ghim</h2><div class=grid>${pins.map(pk).join('')}</div>`:''}`}
 
 // ---- ebook
-async function ebook(a,q){const tu=q=='t=tu',S=await sbooks(),B=await all('books'),sh=JSON.parse(localStorage[K('shelf')]||'[]'),p=prog();
+async function ebook(a,q){const tu=q=='t=tu',g=q&&q.startsWith('g=')?decodeURIComponent(q.slice(2)):'',S=await sbooks(),B=await all('books'),sh=JSON.parse(localStorage[K('shelf')]||'[]'),p=prog();
  const it=(b,x)=>{const v=Math.round((p[b.id]?.pct||0)*100);return `<div class=bk><a href="#/read/${b.id}">${cover(b.title,b.cover)}</a>${x}<div class=pb><u style="width:${v}%"></u></div><small>${v}%</small></div>`};
- const list=tu?[...S.filter(b=>sh.includes(b.id)).map(b=>it(b,`<button class=del data-sh="${b.id}">✖</button>`)),...B.map(b=>it(b,`<button class=del data-del="${b.id}">🗑</button>`))]:S.map(b=>it(b,(admin?`<button class=del data-ds="${b.id}">🗑</button>`:'')+`<button class=add data-sh="${b.id}">${sh.includes(b.id)?'✔':'＋'}</button>`));
- app.innerHTML=`<div class=top><h2>Ebook</h2>${tu||admin?`<label class=btn>＋ ${tu?'Tải sách của tôi':'Tải lên kho'}<input type=file id=up accept=".epub,.docx,.txt" hidden multiple></label>`:''}</div>
+ const btn=b=>(admin?`<button class=del data-ds="${b.id}">🗑</button><button class="add grp" data-gr="${b.id}">📁</button>`:'')+`<button class=add data-sh="${b.id}">${sh.includes(b.id)?'✔':'＋'}</button>`,nat=(x,y)=>x.title.localeCompare(y.title,'vi',{numeric:true}),gs=[...new Set(S.map(b=>b.grp).filter(Boolean))],
+ folder=n=>{const m=S.filter(b=>b.grp==n);return `<div class=bk><a href="#/ebook?g=${encodeURIComponent(n)}">${cover(n,(m.find(b=>b.cover)||{}).cover)}</a><span class=pn>📁 ${m.length}</span><small>${esc(n)}</small></div>`};
+ const list=tu?[...S.filter(b=>sh.includes(b.id)).map(b=>it(b,`<button class=del data-sh="${b.id}">✖</button>`)),...B.map(b=>it(b,`<button class=del data-del="${b.id}">🗑</button>`))]:g?S.filter(b=>b.grp==g).sort(nat).map(b=>it(b,btn(b))):[...gs.map(folder),...S.filter(b=>!b.grp).map(b=>it(b,btn(b)))];
+ app.innerHTML=`<div class=top><h2>${g?'📁 '+esc(g):'Ebook'}</h2>${tu||admin?`<label class=btn>＋ ${tu?'Tải sách của tôi':'Tải lên kho'}<input type=file id=up accept=".epub,.docx,.txt" hidden multiple></label>`:''}</div>
  <div class=chips><a href="#/ebook" class="${tu?'':'on'}">Kho sách</a><a href="#/ebook?t=tu" class="${tu?'on':''}">Tủ sách của tôi</a></div>
  ${list.length?`<div class=grid>${list.join('')}</div>`:`<p class=muted>${tu?'Tủ sách trống. Bấm ＋ ở sách trong Kho sách, hoặc tải sách của bạn lên.':'Kho sách chưa có sách nào.'}</p>`}`;
  const up=$('#up');if(up)up.onchange=async e=>{for(const f of e.target.files){try{const r=await parse(f),t=f.name.replace(/\.\w+$/,''),ty=f.name.split('.').pop().toUpperCase();
   if(tu)await put('books',{id:uid(),title:t,type:ty,ch:r.ch,cover:r.cover||''});
   else{const id='s_'+uid();await api('/storage/v1/object/books/'+id+'.json',{method:'POST',raw:1,body:new Blob([JSON.stringify({ch:r.ch})],{type:'application/json'}),ct:'application/json'});await api('/rest/v1/shared_books',{method:'POST',body:{id,title:t,type:ty,cover:r.cover||'',at:Date.now()}})}}catch(x){alert(f.name+': '+x)}}route()}}
-app.onclick=async e=>{const b=e.target.closest('[data-ds],[data-sh],[data-del]');if(!b)return;const d=b.dataset;
+app.onclick=async e=>{const b=e.target.closest('[data-ds],[data-sh],[data-del],[data-gr]');if(!b)return;const d=b.dataset;
  if(d.del){if(confirm('Xóa sách này khỏi máy?')){await del('books',d.del);route()}}
+ else if(d.gr){const gs=[...new Set((await sbooks()).map(b=>b.grp).filter(Boolean))],n=prompt('Gộp sách vào nhóm nào?\nGõ SỐ để chọn nhóm có sẵn, hoặc gõ TÊN để tạo nhóm mới, để trống = bỏ gộp.\n'+(gs.map((x,i)=>(i+1)+'. '+x).join('\n')||'(chưa có nhóm nào)'));if(n===null)return;const t=n.trim(),name=/^\d+$/.test(t)?gs[+t-1]:t;try{await api('/rest/v1/shared_books?id=eq.'+d.gr,{method:'PATCH',body:{grp:name||null}})}catch(x){alert('Lỗi: '+x)}route()}
  else if(d.sh){const k=K('shelf'),s=JSON.parse(localStorage[k]||'[]'),i=s.indexOf(d.sh);i<0?s.push(d.sh):s.splice(i,1);localStorage[k]=JSON.stringify(s);route()}
  else if(confirm('Xóa sách khỏi kho? Mọi người sẽ không thấy nữa.')){try{await api('/rest/v1/shared_books?id=eq.'+d.ds,{method:'DELETE'});await api('/storage/v1/object/books/'+d.ds+'.json',{method:'DELETE'}).catch(()=>0)}catch(x){alert(x)}route()}};
 async function parse(f){const n=f.name.toLowerCase(),buf=await f.arrayBuffer();
@@ -130,11 +133,11 @@ async function edit(id){if(!admin){alert('Chỉ quản trị viên');return loca
  $('#sv').onclick=async()=>{if($('#pn').checked&&!p.pin&&P.filter(x=>x.pin).length>=10)return alert('Tối đa 10 bài ghim');await pPut({...p,title:$('#t').value||'Không tiêu đề',list:$('#l').value,body:ed.innerHTML,cover:cv,pin:$('#pn').checked});location.hash='#/bai/'+p.id}}
 
 // ---- trò chơi (lưu tiến trình theo tài khoản)
-const GAMES={2048:{n:'2048',keys:['bestScore','gameState']}};
+const GAMES={2048:{n:'2048',e:'🔢',keys:['bestScore','gameState']},flappy:{n:'Flappy Bird',e:'🐤',keys:['flappyBest']},ttt:{n:'Tic Tac Toe',e:'⭕',keys:['tttStats','tttHard']},quasong:{n:'Qua sông',e:'🛶',keys:['quasongBest','quasongWins']},pacman:{n:'Pacman',e:'👻',keys:[]}};
 async function game(id){const g=GAMES[id];if(!g)return;
- if(user&&SB_URL){try{const[r]=await api('/rest/v1/saves?select=data&game=eq.'+id),d=r?.data||{};g.keys.forEach(k=>d[k]!=null?localStorage[k]=d[k]:localStorage.removeItem(k))}catch{}}
- app.innerHTML=`<div class=top><h2>${g.n}</h2><a class="btn g" href="#/trochoi">←</a></div><p class=muted id=sv>${user?'Tiến trình tự lưu mỗi vài giây':'Đăng nhập để lưu tiến trình lên tài khoản'}</p><iframe class=gf src="games/${id}/index.html"></iframe>`;
- const push=async()=>{if(!user||!SB_URL)return;const d={};g.keys.forEach(k=>d[k]=localStorage[k]??null);try{await api('/rest/v1/saves',{method:'POST',body:{user_id:JSON.parse(localStorage.sess).id,game:id,data:d},prefer:'resolution=merge-duplicates'});$('#sv')&&($('#sv').textContent='Đã lưu '+new Date().toLocaleTimeString('vi'))}catch{}};
+ if(user&&SB_URL&&g.keys.length){try{const[r]=await api('/rest/v1/saves?select=data&game=eq.'+id),d=r?.data||{};g.keys.forEach(k=>d[k]!=null?localStorage[k]=d[k]:localStorage.removeItem(k))}catch{}}
+ app.innerHTML=`<div class=top><h2>${g.n}</h2><a class="btn g" href="#/trochoi">←</a></div><p class=muted id=sv>${!g.keys.length?'Trò chơi giải trí, không lưu tiến trình':user?'Tiến trình tự lưu mỗi vài giây':'Đăng nhập để lưu tiến trình lên tài khoản'}</p><iframe class=gf src="games/${id}/index.html"></iframe>`;
+ const push=async()=>{if(!user||!SB_URL||!g.keys.length)return;const d={};g.keys.forEach(k=>d[k]=localStorage[k]??null);try{await api('/rest/v1/saves',{method:'POST',body:{user_id:JSON.parse(localStorage.sess).id,game:id,data:d},prefer:'resolution=merge-duplicates'});$('#sv')&&($('#sv').textContent='Đã lưu '+new Date().toLocaleTimeString('vi'))}catch{}};
  const iv=setInterval(()=>location.hash.startsWith('#/game')?push():clearInterval(iv),4000)}
 
 // ---- tuyết

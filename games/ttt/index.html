@@ -1,0 +1,15 @@
+<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<style>body{font-family:Georgia,serif;background:#eef8f0;text-align:center;margin:0;padding:12px;color:#1f3a30}#b{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:320px;margin:12px auto}#b button{aspect-ratio:1;font-size:44px;border:0;border-radius:14px;background:#d8efe0;cursor:pointer}.m{padding:8px 14px;border:0;border-radius:10px;background:#a9cdb9;color:#1f3a30;margin:3px;cursor:pointer}.on{background:#4f9f7f;color:#fff}</style>
+<h2 style="margin:4px">Tic Tac Toe</h2><div>Bạn là ❌ · Máy: <button class=m id=e>Dễ</button><button class=m id=h>Khó</button></div><div id=b></div><p id=m style="font-weight:bold;min-height:22px"></p><p id=s></p><button class=m onclick=rs()>Ván mới</button>
+<script>
+let B,hard=+(localStorage.tttHard||0),over,S=JSON.parse(localStorage.tttStats||'{"w":0,"l":0,"d":0}');
+const L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+const win=b=>{for(const[l,m,n]of L)if(b[l]&&b[l]==b[m]&&b[l]==b[n])return b[l];return b.includes('')?'':'d'};
+function mm(b,p){const w=win(b);if(w=='O')return 1;if(w=='X')return-1;if(w=='d')return 0;let r=p=='O'?-2:2;b.forEach((v,i)=>{if(!v){b[i]=p;const q=mm(b,p=='O'?'X':'O');b[i]='';r=p=='O'?Math.max(r,q):Math.min(r,q)}});return r}
+function ai(){const e=B.map((v,i)=>v?-1:i).filter(i=>i>=0);if(!hard&&Math.random()<.6)return e[Math.random()*e.length|0];let bs=-9,bi=e[0];e.forEach(i=>{B[i]='O';const r=mm(B,'X');B[i]='';if(r>bs){bs=r;bi=i}});return bi}
+function end(w){over=1;const k={X:'w',O:'l',d:'d'}[w];S[k]++;localStorage.tttStats=JSON.stringify(S);m.textContent={X:'Bạn thắng! 🎉',O:'Máy thắng!',d:'Hòa!'}[w];draw()}
+function draw(){b.innerHTML='';B.forEach((v,i)=>{const t=document.createElement('button');t.textContent=v=='X'?'❌':v=='O'?'⭕':'';t.onclick=()=>{if(over||v)return;B[i]='X';let w=win(B);if(w)return end(w);B[ai()]='O';w=win(B);if(w)return end(w);draw()};b.appendChild(t)});
+ s.textContent=`Thắng ${S.w} · Thua ${S.l} · Hòa ${S.d}`;e.className='m'+(hard?'':' on');h.className='m'+(hard?' on':'')}
+function rs(){B=Array(9).fill('');over=0;m.textContent='';draw()}
+e.onclick=()=>{hard=0;localStorage.tttHard=0;rs()};h.onclick=()=>{hard=1;localStorage.tttHard=1;rs()};rs()
+</script>

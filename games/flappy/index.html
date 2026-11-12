@@ -1,0 +1,19 @@
+<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,user-scalable=no">
+<style>html,body{margin:0;height:100%;background:#bfe8d0;display:flex;justify-content:center;touch-action:none;user-select:none}canvas{height:100%;max-width:100%;aspect-ratio:2/3;image-rendering:pixelated}</style>
+<canvas id=c width=320 height=480></canvas>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');let b,P,s,st,t,best=+localStorage.flappyBest||0;
+const reset=()=>{b={y:220,v:0};P=[];s=0;t=0;st=0};reset();
+const flap=()=>{if(st==2){reset();return}st=1;b.v=-6};
+addEventListener('pointerdown',flap);addEventListener('keydown',e=>{if(e.code=='Space'){e.preventDefault();flap()}});
+function die(){st=2;if(s>best){best=s;localStorage.flappyBest=best}}
+function step(){if(st!=1)return;b.v+=.36;b.y+=b.v;if(++t%85==1)P.push({x:330,g:110+Math.random()*180,ok:0});
+ P.forEach(p=>{p.x-=2.2;if(!p.ok&&p.x+40<70){p.ok=1;s++}if(90>p.x&&70<p.x+40&&(b.y-10<p.g-55||b.y+10>p.g+55))die()});P=P.filter(p=>p.x>-50);if(b.y>430||b.y<-20)die()}
+function draw(){x.fillStyle='#bfe8d0';x.fillRect(0,0,320,480);
+ P.forEach(p=>{x.fillStyle='#3cb371';x.fillRect(p.x,0,40,p.g-55);x.fillRect(p.x,p.g+55,40,480);x.fillStyle='#2e8b57';x.fillRect(p.x-3,p.g-75,46,20);x.fillRect(p.x-3,p.g+55,46,20)});
+ x.fillStyle='#d9c08a';x.fillRect(0,440,320,40);
+ x.fillStyle='#ffd84a';x.fillRect(70,b.y-10,20,20);x.fillStyle='#fff';x.fillRect(80,b.y-6,6,6);x.fillStyle='#222';x.fillRect(83,b.y-4,3,3);x.fillStyle='#ff8a3d';x.fillRect(90,b.y,8,5);
+ x.fillStyle='#1f3a30';x.textAlign='center';x.font='bold 28px monospace';x.fillText(s,160,50);x.font='14px monospace';
+ if(st==0)x.fillText('Chạm để bay',160,260);if(st==2){x.fillText('Thua! Điểm '+s+' • Kỷ lục '+best,160,250);x.fillText('Chạm để chơi lại',160,275)}}
+(function L(){step();draw();requestAnimationFrame(L)})()
+</script>
