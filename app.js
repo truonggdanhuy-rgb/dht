@@ -2,7 +2,7 @@
 const SB_URL='https://opucbxnvlchwqmmjolye.supabase.co',SB_KEY='sb_publishable_Ilx40wsl8EXciRRqPy0WPQ_ejkWl6Ur',ADMIN_USER='huyhuy003333';
 const $=(s,e=document)=>e.querySelector(s),app=$('#app'),dlg=$('#dlg');
 let user=localStorage.user||'',admin=user===ADMIN_USER;
-window.DHT={SB_URL,SB_KEY,ADMIN_USER,tok:()=>tok()};
+window.DHT={SB_URL,SB_KEY,ADMIN_USER,tok:()=>tok(),rpc:(f,a)=>rpc(f,a)};
 const db=new Promise(r=>{const q=indexedDB.open('dht',1);q.onupgradeneeded=()=>['books','posts','lists'].forEach(n=>q.result.createObjectStore(n,{keyPath:'id'}));q.onsuccess=()=>r(q.result)});
 const tx=async(s,m,f)=>{const d=await db;return new Promise(r=>{const t=d.transaction(s,m),q=f(t.objectStore(s));t.oncomplete=()=>r(q&&q.result)})};
 const all=s=>tx(s,'readonly',o=>o.getAll()),put=(s,v)=>tx(s,'readwrite',o=>o.put(v)),del=(s,k)=>tx(s,'readwrite',o=>o.delete(k)),get=(s,k)=>tx(s,'readonly',o=>o.get(k));
@@ -24,6 +24,13 @@ const ses=j=>localStorage.sess=JSON.stringify({a:j.access_token,r:j.refresh_toke
 async function tok(){let s=JSON.parse(localStorage.sess||'null');if(!SB_URL||!user||!s)return'';if(Date.now()>s.e-60000){try{ses(await sb('token?grant_type=refresh_token',{refresh_token:s.r}));s=JSON.parse(localStorage.sess)}catch{return''}}return s.a}
 async function api(path,o={}){const t=await tok(),h={apikey:SB_KEY};if(o.method&&user&&!t)throw 'Phiên đăng nhập đã hết. Hãy đăng xuất rồi đăng nhập lại.';if(t)h.Authorization='Bearer '+t;if(o.ct)h['Content-Type']=o.ct;else if(o.body)h['Content-Type']='application/json';if(o.prefer)h.Prefer=o.prefer;
  const r=await fetch(SB_URL+path,{method:o.method||'GET',headers:h,body:o.raw?o.body:o.body&&JSON.stringify(o.body)});if(!r.ok)throw (await r.text()).slice(0,160);const x=await r.text();return x?JSON.parse(x):null}
+// ---- mỗi tài khoản chỉ đăng nhập trên 1 thiết bị (bảng devices + hàm claim_device, xem file supabase.sql)
+const DEV=localStorage.dev||(localStorage.dev=uid()+uid());
+const rpc=(f,a)=>api('/rest/v1/rpc/'+f,{method:'POST',body:a||{}});
+const claim=async()=>{try{return(await rpc('claim_device',{d:DEV}))!==false}catch{return true}};
+const kick=m=>{user='';admin=false;localStorage.removeItem('user');localStorage.removeItem('sess');alert(m);route()};
+const chk=async()=>{if(SB_URL&&user&&localStorage.sess&&!(await claim()))kick('Tài khoản này vừa được đăng nhập ở thiết bị khác nên thiết bị này đã bị đăng xuất.')};
+setInterval(chk,30000);setTimeout(chk,2000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk()});
 const sbooks=async()=>{try{return OFF?[]:await api('/rest/v1/shared_books?select=*&order=at.desc')}catch{return[]}};
 const shared=async id=>{try{const[m]=await api('/rest/v1/shared_books?select=id,title,type,cover&id=eq.'+id),j=await(await fetch(SB_URL+'/storage/v1/object/public/books/'+id+'.json')).json();return{...m,...j}}catch{}};
 const pPut=p=>OFF?put('posts',p):api('/rest/v1/posts',{method:'POST',body:p,prefer:'resolution=merge-duplicates'}),pDel=id=>OFF?del('posts',id):api('/rest/v1/posts?id=eq.'+id,{method:'DELETE'}),lPut=l=>OFF?put('lists',l):api('/rest/v1/lists',{method:'POST',body:l,prefer:'resolution=merge-duplicates'});
@@ -38,15 +45,17 @@ async function auth(reg){const n=$('#un').value.trim().toLowerCase(),p=$('#pw').
  try{if(SB_URL){const e=n+'@dht.app',j=reg?await sb('signup',{email:e,password:p}):await sb('token?grant_type=password',{email:e,password:p});if(!j.access_token)throw 'Cần tắt “Confirm email” trong Supabase';ses(j)}
   else{const U=JSON.parse(localStorage.users||'{}');if(reg){if(U[n])throw 'Tên này đã có trên máy này';U[n]=await sha(p);localStorage.users=JSON.stringify(U)}else if(U[n]!==await sha(p))throw 'Sai tên hoặc mật khẩu'}}
  catch(x){return er(String(x))}
- user=n;admin=n===ADMIN_USER;localStorage.user=n;er('');$('#pw').value='';dlg.close();route()}
+ user=n;admin=n===ADMIN_USER;localStorage.user=n;
+ if(SB_URL&&!await claim()){user='';admin=false;localStorage.removeItem('user');localStorage.removeItem('sess');return er('⚠️ Tài khoản này đang đăng nhập ở thiết bị khác. Hãy đăng xuất ở thiết bị đó hoặc dùng tài khoản khác.')}
+ er('');$('#pw').value='';dlg.close();route()}
 $('#adm').onclick=()=>{if(!user)return dlg.showModal();const d=$('#dlg2'),c=()=>d.close();
  d.innerHTML=`<h3>👤 ${esc(user)}</h3>${admin?'<p>✅ Quyền quản trị</p><p><a class=btn href="#/viet/new">✎ Viết bài mới</a> <a class="btn g" href="#/diendan">Quản lý Diễn đàn</a></p>':'<p class=muted>Thành viên</p>'}<p><button class="btn g" id=lo>Đăng xuất</button> <button class="btn g" id=cx>Đóng</button></p>`;
- d.showModal();d.querySelectorAll('a').forEach(a=>a.onclick=c);$('#cx').onclick=c;$('#lo').onclick=()=>{c();user='';admin=false;localStorage.removeItem('user');localStorage.removeItem('sess');route()}};
+ d.showModal();d.querySelectorAll('a').forEach(a=>a.onclick=c);$('#cx').onclick=c;$('#lo').onclick=async()=>{c();try{if(SB_URL)await rpc('release_device',{d:DEV})}catch{}user='';admin=false;localStorage.removeItem('user');localStorage.removeItem('sess');route()}};
 $('#li').onclick=()=>auth(0);$('#rg').onclick=()=>auth(1);$('#cl').onclick=()=>dlg.close();
 
 // ---- điều hướng
-const R={'':home,ebook,giaitri:()=>app.innerHTML=`<h2>Giải trí</h2><div class=grid2><a class="c gc" href="#/trochoi">🎮<b>Trò chơi</b></a><a class="c gc" href="#/game/pho">🏘<b>Phố</b><small>Gặp gỡ, mua sắm, đua ngựa</small></a></div>`,trochoi:()=>app.innerHTML=`<div class=top><h2>Trò chơi</h2><a class="btn g" href="#/giaitri">←</a></div><div class=grid2>${Object.entries(GAMES).filter(([k,g])=>!g.hide).map(([k,g])=>`<a class="c gc" href="#/game/${k}">${g.e}<b>${g.n}</b><small>${g.keys.length?(user?'Tự lưu tiến trình':'Đăng nhập để lưu'):'Giải trí nhanh'}</small></a>`).join('')}</div>`,game,diendan:lib,read,viet:edit,bai:view};
-async function route(){const[h,q]=location.hash.slice(2).split('?'),[p,a]=h.split('/');onscroll=null;if(SB_URL&&user&&!localStorage.sess){user='';admin=false;localStorage.removeItem('user')}sync();const rd=p=='read'||p=='bai'||(p=='game'&&a=='pho');document.body.classList.toggle('reading',rd);$('#snow').style.display=rd?'none':'';await(R[p||'']||home)(a,q);scrollTo(0,0)}
+const R={'':home,ebook,giaitri:()=>app.innerHTML=`<h2>Giải trí</h2><div class=grid2><a class="c gc" href="#/trochoi">🎮<b>Trò chơi</b></a><a class="c gc" href="#/game/tinyland">🌾<b>Tinyland</b><small>Nông trại, gặp gỡ bạn bè</small></a></div>`,trochoi:()=>app.innerHTML=`<div class=top><h2>Trò chơi</h2><a class="btn g" href="#/giaitri">←</a></div><div class=grid2>${Object.entries(GAMES).filter(([k,g])=>!g.hide).map(([k,g])=>`<a class="c gc" href="#/game/${k}">${g.e}<b>${g.n}</b><small>${g.keys.length?(user?'Tự lưu tiến trình':'Đăng nhập để lưu'):'Giải trí nhanh'}</small></a>`).join('')}</div>`,game,diendan:lib,read,viet:edit,bai:view};
+async function route(){const[h,q]=location.hash.slice(2).split('?'),[p,a]=h.split('/');onscroll=null;if(SB_URL&&user&&!localStorage.sess){user='';admin=false;localStorage.removeItem('user')}sync();const rd=p=='read'||p=='bai'||(p=='game'&&a=='tinyland');document.body.classList.toggle('reading',rd);$('#snow').style.display=rd?'none':'';await(R[p||'']||home)(a,q);scrollTo(0,0)}
 addEventListener('hashchange',route);setTimeout(route);
 
 // ---- trang chủ
@@ -134,12 +143,12 @@ async function edit(id){if(!admin){alert('Chỉ quản trị viên');return loca
  $('#sv').onclick=async()=>{if($('#pn').checked&&!p.pin&&P.filter(x=>x.pin).length>=10)return alert('Tối đa 10 bài ghim');await pPut({...p,title:$('#t').value||'Không tiêu đề',list:$('#l').value,body:ed.innerHTML,cover:cv,pin:$('#pn').checked});location.hash='#/bai/'+p.id}}
 
 // ---- trò chơi (lưu tiến trình theo tài khoản)
-const GAMES={2048:{n:'2048',e:'🔢',keys:['bestScore','gameState']},flappy:{n:'Flappy Bird',e:'🐤',keys:['flappyBest']},ttt:{n:'Tic Tac Toe',e:'⭕',keys:['tttStats','tttHard']},quasong:{n:'Qua sông',e:'🛶',keys:['quasongBest','quasongWins']},pacman:{n:'Pacman',e:'👻',keys:[]},pho:{n:'Phố',e:'🏘',keys:['phoSave'],hide:1,back:'#/giaitri'}};
+const GAMES={2048:{n:'2048',e:'🔢',keys:['bestScore','gameState']},flappy:{n:'Flappy Bird',e:'🐤',keys:['flappyBest']},ttt:{n:'Tic Tac Toe',e:'⭕',keys:['tttStats','tttHard']},quasong:{n:'Qua sông',e:'🛶',keys:['quasongBest','quasongWins']},pacman:{n:'Pacman',e:'👻',keys:[]},tinyland:{n:'Tinyland',e:'🌾',keys:['nt_save'],hide:1,full:1}};
 async function game(id){const g=GAMES[id];if(!g)return;
- if(id=='pho'&&!user){app.innerHTML=`<div class=top><h2>Phố</h2><a class="btn g" href="#/giaitri">←</a></div><div class=c style="padding:20px;text-align:center">🏘<br><b>Hãy đăng nhập để vào Phố nhé</b><p class=muted>Phố cần tài khoản để lưu nhân vật và gặp người khác.</p></div>`;return}
- if(user&&SB_URL&&g.keys.length){try{const[r]=await api('/rest/v1/saves?select=data&game=eq.'+id),d=r?.data||{};g.keys.forEach(k=>d[k]!=null?localStorage[k]=d[k]:localStorage.removeItem(k))}catch{}}
- if(id=='pho')app.innerHTML=`<iframe class="gf pho" src="games/pho/index.html"></iframe><span id=sv hidden></span>`;else app.innerHTML=`<div class=top><h2>${g.n}</h2><a class="btn g" href="#/trochoi">←</a></div><p class=muted id=sv>${!g.keys.length?'Trò chơi giải trí, không lưu tiến trình':user?'Tiến trình tự lưu mỗi vài giây':'Đăng nhập để lưu tiến trình lên tài khoản'}</p><iframe class=gf src="games/${id}/index.html"></iframe>`;
- const push=async()=>{if(!user||!SB_URL||!g.keys.length)return;const d={};g.keys.forEach(k=>d[k]=localStorage[k]??null);try{await api('/rest/v1/saves',{method:'POST',body:{user_id:JSON.parse(localStorage.sess).id,game:id,data:d},prefer:'resolution=merge-duplicates'});$('#sv')&&($('#sv').textContent='Đã lưu '+new Date().toLocaleTimeString('vi'))}catch{}};
+ if(g.full&&!user){app.innerHTML=`<div class=top><h2>${g.n}</h2><a class="btn g" href="#/giaitri">←</a></div><div class=c style="padding:20px;text-align:center">${g.e}<br><b>Hãy đăng nhập để vào ${g.n} nhé</b><p class=muted>Tài khoản DHT dùng để lưu tiến trình và gặp người chơi khác.</p></div>`;return}
+ if(user&&SB_URL&&g.keys.length){try{const[r]=await api('/rest/v1/saves?select=data&game=eq.'+id),d=r?.data||{};g.keys.forEach(k=>d[k]!=null?localStorage[k]=d[k]:localStorage.removeItem(k))}catch{if(g.full){app.innerHTML=`<div class=top><h2>${g.n}</h2><a class="btn g" href="#/giaitri">←</a></div><div class=c style="padding:20px;text-align:center">⚠️<br><b>Chưa tải được tiến trình</b><p class=muted>Kiểm tra mạng rồi mở lại nhé.</p></div>`;return}}}
+ if(g.full)app.innerHTML=`<iframe class="gf full" src="games/${id}/index.html"></iframe><span id=sv hidden></span>`;else app.innerHTML=`<div class=top><h2>${g.n}</h2><a class="btn g" href="#/trochoi">←</a></div><p class=muted id=sv>${!g.keys.length?'Trò chơi giải trí, không lưu tiến trình':user?'Tiến trình tự lưu mỗi vài giây':'Đăng nhập để lưu tiến trình lên tài khoản'}</p><iframe class=gf src="games/${id}/index.html"></iframe>`;
+ let last='';const push=async()=>{if(!user||!SB_URL||!g.keys.length)return;const d={};g.keys.forEach(k=>d[k]=localStorage[k]??null);const j=JSON.stringify(d);if(j===last)return;try{await api('/rest/v1/saves',{method:'POST',body:{user_id:JSON.parse(localStorage.sess).id,game:id,data:d},prefer:'resolution=merge-duplicates'});last=j;$('#sv')&&($('#sv').textContent='Đã lưu '+new Date().toLocaleTimeString('vi'))}catch{}};
  window.onmessage=e=>{if(e.data==='dht-save')push()};
  const iv=setInterval(()=>location.hash.startsWith('#/game')?push():clearInterval(iv),4000)}
 
