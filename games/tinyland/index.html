@@ -1,8 +1,10 @@
 <!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><title>Nông Trại – Làng quê 16-bit</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 *{-webkit-tap-highlight-color:transparent}
+input,textarea,select{font-size:16px!important}/* >=16px: iPhone không tự zoom khi bấm vào ô nhập */
 html,body{margin:0;height:100%;height:100dvh;width:100%;position:fixed;inset:0;background:#16210f;overflow:hidden;touch-action:none;font-family:'Nunito','Be Vietnam Pro','Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-weight:700}
 canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;height:100dvh;image-rendering:pixelated;filter:saturate(.86) contrast(.96) brightness(1.04)}
 .p{position:fixed;background:#f6e7b4;border:3px solid #7a4a26;box-shadow:0 3px 0 #4e2f16;color:#3a2412}
@@ -1073,7 +1075,7 @@ function drawCloudShadows(){cx.fillStyle='rgba(24,48,24,.07)';
 function drawLB(){cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';
  for(const t of LB){cx.fillStyle='rgba(30,30,16,.55)';cx.fillText(t[0],t[1]+1,t[2]+1);cx.fillStyle='#fff8dc';cx.fillText(t[0],t[1],t[2])}}
 // ---------- input ----------
-const keys={};let ptr=null,S=3,dpr=1,vw=0,vh=0,camX=0,camY=0;
+const keys={};let ptr=null,S=3,dpr=1,vw=0,vh=0,camX=0,camY=0,camFree=0,cfx=0,cfy=0;
 addEventListener('keydown',e=>{if(e.target&&(e.target.tagName=='TEXTAREA'||e.target.tagName=='INPUT'))return;const k=e.key.toLowerCase();keys[k]=1;if(UI){if(k=='escape')closeUI();else if((k=='e'||k==' ')&&fish)fishBtn();e.preventDefault();return}if(k=='e'||k==' '){near();e.preventDefault()}if(k.startsWith('arrow'))e.preventDefault()});
 addEventListener('keyup',e=>delete keys[e.key.toLowerCase()]);
 let tt;const toast=m=>{const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>t.style.opacity=0,2600)};
@@ -1083,9 +1085,12 @@ function near(){let best,bd=26;for(const h of hits){if(h[2]>800)continue;
  if(d<bd){bd=d;best=h}}
  if(best&&best[5])return act(best);if(!best&&Pl.y>740&&MAP=='nt')return fishOpen();
  toast(best?best[4]:'Đến gần một công trình rồi bấm E nhé!')}
-cv.addEventListener('pointerdown',e=>{ptr={x:e.clientX,y:e.clientY,t:performance.now()};cv.setPointerCapture(e.pointerId)});
-cv.addEventListener('pointermove',e=>{if(ptr){ptr.x=e.clientX;ptr.y=e.clientY}});
-cv.addEventListener('pointerup',e=>{if(ptr&&performance.now()-ptr.t<220){const wx=e.clientX/S+camX,wy=e.clientY/S+camY,h=hitAt(wx,wy);
+cv.addEventListener('pointerdown',e=>{ptr={x:e.clientX,y:e.clientY,t:performance.now(),x0:e.clientX,y0:e.clientY,pan:0,walk:0};cv.setPointerCapture(e.pointerId)});
+// vuốt nhanh trên màn hình = kéo camera xem map (khi chưa giữ để đi)
+cv.addEventListener('pointermove',e=>{if(!ptr)return;const lx=ptr.x,ly=ptr.y;ptr.x=e.clientX;ptr.y=e.clientY;
+ if(!ptr.pan&&!ptr.walk&&!UI&&!WTM&&!WTON&&!HMA&&Math.hypot(ptr.x-ptr.x0,ptr.y-ptr.y0)>10)ptr.pan=1;
+ if(ptr.pan){camFree=1;const mx=Math.max(0,(CVON?CW:PX)-vw),my=Math.max(0,(CVON?CH:PY)-vh);camX=cl(camX-(ptr.x-lx)/S,0,mx);camY=cl(camY-(ptr.y-ly)/S,0,my)}});
+cv.addEventListener('pointerup',e=>{if(ptr&&!ptr.pan&&performance.now()-ptr.t<220){const wx=e.clientX/S+camX,wy=e.clientY/S+camY,h=hitAt(wx,wy);
  if(UI){}else if(CVON&&window.PKO&&PKO.tap&&PKO.tap(wx,wy)){}else if(MAP=='hm'&&DECO)decoTap(wx,wy);else if(MAP=='hm'&&hmSeat(wx,wy)){}else if(h)tapHit(h);else{pa=null;goal={x:wx,y:wy,t:0};Pl.pend=0}}ptr=null});
 cv.addEventListener('pointercancel',()=>ptr=null);
 var WTM=0,WEXP=null;function resize(){dpr=window.devicePixelRatio||1;cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;S=Math.max(2,Math.min(4,Math.floor(innerWidth/440)));vw=innerWidth/S;vh=innerHeight/S;if(WTM)S=Math.max(2,Math.min(4,Math.floor(Math.min(innerWidth/260,innerHeight/190))));vw=innerWidth/S;vh=innerHeight/S;if(WTON){S=Math.min(innerWidth/WW,innerHeight/WH);vw=innerWidth/S;vh=innerHeight/S}}
@@ -2790,7 +2795,7 @@ function switchMap(m){if(MAP==m)return;if(MAP=='cv')cvLeave();if(MAP=='hm'){setA
  else{setA(SP,SPNT);setA(hits,HNT);setA(LB,LNT);
   for(let y=0;y<H;y++)for(let x=0;x<W;x++)solid[y][x]=SNT[y][x];
   Pl.x=MPOS.nt.x;Pl.y=MPOS.nt.y;toast('🌾 Đã về Nông Trại')}
- goal=null;pa=null;fish=null;Pl.sit=0;Pl.bn=0;Pl.mv=0;closeUI();petReset();
+ goal=null;pa=null;fish=null;Pl.sit=0;Pl.bn=0;Pl.mv=0;closeUI();petReset();camFree=0;
  camX=cl(Pl.x-vw/2,0,Math.max(0,(CVON?CW:PX)-vw));camY=cl(Pl.y-vh/2,0,Math.max(0,(CVON?CH:PY)-vh));save()}
 function hdAct(){if(ST.xu<30)return toast('Cần 30 Xu để thả một hoa đăng 🌸');
  ST.xu-=30;xuUp();save();
@@ -2802,7 +2807,7 @@ function update(dt,tm){
 petUpdate(dt);
 let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);
 if(HMA){HMA.t+=dt;if(HMA.t>HMA.d||(HMA.t>.7&&(ptr||dx||dy)))hmEnd();dx=dy=0;goal=null;ptr=null}if(UI){dx=dy=0;goal=null;ptr=null}if(dx||dy)goal=null;
-if(!dx&&!dy&&ptr&&performance.now()-ptr.t>150){goal=null;const gx=ptr.x/S+camX-Pl.x,gy=ptr.y/S+camY-Pl.y,L=Math.hypot(gx,gy);if(L>4){dx=gx/L;dy=gy/L}}
+if(!dx&&!dy&&ptr&&!ptr.pan&&performance.now()-ptr.t>150){ptr.walk=1;goal=null;const gx=ptr.x/S+camX-Pl.x,gy=ptr.y/S+camY-Pl.y,L=Math.hypot(gx,gy);if(L>4){dx=gx/L;dy=gy/L}}
 else if(!dx&&!dy&&goal){const gx=goal.x-Pl.x,gy=goal.y-Pl.y,L=Math.hypot(gx,gy);goal.t+=dt;if(L<3||goal.t>4)goal=null;else{dx=gx/L;dy=gy/L}}
 if((dx||dy)&&!Pl.sit){const L=Math.hypot(dx,dy);dx/=L;dy/=L;const sp=78*(ST.av.m>=0?MOUNTS[ST.av.m].spd:1)*dt,ox=Pl.x,oy=Pl.y;
  if(can(Pl.x+dx*sp,Pl.y))Pl.x+=dx*sp;if(can(Pl.x,Pl.y+dy*sp))Pl.y+=dy*sp;
@@ -2874,7 +2879,7 @@ drpT-=dt;if(drpT<=0){drpT=.28;DRP.push({x:WHT.x+ri(2,12),y:RY-26+ri(0,3),vy:20})
 for(const d of DRP){d.vy+=140*dt;d.y+=d.vy*dt}
 DRP=DRP.filter(d=>{if(d.y>RY+16){if(rnd()<.5)RIP.push({x:d.x,y:RY+16,t:0});return false}return true});
 let txc=cl(Pl.x-vw/2,0,Math.max(0,(CVON?CW:PX)-vw)),tyc=cl(Pl.y-vh/2,0,Math.max(0,(CVON?CH:PY)-vh));
-if(WTM){txc=vw>=WW?(WW-vw)/2:cl(Pl.x-vw/2,0,WW-vw);tyc=vh>=WH?(WH-vh)/2:cl(Pl.y-vh/2,0,WH-vh);camX=txc;camY=tyc}else if(WTON){camX=(WW-vw)/2;camY=(WH-vh)/2}else{camX+=(txc-camX)*Math.min(1,dt*7);camY+=(tyc-camY)*Math.min(1,dt*7)}
+if(WTM){txc=vw>=WW?(WW-vw)/2:cl(Pl.x-vw/2,0,WW-vw);tyc=vh>=WH?(WH-vh)/2:cl(Pl.y-vh/2,0,WH-vh);camX=txc;camY=tyc}else if(WTON){camX=(WW-vw)/2;camY=(WH-vh)/2}else{if((Pl.mv||Math.abs(Pl.x-cfx)+Math.abs(Pl.y-cfy)>.5)&&!(ptr&&ptr.pan))camFree=0;cfx=Pl.x;cfy=Pl.y;if(!camFree){camX+=(txc-camX)*Math.min(1,dt*7);camY+=(tyc-camY)*Math.min(1,dt*7)}}
 if(CVON)cvUpdate(dt,tm);
 }
 // ---------- render ----------
@@ -2937,6 +2942,30 @@ function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;const tm=now
 requestAnimationFrame(frame);
 setTimeout(()=>$('hint').style.opacity=0,9000);
 setTimeout(()=>toast('🌾 Làng quê đã khoác áo mới — đi khám phá nhé!'),700);
+
+// ---------- toàn màn hình khi chơi ngang (ẩn thanh công cụ trình duyệt) ----------
+(function(){
+ const de=document.documentElement,touch=matchMedia('(pointer:coarse)').matches;
+ if(!touch)return;
+ const canFS=!!(de.requestFullscreen||de.webkitRequestFullscreen);
+ const inFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+ const land=()=>innerWidth>innerHeight;
+ let off=0,btn=document.createElement('button');
+ btn.className='b';btn.id='fsb';btn.textContent='⛶';btn.title='Toàn màn hình';
+ btn.style.cssText='position:fixed;right:calc(10px + env(safe-area-inset-right,0px));top:calc(10px + env(safe-area-inset-top,0px));z-index:3;font-size:16px;padding:4px 9px;display:none';
+ document.body.appendChild(btn);
+ const enter=()=>{if(!canFS||inFS())return;try{const f=de.requestFullscreen||de.webkitRequestFullscreen,p=f.call(de,{navigationUI:'hide'});const lk=()=>{try{screen.orientation.lock('landscape').catch(()=>{})}catch(e){}};if(p&&p.then)p.then(lk).catch(()=>{});else lk()}catch(e){}};
+ const leave=()=>{try{(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(e){}try{screen.orientation.unlock()}catch(e){}};
+ const sync=()=>{btn.style.display=land()?'block':'none';btn.textContent=inFS()?'✕':'⛶'};
+ btn.addEventListener('click',e=>{e.stopPropagation();if(!canFS){toast('iPhone: bấm nút Chia sẻ → "Thêm vào MH chính" để chơi toàn màn hình nhé!');return}if(inFS()){off=1;leave()}else{off=0;enter()}});
+ btn.addEventListener('pointerdown',e=>e.stopPropagation());
+ // chạm lần đầu khi đang ngang -> tự vào toàn màn hình (trình duyệt bắt buộc phải có thao tác chạm)
+ addEventListener('pointerup',()=>{if(!off&&land()&&!inFS())enter()},true);
+ addEventListener('resize',sync);addEventListener('orientationchange',()=>setTimeout(sync,200));
+ document.addEventListener('fullscreenchange',()=>{sync();setTimeout(resize,150)});
+ document.addEventListener('webkitfullscreenchange',()=>{sync();setTimeout(resize,150)});
+ sync();
+})();
 </script>
 <script src="park-map.js"></script>
 <script src="park-online.js"></script>

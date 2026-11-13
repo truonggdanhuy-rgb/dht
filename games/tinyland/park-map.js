@@ -522,7 +522,9 @@ window.cvMeKey=()=>CV.seat>=0&&CV.seats[CV.seat]?CV.seats[CV.seat].by+.5:CV.hz>=
 const hbob=i=>Math.sin(performance.now()/1000*5+i);
 window.cvLiftMe=()=>CV.hz>=0?22+Math.round(Math.abs(hbob(CV.hz))*3):0;
 window.cvRockMe=()=>CV.hz>=0?Math.round(hbob(CV.hz)*3):0;
-window.cvHeadPos=()=>({x:Math.round(Pl.x)+cvRockMe(),y:Math.round(Pl.y)-cvLiftMe()-(ST.av.m>=0&&!Pl.sit?44:34)});
+// khoảng cách từ chân tới dòng tên: tính theo chỗ ngồi (seat) riêng của từng thú cưỡi + hướng nhìn
+window.tagOff=(m,d)=>{if(m==null||m<0)return 34;const M=MOUNTS[m];if(!M)return 44;const s=M.seat[d>1?'side':d]||M.seat[0];return 28-s[1]};
+window.cvHeadPos=()=>({x:Math.round(Pl.x)+cvRockMe(),y:Math.round(Pl.y)-cvLiftMe()-(Pl.sit?34:tagOff(ST.av.m,Pl.d))});
 
 function trySeat(i){const s=CV.seats[i];if(!s||Pl.sit||CV.seat>=0)return;
  if(CV.hzOcc&&CV.seatOcc&&CV.seatOcc(i))return toast('🪑 Chỗ này có người ngồi rồi!');
@@ -545,7 +547,7 @@ function drawOther(o,tm){let X,Y,sit=0,lift=0;
  if(o.seat>=0&&CV.seats[o.seat]){const s=CV.seats[o.seat];X=s.x;Y=s.y;sit=2}
  else if(o.hz>=0&&CV.horses[o.hz]){const h=CV.horses[o.hz],b=Math.sin(tm*5+h.i);X=h.x+Math.round(b*3);Y=h.y;sit=2;lift=22+Math.round(Math.abs(b)*3)}
  else{X=o.x;Y=o.y}
- X=Math.round(X);Y=Math.round(Y)-lift;o.hx=X;o.hy=Y-(o.m>=0&&!sit?44:34);
+ X=Math.round(X);Y=Math.round(Y)-lift;o.hx=X;o.hy=Y-(sit?34:tagOff(o.m,o.d));
  if(X<camX-30||X>camX+vw+30||Y<camY-30||Y>camY+vh+60)return;
  const ob={d:o.d,a:o.a,mv:o.mv,sit,hair:o.hair,set:o.set};
  if(o.m>=0&&!sit)drawRide(cx,X,Y,ob,o.m,tm);else drawAv(cx,X-10,Y-30,ob)}
