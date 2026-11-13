@@ -2,7 +2,6 @@
 const SB_URL='https://opucbxnvlchwqmmjolye.supabase.co',SB_KEY='sb_publishable_Ilx40wsl8EXciRRqPy0WPQ_ejkWl6Ur',ADMIN_USER='huyhuy003333';
 const $=(s,e=document)=>e.querySelector(s),app=$('#app'),dlg=$('#dlg');
 let user=localStorage.user||'',admin=user===ADMIN_USER;
-window.DHT={SB_URL,SB_KEY,ADMIN_USER,tok:()=>tok()};
 const db=new Promise(r=>{const q=indexedDB.open('dht',1);q.onupgradeneeded=()=>['books','posts','lists'].forEach(n=>q.result.createObjectStore(n,{keyPath:'id'}));q.onsuccess=()=>r(q.result)});
 const tx=async(s,m,f)=>{const d=await db;return new Promise(r=>{const t=d.transaction(s,m),q=f(t.objectStore(s));t.oncomplete=()=>r(q&&q.result)})};
 const all=s=>tx(s,'readonly',o=>o.getAll()),put=(s,v)=>tx(s,'readwrite',o=>o.put(v)),del=(s,k)=>tx(s,'readwrite',o=>o.delete(k)),get=(s,k)=>tx(s,'readonly',o=>o.get(k));
@@ -45,9 +44,9 @@ $('#adm').onclick=()=>{if(!user)return dlg.showModal();const d=$('#dlg2'),c=()=>
 $('#li').onclick=()=>auth(0);$('#rg').onclick=()=>auth(1);$('#cl').onclick=()=>dlg.close();
 
 // ---- điều hướng
-const R={'':home,ebook,giaitri:()=>app.innerHTML=`<h2>Giải trí</h2><div class=grid2><a class="c gc" href="#/trochoi">🎮<b>Trò chơi</b></a><a class="c gc" href="#/game/pho">🏘<b>Phố</b><small>Gặp gỡ, mua sắm, đua ngựa</small></a></div>`,trochoi:()=>app.innerHTML=`<div class=top><h2>Trò chơi</h2><a class="btn g" href="#/giaitri">←</a></div><div class=grid2>${Object.entries(GAMES).filter(([k,g])=>!g.hide).map(([k,g])=>`<a class="c gc" href="#/game/${k}">${g.e}<b>${g.n}</b><small>${g.keys.length?(user?'Tự lưu tiến trình':'Đăng nhập để lưu'):'Giải trí nhanh'}</small></a>`).join('')}</div>`,game,diendan:lib,read,viet:edit,bai:view};
-async function route(){const[h,q]=location.hash.slice(2).split('?'),[p,a]=h.split('/');onscroll=null;if(SB_URL&&user&&!localStorage.sess){user='';admin=false;localStorage.removeItem('user')}sync();const rd=p=='read'||p=='bai'||(p=='game'&&a=='pho');document.body.classList.toggle('reading',rd);$('#snow').style.display=rd?'none':'';await(R[p||'']||home)(a,q);scrollTo(0,0)}
-addEventListener('hashchange',route);setTimeout(route);
+const R={'':home,ebook,giaitri:()=>app.innerHTML=`<h2>Giải trí</h2><div class=grid2><a class="c gc" href="#/trochoi">🎮<b>Trò chơi</b></a><div class="c gc off">🏘<b>Phố</b><small>Sắp ra mắt</small></div></div>`,trochoi:()=>app.innerHTML=`<div class=top><h2>Trò chơi</h2><a class="btn g" href="#/giaitri">←</a></div><div class=grid2>${Object.entries(GAMES).map(([k,g])=>`<a class="c gc" href="#/game/${k}">${g.e}<b>${g.n}</b><small>${g.keys.length?(user?'Tự lưu tiến trình':'Đăng nhập để lưu'):'Giải trí nhanh'}</small></a>`).join('')}</div>`,game,diendan:lib,read,viet:edit,bai:view};
+async function route(){const[h,q]=location.hash.slice(2).split('?'),[p,a]=h.split('/');onscroll=null;if(SB_URL&&user&&!localStorage.sess){user='';admin=false;localStorage.removeItem('user')}sync();const rd=p=='read'||p=='bai';document.body.classList.toggle('reading',rd);$('#snow').style.display=rd?'none':'';await(R[p||'']||home)(a,q);scrollTo(0,0)}
+addEventListener('hashchange',route);route();
 
 // ---- trang chủ
 async function home(){const B=[...await all('books'),...await sbooks()],{posts:P}=await posts(),p=prog(),bk=b=>{const v=Math.round((p[b.id]?.pct||0)*100);return `<a class=bk href="#/read/${b.id}">${cover(b.title,b.cover)}<div class=pb><u style="width:${v}%"></u></div><small>${v}%</small></a>`},pk=x=>`<a class=bk href="#/bai/${x.id}">${cover(x.title,x.cover)}${x.pin?'<span class=pn>📌</span>':''}</a>`;
@@ -134,13 +133,11 @@ async function edit(id){if(!admin){alert('Chỉ quản trị viên');return loca
  $('#sv').onclick=async()=>{if($('#pn').checked&&!p.pin&&P.filter(x=>x.pin).length>=10)return alert('Tối đa 10 bài ghim');await pPut({...p,title:$('#t').value||'Không tiêu đề',list:$('#l').value,body:ed.innerHTML,cover:cv,pin:$('#pn').checked});location.hash='#/bai/'+p.id}}
 
 // ---- trò chơi (lưu tiến trình theo tài khoản)
-const GAMES={2048:{n:'2048',e:'🔢',keys:['bestScore','gameState']},flappy:{n:'Flappy Bird',e:'🐤',keys:['flappyBest']},ttt:{n:'Tic Tac Toe',e:'⭕',keys:['tttStats','tttHard']},quasong:{n:'Qua sông',e:'🛶',keys:['quasongBest','quasongWins']},pacman:{n:'Pacman',e:'👻',keys:[]},pho:{n:'Phố',e:'🏘',keys:['phoSave'],hide:1,back:'#/giaitri'}};
+const GAMES={2048:{n:'2048',e:'🔢',keys:['bestScore','gameState']},flappy:{n:'Flappy Bird',e:'🐤',keys:['flappyBest']},ttt:{n:'Tic Tac Toe',e:'⭕',keys:['tttStats','tttHard']},quasong:{n:'Qua sông',e:'🛶',keys:['quasongBest','quasongWins']},pacman:{n:'Pacman',e:'👻',keys:[]},nongtrai:{n:'Nông Trại',e:'🌾',keys:['nt_save']}};
 async function game(id){const g=GAMES[id];if(!g)return;
- if(id=='pho'&&!user){app.innerHTML=`<div class=top><h2>Phố</h2><a class="btn g" href="#/giaitri">←</a></div><div class=c style="padding:20px;text-align:center">🏘<br><b>Hãy đăng nhập để vào Phố nhé</b><p class=muted>Phố cần tài khoản để lưu nhân vật và gặp người khác.</p></div>`;return}
  if(user&&SB_URL&&g.keys.length){try{const[r]=await api('/rest/v1/saves?select=data&game=eq.'+id),d=r?.data||{};g.keys.forEach(k=>d[k]!=null?localStorage[k]=d[k]:localStorage.removeItem(k))}catch{}}
- if(id=='pho')app.innerHTML=`<iframe class="gf pho" src="games/pho/index.html"></iframe><span id=sv hidden></span>`;else app.innerHTML=`<div class=top><h2>${g.n}</h2><a class="btn g" href="#/trochoi">←</a></div><p class=muted id=sv>${!g.keys.length?'Trò chơi giải trí, không lưu tiến trình':user?'Tiến trình tự lưu mỗi vài giây':'Đăng nhập để lưu tiến trình lên tài khoản'}</p><iframe class=gf src="games/${id}/index.html"></iframe>`;
+ app.innerHTML=`<div class=top><h2>${g.n}</h2><a class="btn g" href="#/trochoi">←</a></div><p class=muted id=sv>${!g.keys.length?'Trò chơi giải trí, không lưu tiến trình':user?'Tiến trình tự lưu mỗi vài giây':'Đăng nhập để lưu tiến trình lên tài khoản'}</p><iframe class=gf src="games/${id}/index.html"></iframe>`;
  const push=async()=>{if(!user||!SB_URL||!g.keys.length)return;const d={};g.keys.forEach(k=>d[k]=localStorage[k]??null);try{await api('/rest/v1/saves',{method:'POST',body:{user_id:JSON.parse(localStorage.sess).id,game:id,data:d},prefer:'resolution=merge-duplicates'});$('#sv')&&($('#sv').textContent='Đã lưu '+new Date().toLocaleTimeString('vi'))}catch{}};
- window.onmessage=e=>{if(e.data==='dht-save')push()};
  const iv=setInterval(()=>location.hash.startsWith('#/game')?push():clearInterval(iv),4000)}
 
 // ---- tuyết
