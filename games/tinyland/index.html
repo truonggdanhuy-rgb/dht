@@ -3225,7 +3225,10 @@ r('#6a4428',0,0,320,306);for(let y=306;y<336;y+=4)for(let x=0;x<320;x+=4)r(((x+y
 pk(12,30,144,112,'#e6c08a','#d9b27a');tl(164,30,144,112,'#f4ead0','#ead3a8');pk(12,166,192,128,'#d6a468','#c8965a');tl(228,166,80,128,'#d8eef2','#c6e2ea');
 pk(156,70,8,38,'#e6c08a','#d9b27a');pk(40,142,24,24,'#e6c08a','#d9b27a');pk(168,142,24,24,'#d6a468','#c8965a');tl(204,224,24,44,'#e4dcc4','#d8cfb4');
 wl(12,30,144,'#f6d9c0');wl(164,30,144,'#f7e8b8');wl(12,166,192,'#eed8ae');wl(228,166,80,'#c6e6ec');
-r('#4e2f16',0,294,320,2);pk(70,294,32,12,'#c49a6a','#b88a5a');r('#e3d3a6',74,296,24,8);wn(70,13,16,16);wnc(38,149,24,16);wnc(122,149,24,16);
+r('#4e2f16',0,294,320,2);pk(70,294,32,12,'#c49a6a','#b88a5a');r('#e3d3a6',74,296,24,8);wn(70,13,16,16);wnc(122,149,24,16);
+// 2 lối đi (ngủ↔khách, bếp↔khách): vẽ lại sàn đè lên tường để thấy rõ chỗ đi qua
+pk(40,142,24,24,'#d6a468','#c8965a');pk(168,142,24,24,'#d6a468','#c8965a');
+for(const x of[40,168]){r('rgba(60,30,10,.28)',x,148,1,18);r('rgba(60,30,10,.28)',x+23,148,1,18);r('#cdb98a',x-1,148,1,14);r('#cdb98a',x+24,148,1,14)}
 g.save();// giuong
 bx(20,16,44,8,'#8f5d34','#5d3a1c');bx(22,24,40,20,'#fffaf0','#e6dcc4');bx(25,27,15,9,'#fff','#e0d8c8');bx(44,27,15,9,'#fff','#e0d8c8');bx(22,44,40,28,'#ea7a86','#c4505a');r('#f6a9b1',22,44,40,3);bx(20,72,44,5,'#8f5d34','#5d3a1c');
 g.restore();g.save();g.translate(32,0);wn(166,13,22,15);// bep
@@ -3255,7 +3258,7 @@ HM.sp.push({by:999,d:()=>{const t=performance.now()/1000,A=HMA,k=A&&A.k;
 [[20,16,44,60,'🛏️ Giường êm — bấm để ngủ','hm:bed',[42,88]],[222,10,26,36,'🍳 Bếp nấu — bấm để đứng nấu','hm:cook'],[258,152,14,28,'🚽 Toilet — bấm để dùng','hm:wc'],[270,186,22,80,'🛁 Bồn tắm — bấm để ngâm mình','hm:bath',[260,226]]].forEach(h=>HM.hits.push(h));
 const HM0=HM.sp[0];
 HM.hits.push([68,280,36,26,'🚪 Cửa ra — bấm để về Nông Trại','gate',[86,288]]);
-[['PHÒNG NGỦ',60,138],['BẾP',236,136],['PHÒNG KHÁCH',70,288],['PHÒNG TẮM',268,288],['CỬA RA',86,304]].forEach(l=>HM.lb.push(l));
+[['CỬA RA',86,304]].forEach(l=>HM.lb.push(l));
 
 // ---------- TRANG TRI NHA (luoi an 8px) ----------
 const HR=[[12,30,144,112],[164,30,144,112],[12,166,192,128],[228,166,80,128]],HX=[[20,16,44,62],[170,6,18,40],[192,10,56,36],[258,152,14,28],[232,148,22,32],[270,186,22,80],[64,270,44,24]],HWB=[[12,14,144],[164,14,144],[12,150,192],[228,150,80]];
@@ -3291,8 +3294,13 @@ function hmOk(it){const c=CAT[it[0]],R=box(it),k=c[3],P=ST.hm.p;
  if(k=='w'){if(!HWB.some(q=>R[0]>=q[0]&&R[0]+R[2]<=q[0]+q[2]&&R[1]==q[1]))return 0;return!HX.some(q=>hov(R,q))&&!P.some(o=>CAT[o[0]][3]=='w'&&hov(R,box(o)))}
  if(!HR.some(q=>R[0]>=q[0]&&R[1]>=q[1]&&R[0]+R[2]<=q[0]+q[2]&&R[1]+R[3]<=q[1]+q[3]))return 0;
  return!HX.some(q=>hov(R,q))&&!P.some(o=>CAT[o[0]][3]==k&&hov(R,box(o)))}
-function hmInit(){if(!ST.hm||ST.hm.v!=2)ST.hm={v:2,i:Object.assign({plt:1,pic:1,rug:1,tv:1},ST.hm&&ST.hm.i),p:[['sofa',11,21,0],['rug',10,23,0],['tbl',11,25,0],['arm',6,26,0],['shf',2,21,0],['lmp',20,22,0],['din',24,9,0],['chr',22,10,0],['chr',30,10,1],['wrd',16,4,0],['drw',9,4,0],['plt',34,12,0],['plt',17,14,0],['cat',14,15,0],['clk',12,1.75,0],['pic',10,18.75,0],['bsk',20,18.75,0],['bsk',36,1.75,0]]};
- {const L=ST.hm.p;ST.hm.p=[];for(const o of L)if(hmOk(o))ST.hm.p.push(o)}
+function hmInit(){
+ /* v3: nhà trống, nội thất mua ở Tiệm nội thất (Phố xá). Dữ liệu cũ (v2): đồ đang bày được CẤT VÀO TÚI NỘI THẤT, không mất món nào. */
+ if(!ST.hm||ST.hm.v!=3){const old=ST.hm,I=Object.assign({},old&&old.i);
+  if(old&&Array.isArray(old.p))for(const o of old.p)if(CAT[o[0]])I[o[0]]=(I[o[0]]||0)+1;
+  for(const k of Object.keys(I))if(!CAT[k]||!(I[k]>0))delete I[k];
+  ST.hm={v:3,i:I,p:[]}}
+ {const L=ST.hm.p;ST.hm.p=[];for(const o of L)if(CAT[o[0]]&&hmOk(o))ST.hm.p.push(o)}
  hmSync()}
 function hmSync(){if(MAP!='hm')return;const P=ST.hm.p;HM.sp=[HM0];
  if(DECO)HM.sp.push({by:3,d:()=>{for(const q of HR)for(let x=q[0];x<q[0]+q[2];x+=8)for(let y=q[1];y<q[1]+q[3];y+=8)r('rgba(255,255,255,.28)',x,y,1,1)}});
@@ -3304,7 +3312,7 @@ function decoTap(wx,wy){const P=ST.hm.p;
  else{for(let i=P.length-1;i>=0;i--){const b=box(P[i]);if(wx>=b[0]&&wx<b[0]+b[2]&&wy>=b[1]&&wy<b[1]+b[3]){const o=P.splice(i,1)[0];SEL={id:o[0],gx:o[1],gy:o[2],f:o[3],o:o};break}}}
  hmSync();barUp()}
 function barUp(){const d=$('dbar');if(!DECO){d.style.display='none';return}d.style.display='flex';
- d.innerHTML=SEL?'<button class="b" onclick="decoDo(0)">✔ Đặt</button><button class="b" onclick="decoDo(1)">↔ Xoay</button><button class="b" onclick="decoDo(2)">🎒 Cất</button><button class="b" onclick="decoDo(3)">✖ Hủy</button>':'<button class="b" onclick="decoUI()">🎒 Túi nhà</button><button class="b" onclick="decoToggle()">✅ Xong</button><span style="font-size:11px;align-self:center">Chạm đồ để chọn</span>'}
+ d.innerHTML=SEL?'<button class="b" onclick="decoDo(0)">✔ Đặt</button><button class="b" onclick="decoDo(1)">↔ Xoay</button><button class="b" onclick="decoDo(2)">🎒 Cất</button><button class="b" onclick="decoDo(3)">✖ Hủy</button>':'<button class="b" onclick="decoUI()">🎒 Túi nội thất</button><button class="b" onclick="decoToggle()">✅ Xong</button><span style="font-size:11px;align-self:center">Chạm đồ để chọn</span>'}
 function decoDo(k){if(!SEL)return;const I=ST.hm.i,id=SEL.id;
  if(k==0){const it=[id,SEL.gx,SEL.gy,SEL.f];if(!hmOk(it))return toast('❌ Chỗ này không đặt được');ST.hm.p.push(it);if(!SEL.o)I[id]--;SEL=null}
  else if(k==1)SEL.f^=1;
@@ -3313,14 +3321,13 @@ function decoDo(k){if(!SEL)return;const I=ST.hm.i,id=SEL.id;
 function decoToggle(){DECO=!DECO;SEL=null;$('dbtn').textContent=DECO?'✅ Xong':'🛠️ Trang trí';hmSync();barUp();if(DECO)decoUI()}
 var DT=0;
 function decoUI(){const I=ST.hm.i,P=ST.hm.p,n=Object.keys(I).reduce((a,k)=>a+(I[k]||0),0);UI=1;$('dbar').style.display='none';$('ui').style.display='block';
- let h='<div class="uh"><span>🛋️ Nội thất nhà</span><button class="b x" onclick="closeUI()">✕</button></div><div class="tabs"><button class="b'+(DT?'':' on')+'" onclick="DT=0;decoUI()">🎒 Túi ('+n+')</button><button class="b'+(DT?' on':'')+'" onclick="DT=1;decoUI()">🏠 Đang bày ('+P.length+')</button></div><div class="mut">Xu: '+ST.xu+' 🪙</div><div class="g1">';
+ let h='<div class="uh"><span>🛋️ Nội thất nhà</span><button class="b x" onclick="closeUI()">✕</button></div><div class="tabs"><button class="b'+(DT?'':' on')+'" onclick="DT=0;decoUI()">🎒 Túi nội thất ('+n+')</button><button class="b'+(DT?' on':'')+'" onclick="DT=1;decoUI()">🏠 Đang bày ('+P.length+')</button></div><div class="mut">Xu: '+ST.xu+' 🪙</div><div class="g1">';
  if(DT)h+=P.map((o,i)=>{const c=CAT[o[0]];return'<div class="it"><span>'+c[0]+'</span><span class="sb"><button class="b" onclick="decoMove('+i+')">Di chuyển</button><button class="b" onclick="decoStore('+i+')">🎒 Cất</button></span></div>'}).join('')||'<div class="mut">Chưa bày món nào.</div>';
- else h+=Object.keys(CAT).map(k=>{const c=CAT[k],m=I[k]||0,pr=20+c[1]*c[2]*6;return'<div class="it"><span>'+c[0]+' <small>'+c[1]+'×'+c[2]+(c[3]=='w'?' • treo tường':c[3]=='r'?' • thảm':'')+' • có '+m+'</small></span><span class="sb"><button class="b" '+(m?'':'disabled style="opacity:.4"')+' onclick="decoPut(\''+k+'\')">Đặt</button><button class="b" onclick="decoBuy(\''+k+'\','+pr+')">'+pr+'🪙</button></span></div>'}).join('');
+ else h+=(Object.keys(CAT).filter(k=>(I[k]||0)>0).map(k=>{const c=CAT[k],m=I[k]||0;return'<div class="it"><span>'+c[0]+' <small>'+c[1]+'×'+c[2]+(c[3]=='w'?' • treo tường':c[3]=='r'?' • thảm':'')+' • có '+m+'</small></span><span class="sb"><button class="b" onclick="decoPut(\''+k+'\')">Đặt</button></span></div>'}).join('')||'<div class="mut">Túi nội thất đang trống.</div>')+'<div class="mut">🛋️ Muốn thêm đồ? Ra Phố xá, ghé <b>Tiệm nội thất</b> để mua (100–300 Xu/món). Đồ mua về sẽ nằm ở đây.</div>';
  $('ui').innerHTML=h+'</div>'}
 function decoStore(i){const o=ST.hm.p.splice(i,1)[0];ST.hm.i[o[0]]=(ST.hm.i[o[0]]||0)+1;hmSync();decoUI();toast('🎒 Đã cất '+CAT[o[0]][0]+' vào túi')}
 function decoMove(i){const o=ST.hm.p.splice(i,1)[0];closeUI();SEL={id:o[0],gx:o[1],gy:o[2],f:o[3],o:o};hmSync();barUp()}
 function hmSeat(wx,wy){if(Pl.sit)return 0;for(const o of ST.hm.p){if(!'sofa arm chr'.includes(o[0]))continue;const b=box(o);if(wx>=b[0]&&wx<b[0]+b[2]&&wy>=b[1]&&wy<b[1]+b[3]){ST.av.m=-1;Pl.x=Math.min(b[0]+b[2]-6,Math.max(b[0]+6,wx));Pl.y=b[1]+b[3]-2;Pl.by=b[1]+b[3]+8;Pl.d=0;Pl.sit=2;Pl.st=0;Pl.nt=0;Pl.bn=1;goal=null;toast('🛋️ Ngồi nghỉ... (di chuyển để đứng dậy)');return 1}}return 0}
-function decoBuy(k,pr){if(ST.xu<pr)return toast('Không đủ xu!');ST.xu-=pr;ST.hm.i[k]=(ST.hm.i[k]||0)+1;xuUp();save();decoUI()}
 function decoPut(k){closeUI();const c=CAT[k];SEL={id:k,gx:Math.round(Pl.x/8-c[1]/2),gy:c[3]=='w'?(Pl.y<80?14:150)/8:Math.round(Pl.y/8-c[2]/2),f:0,o:null};hmSync();barUp();toast('Chạm vào nơi muốn đặt, rồi bấm ✔ Đặt')}
 
 let MAP='nt';const MPOS={nt:{x:560,y:292}};

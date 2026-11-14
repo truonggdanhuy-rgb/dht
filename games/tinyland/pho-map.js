@@ -1,6 +1,7 @@
 /* ============================================================
    PHỐ XÁ — map online thứ 2 (dùng chung hệ thống mạng của Công viên)
    - Shop: bán thú cưỡi / pet / set / tóc-mũ (đồ trong Túi chỉ có khi đã mua)
+   - Tiệm nội thất (nhà phố số 1): bán đồ trang trí nhà 100–300 Xu, đồ mua về nằm trong Túi nội thất (chỉ mở khi ở trong nhà)
    - Sạp vé số (xổ sau 2 phút, lồng quay), Miếu cầu phúc (xin xăm 5 lần/ngày)
    - Khách phố tự thoại thưa thớt, vỉa hè, ghế nhựa, bánh mì, trà đá, báo
    ============================================================ */
@@ -230,7 +231,7 @@ function build(){
  // ----- hàng nhà phố (san sát) -----
  put(mkMieu(),96,160,[4,0,190,162]);
  const H=[
-  [188,76,132,{wall:PAL.cream,aw:['#cfe0cf','#f4f0e4'],door:'shutter',laundry:1,tank:1,sign:{t:'TẠP HÓA',bg:'#cfe3cf',fg:'#4c6f52'}}],
+  [188,76,132,{wall:PAL.cream,aw:['#cfe0cf','#f4f0e4'],tank:1,shelf:['#c98a52','#7db3a7','#e09a62','#d9a468'],sign:{t:'NỘI THẤT',bg:'#cfe3cf',fg:'#4c6f52'}}],
   [264,92,152,{wall:PAL.pink,aw:['#e7b4ae','#f8ece6'],balc:1,tile:1,shelf:['#e0a099','#8fb8e0','#f2d79a','#9ccaa6'],sign:{t:'TIỆM MAY & MŨ NÓN',bg:'#f0c8c2',fg:'#8a4a44'},shut:'#cfe0cf'}],
   [356,80,128,{wall:PAL.sky,aw:['#dba9a0','#f6efe6'],tank:1,shelf:['#f2d79a','#e8c7a0'],sign:{t:'PHỞ BÒ',bg:'#e8c4be',fg:'#8a3f38'},shut:'#e8d9a8'}],
   [436,98,152,{wall:PAL.sage,aw:['#a9c4dc','#f4f0e4'],balc:1,tile:1,shelf:['#8fb8e0','#e0a099','#9ccaa6'],sign:{t:'TIỆM THÚ CƯỠI',bg:'#bcd6e6',fg:'#3f607a'},shut:'#e8c6b0'}],
@@ -248,7 +249,7 @@ function build(){
  hit(440,96,90,60,'🐃 Tiệm thú cưỡi — trâu, voi, kỳ lân, xe đạp...','cv:ps:shop:m',[486,178]);
  hit(616,96,90,60,'🐾 Tiệm thú cưng — mèo, thỏ, gà, Mây Mây...','cv:ps:shop:p',[662,178]);
  hit(358,100,76,56,'🍜 Phở bò — thơm nức mũi, chưa mở bán đâu nhé!');
- hit(190,100,72,56,'🛒 Tiệm tạp hóa đang đóng cửa nghỉ trưa');
+ hit(190,100,72,56,'🛋️ Tiệm nội thất — mua đồ trang trí cho nhà (100–300 Xu)','cv:ps:furn',[226,178]);
  hit(536,100,74,56,'💊 Hiệu thuốc — kệ thuốc ngăn nắp');
  hit(712,100,76,56,'✂️ Tiệm cắt tóc — chú thợ đi ăn sáng rồi');
  hit(792,100,80,56,'☕ Cà phê sáng — mùi cà phê phin ngào ngạt');
@@ -473,8 +474,27 @@ window.psBuy=i=>{if(typeof ownE=='function')ownE();const k=SH_TAB,pr=price(k,i),
  ST.xu-=pr;own.push(i);xuUp();save();toast('🛍️ Đã mua '+SHOP[k].all()[i].n+'!');psItem(i)};
 window.psUse=i=>{const k=SH_TAB;if(!ST.own[k].includes(i))return;ST.av[k]=i;if(k=='m'&&Pl.sit){Pl.sit=0;Pl.mv=0}if(k=='p')petReset();save();toast('✨ Đã dùng '+SHOP[k].all()[i].n);psItem(i)};
 
+// ============================================================
+//  TIỆM NỘI THẤT (giá theo độ đẹp: 100–300 Xu). Mua → vào Túi nội thất (ST.hm.i), mở khi ở trong nhà.
+// ============================================================
+const FURN_PR={clk:100,cal:100,chr:100,mir:120,lmp:120,drw:130,bsk:140,tbl:140,plt:150,cat:160,rug:170,pic:180,shf:190,wrd:200,tv:220,arm:230,din:260,sofa:300};
+window.FURN_PR=FURN_PR;
+window.psFurn=()=>{PS.view='furn';if(typeof hmInit=='function')hmInit();const I=ST.hm.i,P=ST.hm.p,ks=Object.keys(CAT).sort((a,b)=>(FURN_PR[a]||200)-(FURN_PR[b]||200));
+ let h=head('🛋️ Tiệm nội thất')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu • đồ mua về nằm trong <b>🎒 Túi nội thất</b> (vào nhà → 🛠️ Trang trí để bày)</div><div class="g1">';
+ h+=ks.map(k=>{const c=CAT[k],pr=FURN_PR[k]||200,own=(I[k]||0)+P.filter(o=>o[0]==k).length;
+  return '<div class="it"><span style="display:flex;align-items:center;gap:8px"><canvas class="fc" data-k="'+k+'" width="60" height="52" style="width:60px;height:52px;image-rendering:pixelated;background:#f3ead3;border-radius:6px"></canvas><span><b>'+c[0]+'</b><br><small>'+c[1]+'×'+c[2]+(c[3]=='w'?' • treo tường':c[3]=='r'?' • thảm':'')+(own?' • đã có '+own:'')+'</small></span></span>'+
+   '<span class="sb"><button class="b" onclick="psFurnBuy(\''+k+'\')">🪙 '+pr+'</button></span></div>'}).join('');
+ openUI(h+'</div>');
+ document.querySelectorAll('canvas.fc').forEach(c=>{try{const g=c.getContext('2d'),im=dspr(c.dataset.k,0),sc=Math.max(1,Math.min(Math.floor(56/im.width),Math.floor(48/im.height),3));g.imageSmoothingEnabled=false;g.clearRect(0,0,60,52);
+  g.drawImage(im,Math.round((60-im.width*sc)/2),Math.round((52-im.height*sc)/2),im.width*sc,im.height*sc)}catch(e){}})};
+window.psFurnBuy=k=>{if(!CAT[k])return;if(typeof hmInit=='function')hmInit();const pr=FURN_PR[k]||200;
+ if(ST.xu<pr)return toast('🪙 Chưa đủ Xu — còn thiếu '+(pr-ST.xu).toLocaleString('vi-VN')+' Xu');
+ ST.xu-=pr;ST.hm.i[k]=(ST.hm.i[k]||0)+1;xuUp();save();toast('🛋️ Đã mua '+CAT[k][0]+' — nằm trong Túi nội thất (vào nhà để bày)');
+ const box=document.getElementById('ui'),top=box?box.scrollTop:0;psFurn();if(box)box.scrollTop=top};
+
 function psAct(a,h){const[t,v]=a.split(':');
  if(t=='shop')return psShop(v);
  if(t=='lot')return psLot();
+ if(t=='furn')return psFurn();
  if(t=='mieu')return mieuUI()}
 })();
