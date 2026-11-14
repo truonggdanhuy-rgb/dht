@@ -14,7 +14,7 @@ let sb=null,ch=null,lastT=performance.now();
 
 // ---------- tên nhân vật (bấm avatar góc phải) ----------
 window.nameBox=()=>'<div style="display:flex;gap:4px;margin-bottom:8px"><input id="pnm" maxlength="16" value="'+escH(ST.name)+'" placeholder="Tên nhân vật" style="flex:1;min-width:0;font:inherit;padding:5px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" onclick="setNm()">Lưu tên</button></div>';
-window.setNm=()=>{const n=clean($('pnm').value);if(!n)return toast('Tên không được để trống');ST.name=n;save();toast('✅ Tên nhân vật: '+n);track()};
+window.setNm=()=>{const n=clean($('pnm').value);if(!n)return toast('Tên không được để trống');ST.name=n;save();toast('✅ Tên nhân vật: '+n);track();if(window.cardSync)cardSync()};
 
 // ---------- vẽ tên + bong bóng chat trên đầu ----------
 const bub={}; // id -> {t,until}
@@ -44,8 +44,10 @@ window.claimGifts=async()=>{if(!dhtOk()||giftBusy)return;giftBusy=1;
 setTimeout(claimGifts,2500);setInterval(claimGifts,20000);
 let tapO=null;
 function tapMenu(o){tapO=o;openUI('<div class="uh"><span>🧑 '+escH(o.n||'?')+'</span><button class="b x" onclick="closeUI()">X</button></div>'+
- '<div class="g1"><button class="b r" disabled style="opacity:.55"><span>🎭 Hành động</span><i>sắp có</i></button><button class="b r" disabled style="opacity:.55"><span>🎮 Chơi chung</span><i>sắp có</i></button>'+
+ '<div class="g1"><button class="b r" onclick="pkCard()"><span>🪪 Card</span><i>xem thông tin</i></button><button class="b r" disabled style="opacity:.55"><span>🎭 Hành động</span><i>sắp có</i></button><button class="b r" disabled style="opacity:.55"><span>🎮 Chơi chung</span><i>sắp có</i></button>'+
  '<button class="b r" onclick="liXiUI()"><span>🧧 Lì xì</span><i>tặng Xu</i></button>'+bfBtn(o)+'</div>')}
+window.pkCard=()=>{if(tapO&&CV.others.has(tapO.id)&&window.idView)idView(tapO);else{closeUI();toast('Người này đã rời đi')}};
+window.pkBack=o=>{const x=o&&CV.others.has(o.id)?o:tapO;if(x&&CV.others.has(x.id))tapMenu(x);else closeUI()};
 window.liXiUI=()=>{const o=tapO;if(!o||!CV.others.has(o.id))return closeUI();if(!o.u)return toast('Người này chưa thể nhận lì xì');
  openUI('<div class="uh"><span>🧧 Lì xì cho '+escH(o.n||'?')+'</span><button class="b x" onclick="closeUI()">X</button></div><div class="mut">Bạn đang có 🪙 <b>'+fmtXu(ST.xu)+'</b> Xu. Xu tặng sẽ bị trừ của bạn và cộng cho '+escH(o.n||'?')+'.</div>'+
  '<div style="display:flex;gap:4px;margin:8px 0"><input id="lxn" type="number" inputmode="numeric" min="1" max="1000000" placeholder="Số Xu muốn tặng" style="flex:1;min-width:0;font:inherit;padding:6px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" id="lxb" onclick="liXiGo()">🧧 Tặng</button></div>'+
@@ -140,6 +142,7 @@ function sync(){if(!ch)return;const st=ch.presenceState(),all=[];for(const k in 
   o.u=p.u||'';o.n=p.n;o.hair=p.h;o.set=p.s;o.e=p.e|0;o.m=p.m==null?-1:p.m;o.seat=p.q==null?-1:p.q;o.hz=p.z==null?-1:p.z;o.qt=p.qt||0;o.zt=p.zt||0;o.bf=p.bf==null?-1:p.bf|0}
  for(const id of[...CV.others.keys()])if(!okIds.has(id))CV.others.delete(id);
  if(PK.in){chatUI();
+  if(PK.rank<0)selfHeal();   // máy chủ đã xóa mình khỏi danh sách (rớt mạng ngắn, iPhone ngủ...) -> đăng ký lại ngay
   if(PK.rank>=MAXP){toast('🚫 Công viên đã đủ người, bạn được mời ra ngoài');switchMap('nt');return}
   // ai ngồi/cưỡi trước thì giữ chỗ
   const lose=(mine,t,get)=>{for(const o of CV.others.values())if(get(o)==mine&&((o.t0||0)<t||((o.t0||0)==t&&o.id<ME.id)))return 1};
@@ -148,20 +151,40 @@ function sync(){if(!ch)return;const st=ch.presenceState(),all=[];for(const k in 
   gSync()}}
 CV.seatOcc=i=>{for(const o of CV.others.values())if(o.seat==i)return 1;return 0};
 CV.hzOcc=i=>{if(CV.hz==i)return 1;for(const o of CV.others.values())if(o.hz==i)return 1;return 0};
-function connect(room){return new Promise((ok,no)=>{
+function connect(room,keep){return new Promise((ok,no)=>{
  sb=sb||window.supabase.createClient(SB_URL_,SB_KEY_,{realtime:{params:{eventsPerSecond:20}}});
- ME.ts=Date.now();ME.q=-1;ME.z=-1;let done=0;
+ if(!keep){ME.ts=Date.now();ME.q=-1;ME.z=-1}let done=0;
  const tm=setTimeout(()=>{if(!done){done=1;no(new Error('hết thời gian chờ'))}},9000);
  ch=sb.channel(room=='ps'?'pho-xa':'cong-vien',{config:{presence:{key:ME.id},broadcast:{self:false}}});
  ch.on('presence',{event:'sync'},()=>{sync();if(!done&&PK.rank>=0){done=1;clearTimeout(tm);ok(PK.rank>=MAXP?'full':'ok')}});
- ch.on('broadcast',{event:'mv'},({payload:p})=>{const o=CV.others.get(p.i);if(!o)return;o.tx=p.x;o.ty=p.y;o.d=p.d;if(Math.hypot(o.tx-o.x,o.ty-o.y)>160){o.x=o.tx;o.y=o.ty}});
+ ch.on('broadcast',{event:'mv'},({payload:p})=>{const o=CV.others.get(p.i);if(!o){askRetrack(p.i);return}o.tx=p.x;o.ty=p.y;o.d=p.d;if(Math.hypot(o.tx-o.x,o.ty-o.y)>160){o.x=o.tx;o.y=o.ty}});
  ch.on('broadcast',{event:'chat'},({payload:p})=>{if(!PK.in||!CV.others.has(p.i))return;const t=String(p.t||'').slice(0,60);addLine(String(p.n||'?').slice(0,16),t);bub[p.i]={t,until:performance.now()+5000}});
  ch.on('broadcast',{event:'g'},({payload:p})=>gRecv(p));
+ ch.on('broadcast',{event:'rt'},({payload:p})=>{if(p&&p.to==ME.id)track()});
  ch.on('broadcast',{event:'bfinv'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(bfPoll,600)});
  ch.on('broadcast',{event:'bfok'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(bfPoll,600)});
  ch.on('broadcast',{event:'gift'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(claimGifts,600)});
  ch.subscribe(s=>{if(s=='SUBSCRIBED')ch.track({...me(),x:Math.round(CV.pos.x),y:Math.round(CV.pos.y)});
-  else if((s=='CHANNEL_ERROR'||s=='TIMED_OUT')){if(!done){done=1;clearTimeout(tm);no(new Error('lỗi kênh '+s))}else if(PK.in)toast('⚠️ Mất kết nối, đang thử lại...')}})})}
+  else if((s=='CHANNEL_ERROR'||s=='TIMED_OUT'||s=='CLOSED')){if(!done){if(s=='CLOSED')return;done=1;clearTimeout(tm);no(new Error('lỗi kênh '+s))}else if(PK.in){if(s!='CLOSED')toast('⚠️ Mất kết nối, đang thử lại...');setTimeout(()=>revive(0),4000)}}})})}
+// ---------- TỰ CHỮA LÀNH: không để người chơi "biến mất" ----------
+// Nguyên nhân cũ: khi 1 máy rớt kết nối thoáng qua (iPhone khóa màn hình/chuyển app, wifi chập chờn),
+// máy chủ xóa họ khỏi danh sách; máy họ vẫn chạy nhưng không đăng ký lại nên mọi người thấy họ biến mất mãi.
+let lastHeal=0,rvBusy=0,askT={};
+function selfHeal(){const n=performance.now();if(n-lastHeal<1500)return;lastHeal=n;track()}
+function askRetrack(id){if(!id||!PK.in)return;const n=performance.now();if(askT[id]&&n-askT[id]<4000)return;askT[id]=n;bcast('rt',{to:id})}
+async function revive(force){
+ if(!PK.in||rvBusy||PK.busy)return;
+ if(ch&&ch.state==='joined'&&!force){track();return}
+ rvBusy=1;
+ try{const room=CV.room;try{if(ch)await sb.removeChannel(ch)}catch(e){}ch=null;await loadLib();await connect(room,1);track();toast('✅ Đã kết nối lại')}
+ catch(e){setTimeout(()=>revive(1),5000)}
+ rvBusy=0}
+// quay lại app / có mạng lại -> kiểm tra & đăng ký lại ngay
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>revive(0),300)});
+addEventListener('pageshow',()=>setTimeout(()=>revive(0),300));
+addEventListener('online',()=>setTimeout(()=>revive(1),800));
+// nhịp tim: 25 giây đăng ký lại 1 lần cho chắc (rẻ, chỉ vài người)
+setInterval(()=>{if(PK.in&&!document.hidden){if(!ch||ch.state!=='joined')revive(0);else track()}},25000);
 window.cvEnter=async(room)=>{room=room==='ps'?'ps':'cv';const nm=room=='ps'?'Phố xá':'Công viên',was=MAP=='cv'||MAP=='ps';
  if(PK.busy)return;PK.busy=1;closeUI();toast((room=='ps'?'🏘️':'🌳')+' Đang vào '+nm+'...');
  try{await loadLib();if(ch){showUI(0);gLeave();await disconnect()}CV.room=room;const r=await connect(room);
@@ -204,14 +227,14 @@ function pay(w,why){if(!G||G.paid)return;G.paid=1;G.ph='over';G.w=w;CVLOCK=0;con
  else G.msg='😢 Bạn thua −'+b+' Xu'+(why?' ('+why+')':'');
  xuUp();save();toast(G.msg);rdy[G.tb.id]={};gUI()}
 function startGame(first,deck){const b=G.tb.bet;if(ST.xu<b){G.msg='🪙 Không đủ Xu để chơi tiếp';G.ph='wait';gUI();return false}
- ST.xu-=b;xuUp();save();G.ph='play';G.paid=0;G.w=-1;G.sc=[0,0];G.pick=[];G.turn=first;G.msg='';CVLOCK=1;
+ ST.xu-=b;xuUp();save();G.ph='play';G.paid=0;G.gone=0;G.w=-1;G.sc=[0,0];G.pick=[];G.turn=first;G.msg='';CVLOCK=1;
  if(G.tb.kind=='ttt')G.bd=Array(9).fill('');else{G.deck=deck||null;G.bd=Array(16).fill(null);G.done=Array(16).fill(-1)}
  G.dl=Date.now()+(G.tb.kind=='ttt'?30000:40000);gUI();return true}
 const LN=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 const tWin=b=>{for(const[a,c,d]of LN)if(b[a]&&b[a]==b[c]&&b[a]==b[d])return b[a]=='X'?0:1;return b.includes('')?-1:2};
 function gSync(){ // gọi sau mỗi lần presence đổi
  if(!G)return;const pl=players(G.tb);
- if(G.ph=='play'){const opp=pl[1-mySide()];if(!opp)pay(mySide(),'đối thủ rời bàn')}
+ if(G.ph=='play'){const opp=pl[1-mySide()];if(!opp){if(!G.gone)G.gone=Date.now()}else G.gone=0}
  if(G.ph!='play'&&(!pl[1-mySide()])){G.msg='Đang chờ người chơi thứ 2...';G.ph='wait'}
  gUI()}
 function gRecv(p){if(!G||p.tb!=G.tb.id)return;const k=p.k;
@@ -249,6 +272,7 @@ function gTick(dt){if(!G)return;tG+=dt;if(tG<.25)return;tG=0;
   const gid=G.tb.id+'-'+Date.now(),first=Math.random()<.5?0:1;G.gid=gid;
   const deck=G.tb.kind=='mem'?[...EMO,...EMO].sort(()=>Math.random()-.5).map(e=>EMO.indexOf(e)):null;
   rdy[G.tb.id]={};if(startGame(first,deck))gSend({k:'start',first})}
+ if(G.ph=='play'&&G.gone&&Date.now()-G.gone>10000)pay(mySide(),'đối thủ rời bàn');
  if(G.ph=='play'&&isHost()&&Date.now()>G.dl+1500){gSend({k:'end',w:1-G.turn,why:'hết giờ'});pay(1-G.turn,'hết giờ')}
  if(G.ph=='play')gUI(1)}
 function gUI(light){if(!G)return;const tb=G.tb,pl=players(tb),s=mySide(),n=i=>pl[i]?escH(pl[i].n):'…',ttt=tb.kind=='ttt';

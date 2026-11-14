@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><title>Nông Trại – Làng quê 16-bit</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -615,7 +615,8 @@ const SETS=[
  {n:'Công sở nữ',sh:'#f6f6f8',shl:'#ffffff',shd:'#cfd2dc',scarf:'#ffffff',knot:'#d6456b',bow:1,belt:'#2f3550',skirt:'#2f3550',pt:'#f1c08a',rpt:'#2f3550',shoe:'#3a2024'},
  {n:'Siêu anh hùng',sh:'#2b59c8',shl:'#4a7ae0',shd:'#1c3f94',scarf:'#2b59c8',knot:'#ffd23f',belt:'#ffd23f',trim:'#c61f2b',pt:'#2b59c8',shoe:'#c61f2b',boot:1,cape:'#d8232a',emblem:1},
  {n:'Mascot Gấu Poh',mascot:'pooh',sh:'#d8232a',pt:'#f2b233',rpt:'#f2b233',shoe:'#c98a1c',scarf:'#d8232a'},
- {n:'Mascot Kỳ lân',mascot:'uni',sh:'#fbfbff',pt:'#fbfbff',rpt:'#fbfbff',shoe:'#ffd35a',scarf:'#fbfbff'}];
+ {n:'Mascot Kỳ lân',mascot:'uni',sh:'#fbfbff',pt:'#fbfbff',rpt:'#fbfbff',shoe:'#ffd35a',scarf:'#fbfbff'},
+ {n:'Mascot Doraemon',mascot:'dora',sh:'#1b8fe0',pt:'#1b8fe0',rpt:'#1b8fe0',shoe:'#d6e4f0',scarf:'#e8272b'}];
 const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'},{n:'Tóc nâu buộc',k:'tail',c:'#6a3e1e'},{n:'Tóc vàng',k:'short',c:'#e0b84a'},{n:'Mũ len đỏ',k:'beanie',c:'#c0392b',hr:'#2b1d12'},{n:'Mũ len xanh',k:'beanie',c:'#2f6fe0',hr:'#6a3e1e'}];
 // ---- Bieu cam nhan vat ----
 const EXPRS=[{n:'Mặc định'},{n:'😎 Ngầu'},{n:'😍 Iu iu'},{n:'🤤 Đói bụng'},{n:'😢 Sad'},{n:'😄 Vui vẻ'}];
@@ -642,8 +643,69 @@ function faceFx(u,e,side,Rt){
   else if(e==5){s(EY,11,12,1,1);s(EY,12,11,1,1);s(EY,13,12,1,1);s(DK,12,13,3,1);s(DK,13,14,1,1)}
  }
 }
+// ================================================================
+//  CHUẨN KÍCH THƯỚC MASCOT  (mọi mascot hiện tại và sau này PHẢI theo khung này)
+//  Lý do: thú cưỡi, ghế ngồi, tên/bong bóng chat, vị trí tay-chân đều tính theo khung người chuẩn.
+//  Lưới vẽ 20 x 31 điểm ảnh, gốc ở giữa 2 bàn chân (x=10, y=30):
+//    • Chiều rộng:  x từ 1 đến 19 (đầu rộng 14: x3..17, thân x4..16, tay x1..4 & x16..19, chân 4px)
+//    • Đầu:  y4..13   • Thân: y14..25   • Tay: y16..22   • Chân: y24..29 (đế giày y29)
+//    • Đỉnh đầu cao nhất (tai/ăng-ten...) không vượt y0;  nhìn ngang quay mặt phải (hàm M tự lật khi quay trái)
+//    • Khi cưỡi (rd) KHÔNG vẽ chân và bóng — thú cưỡi tự vẽ chân theo màu rpt/shoe của set
+//    • Khi ngồi (sit) chân ở x5 và x11, không bóng
+//  CÁCH THÊM MASCOT MỚI (3 bước):
+//    1. Thêm 1 dòng vào SETS: {n:'Mascot ...',mascot:'tenmoi',sh,pt,rpt,shoe,scarf}   (rpt/shoe = màu chân khi cưỡi thú)
+//    2. Viết hàm vẽ drawMascotXxx(r,u,o,S,k) dùng MSTD.HF/BF/HS/BS làm hình khối rồi đăng ký vào MASCOT_DRAW
+//    3. Thêm giá vào SHOP.s.pr trong pho-map.js  —  rồi mở Console gõ  mascotCheck()  để máy tự kiểm tra kích thước
+// ================================================================
+const MSTD={W:20,H:31,foot:29,
+ HF:[[4,6,14],[5,4,16],[6,3,17,6],[12,4,16],[13,6,14]],BF:[[14,6,14],[15,4,16,10],[25,6,14]],   // đầu / thân nhìn trước-sau
+ HS:[[4,6,12],[5,4,14],[6,3,15,6],[12,4,14],[13,6,12]],BS:[[14,6,13],[15,5,15,10],[25,6,14]]};   // đầu / thân nhìn ngang
+// ---- Mascot Doraemon (theo khung chuẩn MSTD) ----
+function drawMascotDora(r,u,o,S,k){
+ const {side,Rt,back,sit,rd,lg}=k,t=performance.now()/1000;
+ const BL='#1b8fe0',BLL='#55b6f5',BLD='#1370b4',WH='#ffffff',WD='#d6e4f0',RD='#e8272b',RDD='#aa1a1e',YL='#ffd23f',YD='#c98f12',BK='#16202b',PK='#ff7a85';
+ const M=(c,x,y,w,h)=>u(c,Rt?x:20-x-w,y,w,h),fill=(c,L,m)=>L.forEach(q=>{const h=q[3]||1;m?M(c,q[1],q[0],q[2]-q[1],h):u(c,q[1],q[0],q[2]-q[1],h)});
+ if(!sit&&!rd)E(r,'rgba(0,0,0,.2)',10,30,8,2);
+ const leg=(x,lift)=>{r(BL,x,24,4,3-lift);r(BLD,x+3,24,1,3-lift);r(WH,x,27-lift,4,2);r(S.shoe,x,29-lift,4,1)};
+ if(rd){}
+ else if(sit)leg(5,0),leg(11,0);
+ else if(!side){if(lg>0){leg(11,0);leg(5,1)}else if(lg<0){leg(5,0);leg(11,1)}else{leg(5,0);leg(11,0)}}
+ else{const sx=lg*(Rt?2:-2),a=7+sx,b=9-sx;if(lg>0){leg(b,0);leg(a,1)}else if(lg<0){leg(a,0);leg(b,1)}else{leg(a,0);leg(b,0)}}
+ if(!side){
+  fill(BL,MSTD.BF);u(BLL,5,16,2,8);u(BLD,13,16,2,8);
+  if(back){u(RD,8,21,4,4);u(RDD,8,24,4,1);u('#ff6a6e',8,21,1,1)}                      // đuôi: quả cầu đỏ
+  else{u(WH,6,16,8,7);u(WD,7,19,6,1);u(WD,7,20,1,2);u(WD,12,20,1,2);u(WD,8,22,4,1)}   // bụng trắng + túi thần kỳ
+  u(RD,6,14,8,1);u(RD,4,15,12,1);                                      // vòng cổ đỏ
+  if(!back){u(YL,9,16,3,3);u('#fff3a0',9,16,1,1);u(YD,9,18,3,1);u(BK,10,18,1,1)}       // chuông vàng
+  const arm=(x,ay)=>{u(BL,x,16+ay,3,5);u(BLL,x,16+ay,1,5);u(BLD,x+2,16+ay,1,5);u(WH,x,21+ay,3,2)};
+  arm(1,lg);arm(16,-lg);
+  fill(BL,MSTD.HF);u(BLL,5,5,3,1);u(BLD,4,12,2,1);u(BLD,14,12,2,1);
+  if(!back){
+   fill(WH,[[7,7,13],[8,5,15],[9,4,16,3],[12,5,15],[13,7,13]]);                        // mặt trắng
+   fill(BK,[[4,7,9],[5,6,10],[6,5,11,3],[9,6,10],[10,7,9]]);fill(BK,[[4,11,13],[5,10,14],[6,9,15,3],[9,10,14],[10,11,13]]);   // viền mắt đen mảnh
+   fill(WH,[[5,7,9],[6,6,10,3],[9,7,9]]);fill(WH,[[5,11,13],[6,10,14,3],[9,11,13]]);u(BK,8,6,1,3);u(BK,11,6,1,3);u('#ffffff',8,6,1,1);u('#ffffff',11,6,1,1); // 2 mắt
+   u(RD,9,10,3,2);u('#ff9a9c',9,10,1,1);                                                // mũi đỏ
+   u(BK,6,11,1,1);u(BK,14,11,1,1);u(BK,7,12,7,1);u(PK,8,13,5,1);                        // miệng cười
+   for(const y of[8,10,12]){u(BK,1,y,3,1);u(BK,16,y,3,1)}                               // ria
+  }
+ }else{
+  M(RD,2,21,3,3);M(RDD,2,23,3,1);                                                      // đuôi
+  fill(BL,MSTD.BS,1);M(BLL,6,16,2,8);M(BLD,13,16,2,8);
+  M(WH,10,16,5,7);M(WD,11,19,3,1);
+  M(RD,6,14,7,1);M(RD,5,15,10,1);M(YL,13,16,3,3);M(YD,13,18,3,1);M(BK,14,18,1,1);
+  fill(BL,MSTD.HS,1);M(BLD,4,12,2,1);
+  fill(WH,[[7,9,14],[8,7,15,4],[12,8,14],[13,9,12]],1);
+  fill(BLD,[[4,12,14],[5,11,15,5],[10,12,14]],1);fill(WH,[[5,12,14],[6,11,15,3],[9,12,14]],1);M(BK,13,6,1,3);M(WH,13,6,1,1);
+  M(RD,15,9,3,2);M('#ff9a9c',15,9,1,1);
+  M(BK,11,12,4,1);M(BK,15,11,1,1);M(PK,10,13,2,1);
+  M(BK,15,12,3,1);
+  const am=Math.round(lg);M(BL,8+am,16,3,5);M(BLD,10+am,16,1,5);M(WH,8+am,21,3,2)
+ }
+}
+const MASCOT_DRAW={dora:drawMascotDora};   // đăng ký mascot mới tại đây (Gấu Poh & Kỳ lân vẽ trong drawMascot bên dưới)
 // ---- Mascot (mac ca bo, gom ca toc va mat) ----
 function drawMascot(r,u,o,S,k){
+ if(MASCOT_DRAW[S.mascot])return MASCOT_DRAW[S.mascot](r,u,o,S,k);
  const {side,Rt,back,sit,rd,lg}=k,pooh=S.mascot=='pooh',t=performance.now()/1000;
  const FU=pooh?'#f2b233':'#fbfbff',FL=pooh?'#ffd36b':'#ffffff',FD=pooh?'#c98a1c':'#dfe2f2',IN=pooh?'#e8962a':'#ffb3d1',
   MZ='#f7d9a0',NS='#3a2412',EYE=pooh?'#1a1208':'#6a3fb0',RS='#d8232a',RD='#a81a20',GD='#ffd35a',HB='#ffe3ee',
@@ -660,7 +722,7 @@ function drawMascot(r,u,o,S,k){
  const HS=[[4,6,12],[5,4,14],[6,3,15,6],[12,4,14],[13,6,12]],BS2=[[14,6,13],[15,5,15,10],[25,6,14]];
  if(!side){
   // duoi (sau bo)
-  if(!pooh&&back){for(let i=0;i<5;i++)u(RB[i],7+i,23,1,6+(i&1))}
+  if(!pooh&&back){for(let i=0;i<5;i++)u(RB[i],7+i,23,1,(rd?2:6)+(i&1))}
   fill(FU,BF);u(FL,5,16,2,8);u(FD,13,16,2,8);
   const arm=(x,ay)=>{u(FU,x,16+ay,3,6);u(FL,x,16+ay,1,6);if(pooh)u(FD,x,21+ay,3,1);else{u(FD,x+2,16+ay,1,6);u(IN,x,20+ay,3,2)}};
   if(pooh){
@@ -757,6 +819,23 @@ function drawAv(g,ox,oy,o){
   else if(back){u(cap,5,5,10,7);u(cap,6,4,8,1);u(hl,7,5,3,1);u(hd,5,10,10,2);u('#ffffff',9,1,3,3);u('#d8e4f0',9,3,3,1)}
   else{u(cap,Rt?5:6,5,10,4);u(cap,Rt?6:7,4,8,1);u(hl,Rt?7:9,5,3,1);u(hd,Rt?5:6,8,10,2);u(HC,Rt?5:13,10,2,3);u('#ffffff',Rt?8:11,1,3,3);u('#d8e4f0',Rt?8:11,3,3,1)}}
 }
+// ---- tự kiểm tra mascot theo khung chuẩn MSTD: gõ mascotCheck() trong Console (F12) ----
+window.mascotCheck=function(quiet){const res=[];
+ SETS.forEach((S,si)=>{if(!S.mascot)return;const bad=[];let tag=S.n;
+  const st=[];for(let d=0;d<4;d++){for(let f=0;f<4;f++)st.push({d,a:(f+.05)/9,mv:1,k:'đi d'+d+' f'+f});st.push({d,a:0,mv:0,sit:2,k:'ngồi d'+d});st.push({d,a:0,mv:0,ride:1,k:'cưỡi d'+d})}
+  for(const q of st){let x0=99,x1=-99,y0=99,y1=-99,n=0,fs='';
+   const g={set fillStyle(v){fs=v},get fillStyle(){return fs},fillRect(x,y,w,h){if(String(fs).startsWith('rgba(0,0,0'))return;if(w<=0||h<=0)return;n++;x0=Math.min(x0,x);x1=Math.max(x1,x+w);y0=Math.min(y0,y);y1=Math.max(y1,y+h)}};
+   drawAv(g,0,0,{d:q.d,a:q.a,mv:q.mv,sit:q.sit||0,ride:q.ride,hair:0,set:si,e:0});
+   if(!n){bad.push(q.k+': không vẽ gì');continue}
+   if(x0<0||x1>MSTD.W)bad.push(q.k+': tràn ngang x'+x0+'..'+x1+' (cho phép 0..'+MSTD.W+')');
+   if(y0<-(q.mv?1:0))bad.push(q.k+': vượt đỉnh y'+y0+' (tối thiểu 0, cho phép nhún -1 khi đi)');
+   if(y1>MSTD.foot+1)bad.push(q.k+': chân thấp quá y'+y1+' (tối đa '+(MSTD.foot+1)+')');
+   if(!q.sit&&!q.ride&&y1<MSTD.foot+1-1)bad.push(q.k+': chân lơ lửng y'+y1+' (đế giày phải chạm y'+(MSTD.foot+1)+')');
+   if(q.ride&&y1>27)bad.push(q.k+': khi cưỡi thân thò xuống y'+y1+' (tối đa 27)');
+   if(y1-y0>MSTD.H)bad.push(q.k+': cao '+(y1-y0)+' > '+MSTD.H)}
+  res.push({mascot:tag,ok:!bad.length,loi:bad})});
+ if(!quiet)res.forEach(r=>console.log((r.ok?'✅ ':'❌ ')+r.mascot,r.loi.length?r.loi:'đúng chuẩn 20x31'));
+ return res};
 // ---- thu cuoi: khung xuong (4 huong). Moi thu cuoi chi can khai bao: seat, hw, drop, spd, draw(R,d,f,bob,t,part)
 // R(mau,x,y,w,h) ve quanh diem chan (0,0); huong TRAI = lat guong huong PHAI. part 0 = lop duoi (truoc nguoi ngoi), part 1 = lop tren (de len nguoi).
 // ---- tien ich ve cho thu cuoi moi (xe, voi, ky lan) ----
@@ -1250,14 +1329,21 @@ cv.addEventListener('pointerdown',e=>{ptr={x:e.clientX,y:e.clientY,t:performance
 // vuốt nhanh trên màn hình = kéo camera xem map (khi chưa giữ để đi)
 cv.addEventListener('pointermove',e=>{if(!ptr)return;const lx=ptr.x,ly=ptr.y;ptr.x=e.clientX;ptr.y=e.clientY;
  if(!ptr.pan&&!ptr.walk&&!UI&&!WTM&&!WTON&&!HMA&&Math.hypot(ptr.x-ptr.x0,ptr.y-ptr.y0)>10)ptr.pan=1;
- if(ptr.pan){camFree=1;const mx=Math.max(0,(CVON?CW:PX)-vw),my=Math.max(0,(CVON?CH:PY)-vh);camX=cl(camX-(ptr.x-lx)/S,0,mx);camY=cl(camY-(ptr.y-ly)/S,0,my)}});
+ if(ptr.pan){camFree=1;camX=cc(camX-(ptr.x-lx)/S,CVON?CW:PX,vw);camY=cc(camY-(ptr.y-ly)/S,CVON?CH:PY,vh)}});
 cv.addEventListener('pointerup',e=>{if(ptr&&!ptr.pan&&performance.now()-ptr.t<220){const wx=e.clientX/S+camX,wy=e.clientY/S+camY,h=hitAt(wx,wy);
  if(UI){}else if(CVON&&window.PKO&&PKO.tap&&PKO.tap(wx,wy)){}else if(MAP=='hm'&&DECO)decoTap(wx,wy);else if(MAP=='hm'&&hmSeat(wx,wy)){}else if(h)tapHit(h);else{pa=null;goal={x:wx,y:wy,t:0};Pl.pend=0}}ptr=null});
 cv.addEventListener('pointercancel',()=>ptr=null);
-var WTM=0,WEXP=null;function resize(){dpr=window.devicePixelRatio||1;cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;S=Math.max(2,Math.min(4,Math.floor(innerWidth/440)));vw=innerWidth/S;vh=innerHeight/S;if(WTM)S=Math.max(2,Math.min(4,Math.floor(Math.min(innerWidth/260,innerHeight/190))));vw=innerWidth/S;vh=innerHeight/S;if(WTON){S=Math.min(innerWidth/WW,innerHeight/WH);vw=innerWidth/S;vh=innerHeight/S}}
+var WTM=0,WEXP=null,ZL=0;try{ZL=Math.max(-4,Math.min(2,parseInt(localStorage.tl_zoom||'0')||0))}catch(e){}
+/* ZOOM: ZL=0 là cỡ mặc định như cũ; ZL<0 thu nhỏ (nhìn rộng hơn), ZL>0 phóng to. Mỗi bậc ×1.25, làm tròn theo điểm ảnh thiết bị cho nét. */
+const zoomBase=()=>Math.max(2,Math.min(4,Math.floor(innerWidth/440)));
+const zoomS=l=>{let z=zoomBase()*Math.pow(1.25,l);z=Math.round(z*dpr)/dpr;return Math.max(1,Math.min(6,z))};
+function resize(){dpr=window.devicePixelRatio||1;cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;
+ S=zoomBase();if(WTM)S=Math.max(2,Math.min(4,Math.floor(Math.min(innerWidth/260,innerHeight/190))));
+ if(WTON)S=Math.min(innerWidth/WW,innerHeight/WH);else if(!WTM)S=zoomS(ZL);
+ vw=innerWidth/S;vh=innerHeight/S}
 addEventListener('resize',resize);resize();
-const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),can=(x,y)=>!(isSolid(x-5,y)||isSolid(x+5,y)||isSolid(x-5,y-3)||isSolid(x+5,y-3));
-camX=cl(Pl.x-vw/2,0,Math.max(0,PX-vw));camY=cl(Pl.y-vh/2,0,Math.max(0,PY-vh));
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),cc=(v,W,V)=>W<=V?(W-V)/2:Math.max(0,Math.min(W-V,v)),can=(x,y)=>!(isSolid(x-5,y)||isSolid(x+5,y)||isSolid(x-5,y-3)||isSolid(x+5,y-3));
+camX=cc(Pl.x-vw/2,PX,vw);camY=cc(Pl.y-vh/2,PY,vh);
 // ---------- kinh te / kho / cau ca / may dao ----------
 const CROPS=[['Lúa','🌾',12,3,4,'#e8c84a'],['Nếp','🍙',15,4,5,'#f3ead0'],['Bắp','🌽',18,4,6,'#f5c518'],['Mía','🎋',10,2,4,'#7a3b8a'],['Đậu xanh','🫘',20,5,7,'#4f8a3a'],['Cà rốt','🥕',25,5,8,'#f08a24'],['Dưa leo','🥒',15,4,6,'#3f9a3f'],['Bắp cải','🥬',35,7,10,'#9ad66a'],['Mướp','🌿',30,6,9,'#6aae4a'],['Khoai tây','🥔',40,8,12,'#c9a066'],['Bông','☁️',45,8,13,'#ffffff'],['Lúa mì','🥖',20,5,7,'#d9a83a'],['Khoai lang','🍠',30,6,10,'#b04a8a'],['Dâu tây','🍓',30,8,14,'#e8304a'],['Cà chua','🍅',18,5,8,'#e8402a'],['Hành lá','🧅',12,3,5,'#8ad05a'],['Ớt','🌶️',15,4,7,'#d9302a']];
 const SVGI=b=>'<svg class="ci" viewBox="0 0 24 24" aria-hidden="true">'+b+'</svg>',
@@ -2969,7 +3055,7 @@ function switchMap(m){if(MAP==m)return;if(MAP=='cv'||MAP=='ps')cvLeave();if(MAP=
   for(let y=0;y<H;y++)for(let x=0;x<W;x++)solid[y][x]=SNT[y][x];
   Pl.x=MPOS.nt.x;Pl.y=MPOS.nt.y;toast('🌾 Đã về Nông Trại')}
  goal=null;pa=null;fish=null;Pl.sit=0;Pl.bn=0;Pl.mv=0;closeUI();petReset();camFree=0;
- camX=cl(Pl.x-vw/2,0,Math.max(0,(CVON?CW:PX)-vw));camY=cl(Pl.y-vh/2,0,Math.max(0,(CVON?CH:PY)-vh));save()}
+ camX=cc(Pl.x-vw/2,CVON?CW:PX,vw);camY=cc(Pl.y-vh/2,CVON?CH:PY,vh);save()}
 function hdAct(){if(ST.xu<30)return toast('Cần 30 Xu để thả một hoa đăng 🌸');
  ST.xu-=30;xuUp();save();
  LHRL.push({x:ri(304,336),b:performance.now(),c:pick(['#ffb3d1','#fff3c4','#ffd23f','#ff9fc2','#bfe8ff'])});
@@ -3051,7 +3137,7 @@ RIP=RIP.filter(p=>p.t<1);
 drpT-=dt;if(drpT<=0){drpT=.28;DRP.push({x:WHT.x+ri(2,12),y:RY-26+ri(0,3),vy:20})}
 for(const d of DRP){d.vy+=140*dt;d.y+=d.vy*dt}
 DRP=DRP.filter(d=>{if(d.y>RY+16){if(rnd()<.5)RIP.push({x:d.x,y:RY+16,t:0});return false}return true});
-let txc=cl(Pl.x-vw/2,0,Math.max(0,(CVON?CW:PX)-vw)),tyc=cl(Pl.y-vh/2,0,Math.max(0,(CVON?CH:PY)-vh));
+let txc=cc(Pl.x-vw/2,CVON?CW:PX,vw),tyc=cc(Pl.y-vh/2,CVON?CH:PY,vh);
 if(WTM){txc=vw>=WW?(WW-vw)/2:cl(Pl.x-vw/2,0,WW-vw);tyc=vh>=WH?(WH-vh)/2:cl(Pl.y-vh/2,0,WH-vh);camX=txc;camY=tyc}else if(WTON){camX=(WW-vw)/2;camY=(WH-vh)/2}else{if((Pl.mv||Math.abs(Pl.x-cfx)+Math.abs(Pl.y-cfy)>.5)&&!(ptr&&ptr.pan))camFree=0;cfx=Pl.x;cfy=Pl.y;if(!camFree){camX+=(txc-camX)*Math.min(1,dt*7);camY+=(tyc-camY)*Math.min(1,dt*7)}}
 if(CVON)cvUpdate(dt,tm);
 }
@@ -3138,6 +3224,58 @@ setTimeout(()=>toast('🌾 Làng quê đã khoác áo mới — đi khám phá n
  document.addEventListener('fullscreenchange',()=>{sync();setTimeout(resize,150)});
  document.addEventListener('webkitfullscreenchange',()=>{sync();setTimeout(resize,150)});
  sync();
+})();
+</script>
+<script>
+// ---------- ZOOM + CHỐNG TỰ PHÓNG TO (iPhone) ----------
+(function(){
+ // 1) iOS: chặn chụm 2 ngón / chạm đúp phóng to cả trang (trước đây làm mất hết nút panel)
+ ['gesturestart','gesturechange','gestureend'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
+ document.addEventListener('dblclick',e=>e.preventDefault());
+ document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1&&!(e.target.closest&&e.target.closest('#ui')))e.preventDefault()},{passive:false});
+ // chạm đúp trên canvas (không đụng tới nút bấm để nút bấm nhanh vẫn nhạy)
+ let lt=0;cv.addEventListener('touchend',e=>{const n=Date.now();if(n-lt<350)e.preventDefault();lt=n},{passive:false});
+ // nếu trang vẫn bị phóng to (vd. sau khi gõ chat) -> ép về 100%
+ const metas=()=>{const a=[document.querySelector('meta[name=viewport]')];try{a.push(parent.document.querySelector('meta[name=viewport]'))}catch(e){}return a.filter(Boolean)};
+ const LOCK='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+ window.resetZoom=()=>{try{const m=metas();m.forEach(x=>x.setAttribute('content','width=device-width, initial-scale=1, minimum-scale=0.99, maximum-scale=1, viewport-fit=cover'));
+  setTimeout(()=>{m.forEach(x=>x.setAttribute('content',LOCK));scrollTo(0,0);try{parent.scrollTo(0,0)}catch(e){}},60)}catch(e){}};
+ if(window.visualViewport){let busy=0;visualViewport.addEventListener('resize',()=>{if(visualViewport.scale>1.02&&!busy){busy=1;resetZoom();setTimeout(()=>busy=0,600)}})}
+ document.addEventListener('focusout',e=>{if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))setTimeout(resetZoom,120)});
+
+ // 2) Nút ZOOM trong game: nhìn rộng hơn / gần hơn
+ const css=document.createElement('style');
+ css.textContent='#zm{position:fixed;right:calc(8px + env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:3;display:flex;flex-direction:column;gap:4px;align-items:center}'+
+  '#zm .b{width:36px;height:36px;padding:0;font-size:18px;display:flex;align-items:center;justify-content:center;opacity:.9;touch-action:manipulation}'+
+  '#zm small{font-size:10px;color:#fff;text-shadow:0 1px 2px #000;font-weight:800;min-height:11px}';
+ document.head.appendChild(css);
+ const box=document.createElement('div');box.id='zm';
+ box.innerHTML='<button class="b" id="zmi" title="Phóng to">➕</button><small id="zml"></small><button class="b" id="zmo" title="Thu nhỏ - nhìn rộng hơn">➖</button>';
+ document.body.appendChild(box);
+ ['pointerdown','pointerup','touchstart'].forEach(ev=>box.addEventListener(ev,e=>e.stopPropagation()));
+ const lab=()=>{const l=$('zml');if(l)l.textContent=ZL==0?'':Math.round(Math.pow(1.25,ZL)*100)+'%';$('zmi').style.opacity=ZL>=2?.4:.9;$('zmo').style.opacity=ZL<=-4?.4:.9};
+ window.zoomBy=dir=>{if(WTM||WTON)return;const cur=S;let n=ZL;
+  // nhảy tới bậc kế tiếp thực sự làm đổi cỡ (màn hình mật độ thấp có bậc bị trùng sau khi làm tròn)
+  while(n+dir>=-4&&n+dir<=2){n+=dir;if(Math.abs(zoomS(n)-cur)>.01)break}
+  if(n==ZL){toast(dir<0?'🔍 Đã thu nhỏ hết cỡ':'🔍 Đã phóng to hết cỡ');return}
+  ZL=n;try{localStorage.tl_zoom=ZL}catch(e){}
+  const px=(camX+vw/2),py=(camY+vh/2);resize();
+  if(camFree){camX=px-vw/2;camY=py-vh/2}
+  lab()};
+ window.zoomReset=()=>{ZL=0;try{localStorage.tl_zoom=0}catch(e){}resize();lab()};
+ $('zmi').onclick=()=>zoomBy(1);$('zmo').onclick=()=>zoomBy(-1);$('zml').onclick=zoomReset;$('zml').style.cursor='pointer';
+ // phím + / - và lăn chuột (máy tính)
+ addEventListener('keydown',e=>{if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;if(e.key=='+'||e.key=='=')zoomBy(1);else if(e.key=='-'||e.key=='_')zoomBy(-1);else if(e.key=='0')zoomReset()});
+ let wt=0;cv.addEventListener('wheel',e=>{e.preventDefault();const n=Date.now();if(n-wt<140)return;wt=n;zoomBy(e.deltaY>0?-1:1)},{passive:false});
+ // chụm 2 ngón trên màn hình để zoom
+ const pts=new Map();let d0=0;
+ const dist=()=>{const a=[...pts.values()];return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)};
+ cv.addEventListener('pointerdown',e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pts.size==2){ptr=null;goal=null;d0=dist()}});
+ cv.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;p.x=e.clientX;p.y=e.clientY;
+  if(pts.size==2){ptr=null;const d=dist();if(d0>0){const r=d/d0;if(r>1.3){zoomBy(1);d0=d}else if(r<.77){zoomBy(-1);d0=d}}}});
+ const up=e=>{pts.delete(e.pointerId);if(pts.size<2)d0=0};
+ cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ lab();
 })();
 </script>
 <script src="park-map.js"></script>

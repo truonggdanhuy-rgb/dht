@@ -93,15 +93,16 @@ const fmtD=t=>{const d=new Date(t);return String(d.getDate()).padStart(2,'0')+'/
 const accName=()=>{try{return localStorage.user||ST.name||'Khách'}catch(e){return ST.name||'Khách'}};
 
 // avatar có khung: ảnh nằm dưới khung, chỉ lộ ra ở phần lỗ trống của khung
-function avHtml(fr,w){
+function avHtml(fr,w,img,av){
  const f=FRAMES[fr],h=Math.round(w*1.25);
- const ph=ID.img?'background-image:url('+ID.img+')':'';
- const body='<div class="idph"'+(f?' style="'+ph+';-webkit-mask-image:url('+f.m+');mask-image:url('+f.m+')"':' style="'+ph+'"')+'>'+(ID.img?'':'<canvas class="idface" width="64" height="80"></canvas>')+'</div>';
+ if(img===undefined)img=ID.img;
+ const ph=img?'background-image:url('+img+')':'';
+ const body='<div class="idph"'+(f?' style="'+ph+';-webkit-mask-image:url('+f.m+');mask-image:url('+f.m+')"':' style="'+ph+'"')+'>'+(img?'':'<canvas class="idface" width="64" height="80"'+(av?' data-h="'+(av.h|0)+'" data-s="'+(av.s|0)+'" data-e="'+(av.e|0)+'"':'')+'></canvas>')+'</div>';
  return '<div class="idav'+(f?'':' nf')+'" style="width:'+w+'px;height:'+h+'px">'+body+(f?'<img class="idfr" alt="" src="'+f.f+'">':'')+'</div>'}
 // mặt nhân vật mặc định (khi chưa tải ảnh)
 function paintFaces(){
  document.querySelectorAll('canvas.idface').forEach(c=>{
-  try{const g=c.getContext('2d'),A=ST.av||{},o={d:0,a:0,mv:0,sit:0,hair:A.h|0,set:A.s|0,e:A.e|0};
+  try{const g=c.getContext('2d'),A=c.dataset.h!==undefined?{h:+c.dataset.h,s:+c.dataset.s,e:+c.dataset.e}:(ST.av||{}),o={d:0,a:0,mv:0,sit:0,hair:A.h|0,set:A.s|0,e:A.e|0};
    const gr=g.createLinearGradient(0,0,0,80);gr.addColorStop(0,'#d6f0fb');gr.addColorStop(1,'#bfe3f5');g.fillStyle=gr;g.fillRect(0,0,64,80);
    const t=document.createElement('canvas');t.width=40;t.height=48;const tg=t.getContext('2d');drawAv(tg,10,2,o);
    g.imageSmoothingEnabled=false;g.drawImage(t,5,1,30,37.5,0,0,64,80)}catch(e){}})}
@@ -118,7 +119,7 @@ function mainView(){
  const n=ID.ls.n,mx=ST.lv>=100,need=mx?1:lvNeed(ST.lv),pc=mx?100:Math.min(100,ST.exp/need*100);
  const h='<div class="uh"><span>🪪 Căn cước Tinyland</span><button class="b x" onclick="closeUI()">X</button></div>'+
  '<div class="idtop"><div class="idl"><div class="idavw" onclick="idMenu()" title="Bấm để chỉnh avatar">'+avHtml(ID.fr,132)+'</div></div>'+
- '<div class="idr"><div class="idnm">'+escH(accName())+'</div><div class="idsub">🎭 '+escH(ST.name||'')+'</div>'+
+ '<div class="idr"><div class="idnm">'+escH(ST.name||'Nhân vật')+'</div><div class="idsub">🎭 Tên nhân vật • đổi ở avatar góc phải màn chính</div>'+
  '<div class="idline"><span>🎂 Ngày ra đời</span><b id="idborn">'+fmtD(ID.born)+'</b></div>'+
  '<div class="idlv"><div class="t"><span>⭐ Level</span><b>'+ST.lv+(mx?' MAX':'')+'</b></div><div class="idbar"><i style="width:'+pc+'%"></i></div></div>'+
  '<div class="mut" style="margin:0;font-size:10.5px">👆 Bấm vào avatar để đổi ảnh / khung</div></div></div>'+
@@ -136,13 +137,13 @@ window.idTT=k=>{if(k==0){const t=lvTier(ST.lv),nx=LV_FROM[t+1];toast('⭐ Danh h
  else{const B=bfGet();if(!B)return idBF();const t=bfTierOf(B.exp);toast('💞 Danh hiệu Bạn thân: '+BT_N[t]+(t<4?' • Cần '+bfExpAt[t+1]+' EXP tình bạn để lên «'+BT_N[t+1]+'»':' • Bậc cao nhất!'))}};
 window.idMenu=()=>{const m=$('idmenu');if(m)m.classList.toggle('on')};
 window.idPick=()=>{const f=$('idfile');if(f)f.click()};
-window.idBio=el=>{if(el.value.length>200)el.value=el.value.slice(0,200);ID.bio=el.value;const c=$('idcn');if(c)c.textContent=el.value.length};
-window.idDelImg=()=>{ID.img='';save();idRender();toast('Đã dùng lại mặt nhân vật')};
+window.idBio=el=>{if(el.value.length>200)el.value=el.value.slice(0,200);ID.bio=el.value;clearTimeout(window.__cbt);window.__cbt=setTimeout(()=>cardSync(),2500);const c=$('idcn');if(c)c.textContent=el.value.length};
+window.idDelImg=()=>{ID.img='';save();cardSync();idRender();toast('Đã dùng lại mặt nhân vật')};
 window.idFile=inp=>{const f=inp.files&&inp.files[0];if(!f)return;
  const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{
   const W=240,H=300,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');
   const s=Math.max(W/im.width,H/im.height),w=im.width*s,h=im.height*s;g.drawImage(im,(W-w)/2,(H-h)/2,w,h);
-  ID.img=c.toDataURL('image/jpeg',.82);save();idRender();toast('📷 Đã đổi ảnh avatar!')};
+  ID.img=c.toDataURL('image/jpeg',.82);save();cardSync();idRender();toast('📷 Đã đổi ảnh avatar!')};
   im.onerror=()=>toast('Ảnh không đọc được, thử ảnh khác nhé');im.src=rd.result};
  rd.onerror=()=>toast('Không đọc được ảnh');rd.readAsDataURL(f)};
 
@@ -170,10 +171,10 @@ function bfView(){
 window.idFrames=()=>{IDV='frames';FSEL=ID.fr>=0?ID.fr:0;idRender()};
 window.idBack=()=>{IDV='main';idRender()};
 window.idSel=i=>{FSEL=i;idRender()};
-window.idEquip=i=>{ID.fr=i;save();idRender();toast('🖼️ Đã dùng khung '+FRAMES[i].n)};
-window.idNone=()=>{ID.fr=-1;save();idRender();toast('Đã gỡ khung')};
+window.idEquip=i=>{ID.fr=i;save();cardSync();idRender();toast('🖼️ Đã dùng khung '+FRAMES[i].n)};
+window.idNone=()=>{ID.fr=-1;save();cardSync();idRender();toast('Đã gỡ khung')};
 window.idBuy=i=>{if(ID.own.includes(i))return;if(ST.xu<PRICE)return toast('Không đủ Xu! Cần '+PRICE+' Xu');
- ST.xu-=PRICE;ID.own.push(i);ID.fr=i;xuUp();save();idRender();toast('🎉 Đã mua khung '+FRAMES[i].n+' (−'+PRICE+' Xu)')};
+ ST.xu-=PRICE;ID.own.push(i);ID.fr=i;xuUp();save();cardSync();idRender();toast('🎉 Đã mua khung '+FRAMES[i].n+' (−'+PRICE+' Xu)')};
 function framesView(){
  const own=i=>ID.own.includes(i),f=FRAMES[FSEL];
  let act;
@@ -193,4 +194,67 @@ async function idBorn(){
   const r=await fetch(D.SB_URL+'/auth/v1/user',{headers:{apikey:D.SB_KEY,Authorization:'Bearer '+t}});if(!r.ok)return;
   const j=await r.json();const ts=Date.parse(j.created_at);if(!ts)return;
   ID.born=ts;ID.bs=1;save();const e=$('idborn');if(e)e.textContent=fmtD(ts)}catch(e){}}
+// ============================================================
+//  CARD CÔNG KHAI: đẩy Card của mình lên máy chủ & xem Card người khác
+//  (cần chạy phần "3) Card" trong supabase.sql 1 lần)
+// ============================================================
+let SMALL='',SMALLSRC='';
+const smallImg=()=>new Promise(res=>{if(!ID.img)return res('');if(SMALLSRC===ID.img)return res(SMALL);
+ const im=new Image();im.onload=()=>{try{const c=document.createElement('canvas');c.width=144;c.height=180;c.getContext('2d').drawImage(im,0,0,144,180);SMALL=c.toDataURL('image/jpeg',.72);SMALLSRC=ID.img;res(SMALL)}catch(e){res('')}};
+ im.onerror=()=>res('');im.src=ID.img});
+async function cardSnap(){const B=bfGet(),A=ST.av||{},mx=ST.lv>=100,need=mx?1:lvNeed(ST.lv),pc=mx?100:Math.min(100,Math.round(ST.exp/need*100));
+ return{v:1,n:ST.name||'',bio:ID.bio||'',fr:ID.fr,lv:ST.lv|0,pc,earn:Math.floor(ID.earn||0),ls:ID.ls?ID.ls.n:1,born:ID.born||0,
+  av:{h:A.h|0,s:A.s|0,e:A.e|0},img:await smallImg(),
+  bf:B?{pn:B.pn||'',exp:B.exp|0,since:B.since||0,pav:{h:(B.pav&&B.pav.h)|0,s:(B.pav&&B.pav.s)|0,e:(B.pav&&B.pav.e)|0}}:null}}
+let lastCard='',cardBusy=0;
+window.cardSync=async()=>{if(cardBusy||!dhtOk())return;cardBusy=1;
+ try{const sn=await cardSnap(),j=JSON.stringify(sn);if(j!==lastCard){const ok=await dhtRpc('card_put',{p:sn});if(ok===true)lastCard=j}}catch(e){}
+ cardBusy=0};
+setTimeout(()=>cardSync(),3500);setInterval(()=>cardSync(),30000);
+
+// làm sạch dữ liệu của người khác trước khi hiển thị (không tin dữ liệu từ máy chủ)
+const num=(v,a,b,d)=>{v=+v;return isFinite(v)?Math.max(a,Math.min(b,Math.floor(v))):d};
+const cleanImg=v=>(typeof v=='string'&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(v)&&v.length<120000)?v:'';
+function cardClean(d){if(!d||typeof d!='object')return null;const a=d.av||{},b=d.bf,
+ o={n:String(d.n||'').replace(/[\u0000-\u001f<>]/g,'').slice(0,16),bio:String(d.bio||'').replace(/[\u0000-\u0009\u000b-\u001f]/g,'').slice(0,200),
+  fr:num(d.fr,-1,FRAMES.length-1,-1),lv:num(d.lv,1,100,1),pc:num(d.pc,0,100,0),earn:num(d.earn,0,1e12,0),ls:num(d.ls,1,99999,1),born:num(d.born,0,4102444800000,0),
+  av:{h:num(a.h,0,99,0),s:num(a.s,0,99,0),e:num(a.e,0,99,0)},img:cleanImg(d.img),bf:null};
+ if(b&&typeof b=='object'){const p=b.pav||{};o.bf={pn:String(b.pn||'').replace(/[\u0000-\u001f<>]/g,'').slice(0,16),exp:num(b.exp,0,1e9,0),since:num(b.since,0,4102444800000,0),pav:{h:num(p.h,0,99,0),s:num(p.s,0,99,0),e:num(p.e,0,99,0)}}}
+ return o}
+
+let OV=null; // thẻ đang xem {o:người chơi, d:dữ liệu|null, st:'load'|'ok'|'none'|'err'}
+window.idView=async o=>{if(!o)return;OV={o,d:null,st:'load'};ovRender();
+ if(!o.u){OV.st='none';return ovRender()}
+ try{const r=await dhtRpc('card_get',{p_uid:o.u});if(!OV||OV.o!==o)return;const c=cardClean(r);if(c){OV.d=c;OV.st='ok'}else OV.st='none'}
+ catch(e){if(!OV||OV.o!==o)return;OV.st='err'}
+ ovRender()};
+function ovRender(){if(!OV)return;const o=OV.o,d=OV.d,nm=escH((d&&d.n)||o.n||'?'),
+ hd=back=>'<div class="uh"><span>'+(window.pkBack?'<button class="b x" onclick="idViewBack()">‹ Menu</button> ':'')+'🪪 Card của '+nm+'</span><button class="b x" onclick="idViewClose()">X</button></div>';
+ if(OV.st=='load')return openIdc(hd()+'<div class="idemp"><div class="big">🪪</div>Đang mở Card của <b>'+nm+'</b>...</div>');
+ if(OV.st!='ok'){const A={h:o.hair|0,s:o.set|0,e:o.e|0};
+  return openIdc(hd()+'<div class="idtop"><div class="idl">'+avHtml(-1,110,'',A)+'</div><div class="idr"><div class="idnm">'+nm+'</div><div class="idsub">'+(OV.st=='err'?'Chưa tải được Card, thử lại nhé':'Người này chưa cập nhật Card')+'</div></div></div>'+
+   '<div class="mut">'+(OV.st=='err'?'Kiểm tra mạng rồi bấm lại “Card”.':'Card sẽ hiện khi bạn ấy mở Tinyland bản mới (và máy chủ đã chạy supabase.sql).')+'</div>');}
+ const mx=d.lv>=100,B=d.bf,t=B?bfTierOf(B.exp):0,F=d.fr>=0?FRAMES[d.fr]:null;
+ let h=hd()+'<div class="idtop"><div class="idl">'+avHtml(d.fr,132,d.img,d.av)+'</div>'+
+  '<div class="idr"><div class="idnm">'+nm+'</div>'+
+  '<div class="idline"><span>🎂 Ngày ra đời</span><b>'+(d.born?fmtD(d.born):'—')+'</b></div>'+
+  '<div class="idlv"><div class="t"><span>⭐ Level</span><b>'+d.lv+(mx?' MAX':'')+'</b></div><div class="idbar"><i style="width:'+d.pc+'%"></i></div></div></div></div>'+
+  '<div class="idbox idtt"><div class="idtl"><img alt="Danh hiệu Level" src="'+TITLE_ASSETS.lv[lvTier(d.lv)]+'">'+(B?'<img alt="Danh hiệu Bạn thân" src="'+TITLE_ASSETS.bf[t]+'">':'<div class="idnobf"><span class="l">🔒</span><div><b>Chưa có bạn thân</b><small>Chưa mở danh hiệu Bạn thân</small></div></div>')+'</div></div>'+
+  '<div class="idbox"><h4>📝 Thông tin</h4><div style="white-space:pre-wrap;word-break:break-word;font-size:13px;min-height:20px;color:#24475c">'+(d.bio?escH(d.bio):'<span class="mut">Chưa viết giới thiệu.</span>')+'</div></div>'+
+  '<div class="idg3"><div class="idsq"><span class="e">🪙</span><b>'+fmtXu(d.earn)+'</b><small>Tổng xu đã kiếm</small></div>'+
+  '<div class="idsq"><span class="e">'+(d.ls>10?'🔥':'📅')+'</span><b>'+d.ls+' ngày</b><small>Chuỗi đăng nhập</small></div>'+
+  '<div class="idsq"><span class="e">🖼️</span><b>'+(F?F.n:'Chưa có')+'</b><small>Khung đang dùng</small></div></div>';
+ // Bạn thân
+ if(B){const mt=t>=4,cur=bfExpAt[t],nx=mt?cur:bfExpAt[t+1],pc=mt?100:Math.max(0,Math.min(100,(B.exp-cur)/(nx-cur)*100)),days=B.since?Math.max(1,Math.floor((Date.now()-B.since)/864e5)+1):1;
+  h+='<div class="idbox"><h4>👫 Bạn thân</h4><div class="idpair"><div class="idpc"><canvas class="idchr" width="40" height="48" data-h="'+d.av.h+'" data-s="'+d.av.s+'" data-e="'+d.av.e+'"></canvas><b>'+nm+'</b></div>'+
+   '<div class="idmid"><span class="h">💖</span>Bạn thân</div>'+
+   '<div class="idpc"><canvas class="idchr" width="40" height="48" data-h="'+B.pav.h+'" data-s="'+B.pav.s+'" data-e="'+B.pav.e+'"></canvas><b>'+escH(B.pn||'Bạn thân')+'</b></div></div>'+
+   '<div class="idlv" style="border:0;padding:6px 0 0"><div class="t"><span>'+BT_N[t]+'</span><b>'+(mt?'MAX':fmtXu(B.exp)+' / '+fmtXu(nx)+' EXP')+'</b></div><div class="idbar" style="height:10px"><i style="width:'+pc+'%;background:linear-gradient(90deg,#ff9ec2,#8fd0ee)"></i></div></div>'+
+   '<div class="idline" style="margin-top:6px"><span>📅 Ngày tình bạn</span><b>'+(B.since?fmtD(B.since)+' • '+days+' ngày':'—')+'</b></div></div>'}
+ else h+='<div class="idbox"><h4>👫 Bạn thân</h4><div class="mut" style="margin:0">'+nm+' chưa có bạn thân.</div></div>';
+ // Gia đình (tính năng Cây gia đình chưa có trong game nên hiện chỗ chờ)
+ h+='<div class="idbox"><h4>🌳 Gia đình</h4><div class="mut" style="margin:0">Cây gia đình sắp ra mắt — khi có, thành viên gia đình của '+nm+' sẽ hiện ở đây.</div></div>';
+ openIdc(h);paintFaces();paintChars()}
+window.idViewBack=()=>{const o=OV&&OV.o;OV=null;if(window.pkBack)pkBack(o);else closeUI()};
+window.idViewClose=()=>{OV=null;closeUI()};
 })();
