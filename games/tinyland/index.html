@@ -662,7 +662,10 @@ const SETS=[
  {n:'Tứ thân hoa sen',fx:'tuthan',sh:'#f6a9c6',shl:'#fcd0e0',shd:'#d97fa3',scarf:'#f6a9c6',belt:'#f6a9c6',trim:'#fff0f6',yem:'#fffaf0',yd:'#d97fa3',vay:'#3f9b6a',lotus:'#f9a5c4',sash:'#f4cf47',pt:'#3f9b6a',rpt:'#3f9b6a',shoe:'#fff0f6'}];
 const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'},{n:'Tóc nâu buộc',k:'tail',c:'#6a3e1e'},{n:'Tóc vàng',k:'short',c:'#e0b84a'},{n:'Mũ len đỏ',k:'beanie',c:'#c0392b',hr:'#2b1d12'},{n:'Mũ len xanh',k:'beanie',c:'#2f6fe0',hr:'#6a3e1e'},
  {n:'Tóc Sailor Moon',k:'sailor',c:'#f6d96b'},{n:'Tóc 2 chùm',k:'bun2',c:'#2a2224'},{n:'Tóc nữ yêu kiều',k:'longf',c:'#201a24'},{n:'Tóc xinh yêu',k:'bobf',c:'#17151c'},
- {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'}];
+ {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'},
+ {n:'Sóng xanh hồng',k:'lwave',p:['#74c8ff','#9fb0ff','#d9a0ff','#ff9ccf']},{n:'Sóng bạch kim',k:'lwave',p:['#ffffff','#ece8fb','#cfc6ee','#b9aee0']},{n:'Sóng cầu vồng',k:'lwave',p:['#ff7a8a','#ffb36b','#ffe66b','#8fe388','#6fc8ff','#a98cff']},
+ {n:'Hai chùm hồng',k:'twt',p:['#ff9fcf','#ff79b8','#ff5aa5'],b:'#7a5cff'},{n:'Hoa sương',k:'pony',p:['#ffb6d9','#ff8fc2','#f06aa8'],b:'#fff3a8'},{n:'Đuôi ngựa bạc hà',k:'pony',p:['#9ff0d6','#6fdcc0','#4cc2a6'],b:'#ffffff'},
+ {n:'Gai hồng',k:'spike',p:['#d94a8c','#ff8ec4']},{n:'Gai đen xanh',k:'spike',p:['#20282a','#2fe0a0']},{n:'Gai trắng xanh',k:'spike',p:['#f2f6ff','#6fb8ff']},{n:'Gai cầu vồng',k:'spike',m:'r',p:['#ff6b6b','#ffc24a','#fff06b','#6fe38a','#5ab8ff','#b184ff']},{n:'Gai hồng lam',k:'spike',p:['#ff7fc0','#46e0d4']},{n:'Gai cam lửa',k:'spike',p:['#d8321c','#ffa23a']}];
 // ---- Bieu cam nhan vat ----
 const EXPRS=[{n:'Mặc định'},{n:'😎 Ngầu'},{n:'😍 Iu iu'},{n:'🤤 Đói bụng'},{n:'😢 Sad'},{n:'😄 Vui vẻ'},{n:'🍬 Bong bóng kẹo'}];
 // 6 biểu cảm đầu miễn phí (ai cũng có); từ số 6 trở đi mua ở Shop Phố xá
@@ -954,7 +957,7 @@ function drawAv(g,ox,oy,o){
   if(!side&&!back){u(cap,5,5,10,5);u(cap,6,4,8,1);u(hl,7,5,3,1);u(hd,5,8,10,2);u(HC,6,10,1,2);u(HC,13,10,1,2);u('#ffffff',9,1,3,3);u('#d8e4f0',9,3,3,1)}
   else if(back){u(cap,5,5,10,7);u(cap,6,4,8,1);u(hl,7,5,3,1);u(hd,5,10,10,2);u('#ffffff',9,1,3,3);u('#d8e4f0',9,3,3,1)}
   else{u(cap,Rt?5:6,5,10,4);u(cap,Rt?6:7,4,8,1);u(hl,Rt?7:9,5,3,1);u(hd,Rt?5:6,8,10,2);u(HC,Rt?5:13,10,2,3);u('#ffffff',Rt?8:11,1,3,3);u('#d8e4f0',Rt?8:11,3,3,1)}}
- else if(HAIRFX[kind])HAIRFX[kind](u,o,{side,Rt,back,SK,HC,cap});
+ else if(HAIRFX[kind])HAIRFX[kind](u,o,{side,Rt,back,SK,HC,cap,HS});
  if(o.acc>=0&&!rd&&!sit)drawAcc(r,o,{side,Rt,back,lg,sx});
 }
 // ---- PHỤ KIỆN CẦM TAY (GEN): chỉ hiện khi đi bộ (ẩn khi cưỡi thú / ngồi), mỗi lần dùng 1 món ----

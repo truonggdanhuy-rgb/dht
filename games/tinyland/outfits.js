@@ -251,3 +251,85 @@ SETFX.tuthan=(u,o,S,K)=>{
 
 /* --- sprite đối xứng: mỗi dòng 10 ký tự (nửa trái x0..9), tự lật sang nửa phải --- */
 function SPH(u,y0,rows,pal){rows.forEach((s,j)=>{let i=0;while(i<s.length){const ch=s[i];if(ch=='.'||ch==' '){i++;continue}let k=i;while(k<s.length&&s[k]==ch)k++;const c=pal[ch];if(c){u(c,i,y0+j,k-i,1);u(c,20-k,y0+j,k-i,1)}i=k}})}
+
+/* ============ TÓC MÀU MỚI (nam / nữ) — dùng bảng màu HS.p trong HAIRS ============
+   p = mảng màu. lwave/twt/pony: màu đổi dần từ trên xuống. spike: HS.m=='r' => mỗi gai 1 màu (cầu vồng), còn lại gốc p[0] – ngọn p[1]. */
+const _gy=(p,t)=>p[Math.max(0,Math.min(p.length-1,Math.floor(t*p.length)))];
+const _hs=K=>K.HS||{p:['#888']};
+const _sh=(c,k)=>(typeof shade=='function'?shade(c,k):c);
+
+// ---- Tóc dài gợn sóng (nữ) ----
+HAIRFX.lwave=(u,o,K)=>{
+ const{side,Rt,back}=K,p=_hs(K).p,mx=(x,w)=>Rt?x:20-x-w,sw=o.mv?_sw():0,
+ cy=y=>_gy(p,(y-5)/22),W=y=>Math.round(Math.sin(y/2.3)),
+ row=(x,y,w)=>{const c=cy(y);u(c,x,y,w,1);u(_sh(c,.35),x+(w>2?1:0),y,1,1);u(_sh(c,-.25),x+w-1,y,1,1)},
+ cap=(x0,w,y)=>{const c=cy(y);u(c,x0,y,w,1)};
+ if(!side&&!back){
+  cap(7,6,5);cap(6,8,6);cap(5,10,7);cap(5,10,8);
+  u(_sh(cy(6),.4),8,6,3,1);u(_sh(cy(6),.4),7,7,1,1);
+  u(cy(8),5,9,2,3);u(cy(8),13,9,2,3);u(cy(9),9,9,2,1);u(cy(9),7,9,1,1);u(cy(9),12,9,1,1);
+  for(let y=12;y<=27;y++){const s=y>=22?Math.min(2,sw):0,d=W(y);row(Math.max(0,3+d+s),y,3);row(14-d-s,y,3)}
+ }else if(back){
+  cap(7,6,5);cap(6,8,6);
+  for(let y=7;y<=27;y++){const d=W(y);row(4+d,y,12-2*d>12?12:12);}
+  for(let y=9;y<=27;y+=3){u(_sh(cy(y),.35),8,y,1,2);u(_sh(cy(y),.35),12,y,1,2)}
+ }else{
+  u(cy(5),mx(7,6),5,6,1);u(cy(6),mx(5,9),6,9,1);u(cy(7),mx(5,9),7,9,2);
+  u(_sh(cy(6),.4),mx(8,3),6,3,1);u(cy(9),mx(10,3),9,3,1);
+  for(let y=9;y<=27;y++){const d=W(y),s=o.mv?(y>=22?2:y>=16?1:0):0;row(mx(3+d-s,7),y,7)}
+ }
+};
+
+// ---- Hai chùm đuôi dài buộc nơ (nữ) ----
+HAIRFX.twt=(u,o,K)=>{
+ const{side,Rt,back}=K,p=_hs(K).p,mx=(x,w)=>Rt?x:20-x-w,sw=o.mv?_sw():0,B=_hs(K).b||'#ff4f93',
+ cy=y=>_gy(p,(y-5)/20),
+ tail=(x,y0,y1,dr)=>{for(let y=y0;y<=y1;y++){const t=(y-y0)/(y1-y0),w=t>.85?2:3,d=Math.round(dr*t*1.5);const c=cy(y);u(c,x+d,y,w,1);u(_sh(c,.35),x+d,y,1,1)}};
+ if(!side){
+  u(cy(5),7,5,6,1);u(cy(6),6,6,8,1);u(cy(7),5,7,10,2);u(_sh(cy(6),.4),8,6,3,1);
+  if(!back){u(cy(9),5,9,2,3);u(cy(9),13,9,2,3);u(cy(9),9,9,2,1);u(cy(9),7,9,1,1);u(cy(9),12,9,1,1)}
+  else{u(cy(9),5,9,10,5)}
+  tail(2,8,23,sw);tail(15,8,23,-sw);
+  u(B,2,8,3,2);u(B,15,8,3,2);u(_sh(B,.4),3,8,1,1);u(_sh(B,.4),16,8,1,1);
+ }else{
+  u(cy(5),mx(7,6),5,6,1);u(cy(6),mx(5,9),6,9,3);u(_sh(cy(6),.4),mx(8,3),6,3,1);u(cy(9),mx(10,3),9,3,1);u(cy(9),mx(6,5),9,4,1);
+  tail(mx(2,3),8,24,o.mv?-sw:0);u(B,mx(2,3),8,3,2);u(_sh(B,.4),mx(3,1),8,1,1);
+ }
+};
+
+// ---- Tóc đuôi ngựa buộc cao + hoa (nữ) ----
+HAIRFX.pony=(u,o,K)=>{
+ const{side,Rt,back}=K,H=_hs(K),p=H.p,mx=(x,w)=>Rt?x:20-x-w,sw=o.mv?_sw():0,F=H.b||'#fff3a8',
+ cy=y=>_gy(p,(y-4)/20),
+ tail=(x,y0,y1,dr)=>{for(let y=y0;y<=y1;y++){const t=(y-y0)/(y1-y0),w=t<.15?3:t>.85?2:4,d=Math.round(dr*t*2);const c=cy(y);u(c,x+d,y,w,1);u(_sh(c,.35),x+d,y,1,1);u(_sh(c,-.25),x+d+w-1,y,1,1)}},
+ flower=(x,y)=>{u('#ffffff',x,y-1,1,1);u('#ffffff',x-1,y,1,1);u('#ffffff',x+1,y,1,1);u('#ffffff',x,y+1,1,1);u(F,x,y,1,1)};
+ if(!side&&!back){
+  u(cy(5),7,5,6,1);u(cy(6),6,6,8,1);u(cy(7),5,7,10,2);u(_sh(cy(6),.4),8,6,3,1);
+  u(cy(9),5,9,2,3);u(cy(9),13,9,2,3);u(cy(9),9,9,2,1);u(cy(9),7,9,1,1);u(cy(9),12,9,1,1);
+  u(cy(5),13,4,3,2);u(cy(6),15,6,2,5);u(_sh(cy(6),-.2),16,9,1,2);flower(14,6);
+ }else if(back){
+  u(cy(5),7,5,6,1);u(cy(6),6,6,8,1);u(cy(7),5,7,10,7);
+  u(cy(4),8,3,4,2);tail(8,5,23,sw);u(_sh(cy(4),.4),9,3,1,1);flower(10,5);
+ }else{
+  u(cy(5),mx(7,6),5,6,1);u(cy(6),mx(5,9),6,9,3);u(_sh(cy(6),.4),mx(8,3),6,3,1);u(cy(9),mx(10,3),9,3,1);u(cy(9),mx(6,5),9,4,1);
+  u(cy(4),mx(3,3),4,3,2);tail(mx(1,4),6,22,o.mv?-sw:0);flower(mx(4,1),6);
+ }
+};
+
+// ---- Tóc gai nhiều màu (nam) ----
+HAIRFX.spike=(u,o,K)=>{
+ const{side,Rt,back}=K,H=_hs(K),p=H.p,mx=(x,w)=>Rt?x:20-x-w,rb=H.m=='r',
+ base=i=>rb?p[i%p.length]:p[0],tip=i=>rb?p[i%p.length]:p[1]||p[0],
+ sp=(cx,top,bot,i)=>{u(tip(i),cx,top,1,1);u(tip(i),cx-1,top+1,3,1);for(let y=top+2;y<=bot;y++)u(y<=top+3||rb?tip(i):base(i),cx-1,y,3,1);u(_sh(tip(i),.45),cx,top+1,1,1)};
+ if(!side){
+  u(base(0),6,6,8,3);u(base(2),5,7,10,2);
+  [[6,2,6],[9,0,6],[12,1,6],[15,3,7],[4,3,7]].forEach(([cx,t,b],i)=>sp(cx,t+1,b+1,i+(rb?0:0)));
+  sp(10,0,5,2);
+  if(!back){u(base(1),6,9,2,2);u(base(1),12,9,2,2);u(base(1),9,9,2,1);u(_sh(base(1),.3),7,9,1,1);u(base(0),5,9,1,3);u(base(0),14,9,1,3);u(base(0),6,11,1,1);u(base(0),13,11,1,1)}
+  else{u(base(1),5,9,10,4);u(_sh(base(1),-.25),6,12,8,1)}
+ }else{
+  u(base(0),mx(5,9),6,9,3);
+  sp(mx(6,1)+(Rt?0:0),2,6,1);sp(mx(9,1),0,5,3);sp(mx(12,1),2,6,2);sp(mx(4,1)+(Rt?-1:1),5,8,0);
+  u(base(1),mx(10,3),9,3,1);u(base(0),mx(6,4),9,4,3);
+ }
+};
