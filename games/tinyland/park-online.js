@@ -107,7 +107,7 @@ const css=document.createElement('style');css.textContent=`
 #cvg .ce{width:var(--cs);height:var(--cs);font-size:calc(var(--cs)*.55);padding:0;display:flex;align-items:center;justify-content:center}
 #cvg .ce.u{background:#fff3cf}#cvg .ce.m{background:#bfe8b0;border-color:#4caf50}#cvg .ce.o{background:#cfe3ff}#cvg .ce.last{outline:2px solid #ff9800;outline-offset:-2px}#cvg .ce.sw{background:#cfe9ff;border-color:#8fc0e8}#cvg .ce.sm{background:#e6f1fb;border-color:#bcd6ee;color:#6a8aa8}#cvg .ce.sh{background:#ffc2b0;border-color:#e0584a}#cvg .ce.sk{background:#e0584a;border-color:#a8382e}#cvg .ce.sf{background:#aab6c4;border-color:#6d7c8c}#cvg .ce.sv{background:#d9dee5;border-color:#9aa6b4}#cvg .ce.nb{pointer-events:none}`;document.head.appendChild(css);
 const mkEl=(id,html,tagN)=>{const e=document.createElement(tagN||'div');e.id=id;e.innerHTML=html||'';document.body.appendChild(e);return e};
-const elC=mkEl('cvc','<div class="n" id="cvn"></div><div id="cvl"></div>'),
+const elC=mkEl('cvc','<div class="n" id="cvn" style="pointer-events:auto"></div><div id="cvd" style="display:none;font-size:9px;font-weight:600;color:#cfe;line-height:1.3;margin:2px 0"></div><div id="cvl"></div>'),
  elB=mkEl('cvb','<button class="b" id="cvbt">💬 Chat</button><button class="b" id="cvsn">🔊</button>'),
  elI=mkEl('cvi','<input id="cvt" maxlength="60" placeholder="Nhập tin nhắn..." autocomplete="off"><button class="b" id="cvs">Gửi</button><button class="b" id="cvx">✕</button>'),
  elG=mkEl('cvg','');elG.className='p';
@@ -119,6 +119,7 @@ const showUI=v=>{elC.style.display=v?'block':'none';elB.style.display=v?'flex':'
 let lastSend=0;
 function sendChat(){const t=$('cvt').value.trim().slice(0,60);if(!t)return;const n=performance.now();if(n-lastSend<800)return toast('Bạn nhắn nhanh quá, chờ chút nhé!');lastSend=n;$('cvt').value='';
  bcast('chat',{i:ME.id,n:ST.name,t});addLine(ST.name,t);bub[ME.id]={t,until:n+5000}}
+$('cvn').onclick=()=>{try{localStorage.cv_dbg=localStorage.cv_dbg=='1'?'0':'1'}catch(e){}dbgUI()};
 $('cvbt').onclick=()=>{elI.style.display='flex';elB.style.display='none';$('cvt').focus()};
 $('cvx').onclick=()=>{elI.style.display='none';elB.style.display='flex'};$('cvs').onclick=sendChat;
 $('cvt').addEventListener('keydown',e=>{if(e.key=='Enter'){sendChat();e.preventDefault()}else if(e.key=='Escape')$('cvx').onclick();e.stopPropagation()});
@@ -133,16 +134,16 @@ const me=()=>({id:ME.id,u:myUid(),n:ST.name,h:ST.av.h,s:ST.av.s,e:ST.av.e|0,a:ST
 function track(){if(ch&&PK.in)try{ch.track(me())}catch(e){}}
 function bcast(ev,p){if(ch)try{ch.send({type:'broadcast',event:ev,payload:p})}catch(e){}}
 const loadLib=()=>window.supabase?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';s.onload=ok;s.onerror=()=>no(new Error('không tải được thư viện Supabase'));document.head.appendChild(s)});
-async function disconnect(){PK.in=0;try{if(ch){await ch.untrack();await sb.removeChannel(ch)}}catch(e){}ch=null;CV.others.clear();PK.all=[];PK.rank=-1}
+async function disconnect(){PK.in=0;downAt=0;warned=0;const old=ch;ch=null;try{if(old){try{await Promise.race([old.untrack(),sleep(700)])}catch(e){}await Promise.race([sb.removeChannel(old),sleep(1500)])}}catch(e){}CV.others.clear();PK.all=[];PK.rank=-1}
 function sync(){if(!ch)return;const st=ch.presenceState(),all=[];for(const k in st){const m=st[k][st[k].length-1];if(m&&m.id)all.push(m)}
  all.sort((a,b)=>a.ts-b.ts||(a.id<b.id?-1:1));PK.all=all.slice(0,MAXP);PK.rank=all.findIndex(p=>p.id==ME.id);
  const okIds=new Set(PK.all.map(p=>p.id));
  for(const p of PK.all){if(p.id==ME.id)continue;let o=CV.others.get(p.id);
   if(!o){o={id:p.id,x:p.x,y:p.y,tx:p.x,ty:p.y,d:0,a:0,mv:0};CV.others.set(p.id,o)}
-  o.u=p.u||'';o.n=p.n;o.hair=p.h;o.set=p.s;o.e=p.e|0;o.acc=p.a==null?-1:p.a;o.m=p.m==null?-1:p.m;o.seat=p.q==null?-1:p.q;o.hz=p.z==null?-1:p.z;o.qt=p.qt||0;o.zt=p.zt||0;o.bf=p.bf==null?-1:p.bf|0}
- for(const id of[...CV.others.keys()])if(!okIds.has(id))CV.others.delete(id);
+  o.seen=performance.now();o.pres=1;o.u=p.u||'';o.n=p.n;o.hair=p.h;o.set=p.s;o.e=p.e|0;o.acc=p.a==null?-1:p.a;o.m=p.m==null?-1:p.m;o.seat=p.q==null?-1:p.q;o.hz=p.z==null?-1:p.z;o.qt=p.qt||0;o.zt=p.zt||0;o.bf=p.bf==null?-1:p.bf|0}
+ for(const[id,o]of[...CV.others])if(!okIds.has(id)){o.pres=0;if(performance.now()-(o.seen||0)>10000)CV.others.delete(id)} // chớp tắt presence ngắn: giữ người chơi thêm tối đa 10s
  if(PK.in){chatUI();
-  if(PK.rank<0)selfHeal();   // máy chủ đã xóa mình khỏi danh sách (rớt mạng ngắn, iPhone ngủ...) -> đăng ký lại ngay
+  if(PK.rank<0&&ch&&ch.state==='joined')selfHeal();   // máy chủ đã xóa mình khỏi danh sách (rớt mạng ngắn, iPhone ngủ...) -> đăng ký lại ngay
   if(PK.rank>=MAXP){toast('🚫 Công viên đã đủ người, bạn được mời ra ngoài');switchMap('nt');return}
   // ai ngồi/cưỡi trước thì giữ chỗ
   const lose=(mine,t,get)=>{for(const o of CV.others.values())if(get(o)==mine&&((o.t0||0)<t||((o.t0||0)==t&&o.id<ME.id)))return 1};
@@ -151,47 +152,65 @@ function sync(){if(!ch)return;const st=ch.presenceState(),all=[];for(const k in 
   gSync()}}
 CV.seatOcc=i=>{for(const o of CV.others.values())if(o.seat==i)return 1;return 0};
 CV.hzOcc=i=>{if(CV.hz==i)return 1;for(const o of CV.others.values())if(o.hz==i)return 1;return 0};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const PKLOG=window.PKLOG=[];
+function plog(m){const t=new Date().toLocaleTimeString('vi',{hour12:false});PKLOG.push(t+' '+m);if(PKLOG.length>30)PKLOG.shift();dbgUI()}
+function dbgUI(){const d=$('cvd');if(!d)return;let on=0;try{on=localStorage.cv_dbg=='1'}catch(e){}
+ d.style.display=on?'block':'none';if(on)d.innerHTML=PKLOG.slice(-7).map(escH).join('<br>')+'<br>state:'+(ch?ch.state:'-')}
 function connect(room,keep){return new Promise((ok,no)=>{
  sb=sb||window.supabase.createClient(SB_URL_,SB_KEY_,{realtime:{params:{eventsPerSecond:20}}});
- if(!keep){ME.ts=Date.now();ME.q=-1;ME.z=-1}let done=0;
- const tm=setTimeout(()=>{if(!done){done=1;no(new Error('hết thời gian chờ'))}},9000);
- ch=sb.channel(room=='ps'?'pho-xa':'cong-vien',{config:{presence:{key:ME.id},broadcast:{self:false}}});
- ch.on('presence',{event:'sync'},()=>{sync();if(!done&&PK.rank>=0){done=1;clearTimeout(tm);ok(PK.rank>=MAXP?'full':'ok')}});
- ch.on('broadcast',{event:'mv'},({payload:p})=>{const o=CV.others.get(p.i);if(!o){askRetrack(p.i);return}o.tx=p.x;o.ty=p.y;o.d=p.d;if(Math.hypot(o.tx-o.x,o.ty-o.y)>160){o.x=o.tx;o.y=o.ty}});
- ch.on('broadcast',{event:'chat'},({payload:p})=>{if(!PK.in||!CV.others.has(p.i))return;const t=String(p.t||'').slice(0,60);addLine(String(p.n||'?').slice(0,16),t);bub[p.i]={t,until:performance.now()+5000}});
- ch.on('broadcast',{event:'g'},({payload:p})=>gRecv(p));
- ch.on('broadcast',{event:'rt'},({payload:p})=>{if(p&&p.to==ME.id)track()});
- ch.on('broadcast',{event:'bfinv'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(bfPoll,600)});
- ch.on('broadcast',{event:'bfok'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(bfPoll,600)});
- ch.on('broadcast',{event:'gift'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(claimGifts,600)});
- ch.subscribe(s=>{if(s=='SUBSCRIBED')ch.track({...me(),x:Math.round(CV.pos.x),y:Math.round(CV.pos.y)});
-  else if((s=='CHANNEL_ERROR'||s=='TIMED_OUT'||s=='CLOSED')){if(!done){if(s=='CLOSED')return;done=1;clearTimeout(tm);no(new Error('lỗi kênh '+s))}else if(PK.in){if(s!='CLOSED')toast('⚠️ Mất kết nối, đang thử lại...');setTimeout(()=>revive(0),4000)}}})})}
-// ---------- TỰ CHỮA LÀNH: không để người chơi "biến mất" ----------
-// Nguyên nhân cũ: khi 1 máy rớt kết nối thoáng qua (iPhone khóa màn hình/chuyển app, wifi chập chờn),
-// máy chủ xóa họ khỏi danh sách; máy họ vẫn chạy nhưng không đăng ký lại nên mọi người thấy họ biến mất mãi.
-let lastHeal=0,rvBusy=0,askT={};
-function selfHeal(){const n=performance.now();if(n-lastHeal<1500)return;lastHeal=n;track()}
+ if(!keep){ME.ts=Date.now();ME.q=-1;ME.z=-1}
+ let done=0,subAt=0,errs=0,poll=0;
+ const fin=(f,v)=>{if(done)return;done=1;clearTimeout(tm);clearInterval(poll);f(v)};
+ const tm=setTimeout(()=>fin(no,new Error('hết thời gian chờ')),15000);
+ // vào xong khi đã SUBSCRIBED và thấy mình trong danh sách (hoặc chờ tối đa 3s sau khi subscribe)
+ poll=setInterval(()=>{if(subAt&&(PK.rank>=0||performance.now()-subAt>3000))fin(ok,PK.rank>=MAXP?'full':'ok')},200);
+ const mine=ch=sb.channel(room=='ps'?'pho-xa':'cong-vien',{config:{presence:{key:ME.id},broadcast:{self:false}}});
+ mine.on('presence',{event:'sync'},()=>{if(mine===ch)sync()});
+ mine.on('broadcast',{event:'mv'},({payload:p})=>{const o=CV.others.get(p.i);if(!o){askRetrack(p.i);return}o.seen=performance.now();o.tx=p.x;o.ty=p.y;o.d=p.d;if(Math.hypot(o.tx-o.x,o.ty-o.y)>160){o.x=o.tx;o.y=o.ty}});
+ mine.on('broadcast',{event:'chat'},({payload:p})=>{if(!PK.in||!CV.others.has(p.i))return;const t=String(p.t||'').slice(0,60);addLine(String(p.n||'?').slice(0,16),t);bub[p.i]={t,until:performance.now()+5000}});
+ mine.on('broadcast',{event:'g'},({payload:p})=>{const o=p&&CV.others.get(p.f);if(o)o.seen=performance.now();gRecv(p)});
+ mine.on('broadcast',{event:'rt'},({payload:p})=>{if(p&&p.to==ME.id)track()});
+ mine.on('broadcast',{event:'bfinv'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(bfPoll,600)});
+ mine.on('broadcast',{event:'bfok'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(bfPoll,600)});
+ mine.on('broadcast',{event:'gift'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(claimGifts,600)});
+ mine.subscribe((s,err)=>{plog(s+(err?' '+(err.message||err):''));if(mine!==ch)return; // kênh cũ đã bị thay -> bỏ qua
+  if(s=='SUBSCRIBED'){subAt=subAt||performance.now();try{mine.track({...me(),x:Math.round(CV.pos.x),y:Math.round(CV.pos.y)})}catch(e){}
+   if(PK.in&&downAt){const d=performance.now()-downAt;downAt=0;warned=0;if(d>4000)toast('✅ Đã kết nối lại')}}
+  else if(s=='CHANNEL_ERROR'||s=='TIMED_OUT'||s=='CLOSED'){
+   if(!done){if(s!='CLOSED'&&++errs>=4)fin(no,new Error('lỗi kênh '+s+(err?': '+(err.message||err):'')))} // thư viện tự thử lại, đừng bỏ cuộc sớm
+   else if(PK.in&&!downAt)downAt=performance.now()}})})}
+// ---------- GIỮ KẾT NỐI ỔN ĐỊNH ----------
+// Trước đây: cứ thấy kênh lỗi/đóng thoáng qua là tự hủy kênh rồi tạo lại -> mỗi lần tạo lại, server báo "bạn rời" rồi "bạn vào" cho mọi người
+// => 2 máy liên tục thấy nhau biến mất + "Đã kết nối lại" + ván bị xử thua. Giờ: để thư viện Supabase tự nối lại,
+// chỉ tạo kênh mới khi mất kết nối liên tục > 12 giây. Người khác biến mất khỏi presence < 10s vẫn được giữ lại.
+let lastHeal=0,rvBusy=0,askT={},downAt=0,warned=0;
+function selfHeal(){const n=performance.now();if(n-lastHeal<2500)return;lastHeal=n;track()}
 function askRetrack(id){if(!id||!PK.in)return;const n=performance.now();if(askT[id]&&n-askT[id]<4000)return;askT[id]=n;bcast('rt',{to:id})}
 async function revive(force){
  if(!PK.in||rvBusy||PK.busy)return;
  if(ch&&ch.state==='joined'&&!force){track();return}
- rvBusy=1;
- try{const room=CV.room;try{if(ch)await sb.removeChannel(ch)}catch(e){}ch=null;await loadLib();await connect(room,1);track();toast('✅ Đã kết nối lại')}
- catch(e){setTimeout(()=>revive(1),5000)}
+ rvBusy=1;plog('tạo lại kênh');
+ try{const room=CV.room,old=ch;ch=null;try{if(old)await Promise.race([sb.removeChannel(old),sleep(1500)])}catch(e){}
+  await loadLib();await connect(room,1);track();downAt=0;warned=0;toast('✅ Đã kết nối lại')}
+ catch(e){plog('lỗi: '+(e&&e.message||e));setTimeout(()=>revive(1),4000)}
  rvBusy=0}
-// quay lại app / có mạng lại -> kiểm tra & đăng ký lại ngay
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>revive(0),300)});
-addEventListener('pageshow',()=>setTimeout(()=>revive(0),300));
-addEventListener('online',()=>setTimeout(()=>revive(1),800));
-// nhịp tim: 25 giây đăng ký lại 1 lần cho chắc (rẻ, chỉ vài người)
-setInterval(()=>{if(PK.in&&!document.hidden){if(!ch||ch.state!=='joined')revive(0);else track()}},25000);
+setInterval(()=>{if(!PK.in||PK.busy||rvBusy)return;const n=performance.now();
+ if(ch&&ch.state==='joined'){if(downAt){const d=n-downAt;downAt=0;warned=0;if(d>4000)toast('✅ Đã kết nối lại');track()}return}
+ if(!downAt)downAt=n;
+ if(!warned&&n-downAt>5000){warned=1;toast('⚠️ Mạng chập chờn, đang nối lại...')}
+ if(n-downAt>12000){downAt=n;revive(1)}},2000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&PK.in){plog('mở lại app');setTimeout(()=>{if(ch&&ch.state==='joined')track()},400)}});
+addEventListener('online',()=>plog('có mạng lại'));addEventListener('offline',()=>plog('mất mạng'));
+// nhịp tim: đăng ký lại vị trí mỗi 40 giây (nhẹ), chỉ khi kênh đang ổn
+setInterval(()=>{if(PK.in&&!document.hidden&&ch&&ch.state==='joined')track()},40000);
 window.cvEnter=async(room)=>{room=room==='ps'?'ps':'cv';const nm=room=='ps'?'Phố xá':'Công viên',was=MAP=='cv'||MAP=='ps';
  if(PK.busy)return;PK.busy=1;closeUI();toast((room=='ps'?'🏘️':'🌳')+' Đang vào '+nm+'...');
  try{await loadLib();if(ch){showUI(0);gLeave();await disconnect()}CV.room=room;const r=await connect(room);
   if(r=='full'){toast('🚫 '+nm+' đã đủ '+MAXP+' người, thử lại sau nhé!');await disconnect();if(was)switchMap('nt')}else switchMap(room)}
  catch(e){toast('❌ Chưa vào được '+nm+': '+(e.message||e));await disconnect();if(was)switchMap('nt')}
  PK.busy=0};
-let tMv=0,tHb=0,lx=0,ly=0,ld=0,tAv=0,avs='';
+let tGc=0,tMv=0,tHb=0,lx=0,ly=0,ld=0,tAv=0,avs='';
 const PKO=window.PKO={
  tap(wx,wy){let best=null,bd=1e9;for(const o of CV.others.values()){if(o.hx==null)continue;const dx=Math.abs(wx-o.x),dy=wy-(o.hy+20);if(dx<=14&&dy>=-30&&dy<=26){const d=dx+Math.abs(dy);if(d<bd){bd=d;best=o}}}if(!best||G)return false;tapMenu(best);return true},
  onEnter(){PK.in=1;ME.q=-1;ME.z=-1;showUI(1);chatUI();try{const A=window.AudioContext||window.webkitAudioContext;if(A&&!window.__cvAC)window.__cvAC=new A();if(window.__cvAC&&window.__cvAC.resume)window.__cvAC.resume()}catch(e){}track()},
@@ -201,6 +220,7 @@ const PKO=window.PKO={
  onHorse(i){ME.z=i;ME.zt=Date.now();ME.q=-1;track()},
  onStand(){ME.q=-1;ME.z=-1;track();gLeave()},
  tick(dt,tm){if(!ch)return;tMv+=dt;tHb+=dt;
+  if((tGc+=dt)>1){tGc=0;const n=performance.now();for(const[id,o]of[...CV.others])if(!o.pres&&n-(o.seen||0)>10000)CV.others.delete(id)}
   const x=Math.round(Pl.x),y=Math.round(Pl.y);
   if(tMv>=.25&&(x!=lx||y!=ly||Pl.d!=ld)){tMv=0;tHb=0;lx=x;ly=y;ld=Pl.d;bcast('mv',{i:ME.id,x,y,d:Pl.d})}
   else if(tHb>=3){tHb=0;bcast('mv',{i:ME.id,x,y,d:Pl.d})}
@@ -300,7 +320,7 @@ function gTick(dt){if(!G)return;tG+=dt;if(tG<.25)return;tG=0;
   const gid=G.tb.id+'-'+Date.now(),first=Math.random()<.5?0:1;G.gid=gid;
   const deck=G.tb.kind=='mem'?[...EMO,...EMO].sort(()=>Math.random()-.5).map(e=>EMO.indexOf(e)):null;
   rdy[G.tb.id]={};if(startGame(first,deck))gSend({k:'start',first})}
- if(G.ph=='play'&&G.gone&&Date.now()-G.gone>10000)pay(mySide(),'đối thủ rời bàn');
+ if(G.ph=='play'&&G.gone&&Date.now()-G.gone>25000)pay(mySide(),'đối thủ rời bàn');
  if(G.ph=='play'&&isHost()&&Date.now()>G.dl+1500&&!(G.pend&&Date.now()-G.pend<12000)){gSend({k:'end',w:1-G.turn,why:'hết giờ'});pay(1-G.turn,'hết giờ')}
  if(G.ph=='play')gUI(1)}
 function gUI(light){if(!G)return;const tb=G.tb,pl=players(tb),s=mySide(),n=i=>pl[i]?escH(pl[i].n):'…',ttt=tb.kind=='ttt'||tb.kind=='caro',ship=tb.kind=='ship';
