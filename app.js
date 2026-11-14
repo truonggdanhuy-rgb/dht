@@ -55,7 +55,9 @@ $('#li').onclick=()=>auth(0);$('#rg').onclick=()=>auth(1);$('#cl').onclick=()=>d
 
 // ---- điều hướng
 const R={'':home,ebook,giaitri:()=>app.innerHTML=`<h2>Giải trí</h2><div class=grid2><a class="c gc" href="#/trochoi">🎮<b>Trò chơi</b></a><a class="c gc" href="#/game/tinyland">🌾<b>Tinyland</b><small>Nông trại, gặp gỡ bạn bè</small></a></div>`,trochoi:()=>app.innerHTML=`<div class=top><h2>Trò chơi</h2><a class="btn g" href="#/giaitri">←</a></div><div class=grid2>${Object.entries(GAMES).filter(([k,g])=>!g.hide).map(([k,g])=>`<a class="c gc" href="#/game/${k}">${g.e}<b>${g.n}</b><small>${g.keys.length?(user?'Tự lưu tiến trình':'Đăng nhập để lưu'):'Giải trí nhanh'}</small></a>`).join('')}</div>`,game,diendan:lib,read,viet:edit,bai:view};
-async function route(){const[h,q]=location.hash.slice(2).split('?'),[p,a]=h.split('/');onscroll=null;if(SB_URL&&user&&!localStorage.sess){user='';admin=false;localStorage.removeItem('user')}sync();const rd=p=='read'||p=='bai'||(p=='game'&&a=='tinyland');document.body.classList.toggle('reading',rd);$('#snow').style.display=rd?'none':'';await(R[p||'']||home)(a,q);scrollTo(0,0)}
+async function route(){const[h,q]=location.hash.slice(2).split('?'),[p,a]=h.split('/');onscroll=null;if(SB_URL&&user&&!localStorage.sess){user='';admin=false;localStorage.removeItem('user')}sync();const rd=p=='read'||p=='bai'||(p=='game'&&a=='tinyland');document.body.classList.toggle('reading',rd);
+ {const vp=document.querySelector('meta[name=viewport]');if(vp){const lock=p=='game'&&a=='tinyland';/* Tinyland: khóa zoom trang (iOS tự phóng to khi chat/chạm 2 lần), các trang khác giữ nguyên */
+  vp.setAttribute('content',lock?'width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover':'width=device-width,initial-scale=1')}}$('#snow').style.display=rd?'none':'';await(R[p||'']||home)(a,q);scrollTo(0,0)}
 addEventListener('hashchange',route);setTimeout(route);
 
 // ---- trang chủ
