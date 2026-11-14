@@ -158,7 +158,9 @@ function plog(m){const t=new Date().toLocaleTimeString('vi',{hour12:false});PKLO
 function dbgUI(){const d=$('cvd');if(!d)return;let on=0;try{on=localStorage.cv_dbg=='1'}catch(e){}
  d.style.display=on?'block':'none';if(on)d.innerHTML=PKLOG.slice(-7).map(escH).join('<br>')+'<br>state:'+(ch?ch.state:'-')}
 function connect(room,keep){return new Promise((ok,no)=>{
- sb=sb||window.supabase.createClient(SB_URL_,SB_KEY_,{realtime:{params:{eventsPerSecond:20}}});
+ sb=sb||window.supabase.createClient(SB_URL_,SB_KEY_,{realtime:{params:{eventsPerSecond:20},heartbeatIntervalMs:15000,worker:!!window.Worker}});
+ if(!sb._pl){sb._pl=1;try{const R=sb.realtime;R.onOpen&&R.onOpen(()=>plog('ws mở'));R.onClose&&R.onClose(e=>plog('ws đóng '+(e&&e.code)+' '+(e&&e.reason||'')));R.onError&&R.onError(e=>plog('ws lỗi '+(e&&e.message||'')));
+  R.onMessage&&R.onMessage(m=>{if(m&&(m.event=='phx_close'||m.event=='phx_error'||m.event=='system'||(m.event=='phx_reply'&&m.payload&&m.payload.status&&m.payload.status!='ok')))plog('srv '+m.event+' '+JSON.stringify(m.payload||{}).slice(0,110))})}catch(e){}}
  if(!keep){ME.ts=Date.now();ME.q=-1;ME.z=-1}
  let done=0,subAt=0,errs=0,poll=0;
  const fin=(f,v)=>{if(done)return;done=1;clearTimeout(tm);clearInterval(poll);f(v)};
@@ -179,20 +181,22 @@ function connect(room,keep){return new Promise((ok,no)=>{
    if(PK.in&&downAt){const d=performance.now()-downAt;downAt=0;warned=0;if(d>4000)toast('✅ Đã kết nối lại')}}
   else if(s=='CHANNEL_ERROR'||s=='TIMED_OUT'||s=='CLOSED'){
    if(!done){if(s!='CLOSED'&&++errs>=4)fin(no,new Error('lỗi kênh '+s+(err?': '+(err.message||err):'')))} // thư viện tự thử lại, đừng bỏ cuộc sớm
-   else if(PK.in&&!downAt)downAt=performance.now()}})})}
+   else if(PK.in){if(!downAt)downAt=performance.now();schedRevive(s=='CLOSED'?700:6000)}}})})}
 // ---------- GIỮ KẾT NỐI ỔN ĐỊNH ----------
 // Trước đây: cứ thấy kênh lỗi/đóng thoáng qua là tự hủy kênh rồi tạo lại -> mỗi lần tạo lại, server báo "bạn rời" rồi "bạn vào" cho mọi người
 // => 2 máy liên tục thấy nhau biến mất + "Đã kết nối lại" + ván bị xử thua. Giờ: để thư viện Supabase tự nối lại,
 // chỉ tạo kênh mới khi mất kết nối liên tục > 12 giây. Người khác biến mất khỏi presence < 10s vẫn được giữ lại.
-let lastHeal=0,rvBusy=0,askT={},downAt=0,warned=0;
+let rvT=0,rvN=[],lastHeal=0,rvBusy=0,askT={},downAt=0,warned=0;
 function selfHeal(){const n=performance.now();if(n-lastHeal<2500)return;lastHeal=n;track()}
 function askRetrack(id){if(!id||!PK.in)return;const n=performance.now();if(askT[id]&&n-askT[id]<4000)return;askT[id]=n;bcast('rt',{to:id})}
+function schedRevive(ms){clearTimeout(rvT);const n=performance.now();rvN=rvN.filter(t=>n-t<40000);const back=Math.min(6000,ms*Math.pow(2,Math.max(0,rvN.length-1)));
+ rvT=setTimeout(()=>{if(PK.in&&(!ch||ch.state!=='joined')){rvN.push(performance.now());revive(1)}},back)}
 async function revive(force){
  if(!PK.in||rvBusy||PK.busy)return;
  if(ch&&ch.state==='joined'&&!force){track();return}
- rvBusy=1;plog('tạo lại kênh');
+ rvBusy=1;plog('tạo lại kênh');window.__dn=downAt||performance.now();
  try{const room=CV.room,old=ch;ch=null;try{if(old)await Promise.race([sb.removeChannel(old),sleep(1500)])}catch(e){}
-  await loadLib();await connect(room,1);track();downAt=0;warned=0;toast('✅ Đã kết nối lại')}
+  await loadLib();await connect(room,1);track();downAt=0;warned=0;if(performance.now()-(window.__dn||0)>4000)toast('✅ Đã kết nối lại')}
  catch(e){plog('lỗi: '+(e&&e.message||e));setTimeout(()=>revive(1),4000)}
  rvBusy=0}
 setInterval(()=>{if(!PK.in||PK.busy||rvBusy)return;const n=performance.now();
@@ -200,7 +204,7 @@ setInterval(()=>{if(!PK.in||PK.busy||rvBusy)return;const n=performance.now();
  if(!downAt)downAt=n;
  if(!warned&&n-downAt>5000){warned=1;toast('⚠️ Mạng chập chờn, đang nối lại...')}
  if(n-downAt>12000){downAt=n;revive(1)}},2000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&PK.in){plog('mở lại app');setTimeout(()=>{if(ch&&ch.state==='joined')track()},400)}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&PK.in){plog('mở lại app');setTimeout(()=>{if(ch&&ch.state==='joined')track();else if(!downAt||performance.now()-downAt<12100)downAt=performance.now()-12100},1200)}});
 addEventListener('online',()=>plog('có mạng lại'));addEventListener('offline',()=>plog('mất mạng'));
 // nhịp tim: đăng ký lại vị trí mỗi 40 giây (nhẹ), chỉ khi kênh đang ổn
 setInterval(()=>{if(PK.in&&!document.hidden&&ch&&ch.state==='joined')track()},40000);
