@@ -49,8 +49,8 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 .hib:active{transform:translateY(2px);box-shadow:none}
 #hxu{font-size:15px}
 #hud{align-items:flex-start}
-#hpanel{height:80px;box-sizing:border-box}
-#hgrid{display:grid;grid-template-columns:repeat(2,38px);grid-template-rows:repeat(2,38px);gap:4px}
+#hpanel{height:80px;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;padding:4px 6px}
+#hgrid{display:grid;grid-template-columns:repeat(2,38px);grid-template-rows:repeat(3,38px);gap:4px}#hgrid #hact{width:auto}
 #hgrid .hb{width:38px;height:38px;box-sizing:border-box;padding:0;border-width:2px;box-shadow:0 2px 0 #4e2f16;border-radius:8px;background:#e8b86a;flex-direction:column;justify-content:center;gap:1px;font-size:17px;line-height:1;cursor:pointer;font-family:inherit}
 #hgrid .hb:active{transform:translateY(2px);box-shadow:none}
 #hgrid .hb small{font-size:9px;font-weight:800;line-height:1}
@@ -77,12 +77,13 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 </style></head><body>
 <canvas id="c"></canvas>
 <div id="hud">
- <div class="hb" id="hpanel" onclick="infoUI()" style="cursor:pointer"><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div class="hi">🧑‍🌾</div><span id="hlv" style="font-size:11px;line-height:1">Lv.1</span><div style="width:40px;height:4px;background:#d9c28a;border:1px solid #7a4a26"><div id="hlb" style="height:100%;width:0;background:#4caf50"></div></div></div><span id="hxu">0</span></div>
+ <div class="hb" id="hpanel" onclick="infoUI()" style="cursor:pointer"><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><canvas id="hav" width="20" height="20" style="width:44px;height:44px;image-rendering:pixelated;background:linear-gradient(#bfe6ff,#d9f0b8);border:2px solid #7a4a26;border-radius:8px"></canvas><span id="hlv" style="display:none">Lv.1</span><div style="display:none"><div id="hlb"></div></div></div><span id="hxu">0</span></div>
  <div id="hgrid">
   <button class="hb" onclick="mapUI()">🗺️<small>Map</small></button>
   <button class="hb" onclick="bagUI()">🎒<small>Túi</small></button>
   <button class="hb" onclick="khoHub()">📦<small>Kho</small></button>
   <button class="hb" onclick="idUI()" title="Căn cước Tinyland">🪪<small>Thẻ</small></button>
+  <button class="hb" id="hact" onclick="toast('⚡ Hành động — Sắp ra mắt!')" style="grid-column:span 2;width:80px;flex-direction:row;gap:5px;font-size:15px">⚡<small style="font-size:10px">Hành động</small></button>
  </div>
 </div>
 <button class="b" id="dbtn" style="position:fixed;left:10px;top:calc(100px + env(safe-area-inset-top,0px));display:none;z-index:4;padding:6px 10px" onclick="decoToggle()">🛠️ Trang trí</button>
@@ -433,6 +434,7 @@ lg('nong_d9302a');lg('nong_e8c040');lg('nong_e8c040');lg('nong_d9302a');
 
 lg('mieu');lg('chum');
 for(let x=24;x<PX-20;x+=ri(24,42)){if(x>490&&x<630)continue;const low=x>100&&x<480;let k=pick(low?['mon','bush','mon']:['nipa','lau','lau','mon','nipa','bush']),by=ri(668,680);if(x<520&&(k=='nipa'||k=='lau'))k='mon';
+ if(x>622&&x<700)continue;
  place(k=='bush'?S_.bush(pick(['#ff6f91','#ffd23f','#ffffff','#c77dff'])):S_[k],x-16,by)}
 lg('cau');lg('ban');lg('cau');
 [[60,710],[150,760],[250,720],[320,790],[640,720],[720,770],[830,715],[900,800],[980,745],[1040,700],[300,700],[760,812]].forEach(([x,y])=>SP.push({by:-4,d:()=>cx.drawImage(S_.beo,x,y+Math.round(Math.sin(performance.now()/700+x)))}));
@@ -1598,7 +1600,7 @@ cv.addEventListener('pointermove',e=>{if(!ptr)return;const lx=ptr.x,ly=ptr.y;ptr
  if(!ptr.pan&&!ptr.walk&&!UI&&!WTM&&!WTON&&!HMA&&Math.hypot(ptr.x-ptr.x0,ptr.y-ptr.y0)>10)ptr.pan=1;
  if(ptr.pan){camFree=1;camX=cc(camX-(ptr.x-lx)/S,CVON?CW:mapW(),vw);camY=cc(camY-(ptr.y-ly)/S,CVON?CH:PY,vh)}});
 cv.addEventListener('pointerup',e=>{if(ptr&&!ptr.pan&&performance.now()-ptr.t<220){const wx=e.clientX/S+camX,wy=e.clientY/S+camY,h=hitAt(wx,wy);
- if(UI){}else if(CVON&&window.PKO&&PKO.tap&&PKO.tap(wx,wy)){}else if(MAP=='nt'&&FMODE)fmTap(wx,wy);else if(MAP=='hm'&&DECO)decoTap(wx,wy);else if(MAP=='hm'&&hmSeat(wx,wy)){}else if(h)tapHit(h);else{pa=null;goal={x:wx,y:wy,t:0};Pl.pend=0}}ptr=null});
+ if(UI){}else if(CVON&&window.PKO&&PKO.tap&&PKO.tap(wx,wy)){}else if(MAP=='nt'&&FMODE)fmTap(wx,wy);else if(MAP=='hm'&&DECO)decoTap(wx,wy);else if(MAP=='hm'&&hmSeat(wx,wy)){}else if(h)tapHit(h,camFree);else{pa=null;goal={x:wx,y:wy,t:0};Pl.pend=0}}ptr=null});
 cv.addEventListener('pointercancel',()=>ptr=null);
 var WTM=0,WEXP=null,ZL=0;try{ZL=Math.max(-4,Math.min(2,parseInt(localStorage.tl_zoom||'0')||0))}catch(e){}
 /* ZOOM: ZL=0 là cỡ mặc định như cũ; ZL<0 thu nhỏ (nhìn rộng hơn), ZL>0 phóng to. Mỗi bậc ×1.25, làm tròn theo điểm ảnh thiết bị cho nét. */
@@ -1653,7 +1655,7 @@ function closeUI(){if(fish&&fish.ph==0){ST.bait++}UI=0;MUI=-1;fish=null;$('ui').
 const rd=h=>Math.hypot(Math.max(h[0]-Pl.x,0,Pl.x-h[0]-h[2]),Math.max(h[1]-Pl.y,0,Pl.y-h[1]-h[3]));
 function act(h){const a=h[5];if(!a)return toast(h[4]);if(a.startsWith('cv:'))return cvAct(a.slice(3),h);if(a.startsWith('bench:')){const q=a.split(':');return benchSit(+q[1],+q[2])}if(a.startsWith('sitf:')){const q=a.split(':');SEAT.x=+q[1];SEAT.y=+q[2];return sitGo()}if(a=='sit')return sitGo();if(a=='gate')return switchMap('nt');if(a=='chb')return chbAct();if(a=='qb')return qUI();if(a=='home')return switchMap('hm');if(a.startsWith('hm:'))return hmAct(a.slice(3));if(a=='tug')return tugGame();if(a=='hd')return hdAct();if(a=='bench')return benchAct();if(a=='nc')return ncAct();if(a=='ln')return lnAct();if(a=='wr')return wrAct();if(a=='rr')return rrGame();if(a=='gift')return giftAct();if(a=='tl')return tlAct();if(a=='bl')return blAct();const[t,v]=a.split(':');
  if(t=='npc')return toast(NPCL[+v]);if(t=='plot')return plotAct(+v);if(t=='pot')return potAct(+v);if(t=='tree')return treeAct(v);if(t=='pen')return penAct(+v);if(t=='bait')return baitOpen();if(t=='kho')return kho(v);if(t=='mine')return mineAct();if(t=='bee')return beeAct(+v);if(t=='net')return netAct(+v);if(t=='mach')return machAct(+v);if(t=='fish')return fishOpen()}
-function tapHit(h){if(!h[5]||h[5]=='sit'||h[5].startsWith('sitf:')||h[5].startsWith('net:')||rd(h)<=34)return act(h);toast('🚶 Đang đi tới...');goal=h[6]?{x:h[6][0],y:h[6][1],t:-14}:{x:h[0]+h[2]/2,y:h[1]+h[3]+8,t:-14};pa=h;Pl.pend=0}
+function tapHit(h,far){if(far&&h[5]&&!h[5].startsWith('cv:')&&!h[5].startsWith('sitf:')&&!h[5].startsWith('bench:')&&h[5]!='sit'&&h[5]!='gate'&&h[5]!='home')return act(h);if(!h[5]||h[5]=='sit'||h[5].startsWith('sitf:')||h[5].startsWith('net:')||rd(h)<=34)return act(h);toast('🚶 Đang đi tới...');goal=h[6]?{x:h[6][0],y:h[6][1],t:-14}:{x:h[0]+h[2]/2,y:h[1]+h[3]+8,t:-14};pa=h;Pl.pend=0}
 // ruong
 const GD={plot:{arr:'plots',list:CROPS,key:'c',name:'Ô đất',ic:'🌱',last:-1,pick:'chọn hạt giống'},pot:{arr:'pots',list:POTS,key:'p',name:'Chậu',ic:'🪴',last:-1,pick:'chọn cây'}};
 const gFoot=t=>'<div class="pf"><button class="b" onclick="harvestAll()">🧺 Thu hoạch hết</button><button class="b" onclick="sowUI(\''+t+'\')">🌱 Gieo hết</button></div>';
@@ -3824,7 +3826,8 @@ function vtUi(){const v=vit(),hg=v.f<=VT_LOW,sl=v.h<=VT_LOW;
  HUNGRY=hg;SLEEPY=sl;VTP=1}
 (function(){const p=$('hlb');if(p&&!$('vbF'))p.parentNode.parentNode.insertAdjacentHTML('beforeend',
  '<div style="display:flex;flex-direction:column;gap:1px;margin-top:2px;font-size:8px;line-height:7px;color:#7a4a26"><div style="display:flex;align-items:center;gap:1px"><span>🍚</span><div style="width:28px;height:4px;background:#d9c28a;border:1px solid #7a4a26"><div id="vbF" style="height:100%;width:100%;background:#ff9f2e"></div></div></div><div style="display:flex;align-items:center;gap:1px"><span>💤</span><div style="width:28px;height:4px;background:#d9c28a;border:1px solid #7a4a26"><div id="vbH" style="height:100%;width:100%;background:#4a90e0"></div></div></div></div>');
- vtUi();setInterval(vtUi,1500)})();
+ vtUi();setInterval(vtUi,1500);const vb=$('vbF');if(vb)vb.parentNode.parentNode.parentNode.style.display='none'})();
+window.hudAv=()=>{try{const c=$('hav');if(!c||!ST.av)return;const g=c.getContext('2d');g.clearRect(0,0,20,20);drawAv(g,0,0,{d:0,a:0,mv:0,sit:0,hair:ST.av.h,set:ST.av.s,e:ST.av.e,acc:-1})}catch(e){}};setInterval(hudAv,1000);setTimeout(hudAv,300);
 function foodShop(k){const L=FSTALL[k]||[],v=vit();
  let h=head('🏮 Quầy ăn Lễ hội')+'<div class="mut">🪙 Xu: <b>'+fmtXu(ST.xu)+'</b> • Độ no: <b>'+Math.round(v.f)+'%</b><br>Mỗi món '+FOODP+' Xu, cất vào 🎒 Túi → Đồ ăn. Ăn hồi +'+FOOD_NO+'% độ no.</div><div class="g1">';
  h+=L.map(f=>'<div class="it"><span>'+FOOD[f][1]+' '+FOOD[f][0]+' <small>• có '+(ST.food[f]||0)+'</small></span><span class="sb"><button class="b" onclick="foodBuy(\''+f+'\',\''+k+'\')">Mua '+FOODP+'🪙</button><button class="b" onclick="foodEat(\''+f+'\',\''+k+'\')">Ăn</button></span></div>').join('')+'</div>';
