@@ -17,15 +17,14 @@ Object.defineProperty(ST,'xu',{enumerable:true,configurable:true,get(){return _x
 // chuỗi đăng nhập
 (function(){const t=todayS(),y=todayS(new Date(Date.now()-864e5));if(!ID.ls)ID.ls={d:t,n:1};else if(ID.ls.d!=t){ID.ls.n=ID.ls.d==y?ID.ls.n+1:1;ID.ls.d=t}})();
 try{save()}catch(e){}
-if(typeof ID.bf!='number')ID.bf=0;                    // bậc danh hiệu Bạn thân (0..4), sẽ nâng bằng nhiệm vụ sau
+if(typeof ID.bt!='number')ID.bt=-1;                   // bậc danh hiệu Bạn thân (-1: chưa có bạn thân) — lấy từ máy chủ
 const PRICE=300,FR_FREE=2;
 const BT_N=['Bạn mới','Bạn thân','Siêu cấp bạn thân','Tri kỷ keo sơn','Nhân gian khó tìm'];
 const LV_N=['Tập sự','Bá khí','Lão làng','Tài phiệt','Trùm kinh doanh'],LV_FROM=[1,4,10,20,35]; // Lv1-3, 4-9, 10-19, 20-34, 35+
 const lvTier=lv=>{let t=0;LV_FROM.forEach((f,i)=>{if(lv>=f)t=i});return t};
 // logo Bạn thân gắn trước tên nhân vật (thu về kích thước cố định, cao 24px)
 const LG=[];TITLE_ASSETS.logo.forEach((src,i)=>{const im=new Image();im.onload=()=>{const h=24,w=Math.round(im.width*h/im.height),c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(im,0,0,w,h);LG[i]=c};im.src=src});
-window.idLogo=i=>LG[Math.max(0,Math.min(4,i|0))]||null;
-window.idSetBf=n=>{ID.bf=Math.max(0,Math.min(4,n|0));save()};
+window.idLogo=i=>(i==null||i<0)?null:(LG[Math.min(4,i|0)]||null);
 
 // ---- giao diện ----
 const css=document.createElement('style');css.textContent=`
@@ -44,6 +43,19 @@ const css=document.createElement('style');css.textContent=`
 .idav.nf .idph{border-radius:16px;border:3px solid #8cc4e2;box-sizing:border-box;-webkit-mask:none;mask:none;background-color:#cfe9f7}
 .idfr{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block}
 .idtt{padding:8px 6px 6px}.idtl{display:flex;flex-direction:column;align-items:center;gap:5px}.idtl img{width:min(100%,290px);height:auto;display:block;cursor:pointer;filter:drop-shadow(0 2px 2px rgba(40,70,100,.25))}.idtl img:active{transform:scale(.98)}
+.idnobf{width:min(100%,290px);box-sizing:border-box;display:flex;align-items:center;gap:10px;padding:9px 12px;border:2px dashed #f0a9c4;border-radius:16px;background:linear-gradient(135deg,#fff5f9,#ffe3ee);color:#a44b72;cursor:pointer}
+.idnobf .l{font-size:24px;filter:grayscale(.2)}.idnobf b{display:block;font-size:13px}.idnobf small{font-size:10.5px;color:#c27a98}
+.idsoon div.ok{background:linear-gradient(135deg,#fff5f9,#e3f4fd);border:2px solid #f0a9c4;border-style:solid;color:#a44b72;cursor:pointer;font-weight:800}
+.idsoon div.ok small{color:#c27a98}
+.idpair{display:flex;align-items:flex-end;justify-content:space-between;gap:4px;background:linear-gradient(160deg,#f6fcff,#ffeaf2 55%,#d9eefb);border:2px solid #b5dbef;border-radius:14px;padding:12px 8px 8px}
+.idpc{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px}
+.idpc canvas{width:80px;height:96px;image-rendering:pixelated}
+.idpc b{font-size:13px;color:#1f4a66;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.idmid{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:30px;color:#d6568a;font-size:10.5px;font-weight:800}
+.idmid .h{font-size:34px;line-height:1;animation:idhb 1.3s ease-in-out infinite}
+@keyframes idhb{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.idemp{text-align:center;padding:16px 10px;background:linear-gradient(160deg,#f6fcff,#ffeaf2);border:2px dashed #f0a9c4;border-radius:14px;color:#a44b72;font-size:13px;line-height:1.5}
+.idemp .big{font-size:40px}
 .idr{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
 .idnm{font-size:19px;font-weight:800;line-height:1.15;word-break:break-word;color:#1f4a66}
 .idsub{font-size:11px;color:#5b7f95}
@@ -94,10 +106,15 @@ function paintFaces(){
    const t=document.createElement('canvas');t.width=40;t.height=48;const tg=t.getContext('2d');drawAv(tg,10,2,o);
    g.imageSmoothingEnabled=false;g.drawImage(t,5,1,30,37.5,0,0,64,80)}catch(e){}})}
 
+function paintChars(){document.querySelectorAll('canvas.idchr').forEach(c=>{try{const g=c.getContext('2d');g.clearRect(0,0,40,48);drawAv(g,10,2,{d:0,a:0,mv:0,sit:0,hair:+c.dataset.h||0,set:+c.dataset.s||0,e:+c.dataset.e||0})}catch(e){}})}
 let IDV='main',FSEL=0;
-window.idUI=function(){IDV='main';idRender();idBorn()};
-function idRender(){IDV=='frames'?framesView():mainView();paintFaces()}
+window.idUI=function(){IDV='main';idRender();idBorn();idSyncBf()};
+function idRender(){IDV=='frames'?framesView():IDV=='bf'?bfView():mainView();paintFaces();paintChars()}
+// mở thẻ → hỏi máy chủ bạn thân mới nhất, có đổi thì vẽ lại
+async function idSyncBf(){try{if(!window.bfPoll)return;const b=JSON.stringify(bfGet());await bfPoll();
+ if(JSON.stringify(bfGet())!=b&&$('ui').classList.contains('idc')&&(IDV=='main'||IDV=='bf')&&!(document.activeElement&&document.activeElement.tagName=='TEXTAREA'))idRender()}catch(e){}}
 function mainView(){
+ const B=bfGet();
  const n=ID.ls.n,mx=ST.lv>=100,need=mx?1:lvNeed(ST.lv),pc=mx?100:Math.min(100,ST.exp/need*100);
  const h='<div class="uh"><span>🪪 Căn cước Tinyland</span><button class="b x" onclick="closeUI()">X</button></div>'+
  '<div class="idtop"><div class="idl"><div class="idavw" onclick="idMenu()" title="Bấm để chỉnh avatar">'+avHtml(ID.fr,132)+'</div></div>'+
@@ -105,7 +122,7 @@ function mainView(){
  '<div class="idline"><span>🎂 Ngày ra đời</span><b id="idborn">'+fmtD(ID.born)+'</b></div>'+
  '<div class="idlv"><div class="t"><span>⭐ Level</span><b>'+ST.lv+(mx?' MAX':'')+'</b></div><div class="idbar"><i style="width:'+pc+'%"></i></div></div>'+
  '<div class="mut" style="margin:0;font-size:10.5px">👆 Bấm vào avatar để đổi ảnh / khung</div></div></div>'+
- '<div class="idbox idtt"><div class="idtl"><img alt="Danh hiệu Level" src="'+TITLE_ASSETS.lv[lvTier(ST.lv)]+'" onclick="idTT(0)"><img alt="Danh hiệu Bạn thân" src="'+TITLE_ASSETS.bf[ID.bf]+'" onclick="idTT(1)"></div></div>'+
+ '<div class="idbox idtt"><div class="idtl"><img alt="Danh hiệu Level" src="'+TITLE_ASSETS.lv[lvTier(ST.lv)]+'" onclick="idTT(0)">'+(B?'<img alt="Danh hiệu Bạn thân" src="'+TITLE_ASSETS.bf[bfTierOf(B.exp)]+'" onclick="idTT(1)">':'<div class="idnobf" onclick="idTT(1)"><span class="l">🔒</span><div><b>Cần bạn thân để mở danh hiệu</b><small>Mời bạn thân ở khu online nhé</small></div></div>')+'</div></div>'+
  '<div class="idmenu" id="idmenu"><button class="b" onclick="idPick()">📷 Đổi ảnh</button><button class="b" onclick="idFrames()">🖼️ Đổi khung</button></div>'+
  (ID.img?'<div style="text-align:right;margin-top:4px"><button class="b x" style="font-size:10.5px" onclick="idDelImg()">🗑 Dùng lại mặt nhân vật</button></div>':'')+
  '<input id="idfile" type="file" accept="image/*" style="display:none" onchange="idFile(this)">'+
@@ -113,9 +130,10 @@ function mainView(){
  '<div class="idg3"><div class="idsq"><span class="e">🪙</span><b>'+fmtXu(ID.earn)+'</b><small>Tổng xu đã kiếm</small></div>'+
  '<div class="idsq"><span class="e">'+(n>10?'🔥':'📅')+'</span><b>'+n+' ngày</b><small>Chuỗi đăng nhập'+(n>10?' 🔥':'')+'</small></div>'+
  '<div class="idsq"><span class="e">🖼️</span><b>'+(ID.fr>=0?FRAMES[ID.fr].n:'Chưa có')+'</b><small>Khung đang dùng</small></div></div>'+
- '<div class="idsoon"><div>👫 Bạn thân<small>Coming soon</small></div><div>🌳 Cây gia đình<small>Coming soon</small></div></div>';
+ '<div class="idsoon"><div class="ok" onclick="idBF()">👫 Bạn thân<small>'+(B?escH(B.pn||'Bạn thân'):'Chưa có • bấm để xem')+'</small></div><div>🌳 Cây gia đình<small>Coming soon</small></div></div>';
  openIdc(h)}
-window.idTT=k=>{if(k==0){const t=lvTier(ST.lv),nx=LV_FROM[t+1];toast('⭐ Danh hiệu Level: '+LV_N[t]+(nx?' • Đạt Lv '+nx+' để lên «'+LV_N[t+1]+'»':' • Bạn đã đạt bậc cao nhất!'))}else toast('💞 Danh hiệu Bạn thân: '+BT_N[ID.bf]+(ID.bf<4?' • Làm nhiệm vụ Bạn thân để lên bậc (sắp có)':' • Bậc cao nhất!'))};
+window.idTT=k=>{if(k==0){const t=lvTier(ST.lv),nx=LV_FROM[t+1];toast('⭐ Danh hiệu Level: '+LV_N[t]+(nx?' • Đạt Lv '+nx+' để lên «'+LV_N[t+1]+'»':' • Bạn đã đạt bậc cao nhất!'))}
+ else{const B=bfGet();if(!B)return idBF();const t=bfTierOf(B.exp);toast('💞 Danh hiệu Bạn thân: '+BT_N[t]+(t<4?' • Cần '+bfExpAt[t+1]+' EXP tình bạn để lên «'+BT_N[t+1]+'»':' • Bậc cao nhất!'))}};
 window.idMenu=()=>{const m=$('idmenu');if(m)m.classList.toggle('on')};
 window.idPick=()=>{const f=$('idfile');if(f)f.click()};
 window.idBio=el=>{if(el.value.length>200)el.value=el.value.slice(0,200);ID.bio=el.value;const c=$('idcn');if(c)c.textContent=el.value.length};
@@ -127,6 +145,26 @@ window.idFile=inp=>{const f=inp.files&&inp.files[0];if(!f)return;
   ID.img=c.toDataURL('image/jpeg',.82);save();idRender();toast('📷 Đã đổi ảnh avatar!')};
   im.onerror=()=>toast('Ảnh không đọc được, thử ảnh khác nhé');im.src=rd.result};
  rd.onerror=()=>toast('Không đọc được ảnh');rd.readAsDataURL(f)};
+
+// ---- Bạn thân ----
+window.idBF=()=>{IDV='bf';idRender();idSyncBf()};
+window.idQuest=()=>toast('📋 Nhiệm vụ hằng ngày cùng bạn thân sắp ra mắt, chờ chút nha!');
+function bfView(){
+ const B=bfGet(),A=ST.av||{};
+ let h='<div class="uh"><span><button class="b x" onclick="idBack()">‹ Thẻ</button> 💞 Bạn thân</span><button class="b x" onclick="closeUI()">X</button></div>';
+ if(!B)h+='<div class="idemp"><div class="big">💞</div><b>Bạn chưa có bạn thân</b><br>Vào khu online (Công viên, Phố xá), bấm vào một người chơi khác rồi chọn <b>💞 Mời bạn thân</b>.<br><small>Mỗi người chỉ có 1 bạn thân và cả hai cùng chung tiến trình.</small></div>';
+ else{
+  const t=bfTierOf(B.exp),mx=t>=4,cur=bfExpAt[t],nx=mx?cur:bfExpAt[t+1],pc=mx?100:Math.max(0,Math.min(100,(B.exp-cur)/(nx-cur)*100)),pa=B.pav||{};
+  const days=Math.max(1,Math.floor((Date.now()-B.since)/864e5)+1);
+  h+='<div class="idpair"><div class="idpc"><canvas class="idchr" width="40" height="48" data-h="'+(A.h|0)+'" data-s="'+(A.s|0)+'" data-e="'+(A.e|0)+'"></canvas><b>'+escH(ST.name||'Bạn')+'</b></div>'+
+   '<div class="idmid"><span class="h">💖</span>Bạn thân</div>'+
+   '<div class="idpc"><canvas class="idchr" width="40" height="48" data-h="'+(pa.h|0)+'" data-s="'+(pa.s|0)+'" data-e="'+(pa.e|0)+'"></canvas><b>'+escH(B.pn||'Bạn thân')+'</b></div></div>'+
+   '<div class="idbox idtt"><div class="idtl"><img alt="" src="'+TITLE_ASSETS.bf[t]+'" onclick="idTT(1)"></div></div>'+
+   '<div class="idbox"><h4>💞 Tiến trình tình bạn</h4><div class="idlv" style="border:0;padding:0"><div class="t"><span>'+BT_N[t]+'</span><b>'+(mx?'MAX':fmtXu(B.exp)+' / '+fmtXu(nx)+' EXP')+'</b></div><div class="idbar" style="height:10px"><i style="width:'+pc+'%;background:linear-gradient(90deg,#ff9ec2,#8fd0ee)"></i></div></div>'+
+   '<div class="mut" style="margin:6px 0 0;font-size:11px">'+(mx?'Hai bạn đã đạt bậc cao nhất! 🎉':'Bậc kế tiếp: «'+BT_N[t+1]+'»')+' • Tiến trình dùng chung cho cả hai người</div></div>'+
+   '<div class="idline" style="margin-top:8px"><span>📅 Ngày tình bạn</span><b>'+fmtD(B.since)+' • '+days+' ngày</b></div>'+
+   '<button class="b w go" style="margin-top:8px" onclick="idQuest()">📋 Nhiệm vụ hằng ngày</button>'}
+ openIdc(h)}
 
 // ---- đổi khung ----
 window.idFrames=()=>{IDV='frames';FSEL=ID.fr>=0?ID.fr:0;idRender()};
