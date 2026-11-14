@@ -68,6 +68,7 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
   <button class="hb" onclick="mapUI()">🗺️<small>Map</small></button>
   <button class="hb" onclick="bagUI()">🎒<small>Túi</small></button>
   <button class="hb" onclick="khoHub()">📦<small>Kho</small></button>
+  <button class="hb" onclick="idUI()" title="Căn cước Tinyland">🪪<small>Thẻ</small></button>
  </div>
 </div>
 <button class="b" id="dbtn" style="position:fixed;left:10px;top:calc(100px + env(safe-area-inset-top,0px));display:none;z-index:4;padding:6px 10px" onclick="decoToggle()">🛠️ Trang trí</button>
@@ -2210,7 +2211,7 @@ function cdToggle(){const w=$('cdw');w.style.display=w.style.display=='flex'?'no
 function cdGo(){const v=($('cdi').value||'').trim().toLowerCase();
  if(v!='adminhuy')return toast('❌ Code không đúng');
  khoList('ns').forEach(i=>add('ns',i[0],1));[...VPI.map(v=>v[0]),...PRODS.map(p=>p.id)].forEach(k=>add('vp',k,1));
- ST.xu+=10000;xuUp();save();closeUI();toast('🔑 Đã nhận +1 mọi vật phẩm và 10000 Xu!')}
+ window.IDNOEARN=1;ST.xu+=10000;window.IDNOEARN=0;xuUp();save();closeUI();toast('🔑 Đã nhận +1 mọi vật phẩm và 10000 Xu!')}
 // ---------- TU LUU: tai khoan DHT lo viec dong bo dam may (xem DHT/app.js) ----------
 const escH=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 setInterval(persist,5000);
@@ -3142,4 +3143,6 @@ setTimeout(()=>toast('🌾 Làng quê đã khoác áo mới — đi khám phá n
 <script src="park-map.js"></script>
 <script src="pho-map.js"></script>
 <script src="park-online.js"></script>
+<script src="frames.js"></script>
+<script src="idcard.js"></script>
 </body></html>
