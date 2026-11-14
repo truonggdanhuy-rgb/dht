@@ -92,7 +92,7 @@ CV.snd=localStorage.cv_snd!='0';$('cvsn').textContent=CV.snd?'🔊':'🔇';
 $('cvsn').onclick=()=>{CV.snd=!CV.snd;localStorage.cv_snd=CV.snd?'1':'0';$('cvsn').textContent=CV.snd?'🔊':'🔇'};
 
 // ---------- mạng ----------
-const me=()=>({id:ME.id,u:myUid(),n:ST.name,h:ST.av.h,s:ST.av.s,m:ST.av.m,x:Math.round(Pl.x),y:Math.round(Pl.y),ts:ME.ts,q:ME.q,qt:ME.qt,z:ME.z,zt:ME.zt});
+const me=()=>({id:ME.id,u:myUid(),n:ST.name,h:ST.av.h,s:ST.av.s,e:ST.av.e|0,m:ST.av.m,x:Math.round(Pl.x),y:Math.round(Pl.y),ts:ME.ts,q:ME.q,qt:ME.qt,z:ME.z,zt:ME.zt});
 function track(){if(ch&&PK.in)try{ch.track(me())}catch(e){}}
 function bcast(ev,p){if(ch)try{ch.send({type:'broadcast',event:ev,payload:p})}catch(e){}}
 const loadLib=()=>window.supabase?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';s.onload=ok;s.onerror=()=>no(new Error('không tải được thư viện Supabase'));document.head.appendChild(s)});
@@ -102,7 +102,7 @@ function sync(){if(!ch)return;const st=ch.presenceState(),all=[];for(const k in 
  const okIds=new Set(PK.all.map(p=>p.id));
  for(const p of PK.all){if(p.id==ME.id)continue;let o=CV.others.get(p.id);
   if(!o){o={id:p.id,x:p.x,y:p.y,tx:p.x,ty:p.y,d:0,a:0,mv:0};CV.others.set(p.id,o)}
-  o.u=p.u||'';o.n=p.n;o.hair=p.h;o.set=p.s;o.m=p.m==null?-1:p.m;o.seat=p.q==null?-1:p.q;o.hz=p.z==null?-1:p.z;o.qt=p.qt||0;o.zt=p.zt||0}
+  o.u=p.u||'';o.n=p.n;o.hair=p.h;o.set=p.s;o.e=p.e|0;o.m=p.m==null?-1:p.m;o.seat=p.q==null?-1:p.q;o.hz=p.z==null?-1:p.z;o.qt=p.qt||0;o.zt=p.zt||0}
  for(const id of[...CV.others.keys()])if(!okIds.has(id))CV.others.delete(id);
  if(PK.in){chatUI();
   if(PK.rank>=MAXP){toast('🚫 Công viên đã đủ người, bạn được mời ra ngoài');switchMap('nt');return}
@@ -144,7 +144,7 @@ const PKO=window.PKO={
   const x=Math.round(Pl.x),y=Math.round(Pl.y);
   if(tMv>=.25&&(x!=lx||y!=ly||Pl.d!=ld)){tMv=0;tHb=0;lx=x;ly=y;ld=Pl.d;bcast('mv',{i:ME.id,x,y,d:Pl.d})}
   else if(tHb>=3){tHb=0;bcast('mv',{i:ME.id,x,y,d:Pl.d})}
-  tAv+=dt;if(tAv>1){tAv=0;const k=ST.av.h+'|'+ST.av.s+'|'+ST.av.m+'|'+ST.name;if(k!=avs){avs=k;track()}}
+  tAv+=dt;if(tAv>1){tAv=0;const k=ST.av.h+'|'+ST.av.s+'|'+(ST.av.e|0)+'|'+ST.av.m+'|'+ST.name;if(k!=avs){avs=k;track()}}
   gTick(dt)}};
 
 // ============================================================

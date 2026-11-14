@@ -549,7 +549,7 @@ function drawOther(o,tm){let X,Y,sit=0,lift=0;
  else{X=o.x;Y=o.y}
  X=Math.round(X);Y=Math.round(Y)-lift;o.hx=X;o.hy=Y-(sit?34:tagOff(o.m,o.d));
  if(X<camX-30||X>camX+vw+30||Y<camY-30||Y>camY+vh+60)return;
- const ob={d:o.d,a:o.a,mv:o.mv,sit,hair:o.hair,set:o.set};
+ const ob={d:o.d,a:o.a,mv:o.mv,sit,hair:o.hair,set:o.set,e:o.e|0};
  if(o.m>=0&&!sit)drawRide(cx,X,Y,ob,o.m,tm);else drawAv(cx,X-10,Y-30,ob)}
 window.cvPushOthers=(L,tm)=>{for(const o of CV.others.values()){let key=o.y;
  if(o.seat>=0&&CV.seats[o.seat])key=CV.seats[o.seat].by+.5;else if(o.hz>=0&&CV.horses[o.hz])key=CV.horses[o.hz].y+.5;
