@@ -457,7 +457,8 @@ function shDraw(g,k,ix,o,t,big){
  if(big){const d=AVDIR[SH_DIR];o.d=d;o.a=t;o.mv=1;g.clearRect(0,0,110,92);g.fillStyle='rgba(60,110,40,.28)';g.fillRect(0,78,110,14);
   if(k=='m')drawRide(g,55,80,o,ix,t);else if(k=='e'){o.mv=0;g.save();g.scale(3,3);drawAv(g,8,0,o);g.restore()}else{drawAv(g,k=='p'?34:45,50,o);if(k=='p')drawPet(g,d==3?12:68,82,d,1,t,t,ix)}return}
  if(k=='h'){g.save();g.scale(2,2);drawAv(g,1,1,o);g.restore()}
- else if(k=='s'||k=='a')drawAv(g,12,5,o);
+ else if(k=='s')drawAv(g,12,5,o);
+ else if(k=='a')drawAv(g,4,5,o);
  else if(k=='m')drawRide(g,36,64,Object.assign({},o,{d:3,a:t,mv:0}),ix,t);
  else if(k=='e'){g.save();g.scale(3,3);const dr=()=>drawAv(g,-3,-4,o);if(ix==6)tlFreeze(2500,dr);else dr();g.restore()}
  else{g.save();g.scale(2,2);drawPet(g,11,24,0,0,0,t,ix);g.restore()}}

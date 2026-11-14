@@ -957,26 +957,51 @@ function drawAv(g,ox,oy,o){
  else if(HAIRFX[kind])HAIRFX[kind](u,o,{side,Rt,back,SK,HC,cap});
  if(o.acc>=0&&!rd&&!sit)drawAcc(r,o,{side,Rt,back,lg,sx});
 }
-// ---- PHỤ KIỆN CẦM TAY: chỉ hiện khi đi bộ (ẩn khi cưỡi thú / ngồi), mỗi lần dùng 1 món ----
-const ACCS=[{n:'Lồng đèn trăng rằm',k:'moon'},{n:'Xe kéo vịt',k:'duck'}];
+// ---- PHỤ KIỆN CẦM TAY (GEN): chỉ hiện khi đi bộ (ẩn khi cưỡi thú / ngồi), mỗi lần dùng 1 món ----
+// Có 2 "khuôn" dùng chung. Muốn thêm món mới chỉ cần viết 1 hàm vẽ vật rồi thêm 1 dòng vào ACCS:
+//   t:'hang' = cầm CÂY GẬY nhỏ, đầu gậy móc DÂY treo vật lủng lẳng (trăng, đèn cá, bóng bay...)  -> art(P)
+//   t:'pull' = cầm DÂY dài kéo xe đồ chơi chạy theo sau (vịt, tàu hỏa, cá chép...)             -> art(T,mf)
+// (giữ nguyên thứ tự trong ACCS vì ST.own.a / ST.av.a lưu theo số thứ tự)
+const ACCS=[{n:'Lồng đèn trăng rằm',k:'moon',t:'hang',art:accMoon},{n:'Xe kéo vịt',k:'duck',t:'pull',art:accDuck}];
+// vật treo: P.at(x,y) = điểm móc dây; P.R(màu,x,y,w,h) vẽ theo toạ độ gốc ở tay (tự lật theo hướng); P.sw = độ đung đưa; P.t = thời gian
+function accMoon(P){const R=P.R,x0=P.ax-5,y0=P.ay,glow=(.2+.05*Math.sin(P.t*4)).toFixed(2);
+ // vầng sáng
+ P.E('rgba(255,230,120,'+(glow*.7).toFixed(2)+')',x0+5,y0+5,6,5);P.E('rgba(255,240,150,'+(+glow+.1).toFixed(2)+')',x0+5,y0+5,4,3);
+ // trăng khuyết 9x9 (khuyết mở về phía trên-trái), có viền cam + lõi sáng
+ for(let j=0;j<9;j++)for(let i=0;i<9;i++){const dx=i-4,dy=j-4,d2=dx*dx+dy*dy;
+  if(d2<=17&&(i-2.4)*(i-2.4)+(j-2.9)*(j-2.9)>11.5)R(d2>13?'#f0a818':d2>7?'#ffd84a':'#fff0a0',x0+i,y0+j,1,1)}
+ // móc kim loại ở đầu trên + tua đỏ ở đuôi dưới
+ R('#d98a2a',P.ax-1,P.ay-1,2,1);R('#ff7a5a',x0+1,y0+8,1,1);R('#ff7a5a',x0+1,y0+9,1,2);
+ // lấp lánh nhẹ
+ if(Math.sin(P.t*5)>.6)R('#fffbe0',x0+8,y0+1,1,1);else if(Math.sin(P.t*5+2)>.7)R('#fffbe0',x0+9,y0+6,1,1)}
+// xe kéo: T(màu,x,y,w,h) vẽ trong khung 12x10, đầu xe (chỗ buộc dây) ở mép x=11; mf = khung bánh xe lăn
+function accDuck(T,mf){
+ T('#e0584a',0,5,12,2);T('#ff8a7a',0,5,12,1);T('#a8382e',0,6,12,1);          // thân xe đỏ
+ T('#3a3a3a',1,7,3,3);T('#3a3a3a',8,7,3,3);                                  // bánh
+ if(mf){for(const x of[2,9]){T('#cfcfcf',x,7,1,1);T('#cfcfcf',x,9,1,1)}}else{for(const x of[1,3,8,10])T('#cfcfcf',x,8,1,1)}
+ T('#ffd23f',2,2,7,3);T('#ffe680',3,2,4,1);T('#e8b820',2,4,7,1);T('#ffd23f',1,2,1,2);T('#f0b820',3,3,3,1);  // thân vịt
+ T('#ffd23f',6,0,4,3);T('#2b1d12',8,1,1,1);T('#ff9a2a',10,1,2,2);            // đầu + mắt + mỏ
+ T('#a8382e',11,6,1,2)}                                                      // móc buộc dây
 function drawAcc(r0,o,c){const A=ACCS[o.acc];if(!A)return;const t=performance.now()/1000,f=o.mv?Math.floor(o.a*9)%4:0,bob=o.mv&&(f==1||f==3)?-1:0,
  dir=c.side?(c.Rt?1:-1):1,h0=c.side?10-c.sx:16,hy=22+(c.side?0:-c.lg);
  const R=(col,dx,y,w,h)=>r0(col,dir>0?h0+dx:h0-dx-w+1,y+bob,w,h);
- if(A.k=='moon'){const sw=Math.round(Math.sin(t*3)),gp=(.2+.05*Math.sin(t*4)).toFixed(2),S='#e8dcc0';
-  R('#8a5a2e',1,hy-1,1,1);R('#8a5a2e',2,hy-2,1,2);R('#8a5a2e',3,hy-4,1,2);R('#b07a44',3,hy-5,1,1);
-  R(S,3,hy-4,1,2);R(S,4,hy-2,1,2);R(S,5+Math.round(sw/2),hy,1,2);
-  const gx=dir>0?h0+5+sw:h0-5-sw;E(r0,'rgba(255,230,120,'+gp+')',gx,hy+5+bob,8,8);E(r0,'rgba(255,240,150,'+(+gp+.12).toFixed(2)+')',gx,hy+5+bob,5,5);
-  for(let j=0;j<9;j++)for(let i=0;i<9;i++){const dx=i-4,dy=j-4,d2=dx*dx+dy*dy;if(d2<=17&&(i-2.7)*(i-2.7)+(j-3.3)*(j-3.3)>11.5)R(d2>13?'#f0a818':d2>7?'#ffd84a':'#fff0a0',1+sw+i,hy+j,1,1)}
-  R('#d98a2a',4+sw,hy-1,2,1);R('#ff7a5a',5+sw,hy+9,1,2)}
- else{const mf=o.mv?Math.floor(o.a*9)%2:0,tb=o.mv&&mf?-1:0,tx=c.side?-16:2,ty=22,fl=!c.side;
-  const T=(col,x,y,w,h)=>R(col,tx+(fl?11-x-w+1:x),ty+y+tb,w,h),hx=c.side?11:0;
-  r0('rgba(0,0,0,.16)',dir>0?h0+tx:h0-tx-11,ty+10,12,1);
-  {const x0=0,y0=hy,x1=tx+hx,y1=ty+6+tb,n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);for(let k=0;k<=n;k++)R('#e8dcc0',Math.round(x0+(x1-x0)*k/n),Math.round(y0+(y1-y0)*k/n),1,1)}
-  T('#e0584a',0,5,12,2);T('#ff8a7a',0,5,12,1);T('#a8382e',0,6,12,1);
-  T('#3a3a3a',1,7,3,3);T('#3a3a3a',8,7,3,3);
-  if(mf){for(const x of[2,9]){T('#cfcfcf',x,7,1,1);T('#cfcfcf',x,9,1,1)}}else{for(const x of[1,3,8,10])T('#cfcfcf',x,8,1,1)}
-  T('#ffd23f',2,2,7,3);T('#ffe680',3,2,4,1);T('#e8b820',2,4,7,1);T('#ffd23f',1,2,1,2);T('#f0b820',3,3,3,1);
-  T('#ffd23f',6,0,4,3);T('#2b1d12',8,1,1,1);T('#ff9a2a',10,1,2,2)}}
+ // vẽ đường thẳng/võng nhẹ bằng từng điểm 1px (dây, gậy)
+ const line=(col,x0,y0,x1,y1,sag)=>{const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);for(let k=0;k<=n;k++)R(col,Math.round(x0+(x1-x0)*k/n),Math.round(y0+(y1-y0)*k/n+(sag?sag*Math.sin(Math.PI*k/n):0)),1,1)};
+ if(A.t=='hang'){
+  const lag=o.mv?-1:0,sw=Math.round(Math.sin(t*2.6)*1.5)+lag;      // đung đưa + hơi tụt lại khi đi
+  const tx=4,ty=hy-11;                                               // đầu gậy
+  line('#6a4020',0,hy+1,tx,ty);line('#b07a44',1,hy,tx+1,ty);        // cây gậy nhỏ (nâu + sáng)
+  R('#d9a441',tx,ty-1,2,2);R('#ffe08a',tx,ty-1,1,1);                // nút vàng ở đầu gậy
+  const ax=tx+2+sw,ay=hy+1;                                         // điểm móc trên vật treo
+  line('#e8dcc0',tx,ty+1,ax,ay,1);                               // dây mảnh nối đầu gậy -> vật
+  A.art({R,E:(col,x,y,a,b)=>E(R,col,x,y,a,b),ax,ay,sw,t,o});
+ }else{
+  const mf=o.mv?Math.floor(o.a*9)%2:0,tb=o.mv&&mf?-1:0,tx=c.side?-27:12,ty=22,fl=!c.side,hx=c.side?11:0;
+  const T=(col,x,y,w,h)=>R(col,tx+(fl?11-x-w+1:x),ty+y+tb,w,h);
+  r0('rgba(0,0,0,.16)',dir>0?h0+tx:h0-tx-11,ty+10,12,1);            // bóng dưới xe
+  R('#e0584a',-1,hy,2,2);R('#ffb0a0',-1,hy,1,1);                    // vòng cầm dây trong tay
+  line('#a08c5c',1,hy+1,tx+hx,ty+7+tb,o.mv?1:2);                     // dây dài, hơi võng khi đứng yên
+  A.art(T,mf)}}
 // ---- tự kiểm tra mascot theo khung chuẩn MSTD: gõ mascotCheck() trong Console (F12) ----
 window.mascotCheck=function(quiet){const res=[];
  SETS.forEach((S,si)=>{if(!S.mascot)return;const bad=[];let tag=S.n;
@@ -2376,7 +2401,7 @@ function avPaint(){const A=ST.av,t=performance.now()/1000,L=avItems(AVTAB);docum
  if(AVTAB=='h'){o.hair=ix;g.save();g.scale(2,2);drawAv(g,1,1,o);g.restore()}
  else if(AVTAB=='s'){o.set=ix;drawAv(g,12,5,o)}
  else if(AVTAB=='e'){o.e=ix;g.save();g.scale(3,3);const dr=()=>drawAv(g,-3,-4,o);if(ix==6)tlFreeze(2500,dr);else dr();g.restore()}
- else if(AVTAB=='a'){o.acc=ix;drawAv(g,12,5,o)}
+ else if(AVTAB=='a'){o.acc=ix;drawAv(g,4,5,o)}
  else if(AVTAB=='m'){if(ix>=0)drawRide(g,36,64,Object.assign({},o,{d:3,a:t,mv:0}),ix,t);else drawAv(g,26,30,o)}
  else{if(ix>=0){g.save();g.scale(2,2);drawPet(g,11,24,0,0,0,t,ix);g.restore()}else{g.font='22px sans-serif';g.textAlign='center';g.fillText('🚫',22,34)}}})}
 function avLoop(){const c=$('avp');if(!c||!UI){avRaf=0;return}
