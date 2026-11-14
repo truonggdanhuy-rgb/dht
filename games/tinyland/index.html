@@ -664,28 +664,118 @@ const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'}
  {n:'Tóc Sailor Moon',k:'sailor',c:'#f6d96b'},{n:'Tóc 2 chùm',k:'bun2',c:'#2a2224'},{n:'Tóc nữ yêu kiều',k:'longf',c:'#201a24'},{n:'Tóc xinh yêu',k:'bobf',c:'#17151c'},
  {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'}];
 // ---- Bieu cam nhan vat ----
-const EXPRS=[{n:'Mặc định'},{n:'😎 Ngầu'},{n:'😍 Iu iu'},{n:'🤤 Đói bụng'},{n:'😢 Sad'},{n:'😄 Vui vẻ'}];
+const EXPRS=[{n:'Mặc định'},{n:'😎 Ngầu'},{n:'😍 Iu iu'},{n:'🤤 Đói bụng'},{n:'😢 Sad'},{n:'😄 Vui vẻ'},{n:'🍬 Bong bóng kẹo'}];
+// 6 biểu cảm đầu miễn phí (ai cũng có); từ số 6 trở đi mua ở Shop Phố xá
+window.ownE=()=>{if(!ST.own)ST.own={};if(!Array.isArray(ST.own.e))ST.own.e=[];for(let i=0;i<6;i++)if(!ST.own.e.includes(i))ST.own.e.push(i);return ST.own.e};
+// vẽ khung xem trước ở một thời điểm cố định (để bong bóng hiện rõ trong ô nhỏ)
+window.tlFreeze=(ms,fn)=>{const o=performance.now;performance.now=()=>ms;try{fn()}finally{performance.now=o}};
+// ===== Biểu cảm nhân vật v2 (vẽ trên lưới 20x31, đầu x6..13 y8..14) =====
 function faceFx(u,e,side,Rt){
- const EY='#2b1d12',MO='#b5604a',DK='#7a2a2a',PK='#ff4d7a',BL='#6ec1ff',DR='#bfe8fb',BS='rgba(236,130,110,.7)',t=performance.now()/1000;
+ const t=performance.now()/1000;
+ const EY='#2b1d12',MO='#b5604a',MO2='#c4566a',DK='#6b2230',TG='#ff8c9c',PK='#ff4d7a',PKL='#ffb0c6',BL='#7fcbff',BLD='#3f9be0',WH='#ffffff',
+  BS='rgba(236,110,110,.5)',SG1='#2c3a55',SG2='#141a28',GL='#9cc8ff';
+ const s=(c,x,y,w,h)=>u(c,Rt?x:20-x-w,y,w,h);          // vẽ cho nhìn ngang (tự lật trái/phải)
+ const eye2=(x,y)=>{u(EY,x,y,2,2);u(WH,x,y,1,1)};          // mắt to có điểm sáng
+ const heart=(c,x,y)=>{u(c,x,y,1,1);u(c,x+2,y,1,1);u(c,x,y+1,3,1);u(c,x+1,y+2,1,1)};
+ const fl=(a,b)=>Math.floor(((t*a)%1)*b);
  if(!side){
-  if(e==1){u(EY,7,10,2,1);u(EY,11,10,2,1);u(EY,8,11,1,1);u(EY,11,11,1,1);u(MO,9,13,2,1);u(MO,11,12,1,1);u('rgba(70,35,15,.22)',7,12,1,1);u('rgba(70,35,15,.22)',12,12,1,1)}
-  else if(e==2){u(PK,6,10,1,1);u(PK,8,10,1,1);u(PK,6,11,3,1);u(PK,7,12,1,1);u(PK,11,10,1,1);u(PK,13,10,1,1);u(PK,11,11,3,1);u(PK,12,12,1,1);
-   u(MO,8,13,1,1);u(MO,9,14,2,1);u(MO,11,13,1,1);
-   const h=Math.round(Math.sin(t*3));u(PK,15,3+h,1,1);u(PK,17,3+h,1,1);u(PK,15,4+h,3,1);u(PK,16,5+h,1,1)}
-  else if(e==3){u(EY,7,11,2,2);u(EY,11,11,2,2);u('#ffffff',7,11,1,1);u('#ffffff',11,11,1,1);
-   u(DK,9,13,2,2);u('#ff7a8a',9,14,2,1);const L=1+Math.floor((t*1.6%1)*3);u(DR,11,13,1,1);u(DR,11,14,1,L);u(DR,11,14+L,1,1)}
-  else if(e==4){u(EY,7,10,1,1);u(EY,8,9,1,1);u(EY,12,10,1,1);u(EY,11,9,1,1);u(EY,8,11,1,2);u(EY,11,11,1,2);
-   u(BL,7,12,1,2);u(BL,12,12,1,2);const y=14+Math.floor(t*3%2);u(BL,7,y,1,1);u(BL,12,y,1,1);
+  if(e==1){ // 😎 Ngầu: kính râm + cười nhếch
+   u(SG1,6,11,3,1);u(SG2,6,12,3,1);u(SG1,11,11,3,1);u(SG2,11,12,3,1);u(SG2,9,11,2,1);
+   u(GL,7,11,1,1);u(GL,12,11,1,1);
+   u(MO,9,13,3,1);u('#8a3f32',12,13,1,1)}
+  else if(e==2){ // 😍 Iu iu: mắt trái tim + nụ cười + tim bay
+   const pu=Math.sin(t*5)>0?PK:'#ff2f66';
+   heart(pu,6,10);heart(pu,11,10);u(PKL,6,10,1,1);u(PKL,11,10,1,1);
+   u(MO2,8,13,1,1);u(MO2,9,14,2,1);u(MO2,11,13,1,1);
+   for(let k=0;k<2;k++){const p=((t*.45)+k*.5)%1,y=7-Math.round(p*7),x=k?15:1,a=(1-p).toFixed(2);heart('rgba(255,77,122,'+a+')',x+Math.round(Math.sin(t*3+k*3)),y)}}
+  else if(e==3){ // 🤤 Đói bụng: mắt long lanh + le lưỡi + chảy dãi
+   eye2(7,11);eye2(11,11);u(BS,7,13,1,1);u(BS,12,13,1,1);
+   u(DK,9,13,2,1);u(TG,9,14,2,1);
+   const L=1+fl(1.3,3);u(BL,11,14,1,L);u(WH,11,14+L,1,1);u(BL,11,14+L,1,1)}
+  else if(e==4){ // 😢 Buồn: mắt ngấn nước + giọt lệ + miệng mếu
+   eye2(7,11);eye2(11,11);u('rgba(127,203,255,.8)',7,13,2,1);u('rgba(127,203,255,.8)',11,13,2,1);
+   const y=14+fl(1.6,2);u(BL,7,y,1,1);u(BL,12,y,1,1);
    u(MO,9,13,2,1);u(MO,8,14,1,1);u(MO,11,14,1,1)}
-  else if(e==5){u(EY,6,12,1,1);u(EY,7,11,1,1);u(EY,8,12,1,1);u(EY,11,12,1,1);u(EY,12,11,1,1);u(EY,13,12,1,1);
-   u(DK,8,13,4,1);u(DK,9,14,2,1);u('#ffffff',9,13,2,1);u(BS,7,12,1,1);u(BS,12,12,1,1)}
+  else if(e==5){ // 😄 Vui vẻ: mắt cong ^ ^ + cười tươi
+   u(EY,6,12,1,1);u(EY,7,11,1,1);u(EY,8,12,1,1);u(EY,11,12,1,1);u(EY,12,11,1,1);u(EY,13,12,1,1);
+   u(BS,7,12,1,1);u(BS,12,12,1,1);
+   u(DK,8,13,4,1);u(DK,9,14,2,1);u(TG,9,14,2,1);
+   const tw=Math.sin(t*4)>0;if(tw){u('#fff3a8',16,6,1,1);u('#fff3a8',15,7,3,1);u('#fff3a8',16,8,1,1)}else{u('#fff3a8',2,9,1,1);u('#fff3a8',1,10,3,1);u('#fff3a8',2,11,1,1)}}
+  else if(e==6){ bubbleFace(u,t,0,0) }
  }else{
-  const s=(c,x,y,w,h)=>u(c,Rt?x:20-x-w,y,w,h);
-  if(e==1){s(EY,11,10,3,1);s(EY,12,11,1,1);s(MO,12,13,2,1);s(MO,14,12,1,1)}
-  else if(e==2){s(PK,11,10,1,1);s(PK,13,10,1,1);s(PK,11,11,3,1);s(PK,12,12,1,1);s(MO,13,13,1,1)}
-  else if(e==3){s(EY,12,11,2,2);s('#ffffff',12,11,1,1);s(DK,13,13,2,2);const L=1+Math.floor((t*1.6%1)*3);s(DR,13,15,1,L)}
-  else if(e==4){s(EY,11,10,1,1);s(EY,12,9,2,1);s(EY,12,11,1,2);s(BL,12,12,1,2);s(BL,12,14+Math.floor(t*3%2),1,1);s(MO,12,14,2,1);s(MO,14,15,1,1)}
-  else if(e==5){s(EY,11,12,1,1);s(EY,12,11,1,1);s(EY,13,12,1,1);s(DK,12,13,3,1);s(DK,13,14,1,1)}
+  if(e==1){s(SG2,8,11,2,1);s(SG1,10,11,3,1);s(SG2,10,12,3,1);s(GL,11,11,1,1);s(MO,11,13,3,1)}
+  else if(e==2){const pu=Math.sin(t*5)>0?PK:'#ff2f66';
+   s(pu,10,10,1,1);s(pu,12,10,1,1);s(pu,10,11,3,1);s(pu,11,12,1,1);s(PKL,10,10,1,1);
+   s(MO2,12,13,1,1);s(MO2,13,12,1,1);s(MO2,13,13,1,1)}
+  else if(e==3){s(EY,11,11,2,2);s(WH,11,11,1,1);s(DK,12,13,2,1);s(TG,12,14,1,1);
+   const L=1+fl(1.3,3);s(BL,13,14,1,L);s(BL,13,14+L,1,1)}
+  else if(e==4){s(EY,11,11,2,2);s(WH,11,11,1,1);s('rgba(127,203,255,.8)',11,13,2,1);
+   s(BL,11,14+fl(1.6,2),1,1);s(MO,12,13,2,1);s(MO,13,14,1,1)}
+  else if(e==5){s(EY,10,12,1,1);s(EY,11,11,1,1);s(EY,12,12,1,1);s(BS,10,13,1,1);
+   s(DK,12,13,2,1);s(TG,12,14,1,1);s(DK,13,14,1,1)}
+  else if(e==6){ bubbleFace(u,t,1,Rt) }
+ }
+}
+function bubbleFace(u,t,side,Rt){
+ const EY='#2b1d12',MO='#b5604a',DK='#6b2230',WH='#ffffff',BS='rgba(236,110,110,.55)';
+ const px=(c,x,y)=>side?u(c,Rt?x:19-x,y,1,1):u(c,x,y,1,1);        // vẽ 1 điểm ảnh (nhìn ngang tự lật)
+ const T=4.6,tt=t%T;
+ // 0-.6 nhai kẹo | .6-3.2 thổi to dần | 3.2-3.5 căng lên | 3.5-3.9 NỔ | 3.9-4.6 kẹo dính môi, nhai lại
+ const RIM='rgba(52,185,105,.92)',FILM='rgba(165,246,190,.30)',SHD='rgba(70,200,120,.30)',HI='rgba(255,255,255,.95)',GUM='rgba(70,205,120,.95)';
+ let r=0,pop=-1;
+ if(tt>=.6&&tt<3.2){const p=(tt-.6)/2.6;r=.9+2.8*(1-Math.pow(1-p,1.8))+Math.sin(t*7)*.07*p}
+ else if(tt>=3.2&&tt<3.5){r=3.7+(tt-3.2)*1.0+Math.sin(t*45)*.1}
+ else if(tt>=3.5&&tt<3.9)pop=(tt-3.5)/.4;
+ const surprised=(tt>=3.3&&tt<3.9), blow=(tt>=.6&&tt<3.3);
+ // mắt
+ if(!side){
+  if(surprised){u(EY,7,11,2,2);u(WH,7,11,1,1);u(EY,11,11,2,2);u(WH,11,11,1,1)}
+  else if(blow||Math.floor(t*1.0)%5==2&&(t%1)<.18){u(EY,7,12,2,1);u(EY,11,12,2,1)}
+  else{u(EY,7,11,2,2);u(WH,7,11,1,1);u(EY,11,11,2,2);u(WH,11,11,1,1)}
+  u(BS,7,13,1,1);u(BS,12,13,1,1);
+ }else{
+  if(surprised){u(EY,Rt?11:7,11,2,2);u(WH,Rt?11:8,11,1,1)}
+  else if(blow){u(EY,Rt?11:7,12,2,1)}
+  else{u(EY,Rt?11:7,11,2,2);u(WH,Rt?11:8,11,1,1)}
+  u(BS,Rt?10:9,13,1,1);
+ }
+ // miệng
+ const chew=Math.floor(t*4)%2;
+ if(!side){
+  if(blow||pop>=0&&pop<.5){u(DK,9,13,2,1)}
+  else if(surprised){u(DK,9,13,2,2)}
+  else{u(MO,9,13,2,1);if(chew)u(MO,9,14,2,1)}
+ }else{
+  if(blow||pop>=0){px(DK,12,13);px(DK,13,13)}
+  else{px(MO,12,13);px(MO,13,13);if(chew)px(MO,13,14)}
+ }
+ // bong bóng (đường kính chẵn 2/4/6/8 để luôn đối xứng giữa mặt)
+ let d=0;
+ if(tt>=.6&&tt<1.2)d=2;else if(tt>=1.2&&tt<2.0)d=4;else if(tt>=2.0&&tt<3.1)d=6;else if(tt>=3.1&&tt<3.5)d=8;
+ let cx,cy;
+ if(!side){cx=10;cy=d==2?14:d==4?15:d==6?16:16}else{cx=14+d/2;cy=d<=4?14:d==6?15:16}
+ if(d){
+  const inM=(i,j)=>{const dx=i+.5-d/2,dy=j+.5-d/2;return dx*dx+dy*dy<=d*d/4};
+  const x0=Math.round(cx-d/2),y0=Math.round(cy-d/2),wob=(d>=6&&Math.sin(t*12)>0)?0:0;
+  for(let j=0;j<d;j++)for(let i=0;i<d;i++){
+   if(!inM(i,j))continue;
+   const edge=!inM(i-1,j)||!inM(i+1,j)||!inM(i,j-1)||!inM(i,j+1);
+   let c;if(d==2)c=GUM;else if(edge)c=RIM;else c=(i>d*.55&&j>d*.5)?SHD:FILM;
+   px(c,x0+i+wob,y0+j)}
+  if(d==2)px(HI,x0,y0);else{px(HI,x0+1,y0+1);if(d>=6){px(HI,x0+1,y0+2);px(HI,x0+2,y0+1)}}
+  if(!side)px(GUM,9,13),px(GUM,10,13);else{px(GUM,13,13)}
+ }
+ if(pop>=0){ // nổ: mảnh văng ra + màng kẹo dính quanh miệng
+  const a=1-pop,R0=3.6+pop*3.4;cx=side?14+4:10;cy=16;
+  for(let k=0;k<8;k++){const an=k*Math.PI/4+.4,sx=Math.round(cx+Math.cos(an)*R0),sy=Math.round(cy+Math.sin(an)*R0*.85);
+   px('rgba(40,168,92,'+(a*.95).toFixed(2)+')',sx,sy);px('rgba(165,246,190,'+(a*.8).toFixed(2)+')',sx+(Math.cos(an)>0?-1:1),sy)}
+  if(!side){px(GUM,8,13);px(GUM,11,13);px('rgba(70,205,120,.7)',8,14);px('rgba(70,205,120,.7)',11,14);px('rgba(165,246,190,.6)',9,15);px('rgba(165,246,190,.6)',10,15)}
+  else{px(GUM,12,12);px(GUM,13,12);px('rgba(165,246,190,.6)',12,14)}
+ }
+ if(tt>=3.9){ // kẹo còn dính ở môi
+  const fade=Math.max(0,1-(tt-3.9)/.7);
+  if(!side){px('rgba(70,205,120,'+(.9*fade).toFixed(2)+')',9,14);px('rgba(70,205,120,'+(.9*fade).toFixed(2)+')',10,14)}
+  else{px('rgba(70,205,120,'+(.9*fade).toFixed(2)+')',13,14)}
  }
 }
 // ================================================================
@@ -850,7 +940,7 @@ function drawAv(g,ox,oy,o){
   if(o.e>0)faceFx(u,o.e,0,0);else{u(EY,8,11,1,2);u(EY,11,11,1,2);u('rgba(236,130,110,.55)',7,12,1,1);u('rgba(236,130,110,.55)',12,12,1,1);u('#b5604a',9,13,2,1)}
   if(kind=='hat'){u(RD,5,8,1,6);u(RD,14,8,1,6);u(RD,5,14,3,1);u(RD,12,14,3,1)}}
  else{E(u,HC,Rt?8:12,11,3,4);E(u,SK,Rt?11:9,11,3,4);u('rgba(70,35,15,.28)',Rt?8:6,8,6,1);
-  u(SKS,Rt?15:5,11,1,1);if(o.e>0)faceFx(u,o.e,1,Rt);else{u(EY,Rt?12:7,11,1,2);u('#b5604a',Rt?13:6,13,1,1)}
+  u(SKS,Rt?14:5,11,1,1);if(o.e>0)faceFx(u,o.e,1,Rt);else{u(EY,Rt?12:7,11,1,2);u('#b5604a',Rt?13:6,13,1,1)}
   if(kind=='hat'){u(RD,Rt?9:10,8,1,6);u(RD,Rt?8:9,14,4,1)}}
  if(kind=='hat'){
   [[9,2],[8,4],[7,6],[6,8],[5,10],[4,12],[3,14]].forEach(([a,w],i)=>{u('#ecd681',a,i,w,1);const s=Math.max(2,Math.round(w/3));u('#c9b05a',a+w-s,i,s,1);
@@ -2241,8 +2331,9 @@ ST.av=Object.assign({h:0,s:0,m:-1,p:0,e:0},ST.av||{});
 ST.own=Object.assign({h:[0],s:[0],m:[],p:[]},ST.own||{});
 for(const k of['h','s','m','p']){if(!Array.isArray(ST.own[k]))ST.own[k]=[];const v=ST.av[k];if(v>=0&&!ST.own[k].includes(v))ST.own[k].push(v)}
 for(const k of['h','s'])if(!ST.own[k].includes(0))ST.own[k].push(0);
+ownE();
 const AVTABS=[['h','Tóc'],['s','Set'],['e','Biểu cảm'],['m','Thú cưỡi'],['p','Pet']],AVDIR=[0,3,1,2];let AVTAB='h',AVI=0,avRaf=0;
-const avItems=k=>{if(k=='f')return[];if(k=='e')return EXPRS.map((x,i)=>({n:x.n,idx:i}));const all=k=='h'?HAIRS:k=='s'?SETS:k=='m'?MOUNTS:PETS,own=ST.own[k],L=[];
+const avItems=k=>{if(k=='f')return[];if(k=='e'){const oe=ownE();return EXPRS.map((x,i)=>({n:x.n,idx:i})).filter(x=>oe.includes(x.idx))}const all=k=='h'?HAIRS:k=='s'?SETS:k=='m'?MOUNTS:PETS,own=ST.own[k],L=[];
  if(k=='m'||k=='p')L.push({n:k=='m'?'Không cưỡi':'Không dùng',idx:-1});
  all.forEach((x,i)=>{if(own.includes(i))L.push({n:x.n,idx:i})});return L};
 const avCur=k=>avItems(k).findIndex(x=>x.idx==ST.av[k]);
@@ -2262,7 +2353,7 @@ function avTurn(){AVI=(AVI+1)%4}
 function avPaint(){const A=ST.av,t=performance.now()/1000,L=avItems(AVTAB);document.querySelectorAll('canvas.avt').forEach(c=>{const g=c.getContext('2d'),i=+c.dataset.i,ix=L[i]?L[i].idx:-1,o={d:0,a:0,mv:0,sit:0,hair:A.h,set:A.s,e:A.e};g.clearRect(0,0,c.width,c.height);
  if(AVTAB=='h'){o.hair=ix;g.save();g.scale(2,2);drawAv(g,1,1,o);g.restore()}
  else if(AVTAB=='s'){o.set=ix;drawAv(g,12,5,o)}
- else if(AVTAB=='e'){o.e=ix;g.save();g.scale(3,3);drawAv(g,-3,-3,o);g.restore()}
+ else if(AVTAB=='e'){o.e=ix;g.save();g.scale(3,3);const dr=()=>drawAv(g,-3,-4,o);if(ix==6)tlFreeze(2500,dr);else dr();g.restore()}
  else if(AVTAB=='m'){if(ix>=0)drawRide(g,36,64,Object.assign({},o,{d:3,a:t,mv:0}),ix,t);else drawAv(g,26,30,o)}
  else{if(ix>=0){g.save();g.scale(2,2);drawPet(g,11,24,0,0,0,t,ix);g.restore()}else{g.font='22px sans-serif';g.textAlign='center';g.fillText('🚫',22,34)}}})}
 function avLoop(){const c=$('avp');if(!c||!UI){avRaf=0;return}

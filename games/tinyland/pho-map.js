@@ -396,32 +396,34 @@ function mieuLoop(){const c=$('mc');if(!c||!UI||PS.view!='mieu')return;const g=c
 // ============================================================
 //  SHOP
 // ============================================================
-const SHOP={m:{t:'🐃 Thú cưỡi',all:()=>MOUNTS,pr:[1200,5500,4200,3800,300]},p:{t:'🐾 Pet',all:()=>PETS,pr:[250,900,350,300,1100,500]},s:{t:'👕 Set',all:()=>SETS,pr:[0,600,500,450,450,500,800,800,1500,2800,3500,20000, 500,500,600,1000,800,400,400,5000,5000]},h:{t:'🧢 Tóc & mũ',all:()=>HAIRS,pr:[0,150,200,250,300,300, 1000,400,600,200,250,300,1000]}};
+const SHOP={m:{t:'🐃 Thú cưỡi',all:()=>MOUNTS,pr:[1200,5500,4200,3800,300]},p:{t:'🐾 Pet',all:()=>PETS,pr:[250,900,350,300,1100,500]},s:{t:'👕 Set',all:()=>SETS,pr:[0,600,500,450,450,500,800,800,1500,2800,3500,20000, 500,500,600,1000,800,400,400,5000,5000]},h:{t:'🧢 Tóc & mũ',all:()=>HAIRS,pr:[0,150,200,250,300,300, 1000,400,600,200,250,300,1000]},
+ e:{t:'😄 Biểu cảm',all:()=>EXPRS,pr:[0,0,0,0,0,0,18000]}};
 const price=(k,i)=>{const v=SHOP[k].pr[i];return v==null?500:v};
 let SH_TAB='m',SH_I=-1,SH_DIR=0,shRaf=0;
-window.psShop=(tab)=>{if(tab)SH_TAB=tab;PS.view='shop';SH_I=-1;const S=SHOP[SH_TAB],L=S.all(),own=ST.own[SH_TAB],mt=SH_TAB=='m';
- let h=head('🏘️ Shop Phố xá')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu</div><div class="tabs" style="flex-wrap:wrap">'+['m','p','s','h'].map(k=>'<button class="b'+(k==SH_TAB?' on':'')+'" onclick="psShop(\''+k+'\')">'+SHOP[k].t+'</button>').join('')+'</div>';
+window.psShop=(tab)=>{if(typeof ownE=='function')ownE();if(tab)SH_TAB=tab;PS.view='shop';SH_I=-1;const S=SHOP[SH_TAB],L=S.all(),own=ST.own[SH_TAB],mt=SH_TAB=='m';
+ let h=head('🏘️ Shop Phố xá')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu</div><div class="tabs" style="flex-wrap:wrap">'+['m','p','s','h','e'].map(k=>'<button class="b'+(k==SH_TAB?' on':'')+'" onclick="psShop(\''+k+'\')">'+SHOP[k].t+'</button>').join('')+'</div>';
  h+='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+L.map((x,i)=>{const has=own.includes(i);if(x.ach&&!has)return '';
   return '<button class="sq'+(has?' z':'')+'" onclick="psItem('+i+')"><canvas class="shc" data-i="'+i+'" width="'+(mt?72:44)+'" height="'+(mt?68:SH_TAB=='p'?52:44)+'" style="width:'+(mt?88:57)+'px;height:'+(mt?83:SH_TAB=='p'?68:57)+'px;image-rendering:pixelated"></canvas><b>'+x.n+'</b><small>'+(has?'✓ Đã có':'🪙 '+price(SH_TAB,i).toLocaleString('vi-VN'))+'</small></button>'}).join('')+'</div>';
  h+='<div class="mut">Đồ đã mua nằm trong 🎒 Túi. Chạm vào món để xem thử & mua.</div>';
  openUI(h);shPaint()};
 function shDraw(g,k,ix,o,t,big){
- if(k=='h')o.hair=ix;else if(k=='s')o.set=ix;
+ if(k=='h')o.hair=ix;else if(k=='s')o.set=ix;else if(k=='e'){o.e=ix;if(SETS[o.set]&&SETS[o.set].mascot)o.set=0}
  if(big){const d=AVDIR[SH_DIR];o.d=d;o.a=t;o.mv=1;g.clearRect(0,0,110,92);g.fillStyle='rgba(60,110,40,.28)';g.fillRect(0,78,110,14);
-  if(k=='m')drawRide(g,55,80,o,ix,t);else{drawAv(g,k=='p'?34:45,50,o);if(k=='p')drawPet(g,d==3?12:68,82,d,1,t,t,ix)}return}
+  if(k=='m')drawRide(g,55,80,o,ix,t);else if(k=='e'){o.mv=0;g.save();g.scale(3,3);drawAv(g,8,0,o);g.restore()}else{drawAv(g,k=='p'?34:45,50,o);if(k=='p')drawPet(g,d==3?12:68,82,d,1,t,t,ix)}return}
  if(k=='h'){g.save();g.scale(2,2);drawAv(g,1,1,o);g.restore()}
  else if(k=='s')drawAv(g,12,5,o);
  else if(k=='m')drawRide(g,36,64,Object.assign({},o,{d:3,a:t,mv:0}),ix,t);
+ else if(k=='e'){g.save();g.scale(3,3);const dr=()=>drawAv(g,-3,-4,o);if(ix==6)tlFreeze(2500,dr);else dr();g.restore()}
  else{g.save();g.scale(2,2);drawPet(g,11,24,0,0,0,t,ix);g.restore()}}
 function shPaint(){const A=ST.av,t=performance.now()/1000;document.querySelectorAll('canvas.shc').forEach(c=>{const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);shDraw(g,SH_TAB,+c.dataset.i,{d:0,a:0,mv:0,sit:0,hair:A.h,set:A.s,e:A.e},t,0)})}
-window.psItem=i=>{SH_I=i;const S=SHOP[SH_TAB],x=S.all()[i],has=ST.own[SH_TAB].includes(i),pr=price(SH_TAB,i);PS.view='item';
+window.psItem=i=>{if(typeof ownE=='function')ownE();SH_I=i;const S=SHOP[SH_TAB],x=S.all()[i],has=ST.own[SH_TAB].includes(i),pr=price(SH_TAB,i);PS.view='item';
  const eq=ST.av[SH_TAB]==i;
  openUI(head(S.t+' — '+x.n)+'<div style="text-align:center"><canvas id="shp" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#d6e8f2,#e8efd6 70%);border:2px solid #7a4a26;cursor:pointer" onclick="SH_DIR=(SH_DIR+1)%4"></canvas><div class="mut" style="margin:2px 0 6px">Chạm vào hình để xoay • bạn có 🪙 <b>'+fmtXu(ST.xu)+'</b> Xu</div></div>'+
  '<div class="pf">'+(has?'<button class="b" onclick="psUse('+i+')">'+(eq?'✓ Đang dùng':'✨ Dùng ngay')+'</button>':'<button class="b" onclick="psBuy('+i+')">🪙 Mua — '+pr.toLocaleString('vi-VN')+' Xu</button>')+'<button class="b" onclick="psShop()">⬅ Quay lại</button></div>');
  if(!shRaf)shLoop()};
 function shLoop(){const c=$('shp');if(!c||!UI||PS.view!='item'){shRaf=0;return}const A=ST.av,g=c.getContext('2d'),t=performance.now()/1000;
  shDraw(g,SH_TAB,SH_I,{d:0,a:t,mv:1,sit:0,hair:A.h,set:A.s,e:A.e},t,1);shRaf=requestAnimationFrame(shLoop)}
-window.psBuy=i=>{const k=SH_TAB,pr=price(k,i),own=ST.own[k];if(own.includes(i))return psItem(i);
+window.psBuy=i=>{if(typeof ownE=='function')ownE();const k=SH_TAB,pr=price(k,i),own=ST.own[k];if(own.includes(i))return psItem(i);
  if(SHOP[k].all()[i].ach)return toast('🏆 Pet này chỉ nhận được từ mốc quà trong Thẻ');
  if(ST.xu<pr)return toast('🪙 Chưa đủ Xu — còn thiếu '+(pr-ST.xu).toLocaleString('vi-VN')+' Xu');
  ST.xu-=pr;own.push(i);xuUp();save();toast('🛍️ Đã mua '+SHOP[k].all()[i].n+'!');psItem(i)};
