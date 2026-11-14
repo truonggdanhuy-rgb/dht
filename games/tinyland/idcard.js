@@ -59,6 +59,12 @@ const css=document.createElement('style');css.textContent=`
 .idr{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
 .idnm{font-size:19px;font-weight:800;line-height:1.15;word-break:break-word;color:#1f4a66}
 .idsub{font-size:11px;color:#5b7f95}
+.idvt{display:flex;flex-direction:column;gap:5px;margin:4px 0 6px}
+.vtr{display:flex;align-items:center;gap:6px}.vtr .vi{font-size:17px;line-height:1;width:20px;text-align:center}
+.vtc{flex:1;min-width:0}.vtl{display:flex;justify-content:space-between;font-size:10.5px;color:#2f6b3a;line-height:1.2;margin-bottom:2px}.vtl b{color:#24602f}
+.vtb{height:12px;border-radius:8px;background:#e3f4dd;border:2px solid #86c279;overflow:hidden;box-sizing:content-box;box-shadow:inset 0 1px 2px rgba(40,90,40,.2)}
+.vtb i{display:block;height:100%;border-radius:6px;background:linear-gradient(180deg,#c4f59a,#62d055 55%,#3ba841);position:relative;transition:width .4s}
+.vtb i::after{content:'';position:absolute;left:3px;right:3px;top:1px;height:3px;border-radius:3px;background:rgba(255,255,255,.6)}
 .idline{background:#fff;border:2px solid #cfe8f5;border-radius:10px;padding:4px 8px;font-size:12px;display:flex;justify-content:space-between;gap:6px;align-items:center}
 .idline b{font-size:12.5px;color:#1f4a66}
 .idlv{background:#fff;border:2px solid #cfe8f5;border-radius:10px;padding:4px 8px;font-size:12px}
@@ -71,7 +77,7 @@ const css=document.createElement('style');css.textContent=`
 .idbox textarea{width:100%;box-sizing:border-box;min-height:74px;resize:none;font:inherit;font-weight:700;color:#24475c;background:#f4fbff;border:2px solid #cfe8f5;border-radius:10px;padding:6px 8px;outline:none;touch-action:auto}
 .idbox textarea:focus{border-color:#6aa6c9}
 .idcnt{text-align:right;font-size:11px;color:#5b7f95}
-.idg3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.idg3{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px}
 .idsq{background:#fff;border:2px solid #cfe8f5;border-radius:12px;padding:6px 3px;text-align:center;display:flex;flex-direction:column;gap:1px;align-items:center;justify-content:center;min-height:62px}
 .idsq .e{font-size:20px;line-height:1.1}.idsq b{font-size:14px;color:#1f4a66}.idsq small{font-size:10px;color:#5b7f95;line-height:1.2}
 .idsoon{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
@@ -114,23 +120,23 @@ function idRender(){IDV=='frames'?framesView():IDV=='bf'?bfView():mainView();pai
 // mở thẻ → hỏi máy chủ bạn thân mới nhất, có đổi thì vẽ lại
 async function idSyncBf(){try{if(!window.bfPoll)return;const b=JSON.stringify(bfGet());await bfPoll();
  if(JSON.stringify(bfGet())!=b&&$('ui').classList.contains('idc')&&(IDV=='main'||IDV=='bf')&&!(document.activeElement&&document.activeElement.tagName=='TEXTAREA'))idRender()}catch(e){}}
+const vtRow=(ic,nm,v,tip)=>{const p=Math.round(v);return '<div class="vtr" title="'+tip+'"><span class="vi">'+ic+'</span><div class="vtc"><div class="vtl"><span>'+nm+'</span><b>'+p+'%</b></div><div class="vtb"><i style="width:'+p+'%"></i></div></div></div>'};
+function vtHtml(){const v=vit();return '<div class="idvt">'+vtRow('❤️','Sức khỏe',v.h,'Về nhà ngủ trên giường để hồi sức khỏe')+vtRow('🍙','Độ no',v.f,'Dùng thức ăn để hồi độ no (sắp ra mắt)')+'</div>'}
 function mainView(){
  const B=bfGet();
  const n=ID.ls.n,mx=ST.lv>=100,need=mx?1:lvNeed(ST.lv),pc=mx?100:Math.min(100,ST.exp/need*100);
  const h='<div class="uh"><span>🪪 Căn cước Tinyland</span><button class="b x" onclick="closeUI()">X</button></div>'+
  '<div class="idtop"><div class="idl"><div class="idavw" onclick="idMenu()" title="Bấm để chỉnh avatar">'+avHtml(ID.fr,132)+'</div></div>'+
- '<div class="idr"><div class="idnm">'+escH(ST.name||'Nhân vật')+'</div><div class="idsub">🎭 Tên nhân vật • đổi ở avatar góc phải màn chính</div>'+
+ '<div class="idr"><div class="idnm">'+escH(ST.name||'Nhân vật')+'</div>'+vtHtml()+
  '<div class="idline"><span>🎂 Ngày ra đời</span><b id="idborn">'+fmtD(ID.born)+'</b></div>'+
  '<div class="idlv"><div class="t"><span>⭐ Level</span><b>'+ST.lv+(mx?' MAX':'')+'</b></div><div class="idbar"><i style="width:'+pc+'%"></i></div></div>'+
  '<div class="mut" style="margin:0;font-size:10.5px">👆 Bấm vào avatar để đổi ảnh / khung</div></div></div>'+
  '<div class="idbox idtt"><div class="idtl"><img alt="Danh hiệu Level" src="'+TITLE_ASSETS.lv[lvTier(ST.lv)]+'" onclick="idTT(0)">'+(B?'<img alt="Danh hiệu Bạn thân" src="'+TITLE_ASSETS.bf[bfTierOf(B.exp)]+'" onclick="idTT(1)">':'<div class="idnobf" onclick="idTT(1)"><span class="l">🔒</span><div><b>Cần bạn thân để mở danh hiệu</b><small>Mời bạn thân ở khu online nhé</small></div></div>')+'</div></div>'+
  '<div class="idmenu" id="idmenu"><button class="b" onclick="idPick()">📷 Đổi ảnh</button><button class="b" onclick="idFrames()">🖼️ Đổi khung</button></div>'+
- (ID.img?'<div style="text-align:right;margin-top:4px"><button class="b x" style="font-size:10.5px" onclick="idDelImg()">🗑 Dùng lại mặt nhân vật</button></div>':'')+
- '<input id="idfile" type="file" accept="image/*" style="display:none" onchange="idFile(this)">'+
+  '<input id="idfile" type="file" accept="image/*" style="display:none" onchange="idFile(this)">'+
  '<div class="idbox"><h4>📝 Thông tin</h4><textarea id="idbio" maxlength="200" placeholder="Viết vài dòng giới thiệu bản thân nhé (tối đa 200 chữ)..." oninput="idBio(this)" onchange="save()" onblur="save()">'+escH(ID.bio)+'</textarea><div class="idcnt"><span id="idcn">'+ID.bio.length+'</span>/200</div></div>'+
  '<div class="idg3"><div class="idsq"><span class="e">🪙</span><b>'+fmtXu(ID.earn)+'</b><small>Tổng xu đã kiếm</small></div>'+
- '<div class="idsq"><span class="e">'+(n>10?'🔥':'📅')+'</span><b>'+n+' ngày</b><small>Chuỗi đăng nhập'+(n>10?' 🔥':'')+'</small></div>'+
- '<div class="idsq"><span class="e">🖼️</span><b>'+(ID.fr>=0?FRAMES[ID.fr].n:'Chưa có')+'</b><small>Khung đang dùng</small></div></div>'+
+ '<div class="idsq"><span class="e">'+(n>10?'🔥':'📅')+'</span><b>'+n+' ngày</b><small>Chuỗi đăng nhập'+(n>10?' 🔥':'')+'</small></div>'+'</div>'+
  '<div class="idsoon"><div class="ok" onclick="idBF()">👫 Bạn thân<small>'+(B?escH(B.pn||'Bạn thân'):'Chưa có • bấm để xem')+'</small></div><div>🌳 Cây gia đình<small>Coming soon</small></div></div>';
  openIdc(h)}
 window.idTT=k=>{if(k==0){const t=lvTier(ST.lv),nx=LV_FROM[t+1];toast('⭐ Danh hiệu Level: '+LV_N[t]+(nx?' • Đạt Lv '+nx+' để lên «'+LV_N[t+1]+'»':' • Bạn đã đạt bậc cao nhất!'))}
@@ -242,8 +248,7 @@ function ovRender(){if(!OV)return;const o=OV.o,d=OV.d,nm=escH((d&&d.n)||o.n||'?'
   '<div class="idbox idtt"><div class="idtl"><img alt="Danh hiệu Level" src="'+TITLE_ASSETS.lv[lvTier(d.lv)]+'">'+(B?'<img alt="Danh hiệu Bạn thân" src="'+TITLE_ASSETS.bf[t]+'">':'<div class="idnobf"><span class="l">🔒</span><div><b>Chưa có bạn thân</b><small>Chưa mở danh hiệu Bạn thân</small></div></div>')+'</div></div>'+
   '<div class="idbox"><h4>📝 Thông tin</h4><div style="white-space:pre-wrap;word-break:break-word;font-size:13px;min-height:20px;color:#24475c">'+(d.bio?escH(d.bio):'<span class="mut">Chưa viết giới thiệu.</span>')+'</div></div>'+
   '<div class="idg3"><div class="idsq"><span class="e">🪙</span><b>'+fmtXu(d.earn)+'</b><small>Tổng xu đã kiếm</small></div>'+
-  '<div class="idsq"><span class="e">'+(d.ls>10?'🔥':'📅')+'</span><b>'+d.ls+' ngày</b><small>Chuỗi đăng nhập</small></div>'+
-  '<div class="idsq"><span class="e">🖼️</span><b>'+(F?F.n:'Chưa có')+'</b><small>Khung đang dùng</small></div></div>';
+  '<div class="idsq"><span class="e">'+(d.ls>10?'🔥':'📅')+'</span><b>'+d.ls+' ngày</b><small>Chuỗi đăng nhập</small></div>'+'</div>';
  // Bạn thân
  if(B){const mt=t>=4,cur=bfExpAt[t],nx=mt?cur:bfExpAt[t+1],pc=mt?100:Math.max(0,Math.min(100,(B.exp-cur)/(nx-cur)*100)),days=B.since?Math.max(1,Math.floor((Date.now()-B.since)/864e5)+1):1;
   h+='<div class="idbox"><h4>👫 Bạn thân</h4><div class="idpair"><div class="idpc"><canvas class="idchr" width="40" height="48" data-h="'+d.av.h+'" data-s="'+d.av.s+'" data-e="'+d.av.e+'"></canvas><b>'+nm+'</b></div>'+
