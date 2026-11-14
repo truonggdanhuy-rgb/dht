@@ -173,6 +173,12 @@ const mkGTbl=kind=>mk(54,34,(g,r)=>{E(r,'rgba(0,0,0,.22)',27,32,26,2);
  if(kind=='ttt'){r('#f6e7b4',16,10,22,11);r('#5a3519',16,10,22,1);
   r('#7a4a26',23,10,1,11);r('#7a4a26',30,10,1,11);r('#7a4a26',16,14,22,1);r('#7a4a26',16,18,22,1);
   r('#d23a2c',18,11,3,3);r('#3a82d8',25,15,3,3);r('#d23a2c',32,19,3,2);r('#3a82d8',32,11,3,3);r('#d23a2c',25,11,2,2)}
+ else if(kind=='caro'){r('#f6e7b4',12,9,30,12);r('#5a3519',12,9,30,1);r('#5a3519',12,20,30,1);
+  for(let i=1;i<6;i++){r('#b8955a',12+i*5,10,1,10)}for(let j=1;j<3;j++){r('#b8955a',13,9+j*4,28,1)}
+  r('#d23a2c',14,11,2,2);r('#3a82d8',19,11,2,2);r('#d23a2c',24,15,2,2);r('#3a82d8',29,15,2,2);r('#d23a2c',34,15,2,2);r('#3a82d8',19,15,2,2)}
+ else if(kind=='ship'){r('#2a6ab0',8,9,38,11);r('#4a8ad0',8,9,38,1);for(let i=0;i<6;i++)r('#3a7ac0',12+i*6,13+(i%2)*4,4,1);
+  r('#8a96a6',14,12,10,3);r('#d23a2c',16,10,2,2);r('#cfd6de',18,11,3,1);r('#8a96a6',30,16,8,2);r('#ffd23f',33,14,2,2);
+  r('#ff6a3a',40,12,3,3);r('#fff',41,13,1,1)}
  else{r('#2f7a4a',8,10,38,10);for(let i=0;i<4;i++){r('#3a82d8',10+i*9,11,8,8);r('#8fc4ff',10+i*9,11,8,1);r('#fff',13+i*9,14,2,2)}}
  r('rgba(0,0,0,.1)',2,18,50,3)});
 
@@ -408,13 +414,14 @@ function build(){
    seats.push({x:x+dx,y:by-1,by:by+3,sy:by+16,kind:'stool'});hits.push([x+dx-8,by-12,16,15,'🪑 Ghế nhựa vỉa hè — bấm E để ngồi','cv:seat:'+i,[x+dx,by+16]])}};
  ptab(150,862,0,[0,1]);ptab(250,904,1,[2,0]);ptab(318,842,2,[1,2]);
  // ----- bàn trò chơi -----
- const GT=[['t1','ttt',20,1060,812,'TIC TAC TOE'],['t2','ttt',100,1060,904,'TIC TAC TOE'],['m1','mem',20,1260,812,'LẬT HÌNH'],['m2','mem',100,1260,904,'LẬT HÌNH']];
+ const GT=[['t1','ttt',20,1060,812,'TIC TAC TOE'],['c1','caro',20,1060,904,'CARO'],['m1','mem',20,1260,812,'LẬT HÌNH'],['s1','ship',20,1260,904,'BẮN TÀU']],
+  GTN={ttt:'⭕ Tic Tac Toe',mem:'🃏 Lật hình',caro:'♟️ Caro',ship:'🚢 Bắn tàu'},GTC={ttt:'#2a3a8a',mem:'#8a2a5a',caro:'#2a6a4a',ship:'#1f5a8a'};
  for(const[id,kind,bet,x,by,txt]of GT){const tb={id,kind,bet,x,by,seats:[]};CV.tbls.push(tb);
   put(mkGTbl(kind),x,by);blk(x-26,by-14,x+26,by);
-  put(mkSign(txt,70,bet+' XU / VÁN',kind=='ttt'?'#2a3a8a':'#8a2a5a'),x,by-30);
+  put(mkSign(txt,70,bet+' XU / VÁN',GTC[kind]),x,by-30);
   for(const dx of[-44,44]){const i=seats.length;put(WST,x+dx,by+3);tb.seats.push(i);
    seats.push({x:x+dx,y:by-1,by:by+3,sy:by+18,kind:'game',tb:id,side:dx<0?0:1});
-   hits.push([x+dx-9,by-14,18,16,(kind=='ttt'?'⭕ Tic Tac Toe':'🃏 Lật hình')+' — cược '+bet+' Xu. Bấm E để ngồi chờ bạn chơi','cv:seat:'+i,[x+dx,by+18]])}}
+   hits.push([x+dx-9,by-14,18,16,GTN[kind]+' — cược '+bet+' Xu. Bấm E để ngồi chờ bạn chơi','cv:seat:'+i,[x+dx,by+18]])}}
  // biển khu trò chơi
  const banner=mk(220,44,(g,r)=>{r('#5a3519',16,18,4,26);r('#5a3519',200,18,4,26);r('#2f9a94',4,0,212,24);r('#5ac8c0',6,2,208,4);r('#1f6e6a',4,20,212,3);
    for(let x=10;x<212;x+=14){r('#ffe27a',x,24,4,4);r('#ff7a7a',x+7,24,4,4)}
