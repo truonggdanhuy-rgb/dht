@@ -1217,7 +1217,87 @@ function drawPetPig(g,x,y,d,mv,a,t){
  const ph=t%6.5;if(ph<1.3){g.save();g.font='bold 5px sans-serif';g.textAlign='center';g.lineWidth=1.6;g.strokeStyle='#fff';g.fillStyle='#d6456b';
   const yy=y-19-ph*3,tx='ủn ỉn';g.strokeText(tx,x,yy);g.fillText(tx,x,yy);g.restore()}
 }
-const PETS=[{n:'Mèo con',k:'cat',fn:drawPetCat},{n:'Mây Mây',k:'cloud',fn:drawPetCloud,fly:1},{n:'Thỏ',k:'rabbit',fn:drawPetRabbit},{n:'Gà trống',k:'rooster',fn:drawPetRooster},{n:'Gấu trúc mini',k:'panda',fn:drawPetPanda},{n:'Heo hồng',k:'pig',fn:drawPetPig}];
+// ===== Pet thưởng từ Thẻ: Vẹt, Vẹt tím (bay), Gấu trắng, Cò trắng =====
+function drawParrot(g,x,y,d,mv,a,t,P){
+ const side=d>1,mir=d==2,fl=Math.sin(t*(mv?22:12))>0,hv=-6+Math.round(Math.sin(t*2.6)*1.4),bl=Math.sin(t*1.7)>.96,sw=Math.round(Math.sin(t*3)),tl=P.tl;
+ const R=(c,a2,b2,w,h)=>{g.fillStyle=c;g.fillRect(x+(mir?-a2-w:a2),y+b2+hv,w,h)};
+ g.fillStyle='rgba(0,0,0,.18)';g.fillRect(x-3,y+1,7,1);
+ const tc=i=>P.tc[Math.min(P.tc.length-1,Math.floor(i*P.tc.length/tl))];
+ if(side){
+  for(let i=0;i<tl;i++)R(tc(i),-6-(i>>1)+(i>6?sw:0),-1+i,2,1);
+  R(P.b,-4,-8,7,8);R(P.l,-3,-8,4,1);R(P.bel,-1,-5,3,5);R(P.dk,-4,-2,2,2);
+  if(fl){R(P.w,-5,-13,5,6);R(P.wt,-7,-15,3,4)}else{R(P.w,-5,-6,5,6);R(P.wt,-7,-2,3,3)}
+  R(P.b,1,-13,5,5);R(P.c,1,-14,4,2);if(P.cr){R(P.cr,0,-16,1,3);R(P.cr,-1,-15,1,2)}
+  R(P.ch,3,-9,2,1);if(bl)R('#222',4,-11,2,1);else{R('#fff',4,-12,2,2);R('#111',5,-12,1,1)}
+  R(P.bk,6,-12,2,3);R(P.bk,7,-9,1,2);
+  R(P.ft,-1,0,1,2);R(P.ft,1,0,1,2);
+ }else{
+  const back=d==1;
+  for(let i=0;i<tl;i++)R(tc(i),-1+(i>6?sw:0),-1+i,3,1);
+  R(P.b,-3,-9,6,9);if(back){R(P.dk,-2,-8,4,6)}else{R(P.bel,-2,-6,4,6);R(P.l,-2,-9,4,1)}
+  if(fl){R(P.w,-7,-15,4,8);R(P.w,3,-15,4,8);R(P.wt,-7,-17,3,3);R(P.wt,4,-17,3,3)}
+  else{R(P.w,-7,-7,4,8);R(P.w,3,-7,4,8);R(P.wt,-7,-1,3,3);R(P.wt,4,-1,3,3)}
+  R(P.b,-3,-15,6,6);R(P.c,-3,-16,6,2);if(P.cr){R(P.cr,-1,-19,2,3);R(P.cr,-3,-18,1,2);R(P.cr,2,-18,1,2)}
+  if(!back){if(bl){R('#222',-3,-11,2,1);R('#222',1,-11,2,1)}else{R('#fff',-3,-12,2,2);R('#111',-2,-11,1,1);R('#fff',1,-12,2,2);R('#111',1,-11,1,1)}
+   R(P.ch,-3,-9,1,1);R(P.ch,2,-9,1,1);R(P.bk,-1,-11,2,3);R('#c98a1c',-1,-9,2,1);R(P.ft,-2,0,1,1);R(P.ft,1,0,1,1)}
+ }}
+const PARROT=[
+ {b:'#37b24d',l:'#74d680',dk:'#237a35',bel:'#c5ec6c',c:'#e63946',cr:null,ch:'#ffd43b',w:'#2b9a3f',wt:'#2f6fe0',bk:'#f2c230',ft:'#c98a1c',tc:['#e63946','#e63946','#f08c00','#2f6fe0'],tl:8},
+ {b:'#9c5de0',l:'#c79bff',dk:'#6a38b5',bel:'#e3ccff',c:'#ff7ac8',cr:'#ff7ac8',ch:'#ff9ed6',w:'#7a45c8',wt:'#22c7b8',bk:'#ffc83d',ft:'#e0a020',tc:['#9c5de0','#7a45c8','#22c7b8','#22c7b8','#ff7ac8'],tl:15}];
+const drawPetParrot=(g,x,y,d,mv,a,t)=>drawParrot(g,x,y,d,mv,a,t,PARROT[0]);
+const drawPetParrot2=(g,x,y,d,mv,a,t)=>drawParrot(g,x,y,d,mv,a,t,PARROT[1]);
+function drawPetBear(g,x,y,d,mv,a,t){
+ const side=d>1,mir=d==2,f=mv?Math.floor(a*10)%4:0,lg=f==1?1:f==3?-1:0,b=mv&&(f==1||f==3)?-1:0,bl=Math.sin(t*1.7)>.96,br=Math.round(Math.sin(t*2));
+ const R=(c,a2,b2,w,h)=>{g.fillStyle=c;g.fillRect(x+(mir?-a2-w:a2),y+b2,w,h)};
+ const W='#fbfcff',L='#e4ebf7',D='#bccbe3',N='#22262e',PW='#a9b9d4',EY=bl?D:'#22262e';
+ g.fillStyle='rgba(0,0,0,.2)';g.fillRect(x-5,y+1,11,1);
+ const lw=(x2,lift,c)=>{R(c,x2,-4,3,3-(lift?1:0));R(PW,x2,-1-(lift?1:0),3,1)};
+ if(side){
+  lw(-6,lg>0,D);lw(0,lg<0,D);
+  R(W,-7,-10+b,12,7);R(L,-6,-10+b,10,1);R(D,-7,-4+b,12,1);
+  lw(-5,lg<0,W);lw(2,lg>0,W);
+  R(W,-8,-8+b,1,2);
+  R(W,3,-14+b,7,7);R(L,4,-14+b,5,1);R(W,4,-16+b,2,2);R(D,5,-15+b,1,1);
+  R(L,8,-10+b,3,3);R(N,10,-10+b,1,2);R(EY,6,-12+b,1,1);R(D,3,-8+b,6,1);
+ }else if(d==1){
+  lw(-4,lg>0,W);lw(1,lg<0,W);
+  R(W,-5,-10+b,10,7);R(L,-4,-10+b,8,1);R(D,-5,-4+b,10,1);R(W,-1,-6+b,2,2);
+  R(W,-5,-17+b,3,3);R(D,-4,-16+b,1,1);R(W,2,-17+b,3,3);R(D,3,-16+b,1,1);R(W,-4,-15+b,8,7);R(L,-3,-15+b,6,1);R(D,-4,-9+b,8,1)
+ }else{
+  lw(-4,lg>0,W);lw(1,lg<0,W);
+  R(W,-5,-10+b,10,7);R(L,-3,-7+b,6,4);R(D,-5,-4+b,10,1);
+  R(W,-5,-17+b,3,3);R(D,-4,-16+b,1,1);R(W,2,-17+b,3,3);R(D,3,-16+b,1,1);R(W,-4,-15+b,8,7);R(L,-3,-15+b,6,1);
+  R(EY,-3,-12+b,1,2);R(EY,2,-12+b,1,2);R(L,-2,-10+b,4,3);R(N,-1,-10+b,2,1);R(D,0,-9+b,1,1);R(D,-4,-9+b,8,1)
+ }
+}
+function drawPetHeron(g,x,y,d,mv,a,t){
+ const side=d>1,mir=d==2,f=mv?Math.floor(a*10)%4:0,lg=f==1?1:f==3?-1:0,b=mv&&(f==1||f==3)?-1:0,bl=Math.sin(t*1.7)>.96,pk=!mv&&Math.sin(t*.8)>.93,nb=Math.round(Math.sin(t*2));
+ const R=(c,a2,b2,w,h)=>{g.fillStyle=c;g.fillRect(x+(mir?-a2-w:a2),y+b2,w,h)};
+ const W='#ffffff',S='#dce8f5',P='#eef5fc',BK='#f2b81e',LG='#2f2f2f',FT='#e8b820',EY='#111';
+ g.fillStyle='rgba(0,0,0,.2)';g.fillRect(x-4,y+1,9,1);
+ const lw=(x2,lift)=>{R(LG,x2,-8,1,7-(lift?2:0));R(FT,x2-1,-1-(lift?2:0),3,1)};
+ if(side){
+  lw(-1,lg>0);lw(2,lg<0);
+  R(W,-5,-14+b,9,5);R(P,-5,-14+b,8,1);R(S,-3,-12+b,6,3);R(W,-8,-13+b,3,3);R(S,-7,-11+b,2,1);
+  R(P,-9,-15+b,4,1);R(P,-10,-14+b,3,1);R(P,-8,-16+b,3,1);
+  const hy=pk?6:0,hx=pk?3:0;
+  R(W,2,-17+b,2,4);R(W,3+nb*0,-21+b+hy,2,4-hy/3|0);
+  R(W,3+hx,-23+b+hy,4,3);R(P,3+hx,-23+b+hy,4,1);
+  R(BK,7+hx,-22+b+hy,6,1);R(BK,7+hx,-21+b+hy,3,1);
+  if(bl)R(S,5+hx,-22+b+hy,1,1);else R(EY,5+hx,-22+b+hy,1,1);
+ }else if(d==1){
+  lw(-2,lg>0);lw(1,lg<0);
+  R(W,-3,-14+b,6,5);R(S,-2,-13+b,4,3);R(P,-3,-10+b,6,2);R(P,-2,-9+b,4,2);R(P,-1,-8+b,2,2);
+  R(W,-1,-21+b,2,7);R(W,-2,-24+b,4,3);R(P,-2,-24+b,4,1);
+ }else{
+  lw(-2,lg>0);lw(1,lg<0);
+  R(W,-3,-14+b,6,6);R(S,-4,-13+b,1,4);R(S,3,-13+b,1,4);R(P,-2,-14+b,4,1);
+  R(W,-1,-21+b+nb,2,7-nb);R(W,-2,-24+b,4,3);R(P,-2,-24+b,4,1);
+  if(bl){R(S,-2,-22+b,1,1);R(S,1,-22+b,1,1)}else{R(EY,-2,-22+b,1,1);R(EY,1,-22+b,1,1)}
+  R(BK,-1,-22+b,2,3);
+ }
+}
+const PETS=[{n:'Mèo con',k:'cat',fn:drawPetCat},{n:'Mây Mây',k:'cloud',fn:drawPetCloud,fly:1},{n:'Thỏ',k:'rabbit',fn:drawPetRabbit},{n:'Gà trống',k:'rooster',fn:drawPetRooster},{n:'Gấu trúc mini',k:'panda',fn:drawPetPanda},{n:'Heo hồng',k:'pig',fn:drawPetPig},{n:'Vẹt',k:'parrot',fn:drawPetParrot,fly:1,ach:1},{n:'Vẹt tím',k:'parrot2',fn:drawPetParrot2,fly:1,ach:1},{n:'Gấu trắng',k:'polar',fn:drawPetBear,ach:1},{n:'Cò trắng',k:'heron',fn:drawPetHeron,ach:1}];
 const drawPet=(g,x,y,d,mv,a,t,pi)=>(PETS[pi]||PETS[0]).fn(g,x,y,d,mv,a,t);
 const PET={x:560,y:292,d:0,a:0,mv:0,k:0};
 function petReset(){PET.x=Pl.x-12;PET.y=Pl.y+3;PET.mv=0;PET.k=0}
@@ -2246,7 +2326,7 @@ function tlRe(){if(!ST.od)return;if(ST.xu<TL_RE)return toast('Không đủ Xu! C
 function tlGive(){const od=tlList();if(!od.length)return;
  const miss=od.filter(x=>(ST.vp[x.p.id]||0)<x.q);if(miss.length)return toast('Thiếu: '+miss.map(x=>x.p.n+' ('+(ST.vp[x.p.id]||0)+'/'+x.q+')').join(', '));
  let tot=0;od.forEach(x=>{ST.vp[x.p.id]-=x.q;tot+=x.p.price*x.q});
- const mx=ST.lv>=100;ST.xu+=tot;const lu=addExp(5);qAdd('tl',1);ST.od=null;ST.odT=now()+TL_COOL;xuUp();save();closeUI();
+ const mx=ST.lv>=100;ST.xu+=tot;const lu=addExp(5);qAdd('tl',1);if(window.dlAdd)dlAdd('tl');ST.od=null;ST.odT=now()+TL_COOL;xuUp();save();closeUI();
  toast('🛶 Giao hàng thành công! +'+tot+' Xu'+(mx?'':' • +5 EXP')+lu)}
 // ---------- Khi cau: don hang hang ngay ----------
 const BL_N=12,BL_TORN=20*MIN,BL_DONE=5*MIN;
@@ -2285,7 +2365,7 @@ function blUI(keep){const old=$('ui').scrollTop;blEnsure();const n=now();
 function blGive(i){const s=ST.bo[i];if(!s||s.w!=null)return;
  const miss=s.it.filter(x=>blHave(x)<x[2]);
  if(miss.length)return toast('Thiếu: '+miss.map(x=>{const I=ITM[x[0]+':'+x[1]];return I.n+' ('+blHave(x)+'/'+x[2]+')'}).join(', '));
- s.it.forEach(x=>{ST[x[0]][x[1]]-=x[2]});const mx=ST.lv>=100;ST.xu+=s.xu;const lu=addExp(s.xp);qAdd('bl',1);ST.bo[i]={w:now()+BL_DONE};BC=-1;xuUp();save();blUI(1);
+ s.it.forEach(x=>{ST[x[0]][x[1]]-=x[2]});const mx=ST.lv>=100;ST.xu+=s.xu;const lu=addExp(s.xp);qAdd('bl',1);if(window.dlAdd)dlAdd('bl');ST.bo[i]={w:now()+BL_DONE};BC=-1;xuUp();save();blUI(1);
  toast('🎈 Giao đơn'+(s.sp?' đặc biệt':'')+' thành công! +'+s.xu+' Xu'+(mx?'':' • +'+s.xp+' EXP')+lu)}
 function blTear(i){const s=ST.bo[i];if(!s||s.w!=null)return;
  if(BC!=i){BC=i;blUI(1);return toast('✂️ Bấm "Xé thật?" để xé đơn này (đơn mới sau 20 phút)')}
