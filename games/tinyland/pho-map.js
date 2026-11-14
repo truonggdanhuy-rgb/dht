@@ -396,7 +396,7 @@ function mieuLoop(){const c=$('mc');if(!c||!UI||PS.view!='mieu')return;const g=c
 // ============================================================
 //  SHOP
 // ============================================================
-const SHOP={m:{t:'🐃 Thú cưỡi',all:()=>MOUNTS,pr:[1200,5500,4200,3800,300]},p:{t:'🐾 Pet',all:()=>PETS,pr:[250,900,350,300,1100,500]},s:{t:'👕 Set',all:()=>SETS,pr:[0,600,500,450,450,500,800,800,1500,2800,3500,20000]},h:{t:'🧢 Tóc & mũ',all:()=>HAIRS,pr:[0,150,200,250,300,300]}};
+const SHOP={m:{t:'🐃 Thú cưỡi',all:()=>MOUNTS,pr:[1200,5500,4200,3800,300]},p:{t:'🐾 Pet',all:()=>PETS,pr:[250,900,350,300,1100,500]},s:{t:'👕 Set',all:()=>SETS,pr:[0,600,500,450,450,500,800,800,1500,2800,3500,20000, 500,500,600,1000,800,400,400,5000,5000]},h:{t:'🧢 Tóc & mũ',all:()=>HAIRS,pr:[0,150,200,250,300,300, 1000,400,600,200,250,300,1000]}};
 const price=(k,i)=>{const v=SHOP[k].pr[i];return v==null?500:v};
 let SH_TAB='m',SH_I=-1,SH_DIR=0,shRaf=0;
 window.psShop=(tab)=>{if(tab)SH_TAB=tab;PS.view='shop';SH_I=-1;const S=SHOP[SH_TAB],L=S.all(),own=ST.own[SH_TAB],mt=SH_TAB=='m';
