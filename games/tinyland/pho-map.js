@@ -10,7 +10,7 @@ const PW=960,PH=640,TS=16,GC=PW/TS,GR=PH/TS,CV=window.CV;
 const SOL=new Uint8Array(GC*GR);
 const blk=(x0,y0,x1,y1)=>{for(let ty=Math.floor(y0/TS);ty<=Math.floor((y1-1)/TS);ty++)for(let tx=Math.floor(x0/TS);tx<=Math.floor((x1-1)/TS);tx++)if(tx>=0&&ty>=0&&tx<GC&&ty<GR)SOL[ty*GC+tx]=1};
 const psSolid=(x,y)=>{const tx=Math.floor(x/TS),ty=Math.floor(y/TS);return tx<0||ty<0||tx>=GC||ty>=GR||SOL[ty*GC+tx]===1};
-const PS={sp:[],hits:[],lb:[],seats:[],horses:[],tbls:[],pos:{x:150,y:400},fx:null,built:0,npcs:[],view:'',dueN:0};
+const PS={sp:[],hits:[],lb:[],seats:[],horses:[],tbls:[],pos:{x:110,y:430},fx:null,built:0,npcs:[],view:'',dueN:0};
 let sd=777;const rn=()=>{sd=(sd+0x6D2B79F5)|0;let t=Math.imul(sd^sd>>>15,1|sd);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
 const pk=a=>a[Math.floor(rn()*a.length)];
 const hsh=(a,b)=>{let h=Math.imul(a*374761393+b*668265263|0,1274126177);h^=h>>>13;return((h>>>0)%1000)/1000};
@@ -110,14 +110,25 @@ const mkBmCart=()=>mk(78,52,(g,r)=>{E(r,'rgba(0,0,0,.18)',39,50,36,2);
  r('#cfe6ec',8,3,62,16);r('#e8f4f7',8,3,62,2);r('#a9c8d0',8,17,62,2);r('#8fb0b9',8,3,2,16);r('#8fb0b9',68,3,2,16);r('#8fb0b9',38,3,1,16);
  for(let i=0;i<5;i++){r('#e3bd78',12+i*11,9,9,3);r('#f2d79a',12+i*11,9,9,1);r('#c99a52',13+i*11,10,1,1);r('#c99a52',16+i*11,10,1,1);r('#e3bd78',12+i*11,13,9,3)}
  r('rgba(255,255,255,.3)',10,5,3,12)});
-const mkLotStall=()=>mk(104,64,(g,r)=>{E(r,'rgba(0,0,0,.18)',52,62,48,2);
+const LK=.76,mkLotStall=()=>mk(Math.round(104*LK),Math.round(64*LK),(g,r0)=>{const r=(c,x,y,w,h)=>r0(c,Math.round(x*LK),Math.round(y*LK),Math.max(1,Math.round(w*LK)),Math.max(1,Math.round(h*LK)));g.save();g.scale(1,1);E(r,'rgba(0,0,0,.18)',52,62,48,2);
  r('#e9d4ae',6,26,92,34);r('#f4e6c6',6,26,6,34);r('#cdb58a',92,26,6,34);r('#b8a074',6,58,92,2);
  r('#8d6b3f',2,34,100,5);r('#b58d52',2,34,100,1);r('#7a5a33',2,38,100,1);
  r('#cfe6ec',10,40,84,16);r('#e8f4f7',10,40,84,2);r('#a9c8d0',10,54,84,2);
  const cs=['#f0a7a0','#f4d38a','#a8d8b0','#a8c8f0','#d0b0e8'];for(let i=0;i<14;i++){r(cs[i%5],12+i*6,42,4,10);r(shade(cs[i%5],-.12),12+i*6,50,4,2)}
  for(let i=0;i<12;i++){const c=cs[i%5];r('#7a5a33',10+i*7,16,1,6);r(c,8+i*7,22,5,9);r(shade(c,-.14),8+i*7,29,5,2);r('#fff',9+i*7,24,3,1)}
  r('#6b5a48',8,10,88,4);r('#d9cdb4',8,10,88,1);
- r('#c9877a',14,2,76,10);r('#e0a399',14,2,76,2);r('#a66860',14,10,76,2);g.textAlign='center';g.font='800 8px Nunito, sans-serif';g.fillStyle='#fff5e0';g.fillText('VÉ SỐ KIẾN THIẾT',52,10,70)});
+ r('#c9877a',14,2,76,10);r('#e0a399',14,2,76,2);r('#a66860',14,10,76,2);g.textAlign='center';g.font='800 6px Nunito, sans-serif';g.fillStyle='#fff5e0';g.fillText('VÉ SỐ',Math.round(52*LK),Math.round(10*LK),44);g.restore()});
+const mkCar=c=>mk(64,32,(g,r)=>{E(r,'rgba(0,0,0,.18)',32,30,29,2);
+ for(const x of[14,50]){E(r,'#3e3e42',x,25,6,6);E(r,'#8a8a90',x,25,3,3)}
+ r(c,4,14,56,11);r(shade(c,.2),4,14,56,2);r(shade(c,-.25),4,23,56,2);
+ r(c,14,6,34,9);r(shade(c,.2),14,6,34,1);r(shade(c,-.15),14,13,34,2);
+ r('#cfe6ee',17,8,13,6);r('#cfe6ee',33,8,13,6);r('#a9c8d4',17,13,29,1);r('#e8f4f7',18,8,3,2);
+ r('#fbeaa0',56,16,4,3);r('#d85a4a',4,16,3,3);r('#9a9a9a',5,24,54,2)});
+const mkDog=(f)=>mk(18,13,(g,r)=>{E(r,'rgba(0,0,0,.16)',9,12,8,1);
+ const B='#d9a86c',BD='#b88650',BL='#f4dcb0';
+ r(B,4,4,10,6);r(BL,5,8,8,2);r(BD,4,4,10,1);r(B,12,1,5,6);r(BL,15,4,3,3);r('#2b1d12',17,4,1,1);r('#2b1d12',14,2,1,1);r(BD,12,0,2,3);
+ r(BD,2,2,2,4);r(BD,3,1,1,2);
+ r(B,5,10,2,2-(f?1:0));r(B,11,10,2,2-(f?0:1));r(BD,5,10,1,2);r(BD,11,10,1,2)});
 const mkUmb=(c1,c2)=>mk(120,40,(g,r)=>{for(let y=0;y<24;y++){const w=Math.round(58*Math.sqrt(1-((y-24)/24)**2*.6));for(let x=-w;x<=w;x++)r(Math.floor((x+60)/10)%2?c2:c1,60+x,y+4,1,1)}
  r(shade(c1,-.2),0,26,120,3);for(let x=0;x<120;x+=6)r(x%12?c1:c2,x,29,6,3);r('#8a7a68',59,0,2,6)});
 const mkCage=()=>mk(54,64,(g,r)=>{r('#8d6b3f',6,56,42,6);r('#b58d52',6,56,42,1);r('#6b4f2d',10,48,6,10);r('#6b4f2d',38,48,6,10)});
@@ -139,15 +150,16 @@ const pave=(r,x0,y0,x1,y1,tones,jt)=>{r(jt,x0,y0,x1-x0,y1-y0);
  for(let y=y0,row=0;y<y1;y+=8,row++){const off=(row%2)*10;for(let x=x0-off;x<x1;x+=20){const bx=Math.max(x0,x),bw=Math.min(x1,x+19)-bx,bh=Math.min(7,y1-y-1);if(bw<=0||bh<=0)continue;
   r(tones[Math.floor(hsh(x,y)*tones.length)],bx,y+1,bw,bh);r('rgba(255,255,245,.25)',bx,y+1,bw,1)}}};
 function buildBG(){return mk(PW,PH,(g,r)=>{
+ // BỐ CỤC: vỉa hè trên (hàng quán) y156–268 • đường y274–388 (nhỏ 60%) • vỉa hè dưới (vé số, gánh hàng) y394–500
  r('#e6dccb',0,0,PW,160);
- pave(r,0,156,PW,224,['#dcd3c4','#d6ccbb','#e1d9cb'],'#c8bead');
- r('#f0eadf',0,224,PW,3);r('#bfb5a3',0,227,PW,3);
- r('#c9ccc6',0,230,PW,190);
- for(let i=0;i<1600;i++)r(pk(['#c0c4be','#d2d5cf','#bcc0ba']),Math.floor(rn()*PW),230+Math.floor(rn()*190),2,1);
- for(let x=10;x<PW;x+=44)r('#f0ead7',x,323,24,3);
- for(let i=0;i<9;i++)r('#f0ead7',150+i*9,234,5,86),r('#f0ead7',150+i*9,332,5,86);
- r('#f0eadf',0,420,PW,3);r('#bfb5a3',0,423,PW,3);
- pave(r,0,426,PW,500,['#dcd3c4','#d6ccbb','#e1d9cb'],'#c8bead');
+ pave(r,0,156,PW,266,['#dcd3c4','#d6ccbb','#e1d9cb'],'#c8bead');
+ r('#f0eadf',0,266,PW,3);r('#bfb5a3',0,269,PW,3);
+ r('#c9ccc6',0,272,PW,116);
+ for(let i=0;i<900;i++)r(pk(['#c0c4be','#d2d5cf','#bcc0ba']),Math.floor(rn()*PW),272+Math.floor(rn()*116),2,1);
+ for(let x=10;x<PW;x+=44)r('#f0ead7',x,329,24,3);
+ for(let i=0;i<9;i++)r('#f0ead7',150+i*9,278,5,46),r('#f0ead7',150+i*9,338,5,46);
+ r('#f0eadf',0,388,PW,3);r('#bfb5a3',0,391,PW,3);
+ pave(r,0,394,PW,500,['#dcd3c4','#d6ccbb','#e1d9cb'],'#c8bead');
  // tường thấp + mái nhà phía sau
  r('#cdbfa8',0,498,PW,8);r('#e9dfcb',0,496,PW,4);
  for(let x=0;x<PW;x+=60)r('#d9cdb7',x+54,498,6,8);
@@ -164,7 +176,8 @@ function buildBG(){return mk(PW,PH,(g,r)=>{
  // bóng nhà đổ lên vỉa hè
  r('rgba(80,64,50,.10)',0,156,PW,10);r('rgba(80,64,50,.06)',0,166,PW,8);
  // lề đường: vài vết gạch vỡ, lá khô
- for(let i=0;i<40;i++)r(pk(['#cfc0a0','#bcae8e','#d9c9a4']),Math.floor(rn()*PW),160+Math.floor(rn()*60),2,1);
+ for(let i=0;i<60;i++)r(pk(['#cfc0a0','#bcae8e','#d9c9a4']),Math.floor(rn()*PW),160+Math.floor(rn()*100),2,1);
+  for(let i=0;i<40;i++)r(pk(['#cfc0a0','#bcae8e','#d9c9a4']),Math.floor(rn()*PW),398+Math.floor(rn()*98),2,1);
 })}
 
 // ============================================================
@@ -184,6 +197,34 @@ function sayBubble(t,x,y){cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';c
 // ============================================================
 //  DỰNG MAP
 // ============================================================
+// ============================================================
+//  XE CỘ CHẠY TRÊN ĐƯỜNG + NGƯỜI ĐI LẠI (chỉ để trang trí, không bấm được, không cản đường)
+// ============================================================
+function drawVeh(v,tm){const L=PW+200;let x=(tm*v.sp+v.ph)%L;x=v.dir>0?x-100:PW+100-x;
+ if(x<camX-90||x>camX+vw+90)return;const o=v.o,w=o.width,h=o.height,bob=Math.round(Math.sin(tm*13+v.ph)*.5);
+ cx.save();if(v.dir>0)cx.drawImage(o,Math.round(x-w/2)-1,Math.round(v.by-h)-1+bob);else{cx.translate(Math.round(x),0);cx.scale(-1,1);cx.drawImage(o,-Math.round(w/2)-1,Math.round(v.by-h)-1+bob)}cx.restore()}
+// vị trí đi qua đi lại: đứng/ngồi nghỉ ở đầu mỗi đoạn rồi đi tiếp
+function pingPos(v,tm){const leg=(v.x1-v.x0)/v.sp,cyc=2*(leg+v.rest),u=(tm+v.ph)%cyc;
+ if(u<v.rest)return{x:v.x0,d:0,mv:0,rest:1};if(u<v.rest+leg)return{x:v.x0+(u-v.rest)*v.sp,d:3,mv:1,rest:0};
+ if(u<2*v.rest+leg)return{x:v.x1,d:0,mv:0,rest:1};return{x:v.x1-(u-2*v.rest-leg)*v.sp,d:2,mv:1,rest:0}}
+const DOG=[mkDog(0),mkDog(1)].map(outl);
+function drawWalker(w,tm){
+ if(w.k=='gym'){const X=Math.round(w.x),b=Math.abs(Math.sin(tm*3.2))*3,Y=Math.round(w.y-b);
+  drawAv(cx,X-10,Y-30,{d:0,a:tm*1.2,mv:1,sit:0,hair:w.hair,set:w.set});
+  const up=Math.sin(tm*3.2)>0;r('#f1c08a',X-9,Y-(up?26:15),3,3);r('#f1c08a',X+6,Y-(up?26:15),3,3);return}
+ const p=pingPos(w,tm),X=Math.round(p.x),Y=w.y;
+ if(w.k=='vend'){const b=Math.round(Math.sin(tm*5+w.ph)),g=w.goods;
+  const bk=(x,y)=>{r('#b58d52',x,y,9,5);r('#d9b36a',x,y,9,1);r('#8d6b3f',x,y+4,9,1);for(let i=0;i<3;i++)r(g[i%g.length],x+1+i*3,y-2,3,2)};
+  if(p.rest){bk(X-30,Y-4);bk(X+20,Y-4);r('#8a6a3c',X-31,Y-5,60,1);drawAv(cx,X-10,Y-30,{d:0,a:tm,mv:0,sit:2,hair:w.hair,set:w.set})}
+  else{drawAv(cx,X-10,Y-30,{d:p.d,a:tm,mv:1,sit:0,hair:w.hair,set:w.set});
+   r('#8a6a3c',X-19,Y-19,38,1);r('#6b5a48',X-16,Y-18,1,6+b);r('#6b5a48',X+16,Y-18,1,6+b);bk(X-20,Y-12+b);bk(X+12,Y-12+b)}
+  return}
+ if(w.k=='jog'){const bo=Math.round(Math.abs(Math.sin(tm*8))*1);drawAv(cx,X-10,Y-30-bo,{d:p.d,a:tm*1.9,mv:1,sit:0,hair:w.hair,set:w.set});return}
+ if(w.k=='dog'){drawAv(cx,X-10,Y-30,{d:p.d,a:tm,mv:p.mv,sit:0,hair:w.hair,set:w.set});
+  const dr=p.d==2?-1:1,dx=p.d==0?-16:dr*24,DX=X+dx,fr=p.mv?Math.floor(tm*6)%2:0,dg=DOG[fr],flip=p.d==0?(Math.floor(tm/3)%2?-1:1):dr;
+  const hx=X+(p.d==2?-6:6),hy=Y-12;for(let i=0;i<=8;i++){const t=i/8;r('#b5503a',Math.round(hx+(DX+flip*7-hx)*t),Math.round(hy+(Y-9-hy)*t+Math.sin(t*3.14)*2),1,1)}
+  cx.save();if(flip>0)cx.drawImage(dg,Math.round(DX-9)-1,Math.round(Y+1-13)-1);else{cx.translate(DX,0);cx.scale(-1,1);cx.drawImage(dg,-9-1,Math.round(Y+1-13)-1)}cx.restore()}}
+function walker(w){w.hx=null;dyn(w.k=='vend'?w.y+1.5:w.y+(w.k=='dog'?1:0),()=>drawWalker(w,tmNow()))}
 function build(){
  PS.built=1;PS.bg=buildBG();const sp=PS.sp,seats=PS.seats;
  // ----- hàng nhà phố (san sát) -----
@@ -212,56 +253,59 @@ function build(){
  hit(712,100,76,56,'✂️ Tiệm cắt tóc — chú thợ đi ăn sáng rồi');
  hit(792,100,80,56,'☕ Cà phê sáng — mùi cà phê phin ngào ngạt');
  hit(876,100,82,56,'🥇 Tiệm vàng — lấp lánh sau tủ kính');
- // ----- cột điện, đèn đường, thùng rác, cây -----
- for(const x of[250,520,800])put(mkPole(),x,238,[x-3,226,x+3,238]);
- for(const x of[168,372,640,880])put(mkLamp(),x,222,[x-2,216,x+2,222]);
- for(const[x,y]of[[24,372],[928,360],[600,456],[250,456]])put(mkBin(),x,y,[x-6,y-8,x+6,y]);
- hit(14,350,22,24,'🗑️ Thùng rác xinh xắn');
+ // ===== VỈA HÈ TRÊN (y156–268): hàng quán, bàn ghế, xe bánh mì, trà đá, người đi dạo / tập thể dục =====
+ for(const x of[262,632,862])put(mkPole(),x,268,[x-3,258,x+3,268]);
+ for(const x of[160,440,726])put(mkLamp(),x,266,[x-2,260,x+2,266]);
  put(T_BOU,50,232,[36,218,66,232]);hit(26,166,48,66,'🌸 Giàn hoa giấy rực rỡ');
- put(T_BOU,918,420,[904,408,934,420]);put(T_GRN,330,424,[316,412,344,424]);put(T_GRN,850,252,[836,240,864,252]);
  put(mkBurner(),96,214,[82,204,110,214]);
  hit(80,184,32,32,'🪔 Lư hương trước miếu — vào miếu để thắp nhang nhé','cv:ps:mieu',[96,226]);
- // ----- xe máy, xe đạp -----
- put(mkMoto('#d9a39b'),322,222,[304,206,342,222]);put(mkMoto('#9dbcd6'),562,222,[544,206,582,222]);put(mkMoto('#a9c9a8'),700,222,[682,206,720,222]);
- put(mkBike(),228,222,[212,212,244,222]);put(mkBike(),932,222,[916,212,948,222]);
- put(mkMoto('#e2c98a'),160,470,[142,454,180,470]);put(mkBike(),760,478,[744,468,776,478]);
- hit(300,196,44,28,'🛵 Xe máy dựng ven đường');hit(540,196,44,28,'🛵 Xe máy dựng ven đường');
- // ----- bàn ghế nhựa (người chơi ngồi được) -----
+ // bàn ghế nhựa (người chơi ngồi được) — dời hết lên vỉa hè
  const ptab=(x,by,ci,sc)=>{put(TBL[ci],x,by,[x-12,by-8,x+12,by]);for(const dx of[-24,24]){const i=seats.length;put(STL[sc[dx<0?0:1]],x+dx,by+3);
    seats.push({x:x+dx,y:by-1,by:by+3,sy:by+16,kind:'stool'});hit(x+dx-8,by-12,16,15,'🪑 Ghế nhựa vỉa hè — bấm E để ngồi','cv:seat:'+i,[x+dx,by+16])}};
- ptab(396,206,0,[0,1]);ptab(210,300,1,[2,0]);ptab(300,380,2,[1,2]);ptab(560,404,0,[2,1]);ptab(700,456,1,[0,2]);ptab(120,444,2,[1,0]);ptab(840,448,0,[2,0]);
- hit(372,188,48,26,'🍜 Bàn ghế nhựa trước quán phở');
- // ----- xe bánh mì -----
- put(mkUmb('#e8bdb6','#f8f1e6'),430,264);
- put(mkBmCart(),430,304,[394,288,468,304]);
- hit(392,270,80,36,'🥖 Xe bánh mì — "Bánh mì nóng giòn đây!"');
- mkNpc({id:'bm',x:486,y:298,d:2,set:0,hair:0,prop:'',lines:['Bánh mì nóng giòn đây!','Cho thêm ớt hông con?','Hết ổ này là nghỉ nha!','Pate nhà làm, thơm lắm nè.']});
- mkNpc({id:'k1',x:412,y:322,d:1,set:2,hair:1,prop:'bm',lines:['Cho tui ổ không hành nghen.','Thơm quá trời luôn!','Chú ơi, nhanh nhanh giùm nha.']});
- mkNpc({id:'k2',x:448,y:324,d:1,set:5,hair:2,prop:'',lines:['Cho 2 ổ mang đi nha chú!','Bánh mì chú này ngon nhất phố.']});
- // ----- quán trà đá + khách đọc báo -----
- put(mkUmb('#a9c9d6','#f6f1e6'),616,278);
- put(TBL[1],616,320,[604,312,628,320]);
- for(const[dx,nm]of[[-24,'ong'],[24,'ba']]){put(STL[dx<0?1:0],616+dx,323)}
- mkNpc({id:'ong',x:592,y:322,d:0,set:0,hair:1,sit:1,prop:'news',lines:['Hôm nay giá vàng lên rồi...','Ủa, đội mình thắng hả?','Chậc chậc, thời tiết dạo này lạ ghê.','Tin này đọc hoài vẫn hay.']});
- mkNpc({id:'ba',x:640,y:322,d:0,set:5,hair:2,sit:1,prop:'tea',lines:['Trà đá ngày nắng là nhất.','Ông ơi, bớt đọc báo uống trà đi.','Bữa nay mát mẻ quá ha.']});
- put(mkUmb('#e8d28a','#fbf5de'),700,262);put(mkTea(),694,304,[672,292,716,304]);
- mkNpc({id:'tra',x:728,y:298,d:2,set:3,hair:3,prop:'',lines:['Trà đá 3 nghìn nè!','Ngồi nghỉ chút đi con!','Trà đá mát lạnh, giải khát đây!']});
- put(mkNewsBoard(),748,292,[736,282,760,292]);hit(732,254,32,40,'📰 Bảng báo: "Phố xá hôm nay — nắng đẹp, lòng vui"');
- hit(576,296,80,32,'🧋 Quán trà đá — khách đang ngồi đọc báo');
- mkNpc({id:'cat',cat:1,x:270,y:214,d:0,set:0,hair:0,lines:[]});
- put(mkCat(),270,216);hit(260,200,22,18,'🐈 Chú mèo đang ngủ gật... khò khò');
- // ----- sạp vé số + lồng quay -----
- put(mkUmb('#e0b3ac','#fbf0e4'),850,268);
- put(mkLotStall(),850,314,[800,298,902,314]);
- hit(802,268,98,48,'🎟️ Sạp vé số Kiến thiết — bấm để mua vé, xổ sau 2 phút','cv:ps:lot',[850,334]);
- mkNpc({id:'vs',x:914,y:322,d:2,set:4,hair:3,prop:'',lines:['Vé số đây! Thử vận may nào!','Mua tờ vé số lấy hên nè!','Xổ số sắp quay rồi nha!']});
- put(mkCage(),770,330,[756,324,786,330]);
- dyn(329,()=>psCage(770,300,tmNow()));
- hit(752,284,36,48,'🎰 Lồng quay số — bấm để xem vé của bạn','cv:ps:lot',[770,346]);
+ ptab(216,244,1,[2,0]);ptab(310,246,2,[1,2]);ptab(402,244,0,[0,1]);ptab(580,246,0,[2,1]);ptab(910,246,1,[0,2]);
+ hit(368,222,70,34,'🍜 Bàn ghế nhựa trước quán phở');
+ // xe bánh mì
+ put(mkBmCart(),500,258,[464,242,536,258]);
+ hit(462,208,76,50,'🥖 Xe bánh mì — "Bánh mì nóng giòn đây!"');
+ mkNpc({id:'bm',x:550,y:252,d:2,set:0,hair:0,prop:'',lines:['Bánh mì nóng giòn đây!','Cho thêm ớt hông con?','Hết ổ này là nghỉ nha!','Pate nhà làm, thơm lắm nè.']});
+ mkNpc({id:'k1',x:482,y:267,d:1,set:2,hair:1,prop:'bm',lines:['Cho tui ổ không hành nghen.','Thơm quá trời luôn!','Chú ơi, nhanh nhanh giùm nha.']});
+ mkNpc({id:'k2',x:518,y:269,d:1,set:5,hair:2,prop:'',lines:['Cho 2 ổ mang đi nha chú!','Bánh mì chú này ngon nhất phố.']});
+ // quán trà đá + khách đọc báo
+ put(TBL[1],684,246,[672,238,696,246]);
+ for(const dx of[-24,24])put(STL[dx<0?1:0],684+dx,249);
+ mkNpc({id:'ong',x:660,y:248,d:0,set:0,hair:1,sit:1,prop:'news',lines:['Hôm nay giá vàng lên rồi...','Ủa, đội mình thắng hả?','Chậc chậc, thời tiết dạo này lạ ghê.','Tin này đọc hoài vẫn hay.']});
+ mkNpc({id:'ba',x:708,y:248,d:0,set:5,hair:2,sit:1,prop:'tea',lines:['Trà đá ngày nắng là nhất.','Ông ơi, bớt đọc báo uống trà đi.','Bữa nay mát mẻ quá ha.']});
+ put(mkTea(),770,252,[748,240,792,252]);
+ mkNpc({id:'tra',x:808,y:248,d:2,set:3,hair:3,prop:'',lines:['Trà đá 3 nghìn nè!','Ngồi nghỉ chút đi con!','Trà đá mát lạnh, giải khát đây!']});
+ put(mkNewsBoard(),836,254,[824,244,848,254]);hit(820,216,32,40,'📰 Bảng báo: "Phố xá hôm nay — nắng đẹp, lòng vui"');
+ hit(640,214,80,40,'🧋 Quán trà đá — khách đang ngồi đọc báo');
+ mkNpc({id:'cat',cat:1,x:300,y:214,d:0,set:0,hair:0,lines:[]});
+ put(mkCat(),300,216);hit(290,200,22,18,'🐈 Chú mèo đang ngủ gật... khò khò');
+ // người đi dạo (không bấm được): dắt chó, chạy bộ, tập thể dục
+ walker({k:'dog',y:192,x0:130,x1:340,sp:17,rest:6,ph:3,set:2,hair:1});
+ walker({k:'jog',y:190,x0:600,x1:930,sp:34,rest:0,ph:0,set:3,hair:2});
+ walker({k:'jog',y:262,x0:20,x1:170,sp:30,rest:0,ph:5,set:5,hair:0});
+ walker({k:'gym',y:258,x:350,ph:0,set:4,hair:3});
+ // ===== ĐƯỜNG (y274–388): xe máy, xe đạp, ô tô chạy qua lại =====
+ const VL=PW+200;
+ [[1,326,44,[['m','#d9a39b'],['c','#e9d27a'],['m','#9dbcd6'],['b']]],[-1,380,52,[['m','#a9c9a8'],['c','#8fb8e0'],['m','#e2c98a']]]].forEach(([dir,by,sp,L])=>L.forEach((q,i)=>{
+   const im=q[0]=='m'?mkMoto(q[1]):q[0]=='c'?mkCar(q[1]):mkBike(),v={dir,by,sp,ph:i*VL/L.length,im,o:outl(im)};dyn(by,()=>drawVeh(v,tmNow()))}));
+ // ===== VỈA HÈ DƯỚI (y394–500): "bên kia đường" — sạp vé số, vòng quay, gánh hàng =====
+ for(const[x,y]of[[24,424],[470,490],[250,490]])put(mkBin(),x,y,[x-6,y-8,x+6,y]);
+ hit(14,402,22,24,'🗑️ Thùng rác xinh xắn');
+ put(mkLotStall(),866,486,[827,470,905,486]);
+ hit(826,440,80,46,'🎟️ Sạp vé số Kiến thiết — bấm để mua vé, xổ sau 2 phút','cv:ps:lot',[866,496]);
+ mkNpc({id:'vs',x:920,y:486,d:2,set:4,hair:3,prop:'',lines:['Vé số đây! Thử vận may nào!','Mua tờ vé số lấy hên nè!','Xổ số sắp quay rồi nha!']});
+ put(mkCage(),790,486,[776,480,804,486]);
+ dyn(485,()=>psCage(790,456,tmNow()));
+ hit(766,430,48,56,'🎰 Vòng quay số — bấm để xem vé của bạn','cv:ps:lot',[790,496]);
+ // 2 cô bán hàng rong gánh hàng đi qua đi lại chậm rãi, đến đầu đường thì ngồi nghỉ
+ for(const v of[{y:448,x0:200,x1:520,sp:13,rest:10,ph:0,set:5,hair:2,goods:['#e0584a','#f4d38a','#a8d8b0']},{y:470,x0:580,x1:730,sp:11,rest:12,ph:9,set:3,hair:3,goods:['#a8d8b0','#f6f2e2','#f0a7a0']}]){
+   put(STL[0],v.x0,v.y+1);put(STL[1],v.x1,v.y+1);walker(Object.assign({k:'vend'},v))}
  // người
  for(const n of PS.npcs){if(n.cat)continue;dyn(n.sit?n.y+1.5:n.y,()=>drawNpc(n,tmNow()))}
  // ----- nhãn -----
- for(const l of[['SẠP VÉ SỐ',850,350],['NGÕ → NÔNG TRẠI',72,520]])PS.lb.push(l);
+ for(const l of[['NGÕ → NÔNG TRẠI',72,520]])PS.lb.push(l);
  hit(40,478,64,30,'🚪 Ngõ ra — bấm để về Nông Trại','gate',[72,490]);
  // thùng nước, bồn trên mái phía sau
  for(const x of[120,360,640,860])put(mkTank(),x,606);
@@ -283,20 +327,20 @@ function drawCage(g,x,y,R,ang,k){const rr=(c,a,b,w,h)=>{g.fillStyle=c;g.fillRect
  for(let s=0;s<4;s++){const q=ang+s*Math.PI/4;for(let m=2;m<R;m+=2){rr('#a0a7ad',x+Math.cos(q)*m,y+Math.sin(q)*m*.9,1,1);rr('#a0a7ad',x-Math.cos(q)*m,y-Math.sin(q)*m*.9,1,1)}}
  rr('#6a7076',x-2,y-2,4,4);rr('#8d6b3f',x+R+1,y-2,6,3);const hx=x+R+7+Math.cos(ang*2)*3,hy=y+Math.sin(ang*2)*3;rr('#d9b36a',hx-1,hy-1,3,3)}
 function wires(){cx.lineWidth=1;cx.strokeStyle='rgba(76,68,64,.55)';
- const P=[[250,162],[520,162],[800,162]];
+ const P=[[262,192],[632,192],[862,192]];
  for(let i=0;i<P.length-1;i++)for(const dy of[0,5,10]){cx.beginPath();cx.moveTo(P[i][0],P[i][1]+dy);cx.quadraticCurveTo((P[i][0]+P[i+1][0])/2,P[i][1]+dy+16,P[i+1][0],P[i+1][1]+dy);cx.stroke()}
- for(const dy of[0,5]){cx.beginPath();cx.moveTo(250,162+dy);cx.quadraticCurveTo(110,176+dy,0,166+dy);cx.stroke();cx.beginPath();cx.moveTo(800,162+dy);cx.quadraticCurveTo(880,176+dy,960,166+dy);cx.stroke()}}
+ for(const dy of[0,5]){cx.beginPath();cx.moveTo(262,192+dy);cx.quadraticCurveTo(110,206+dy,0,196+dy);cx.stroke();cx.beginPath();cx.moveTo(862,192+dy);cx.quadraticCurveTo(920,206+dy,960,196+dy);cx.stroke()}}
 PS.fx=psFx;
 function psFx(tm,dt){
  if(CV.cur!='ps')return;
  wires();
  // hơi nước: xe bánh mì + quán phở + nhang miếu
- stT-=dt;if(stT<=0){stT=.35;STEAM.push({x:396+Math.random()*6,y:158,t:0,c:'255,255,255',v:12},{x:430+Math.random()*30,y:264,t:0,c:'255,255,255',v:8},{x:93+Math.random()*6,y:202,t:0,c:'230,225,215',v:10})}
+ stT-=dt;if(stT<=0){stT=.35;STEAM.push({x:396+Math.random()*6,y:158,t:0,c:'255,255,255',v:12},{x:496+Math.random()*24,y:210,t:0,c:'255,255,255',v:8},{x:93+Math.random()*6,y:202,t:0,c:'230,225,215',v:10})}
  for(let i=STEAM.length-1;i>=0;i--){const s=STEAM[i];s.t+=dt;s.y-=s.v*dt;s.x+=Math.sin(s.t*2+i)*5*dt;if(s.t>2.2){STEAM.splice(i,1);continue}
   if(s.x<camX-6||s.x>camX+vw+6||s.y<camY-6||s.y>camY+vh+6)continue;cx.fillStyle='rgba('+s.c+','+(.5*(1-s.t/2.2)).toFixed(2)+')';cx.fillRect(Math.round(s.x),Math.round(s.y),3,2)}
  // thoại thưa thớt
  const now=performance.now();
- for(const n of NPC){if(n.cat){const z=Math.floor(tm*1.2)%3;cx.font='800 8px Nunito,Arial,sans-serif';cx.textAlign='center';cx.fillStyle='rgba(90,80,70,.8)';cx.fillText('z'.repeat(1+z),278+z*2,200-z*2);continue}
+ for(const n of NPC){if(n.cat){const z=Math.floor(tm*1.2)%3;cx.font='800 8px Nunito,Arial,sans-serif';cx.textAlign='center';cx.fillStyle='rgba(90,80,70,.8)';cx.fillText('z'.repeat(1+z),308+z*2,200-z*2);continue}
   if(now>n.next){n.say=pk(n.lines);n.until=now+4200;n.next=now+30000+Math.random()*60000}
   if(n.say&&now<n.until&&n.hx!=null&&Math.abs(n.hx-Pl.x)<260&&Math.abs(n.hy-Pl.y)<200)sayBubble(n.say,n.hx,n.hy-6)}}
 
@@ -304,8 +348,8 @@ function psFx(tm,dt){
 //  VÉ SỐ
 // ============================================================
 const LOT_PRICE=100,LOT_REFUND=88,LOT_MAXP=10,LOT_WAIT=120000;
-// o = "1 trên o vé". Kỳ vọng ≈ 95,7 Xu / vé 100 Xu → không lạm phát.
-const LOT=[{k:'ĐẶC BIỆT',p:99999,o:100000,j:6},{k:'GIẢI NHẤT',p:8888,o:10000,j:5},{k:'GIẢI NHÌ',p:2888,o:2000,j:4},{k:'GIẢI BA',p:888,o:400,j:3},{k:'GIẢI TƯ',p:288,o:80,j:2}];
+// o = "1 trên o vé" (KHÔNG hiển thị cho người chơi). Kỳ vọng ≈ 101 Xu / vé 100 Xu (≈ 1 vé trúng trên 23 vé) → không lạm phát đáng kể.
+const LOT=[{k:'ĐẶC BIỆT',p:99999,o:100000,j:6},{k:'GIẢI NHẤT',p:8888,o:15000,j:5},{k:'GIẢI NHÌ',p:2888,o:2500,j:4},{k:'GIẢI BA',p:888,o:300,j:3},{k:'GIẢI TƯ',p:288,o:25,j:2}];
 window.PS_LOT=LOT;
 const lotS=()=>{if(!ST.lot||!Array.isArray(ST.lot.t))ST.lot={t:[]};return ST.lot};
 const dig=()=>String(Math.floor(Math.random()*10));
@@ -315,7 +359,7 @@ function lotMake(){let u=Math.random(),gi=-1,acc=0;for(let i=0;i<LOT.length;i++)
  return{n,w:w.join(''),j,g:gi,p:gi>=0?LOT[gi].p:LOT_REFUND,at:Date.now()+LOT_WAIT,paid:0}}
 window.psLot=()=>{PS.view='lot';const L=lotS();L.t=L.t.filter((t,i,a)=>!t.paid||i>=a.length-6);
  let h=head('🎟️ Sạp vé số Kiến thiết')+'<div class="mut">Vé <b>'+LOT_PRICE+' Xu</b> • xổ số sau <b>2 phút</b> • không trúng được hoàn <b>'+LOT_REFUND+' Xu</b>. Tối đa '+LOT_MAXP+' vé chờ xổ.</div>'+
- '<div class="g1">'+LOT.map(g=>'<div class="it"><span><b>'+g.k+'</b><br><small>khoảng 1/'+g.o.toLocaleString('vi-VN')+' vé • khớp '+g.j+' số cuối</small></span><b>'+g.p.toLocaleString('vi-VN')+' Xu</b></div>').join('')+'</div>'+
+ '<div class="g1">'+LOT.map(g=>'<div class="it"><span><b>'+g.k+'</b><br><small>khớp '+g.j+' số cuối</small></span><b>'+g.p.toLocaleString('vi-VN')+' Xu</b></div>').join('')+'</div>'+
  '<div class="pf"><button class="b" onclick="psLotBuy(1)">🎟️ Mua 1 vé</button><button class="b" onclick="psLotBuy(5)">🎟️ Mua 5 vé</button></div><div class="mut"><b>Vé của bạn</b> (🪙 '+fmtXu(ST.xu)+' Xu)</div><div class="g1" id="lotl"></div>';
  openUI(h);lotList()};
 function lotList(){const el=$('lotl');if(!el)return;const L=lotS(),now=Date.now();
