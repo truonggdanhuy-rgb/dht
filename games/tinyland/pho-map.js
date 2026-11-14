@@ -289,7 +289,7 @@ function build(){
  walker({k:'gym',y:258,x:350,ph:0,set:4,hair:3});
  // ===== ĐƯỜNG (y274–388): xe máy, xe đạp, ô tô chạy qua lại =====
  const VL=PW+200;
- [[1,326,44,[['m','#d9a39b'],['c','#e9d27a'],['m','#9dbcd6'],['b']]],[-1,380,52,[['m','#a9c9a8'],['c','#8fb8e0'],['m','#e2c98a']]]].forEach(([dir,by,sp,L])=>L.forEach((q,i)=>{
+ [[1,326,44,[['c','#e9d27a']]],[-1,380,52,[['c','#8fb8e0']]]].forEach(([dir,by,sp,L])=>L.forEach((q,i)=>{
    const im=q[0]=='m'?mkMoto(q[1]):q[0]=='c'?mkCar(q[1]):mkBike(),v={dir,by,sp,ph:i*VL/L.length,im,o:outl(im)};dyn(by,()=>drawVeh(v,tmNow()))}));
  // ===== VỈA HÈ DƯỚI (y394–500): "bên kia đường" — sạp vé số, vòng quay, gánh hàng =====
  for(const[x,y]of[[24,424],[470,490],[250,490]])put(mkBin(),x,y,[x-6,y-8,x+6,y]);
@@ -442,21 +442,22 @@ function mieuLoop(){const c=$('mc');if(!c||!UI||PS.view!='mieu')return;const g=c
 //  SHOP
 // ============================================================
 const SHOP={m:{t:'🐃 Thú cưỡi',all:()=>MOUNTS,pr:[1200,5500,4200,3800,300]},p:{t:'🐾 Pet',all:()=>PETS,pr:[250,900,350,300,1100,500]},s:{t:'👕 Set',all:()=>SETS,pr:[0,600,500,450,450,500,800,800,1500,2800,3500,20000, 500,500,600,1000,800,400,400,5000,5000]},h:{t:'🧢 Tóc & mũ',all:()=>HAIRS,pr:[0,150,200,250,300,300, 1000,400,600,200,250,300,1000]},
- e:{t:'😄 Biểu cảm',all:()=>EXPRS,pr:[0,0,0,0,0,0,18000]}};
+ e:{t:'😄 Biểu cảm',all:()=>EXPRS,pr:[0,0,0,0,0,0,18000]},
+ a:{t:'🎀 Phụ kiện',all:()=>ACCS,pr:[300,450]}};
 const price=(k,i)=>{const v=SHOP[k].pr[i];return v==null?500:v};
 let SH_TAB='m',SH_I=-1,SH_DIR=0,shRaf=0;
 window.psShop=(tab)=>{if(typeof ownE=='function')ownE();if(tab)SH_TAB=tab;PS.view='shop';SH_I=-1;const S=SHOP[SH_TAB],L=S.all(),own=ST.own[SH_TAB],mt=SH_TAB=='m';
- let h=head('🏘️ Shop Phố xá')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu</div><div class="tabs" style="flex-wrap:wrap">'+['m','p','s','h','e'].map(k=>'<button class="b'+(k==SH_TAB?' on':'')+'" onclick="psShop(\''+k+'\')">'+SHOP[k].t+'</button>').join('')+'</div>';
+ let h=head('🏘️ Shop Phố xá')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu</div><div class="tabs" style="flex-wrap:wrap">'+['m','p','s','h','e','a'].map(k=>'<button class="b'+(k==SH_TAB?' on':'')+'" onclick="psShop(\''+k+'\')">'+SHOP[k].t+'</button>').join('')+'</div>';
  h+='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+L.map((x,i)=>{const has=own.includes(i);if(x.ach&&!has)return '';
   return '<button class="sq'+(has?' z':'')+'" onclick="psItem('+i+')"><canvas class="shc" data-i="'+i+'" width="'+(mt?72:44)+'" height="'+(mt?68:SH_TAB=='p'?52:44)+'" style="width:'+(mt?88:57)+'px;height:'+(mt?83:SH_TAB=='p'?68:57)+'px;image-rendering:pixelated"></canvas><b>'+x.n+'</b><small>'+(has?'✓ Đã có':'🪙 '+price(SH_TAB,i).toLocaleString('vi-VN'))+'</small></button>'}).join('')+'</div>';
  h+='<div class="mut">Đồ đã mua nằm trong 🎒 Túi. Chạm vào món để xem thử & mua.</div>';
  openUI(h);shPaint()};
 function shDraw(g,k,ix,o,t,big){
- if(k=='h')o.hair=ix;else if(k=='s')o.set=ix;else if(k=='e'){o.e=ix;if(SETS[o.set]&&SETS[o.set].mascot)o.set=0}
+ if(k=='h')o.hair=ix;else if(k=='s')o.set=ix;else if(k=='e'){o.e=ix;if(SETS[o.set]&&SETS[o.set].mascot)o.set=0}else if(k=='a')o.acc=ix;
  if(big){const d=AVDIR[SH_DIR];o.d=d;o.a=t;o.mv=1;g.clearRect(0,0,110,92);g.fillStyle='rgba(60,110,40,.28)';g.fillRect(0,78,110,14);
   if(k=='m')drawRide(g,55,80,o,ix,t);else if(k=='e'){o.mv=0;g.save();g.scale(3,3);drawAv(g,8,0,o);g.restore()}else{drawAv(g,k=='p'?34:45,50,o);if(k=='p')drawPet(g,d==3?12:68,82,d,1,t,t,ix)}return}
  if(k=='h'){g.save();g.scale(2,2);drawAv(g,1,1,o);g.restore()}
- else if(k=='s')drawAv(g,12,5,o);
+ else if(k=='s'||k=='a')drawAv(g,12,5,o);
  else if(k=='m')drawRide(g,36,64,Object.assign({},o,{d:3,a:t,mv:0}),ix,t);
  else if(k=='e'){g.save();g.scale(3,3);const dr=()=>drawAv(g,-3,-4,o);if(ix==6)tlFreeze(2500,dr);else dr();g.restore()}
  else{g.save();g.scale(2,2);drawPet(g,11,24,0,0,0,t,ix);g.restore()}}
