@@ -510,7 +510,7 @@ window.cvSetup=()=>{
  toast('🌳 Chào mừng tới Công viên! Bấm 💬 để trò chuyện với mọi người');
  if(window.PKO)PKO.onEnter();
 };
-window.cvLeave=()=>{if(CV.seat>=0||CV.hz>=0)release();CVON=0;CVLOCK=0;if(window.PKO)PKO.onLeave()};
+window.cvLeave=()=>{if(CV.seat>=0||CV.hz>=0)release();CVON=0;CVLOCK=0;if(window.PKO&&window.PK&&PK.in)PKO.onLeave()};
 window.cvUpdate=(dt,tm)=>{
  if((CV.seat>=0||CV.hz>=0)&&!Pl.sit)release();
  if(CVLOCK){goal=null;ptr=null}

@@ -75,7 +75,7 @@ const elC=mkEl('cvc','<div class="n" id="cvn"></div><div id="cvl"></div>'),
  elI=mkEl('cvi','<input id="cvt" maxlength="60" placeholder="Nhập tin nhắn..." autocomplete="off"><button class="b" id="cvs">Gửi</button><button class="b" id="cvx">✕</button>'),
  elG=mkEl('cvg','');elG.className='p';
 const lines=[];
-function chatUI(){$('cvn').textContent='👥 '+(PK.all.length||1)+'/'+MAXP+' trong công viên';
+function chatUI(){$('cvn').textContent='👥 '+(PK.all.length||1)+'/'+MAXP+(CV.room=='ps'?' trong phố xá':' trong công viên');
  $('cvl').innerHTML=lines.map(l=>'<div class="l"><b>'+escH(l[0])+':</b> '+escH(l[1])+'</div>').join('')}
 function addLine(n,t){lines.push([n,t]);while(lines.length>3)lines.shift();chatUI()}
 const showUI=v=>{elC.style.display=v?'block':'none';elB.style.display=v?'flex':'none';if(!v){elI.style.display='none';elG.style.display='none'}};
@@ -113,11 +113,11 @@ function sync(){if(!ch)return;const st=ch.presenceState(),all=[];for(const k in 
   gSync()}}
 CV.seatOcc=i=>{for(const o of CV.others.values())if(o.seat==i)return 1;return 0};
 CV.hzOcc=i=>{if(CV.hz==i)return 1;for(const o of CV.others.values())if(o.hz==i)return 1;return 0};
-function connect(){return new Promise((ok,no)=>{
+function connect(room){return new Promise((ok,no)=>{
  sb=sb||window.supabase.createClient(SB_URL_,SB_KEY_,{realtime:{params:{eventsPerSecond:20}}});
  ME.ts=Date.now();ME.q=-1;ME.z=-1;let done=0;
  const tm=setTimeout(()=>{if(!done){done=1;no(new Error('hết thời gian chờ'))}},9000);
- ch=sb.channel('cong-vien',{config:{presence:{key:ME.id},broadcast:{self:false}}});
+ ch=sb.channel(room=='ps'?'pho-xa':'cong-vien',{config:{presence:{key:ME.id},broadcast:{self:false}}});
  ch.on('presence',{event:'sync'},()=>{sync();if(!done&&PK.rank>=0){done=1;clearTimeout(tm);ok(PK.rank>=MAXP?'full':'ok')}});
  ch.on('broadcast',{event:'mv'},({payload:p})=>{const o=CV.others.get(p.i);if(!o)return;o.tx=p.x;o.ty=p.y;o.d=p.d;if(Math.hypot(o.tx-o.x,o.ty-o.y)>160){o.x=o.tx;o.y=o.ty}});
  ch.on('broadcast',{event:'chat'},({payload:p})=>{if(!PK.in||!CV.others.has(p.i))return;const t=String(p.t||'').slice(0,60);addLine(String(p.n||'?').slice(0,16),t);bub[p.i]={t,until:performance.now()+5000}});
@@ -125,10 +125,11 @@ function connect(){return new Promise((ok,no)=>{
  ch.on('broadcast',{event:'gift'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(claimGifts,600)});
  ch.subscribe(s=>{if(s=='SUBSCRIBED')ch.track({...me(),x:Math.round(CV.pos.x),y:Math.round(CV.pos.y)});
   else if((s=='CHANNEL_ERROR'||s=='TIMED_OUT')){if(!done){done=1;clearTimeout(tm);no(new Error('lỗi kênh '+s))}else if(PK.in)toast('⚠️ Mất kết nối, đang thử lại...')}})})}
-window.cvEnter=async()=>{if(PK.busy)return;PK.busy=1;closeUI();toast('🌳 Đang vào Công viên...');
- try{await loadLib();const r=await connect();
-  if(r=='full'){toast('🚫 Công viên đã đủ '+MAXP+' người, thử lại sau nhé!');await disconnect()}else switchMap('cv')}
- catch(e){toast('❌ Chưa vào được Công viên: '+(e.message||e));await disconnect()}
+window.cvEnter=async(room)=>{room=room==='ps'?'ps':'cv';const nm=room=='ps'?'Phố xá':'Công viên',was=MAP=='cv'||MAP=='ps';
+ if(PK.busy)return;PK.busy=1;closeUI();toast((room=='ps'?'🏘️':'🌳')+' Đang vào '+nm+'...');
+ try{await loadLib();if(ch){showUI(0);gLeave();await disconnect()}CV.room=room;const r=await connect(room);
+  if(r=='full'){toast('🚫 '+nm+' đã đủ '+MAXP+' người, thử lại sau nhé!');await disconnect();if(was)switchMap('nt')}else switchMap(room)}
+ catch(e){toast('❌ Chưa vào được '+nm+': '+(e.message||e));await disconnect();if(was)switchMap('nt')}
  PK.busy=0};
 let tMv=0,tHb=0,lx=0,ly=0,ld=0,tAv=0,avs='';
 const PKO=window.PKO={
