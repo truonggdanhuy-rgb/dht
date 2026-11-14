@@ -184,9 +184,47 @@ function buildBG(){return mk(PW,PH,(g,r)=>{
 // ============================================================
 //  NPC (khách phố) + thoại
 // ============================================================
+
+// ============================================================
+//  TRÙM KIM CƯƠNG (NPC) + hòm kho báu + đống kim cương
+// ============================================================
+const BOSS_SET={n:'Trùm kim cương',sh:'#17171e',shl:'#2e2e3a',shd:'#08080c',scarf:'#ffd23f',knot:'#c89a10',tie:'#33d6ff',belt:'#ffd23f',trim:'#ffd23f',pt:'#17171e',shoe:'#ffd23f',cape:'#2a1a4e'};
+const BOSS_HAIR={k:'short',c:'#101014'};
+const gemBig=(r,x,y,c)=>{const rows=[[2,5],[1,6],[0,7],[1,6],[2,5],[3,4]];rows.forEach(([a,b],i)=>{r(c[1],x+a,y+i,b-a+1,1);r(c[0],x+a,y+i,Math.min(2,b-a+1),1);if(b-a>1)r(c[2],x+b-1,y+i,2,1)});r('#ffffff',x+2,y,2,1);r('#ffffff',x+1,y+1,1,1)};
+const mkDiaPile=()=>mk(40,26,(g,r)=>{
+ E(r,'rgba(0,0,0,.2)',20,24,17,2);
+ const C=[['#f0fdff','#5fd6ff','#2a8ad8'],['#fff0fb','#ff9de0','#d44aa8'],['#f6f0ff','#b79bff','#7a56d8'],['#f0fdff','#7ae8ff','#2a8ad8'],['#fffbe8','#ffe27a','#d9a521']];
+ [[1,17],[8,18],[15,19],[22,18],[29,17]].forEach(([x,y],i)=>gemBig(r,x,y,C[i%5]));
+ [[5,11],[12,12],[19,12],[26,11]].forEach(([x,y],i)=>gemBig(r,x,y,C[(i+2)%5]));
+ [[9,5],[17,4],[24,6]].forEach(([x,y],i)=>gemBig(r,x,y,C[(i+1)%5]));
+ gemBig(r,16,-1+1,C[0]);
+ r('#ffffff',3,16,1,1);r('#ffffff',33,15,1,1);r('#ffffff',20,3,1,1)});
+const mkChest=()=>mk(34,26,(g,r)=>{
+ E(r,'rgba(0,0,0,.2)',17,24,15,2);
+ // nắp mở
+ r('#5a3418',3,0,28,8);r('#7a4a26',4,1,26,6);r('#3a2412',6,2,22,4);r('#ffd23f',3,0,28,1);r('#ffd23f',3,0,1,8);r('#ffd23f',30,0,1,8);
+ // thân
+ r('#6b4220',2,9,30,15);r('#8a5a30',2,9,30,3);r('#4a2c14',2,22,30,2);
+ for(let x=7;x<30;x+=6)r('#5a3418',x,12,1,10);
+ r('#ffd23f',5,9,3,15);r('#ffd23f',26,9,3,15);r('#c89a10',7,9,1,15);r('#c89a10',28,9,1,15);
+ r('#ffd23f',14,13,6,7);r('#c89a10',14,19,6,1);r('#3a2412',16,15,2,3);
+ // kho báu trào ra
+ E(r,'#e0a020',17,9,13,3);E(r,'#ffd23f',17,8,12,2);E(r,'#fff0a0',13,7,5,1);
+ for(let i=0;i<8;i++)r(i%2?'#ffe27a':'#ffd23f',5+i*3,6+(i%3),3,2);
+ gemBig(r,5,2,['#f0fdff','#5fd6ff','#2a8ad8']);gemBig(r,13,0,['#fff0fb','#ff9de0','#d44aa8']);gemBig(r,21,2,['#f6f0ff','#b79bff','#7a56d8']);
+ r('#fff',9,5,1,1);r('#fff',27,6,1,1)});
+const bossDraw=(n,tm)=>{const X=Math.round(n.x),Y=Math.round(n.y),p=actPose('diamond',tm),F=ACTFX.diamond,L=Math.round(p.lift);
+ F.back(X,Y,tm);
+ drawAv(cx,X-10,Y-30-L,{d:p.d,a:tm,mv:0,sit:0,hair:0,set:0,setObj:BOSS_SET,hairObj:BOSS_HAIR});
+ if(p.d==0){r('#08080c',X-3,Y-19-L,6,2);r('#2a2a36',X-3,Y-19-L,6,1);r('#6fe8ff',X-2,Y-19-L,1,1);r('#6fe8ff',X+1,Y-19-L,1,1)}   // kính đen
+ if(p.d==0||p.d==1===false){}
+ if(p.d==0){r('#ffd23f',X-2,Y-12-L,4,1);gem(X,Y-10-L,0,Math.sin(tm*6))}                                    // dây chuyền + mặt kim cương
+ F.front(X,Y-Math.round(L*.5),tm);
+ n.hx=X;n.hy=Y-34-L};
+const sparkle=(x,y,tm,k)=>{const a=Math.sin(tm*4+k*2.1);if(a>.55){r('#ffffff',x,y,1,1);r('rgba(190,240,255,.9)',x-1,y,3,1);r('rgba(190,240,255,.9)',x,y-1,1,3)}};
 const NPC=[];
 const mkNpc=(o)=>{o.next=performance.now()+8000+rn()*50000;o.say=null;o.until=0;NPC.push(o);PS.npcs.push(o);return o};
-function drawNpc(n,tm){const X=Math.round(n.x),Y=Math.round(n.y);
+function drawNpc(n,tm){if(n.boss)return bossDraw(n,tm);const X=Math.round(n.x),Y=Math.round(n.y);
  drawAv(cx,X-10,Y-30,{d:n.d,a:tm,mv:0,sit:n.sit?2:0,hair:n.hair,set:n.set});
  if(n.prop=='news'){r('#e8e2d0',X-7,Y-21,14,10);r('#f7f4e8',X-6,Y-21,12,9);for(let i=0;i<3;i++){r('#b5ab98',X-5,Y-19+i*3,4,1);r('#b5ab98',X+1,Y-19+i*3,4,1)}r('#c9877a',X-5,Y-21,3,2);r('#f1c08a',X-9,Y-14,3,3);r('#f1c08a',X+6,Y-14,3,3)}
  if(n.prop=='tea'){r('#f2f6f8',X+5,Y-14,4,5);r('#f4dca8',X+5,Y-12,4,3)}
@@ -306,6 +344,15 @@ function build(){
  // 2 cô bán hàng rong gánh hàng đi qua đi lại chậm rãi, đến đầu đường thì ngồi nghỉ
  for(const v of[{y:448,x0:200,x1:520,sp:13,rest:10,ph:0,set:5,hair:2,goods:['#e0584a','#f4d38a','#a8d8b0']},{y:470,x0:580,x1:730,sp:11,rest:12,ph:9,set:3,hair:3,goods:['#a8d8b0','#f6f2e2','#f0a7a0']}]){
    put(STL[0],v.x0,v.y+1);put(STL[1],v.x1,v.y+1);walker(Object.assign({k:'vend'},v))}
+
+ // ----- TRÙM KIM CƯƠNG: đứng ở vỉa hè cạnh hòm kho báu + đống kim cương -----
+ {const bx=572,by=480;
+  put(mkChest(),bx-46,by+2,[bx-62,by-8,bx-30,by+2]);put(mkDiaPile(),bx+48,by+2,[bx+28,by-8,bx+68,by+2]);
+  dyn(by+3,()=>{const tm=tmNow();for(let i=0;i<5;i++)sparkle(bx-58+i*7,by-22+(i%3)*4,tm,i);for(let i=0;i<5;i++)sparkle(bx+32+i*8,by-24+(i%2)*6,tm,i+7)});
+  mkNpc({id:'boss',boss:1,x:bx,y:by,d:0,set:0,hair:0,prop:'',lines:['Kim cương đây! Ai lấy kim cương nào?','Ánh sáng này là của các con nè!','Muốn phát kim cương hông? Ghé ta nhé!','Lấp lánh cả phố luôn!']});
+  hit(bx-16,by-44,32,50,'💎 Trùm kim cương — bấm để mở Shop kim cương','cv:ps:dia',[bx,by+14]);
+  hit(bx-64,by-26,36,30,'🧰 Hòm kho báu — lấp lánh quá!');hit(bx+28,by-28,42,32,'💎 Đống kim cương của Trùm');
+  PS.lb.push(['TRÙM KIM CƯƠNG',bx,by-52])}
  // người
  for(const n of PS.npcs){if(n.cat)continue;dyn(n.sit?n.y+1.5:n.y,()=>drawNpc(n,tmNow()))}
  // ----- nhãn -----
@@ -563,5 +610,6 @@ function psAct(a,h){const[t,v]=a.split(':');
  if(t=='lot')return psLot();
  if(t=='wheel')return wheelUI();
  if(t=='furn')return psFurn();
+ if(t=='dia')return diaShop();
  if(t=='mieu')return mieuUI()}
 })();

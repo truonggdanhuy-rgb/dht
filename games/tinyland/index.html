@@ -99,7 +99,7 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
   <button class="hb" onclick="bagUI()">🎒<small>Túi</small></button>
   <button class="hb" onclick="khoHub()">📦<small>Kho</small></button>
   <button class="hb" onclick="idUI()" title="Căn cước Tinyland">🪪<small>Thẻ</small></button>
-  <button class="hb" id="hact" onclick="toast('⚡ Hành động — Sắp ra mắt!')" style="grid-column:span 2;width:80px;flex-direction:row;gap:5px;font-size:15px">⚡<small style="font-size:10px">Hành động</small></button>
+  <button class="hb" id="hact" onclick="actUI()" style="grid-column:span 2;width:80px;flex-direction:row;gap:5px;font-size:15px">⚡<small style="font-size:10px">Hành động</small></button>
  </div>
 </div>
 <button class="b" id="dbtn" style="position:fixed;left:10px;top:calc(100px + env(safe-area-inset-top,0px));display:none;z-index:4;padding:6px 10px" onclick="decoToggle()">🛠️ Trang trí</button>
@@ -925,7 +925,7 @@ function drawMascot(r,u,o,S,k){
 function drawAv(g,ox,oy,o){
  const r=(c,a,b,w,h)=>{g.fillStyle=c;g.fillRect(ox+a,oy+b,w,h)};
  const d=o.d,f=o.mv?Math.floor(o.a*9)%4:0,lg=f==1?1:f==3?-1:0,side=d>1,Rt=d==3,back=d==1,sit=o.sit==2,rd=!!o.ride;
- const S=SETS[o.set]||SETS[0],HS=HAIRS[o.hair]||HAIRS[0],kind=HS.k,cap=HS.c,HC=kind=='beanie'?HS.hr:(HS.c||'#2b1d12');
+ const S=o.setObj||SETS[o.set]||SETS[0],HS=o.hairObj||HAIRS[o.hair]||HAIRS[0],kind=HS.k,cap=HS.c,HC=kind=='beanie'?HS.hr:(HS.c||'#2b1d12');
  const SK='#f1c08a',SKS='#d99e6a',EY='#2b1d12',SH=S.sh,SHL=S.shl||shade(SH,.18),SHD=S.shd||shade(SH,-.28),PT=S.pt,PTL=shade(PT,.25),SD=S.shoe,RD='#c0392b',KN=S.knot||shade(S.scarf,-.3);
  const bob=o.mv&&!o.nobob&&(f==1||f==3)?-1:0,u=(c,a,b,w,h)=>r(c,a,b+bob,w,h);
  if(S.mascot)return drawMascot(r,u,o,S,{f,lg,side,Rt,back,sit,rd});
@@ -1512,20 +1512,24 @@ function petUpdate(dt){if(ST.av.p<0)return;const dx=Pl.x-PET.x,dy=Pl.y-PET.y,L=M
   if(ok)PET.k=0;else{PET.k+=dt;if(PET.k>1.5)petReset()}}
  else{PET.mv=0;PET.k=0}}
 function drawPlayer(){if(HMA&&HMA.hide)return;const A=ST.av,o={d:Pl.d,a:Pl.a,mv:Pl.mv,sit:Pl.sit,hair:A.h,set:A.s,e:A.e,acc:A.m>=0?-1:A.a},X=Math.round(Pl.x)+(CVON?cvRockMe():0),Y=Math.round(Pl.y)-(CVON?cvLiftMe():0);
+ if(ACT&&!Pl.sit&&A.m<0){const t=(performance.now()-ACT_T)/1000,p=actPose(ACT,t),F=ACTFX[ACT];o.d=p.d;o.mv=0;if(F)F.back(X,Y,t);drawAv(cx,X-10,Y-30-Math.round(p.lift),o);if(F)F.front(X,Y-Math.round(p.lift*.5),t);return}
  if(A.m>=0&&!Pl.sit)drawRide(cx,X,Y,o,A.m,performance.now()/1000);else drawAv(cx,X-10,Y-30,o)}
 const note=(x,y,k,c)=>{x=Math.round(x);y=Math.round(y);const d=(c2,ox,oy)=>{r(c2,x+ox,y+5+oy,3,2);r(c2,x+2+ox,y+oy,1,6);r(c2,x+3+ox,y+oy,2,1);r(c2,x+4+ox,y+1+oy,1,1);
  if(k){r(c2,x+5+ox,y+3+oy,3,2);r(c2,x+7+ox,y-2+oy,1,6);r(c2,x+2+ox,y-1+oy,6,1)}};d('#3a2412',1,1);d(c,0,0)};
 var SEAT={x:612,y:382};
 function sitGo(){if(Pl.sit)return;if(ST.av.m>=0){ST.av.m=-1;toast('🐃 Bạn xuống khỏi thú cưỡi để ngồi nghỉ')}Pl.bn=0;Pl.pend=1;goal={x:SEAT.x,y:SEAT.y,t:-8};toast('🛖 Đang leo lên chòi...')}
+/* đứng dậy mà ô đáp bị chặn (ghế/bàn) thì tìm chỗ trống gần nhất, tránh bị kẹt */
+function standFix(){if(can(Pl.x,Pl.y))return;for(let d=2;d<=60;d+=2)for(const[dx,dy]of[[0,d],[d,0],[-d,0],[0,-d],[d,d],[-d,d],[d,-d],[-d,-d]])if(can(Pl.x+dx,Pl.y+dy)){Pl.x+=dx;Pl.y+=dy;return}}
 function seat(dt,tm){for(const n of NT)n.t+=dt;NT=NT.filter(n=>n.t<2.2);
  const man=keys.w||keys.a||keys.s||keys.d||keys.arrowup||keys.arrowdown||keys.arrowleft||keys.arrowright||(ptr&&performance.now()-ptr.t>150);
+ if(ACT&&(man||goal))actStop();
  if(!Pl.sit){if(Pl.pend){if(man)Pl.pend=0;else if(!goal&&Math.hypot(Pl.x-SEAT.x,Pl.y-SEAT.y)<20){Pl.pend=0;Pl.x=SEAT.x;Pl.y=SEAT.y;Pl.sit=1;Pl.st=0}}return}
  Pl.st+=dt;
  if(Pl.sit==1){const u=Math.min(1,Pl.st/.8);Pl.y=SEAT.y-23*u;Pl.d=1;Pl.mv=1;Pl.a+=dt;
   if(u>=1){Pl.sit=2;Pl.st=0;Pl.d=0;Pl.mv=0;Pl.nt=0;toast('🎶 Bạn đang ngồi nghỉ và hát nghêu ngao... (di chuyển để xuống)')}}
  else if(Pl.sit==2){Pl.mv=0;Pl.d=0;Pl.nt-=dt;
   if(Pl.nt<=0){NT.push({x:Pl.x+ri(-6,8),y:Pl.y-38,t:0,k:ri(0,1),c:pick(['#ffd23f','#ff7aa8','#6fd3ff','#b58ad8','#ffffff']),ph:rnd()*6});Pl.nt=.4}
-  if((man||goal)&&!CVLOCK){if(Pl.bn){Pl.bn=0;Pl.sit=0;Pl.mv=0;Pl.y=Pl.by||188}else{Pl.sit=3;Pl.st=0}}}
+  if((man||goal)&&!CVLOCK){if(Pl.bn){Pl.bn=0;Pl.sit=0;Pl.mv=0;Pl.y=Pl.by||188;standFix()}else{Pl.sit=3;Pl.st=0}}}
  else{const u=Math.min(1,Pl.st/.6);Pl.y=SEAT.y-23+23*u;Pl.d=0;Pl.mv=1;Pl.a+=dt;if(u>=1){Pl.sit=0;Pl.mv=0}}}
 // ---------- ve canh ----------
 const mirror=(x,dir,fn)=>{cx.save();cx.translate(x,0);if(dir<0)cx.scale(-1,1);cx.translate(-x,0);fn();cx.restore()};
@@ -1618,15 +1622,18 @@ cv.addEventListener('pointermove',e=>{if(!ptr)return;const lx=ptr.x,ly=ptr.y;ptr
 cv.addEventListener('pointerup',e=>{if(ptr&&!ptr.pan&&performance.now()-ptr.t<220){const wx=e.clientX/S+camX,wy=e.clientY/S+camY,h=hitAt(wx,wy);
  if(UI){}else if(CVON&&window.PKO&&PKO.tap&&PKO.tap(wx,wy)){}else if(MAP=='nt'&&FMODE)fmTap(wx,wy);else if(MAP=='hm'&&DECO)decoTap(wx,wy);else if(MAP=='hm'&&hmSeat(wx,wy)){}else if(h)tapHit(h,camFree);else{pa=null;goal={x:wx,y:wy,t:0};Pl.pend=0}}ptr=null});
 cv.addEventListener('pointercancel',()=>ptr=null);
-var WTM=0,WEXP=null,ZL=0;try{ZL=Math.max(-4,Math.min(2,parseInt(localStorage.tl_zoom||'0')||0))}catch(e){}
+var ACT=0,ACT_T=0;var WTM=0,WEXP=null,ZL=0,ZLW=0;try{ZL=Math.max(-4,Math.min(2,parseInt(localStorage.tl_zoom||'0')||0))}catch(e){}try{ZLW=Math.max(-4,Math.min(3,parseInt(localStorage.tl_zoomw||'0')||0))}catch(e){}
 /* ZOOM: ZL=0 là cỡ mặc định như cũ; ZL<0 thu nhỏ (nhìn rộng hơn), ZL>0 phóng to. Mỗi bậc ×1.25, làm tròn theo điểm ảnh thiết bị cho nét. */
 const zoomBase=()=>Math.max(2,Math.min(4,Math.floor(innerWidth/440)));
 const zoomS=l=>{let z=zoomBase()*Math.pow(1.25,l);z=Math.round(z*dpr)/dpr;return Math.max(1,Math.min(6,z))};
 function mapW(){return MAP=='nt'?PX:1088}
+/* Làng Tuyết: cỡ mặc định phủ kín chiều ngang map; ZLW là bậc zoom riêng của map này (×1.25 mỗi bậc) */
+const wtBase=()=>{const s=Math.max(2,Math.min(4,Math.floor(Math.min(innerWidth/260,innerHeight/190))));return Math.max(s,Math.ceil(innerWidth/WW*dpr)/dpr)};
+const wtZoom=l=>Math.max(1,Math.min(8,Math.round(wtBase()*Math.pow(1.25,l)*dpr)/dpr));
 function resize(){dpr=window.devicePixelRatio||1;cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;
  S=zoomBase();if(WTM)S=Math.max(2,Math.min(4,Math.floor(Math.min(innerWidth/260,innerHeight/190))));
  if(WTON)S=Math.min(innerWidth/WW,innerHeight/WH);else if(!WTM)S=zoomS(ZL);
- if(WTM)S=Math.max(S,Math.ceil(innerWidth/WW*dpr)/dpr);/* Làng Tuyết: luôn phủ kín chiều ngang bằng map, không lộ nền ngoài rìa */
+ if(WTM)S=wtZoom(ZLW);
  vw=innerWidth/S;vh=innerHeight/S}
 addEventListener('resize',resize);resize();
 const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),cc=(v,W,V)=>W<=V?(W-V)/2:Math.max(0,Math.min(W-V,v)),can=(x,y)=>!(isSolid(x-5,y)||isSolid(x+5,y)||isSolid(x-5,y-3)||isSolid(x+5,y-3));
@@ -3863,7 +3870,7 @@ function foodUI(){const v=vit(),old=$('ui').scrollTop;let h=head('🎒 Túi nhâ
  h+='</div><button class="b w" onclick="goMap(\'lehoi\')">🏮 Đến Lễ hội mua đồ ăn</button>';
  openUI(h);$('ui').scrollTop=old}
 
-function switchMap(m){if(MAP==m)return;if(MAP=='nt'&&FMODE)fmExit();if(MAP=='cv'||MAP=='ps')cvLeave();if(MAP=='hm'){setA(RB,RBSAVE);HMA=null;DECO=0;SEL=null;barUp();$('dbtn').style.display='none'}if(MAP=='nt')MPOS.nt={x:Pl.x,y:Pl.y};if(m=='hm'){MPOS.nt={x:560,y:268};RBSAVE=RB.slice();setA(RB,HM.rb);if(ST.av.m>=0)ST.av.m=-1;WW=HW;WH=HH}else if(m=='wt'){WW=640;WH=432}MAP=m;WTM=m=='wt'?1:0;WTON=m=='hm'?1:0;resize();
+function switchMap(m){if(MAP==m)return;if(ACT)actStop();if(MAP=='nt'&&FMODE)fmExit();if(MAP=='cv'||MAP=='ps')cvLeave();if(MAP=='hm'){setA(RB,RBSAVE);HMA=null;DECO=0;SEL=null;barUp();$('dbtn').style.display='none'}if(MAP=='nt')MPOS.nt={x:Pl.x,y:Pl.y};if(m=='hm'){MPOS.nt={x:560,y:268};RBSAVE=RB.slice();setA(RB,HM.rb);if(ST.av.m>=0)ST.av.m=-1;WW=HW;WH=HH}else if(m=='wt'){WW=640;WH=432}MAP=m;WTM=m=='wt'?1:0;WTON=m=='hm'?1:0;resize();
  if(m=='hm'){setA(SP,HM.sp);setA(hits,HM.hits);setA(LB,HM.lb);for(let y=0;y<H;y++)for(let x=0;x<W;x++)solid[y][x]=0;Pl.x=HM.pos.x;Pl.y=HM.pos.y;Pl.d=1;$('dbtn').style.display='block';$('dbtn').textContent='🛠️ Trang trí';hmInit();toast('🏠 Chào mừng về nhà! Bấm 🛠️ Trang trí để bày nội thất')}
  else if(m=='lh'){setA(SP,LH.sp);setA(hits,LH.hits);setA(LB,LH.lb);
   for(let y=0;y<H;y++)for(let x=0;x<W;x++)solid[y][x]=LH.solid[y][x];
@@ -4075,16 +4082,16 @@ setTimeout(()=>toast(ST.fm&&!ST.fm.p.length?'🌾 Nông trại đã dọn trốn
  box.innerHTML='<button class="b" id="zmi" title="Phóng to">➕</button><small id="zml"></small><button class="b" id="zmo" title="Thu nhỏ - nhìn rộng hơn">➖</button>';
  document.body.appendChild(box);
  ['pointerdown','pointerup','touchstart'].forEach(ev=>box.addEventListener(ev,e=>e.stopPropagation()));
- const lab=()=>{const l=$('zml');if(l)l.textContent=ZL==0?'':Math.round(Math.pow(1.25,ZL)*100)+'%';$('zmi').style.opacity=ZL>=2?.4:.9;$('zmo').style.opacity=ZL<=-4?.4:.9};
- window.zoomBy=dir=>{if(WTM||WTON)return;const cur=S;let n=ZL;
+ const lab=()=>{const z=WTM?ZLW:ZL,hi=WTM?3:2,l=$('zml');if(l)l.textContent=z==0?'':Math.round(Math.pow(1.25,z)*100)+'%';$('zmi').style.opacity=z>=hi?.4:.9;$('zmo').style.opacity=z<=-4?.4:.9};window.zoomLab=lab;
+ window.zoomBy=dir=>{if(WTON)return;const cur=S,W_=!!WTM,hi=W_?3:2,zf=W_?wtZoom:zoomS;let n=W_?ZLW:ZL;
   // nhảy tới bậc kế tiếp thực sự làm đổi cỡ (màn hình mật độ thấp có bậc bị trùng sau khi làm tròn)
-  while(n+dir>=-4&&n+dir<=2){n+=dir;if(Math.abs(zoomS(n)-cur)>.01)break}
-  if(n==ZL){toast(dir<0?'🔍 Đã thu nhỏ hết cỡ':'🔍 Đã phóng to hết cỡ');return}
-  ZL=n;try{localStorage.tl_zoom=ZL}catch(e){}
+  while(n+dir>=-4&&n+dir<=hi){n+=dir;if(Math.abs(zf(n)-cur)>.01)break}
+  if(n==(W_?ZLW:ZL)){toast(dir<0?'🔍 Đã thu nhỏ hết cỡ':'🔍 Đã phóng to hết cỡ');return}
+  if(W_){ZLW=n;try{localStorage.tl_zoomw=ZLW}catch(e){}}else{ZL=n;try{localStorage.tl_zoom=ZL}catch(e){}}
   const px=(camX+vw/2),py=(camY+vh/2);resize();
   if(camFree){camX=px-vw/2;camY=py-vh/2}
   lab()};
- window.zoomReset=()=>{ZL=0;try{localStorage.tl_zoom=0}catch(e){}resize();lab()};
+ window.zoomReset=()=>{if(WTM){ZLW=0;try{localStorage.tl_zoomw=0}catch(e){}}else{ZL=0;try{localStorage.tl_zoom=0}catch(e){}}resize();lab()};
  $('zmi').onclick=()=>zoomBy(1);$('zmo').onclick=()=>zoomBy(-1);$('zml').onclick=zoomReset;$('zml').style.cursor='pointer';
  // phím + / - và lăn chuột (máy tính)
  addEventListener('keydown',e=>{if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;if(e.key=='+'||e.key=='=')zoomBy(1);else if(e.key=='-'||e.key=='_')zoomBy(-1);else if(e.key=='0')zoomReset()});
@@ -4099,6 +4106,57 @@ setTimeout(()=>toast(ST.fm&&!ST.fm.p.length?'🌾 Nông trại đã dọn trốn
  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
  lab();
 })();
+</script>
+<script>
+/* ===================== HÀNH ĐỘNG (cá nhân) + SHOP KIM CƯƠNG ===================== */
+/* Hành động = "gif" của nhân vật, lặp lại đến khi bạn di chuyển. Phân loại: 'solo' = cá nhân; 'duo' = tương tác (bấm vào người chơi khác). */
+const ACTS=[{id:'diamond',n:'Phát kim cương',e:'💎',pr:10,k:'solo'}];
+var ACTTAB='solo';
+ST.acts=ST.acts||{};
+const actIdx=id=>ACTS.findIndex(a=>a.id==id);
+const actPose=(id,t)=>{ /* trả về {d,lift} cho từng hành động */
+ if(id=='diamond'){const T=4.2,u=t%T;
+  if(u<1.5){return{d:0,lift:Math.abs(Math.sin(u*Math.PI*2.4))*3.2}}
+  if(u<2.7){const v=(u-1.5)/1.2;return{d:[0,3,1,2][Math.floor(v*18)%4],lift:Math.sin(Math.PI*Math.min(1,v*1.15))*8}}
+  return{d:0,lift:Math.max(0,Math.sin((u-2.7)*Math.PI*1.8))*1.2}}
+ return{d:0,lift:0}};
+const GEMC=[['#f0fdff','#5fd6ff','#2a8ad8'],['#fff0fb','#ff9de0','#d44aa8'],['#f6f0ff','#b79bff','#7a56d8'],['#fffbe8','#ffe27a','#d9a521']];
+const gem=(x,y,k,tw)=>{x=Math.round(x);y=Math.round(y);const c=GEMC[k%4];
+ r(c[1],x-1,y-1,3,3);r(c[1],x-2,y,5,1);r(c[1],x,y-2,1,1);r(c[1],x,y+2,1,1);r(c[0],x-1,y-1,1,1);r(c[0],x,y-2,1,1);r(c[2],x+1,y+1,1,1);r(c[2],x,y+2,1,1);r(c[2],x+2,y,1,1);
+ if(tw>.8){r('#ffffff',x-3,y,1,1);r('#ffffff',x+3,y,1,1);r('#ffffff',x,y-3,1,1);r('#ffffff',x,y+3,1,1)}};
+const ACTFX={diamond:{
+ back:(X,Y,t)=>{const T=4.2,u=t%T,pulse=.5+.5*Math.sin(t*3);
+  E(r,'rgba(120,225,255,'+(.16+.08*pulse).toFixed(2)+')',X,Y,17,6);E(r,'rgba(255,255,255,'+(.18+.1*pulse).toFixed(2)+')',X,Y,10,3);
+  for(let i=0;i<7;i++){const a=t*2.1+i*Math.PI*2/7,s=Math.sin(a);if(s<0)gem(X+Math.cos(a)*17,Y-17+s*6+Math.sin(t*3+i)*1.6,i,Math.sin(t*5+i*2))}},
+ front:(X,Y,t)=>{const T=4.2,u=t%T;
+  for(let i=0;i<7;i++){const a=t*2.1+i*Math.PI*2/7,s=Math.sin(a);if(s>=0)gem(X+Math.cos(a)*17,Y-17+s*6+Math.sin(t*3+i)*1.6,i,Math.sin(t*5+i*2))}
+  // "phát": cuối vòng xoay, kim cương bay tỏa ra
+  if(u>2.3&&u<3.5){const v=(u-2.3)/1.2;for(let i=0;i<8;i++){const a=i*Math.PI/4+.4,rr=8+v*26,x=X+Math.cos(a)*rr,y=Y-18+Math.sin(a)*rr*.55-Math.sin(v*Math.PI)*8+v*v*10;
+    if(v<.92||(Math.floor(t*14)+i)%2)gem(x,y,i+1,v>.5?Math.sin(t*20+i):0)}}
+  // lấp lánh bay lên
+  for(let i=0;i<6;i++){const v=((t*.5+i/6)%1),x=X+Math.sin(i*2.7+t)*13,y=Y-6-v*34;const a=1-v;if(a>.1){r('rgba(255,255,255,'+a.toFixed(2)+')',Math.round(x),Math.round(y),1,1);if(i%2){r('rgba(190,240,255,'+(a*.8).toFixed(2)+')',Math.round(x)-1,Math.round(y),3,1);r('rgba(190,240,255,'+(a*.8).toFixed(2)+')',Math.round(x),Math.round(y)-1,1,3)}}}}}};
+function actStart(id){if(Pl.sit)return toast('Hãy đứng dậy trước khi làm hành động nhé!');
+ if(ST.av.m>=0){ST.av.m=-1;toast('🐃 Bạn xuống khỏi thú cưỡi để làm hành động')}
+ goal=null;pa=null;Pl.pend=0;Pl.mv=0;ACT=id;ACT_T=performance.now();closeUI();try{if(window.PKO&&PKO.act)PKO.act()}catch(e){}
+ toast('✨ '+ACTS[actIdx(id)].n+'... (di chuyển để dừng)')}
+function actStop(){if(!ACT)return;ACT=0;try{if(window.PKO&&PKO.act)PKO.act()}catch(e){}}
+function actUI(){const own=ACTS.filter(a=>ST.acts[a.id]&&a.k==ACTTAB);
+ let h=head('⚡ Hành động')+'<div class="tabs"><button class="b'+(ACTTAB=='solo'?' on':'')+'" onclick="ACTTAB=\'solo\';actUI()">🧍 Cá nhân</button><button class="b'+(ACTTAB=='duo'?' on':'')+'" onclick="ACTTAB=\'duo\';actUI()">🤝 Tương tác</button></div>';
+ if(ACTTAB=='duo')h+='<div class="mut">🤝 Hành động tương tác dùng khi bấm vào người chơi khác. Hiện chưa có hành động nào — sắp ra mắt!</div>';
+ else if(!own.length)h+='<div class="mut">Bạn chưa có hành động cá nhân nào.<br>Ghé <b>Trùm kim cương</b> ở 🏘️ Phố xá để mua nhé!</div>';
+ else h+='<div class="mut">Chọn một hành động để thực hiện. Hành động lặp lại đến khi bạn di chuyển.</div><div class="sg" style="grid-template-columns:repeat(2,1fr)">'+own.map(a=>'<button class="sq aq" onclick="actAsk(\''+a.id+'\')"><span class="e" style="font-size:30px">'+a.e+'</span><b>'+a.n+'</b><small>Bấm để dùng</small></button>').join('')+'</div>';
+ openUI(h)}
+function actAsk(id){const a=ACTS[actIdx(id)];if(!a||!ST.acts[id])return;
+ openUI(head('⚡ Hành động')+'<div class="aq2"><div class="e">'+a.e+'</div><b>'+a.n+'</b><div class="mut">Bạn muốn thực hiện hành động này?<br>Di chuyển bất cứ lúc nào để dừng lại.</div></div><div class="pf"><button class="b" onclick="actStart(\''+id+'\')">✅ Thực hiện</button><button class="b" onclick="actUI()">⬅ Quay lại</button></div>')}
+function diaShop(){const a=ACTS[0],have=!!ST.acts[a.id],ok=(ST.dia|0)>=a.pr;
+ openUI(head('💎 Shop kim cương')+'<div class="dsay"><span>🕶️</span><i>“Muốn phát kim cương cho cả phố hả? Mua đi, nhìn là mê liền!”</i></div><div class="mut" style="text-align:center">Bạn có <b>💎 '+(ST.dia|0)+'</b> kim cương</div>'
+ +'<div class="sg" style="grid-template-columns:1fr"><div class="sq aq" style="cursor:default;min-height:96px"><span class="e" style="font-size:34px">'+a.e+'</span><b>'+a.n+'</b><small>Hành động cá nhân • lặp lại đến khi bạn di chuyển</small>'
+ +(have?'<button class="b" style="margin-top:4px" onclick="actUI()">✓ Đã có — mở Hành động</button>':'<button class="b" style="margin-top:4px;'+(ok?'':'opacity:.6')+'" onclick="diaBuy(\''+a.id+'\')">💎 '+a.pr+' — Mua</button>')+'</div></div>'
+ +'<div class="mut" style="text-align:center">Hành động đã mua nằm trong nút ⚡ Hành động, dùng được mãi mãi.</div>')}
+function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||ST.acts[id])return;
+ if((ST.dia|0)<a.pr)return toast('💎 Chưa đủ kim cương — cần '+a.pr+', bạn có '+(ST.dia|0));
+ ST.dia-=a.pr;ST.acts[id]=1;xuUp();save();toast('🎉 Đã mua hành động '+a.n+'!\nMở ⚡ Hành động để dùng');diaShop()}
+(function(){const css=document.createElement('style');css.textContent='.aq{background:linear-gradient(#e6f6ff,#d2ecfb)!important;border-color:#8fc4e6!important;color:#1f4a6a}.aq small{color:#4f7f9f!important}.aq2{text-align:center;padding:10px;background:linear-gradient(#e6f6ff,#d2ecfb);border:2px solid #8fc4e6;margin-bottom:8px;color:#1f4a6a}.aq2 .e{font-size:44px}.dsay{display:flex;gap:8px;align-items:center;background:#e6f6ff;border:2px solid #8fc4e6;padding:6px 8px;margin-bottom:6px;color:#1f4a6a;font-size:13px}.dsay span{font-size:26px}';document.head.appendChild(css)})();
 </script>
 <script src="park-map.js"></script>
 <script src="pho-map.js"></script>

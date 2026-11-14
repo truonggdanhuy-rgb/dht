@@ -557,6 +557,7 @@ function drawOther(o,tm){let X,Y,sit=0,lift=0;
  X=Math.round(X);Y=Math.round(Y)-lift;o.hx=X;o.hy=Y-(sit?34:tagOff(o.m,o.d));
  if(X<camX-30||X>camX+vw+30||Y<camY-30||Y>camY+vh+60)return;
  const ob={d:o.d,a:o.a,mv:o.mv,sit,hair:o.hair,set:o.set,e:o.e|0,acc:(o.m>=0||sit||o.acc==null)?-1:o.acc};
+ if(o.ac&&!sit&&o.m<0&&ACTS[o.ac-1]){const id=ACTS[o.ac-1].id,p=actPose(id,tm),F=ACTFX[id];ob.d=p.d;ob.mv=0;if(F)F.back(X,Y,tm);drawAv(cx,X-10,Y-30-Math.round(p.lift),ob);if(F)F.front(X,Y-Math.round(p.lift*.5),tm);return}
  if(o.m>=0&&!sit)drawRide(cx,X,Y,ob,o.m,tm);else drawAv(cx,X-10,Y-30,ob)}
 window.cvPushOthers=(L,tm)=>{for(const o of CV.others.values()){let key=o.y;
  if(o.seat>=0&&CV.seats[o.seat])key=CV.seats[o.seat].by+.5;else if(o.hz>=0&&CV.horses[o.hz])key=CV.horses[o.hz].y+.5;
