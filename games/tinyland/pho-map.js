@@ -297,6 +297,9 @@ function build(){
  put(mkLotStall(),866,486,[827,470,905,486]);
  hit(826,440,80,46,'🎟️ Sạp vé số Kiến thiết — bấm để mua vé, xổ sau 2 phút','cv:ps:lot',[866,496]);
  mkNpc({id:'vs',x:920,y:486,d:2,set:4,hair:3,prop:'',lines:['Vé số đây! Thử vận may nào!','Mua tờ vé số lấy hên nè!','Xổ số sắp quay rồi nha!']});
+ put(mkWheelStall(),165,486,[137,474,193,486]);
+ hit(136,424,60,62,'🎡 Vòng quay may mắn — quay bằng vé nhận từ khí cầu','cv:ps:wheel',[165,498]);
+ mkNpc({id:'wl',x:200,y:490,d:2,set:5,hair:2,prop:'',lines:['Giao khí cầu là có vé quay nè!','Quay trúng kim cương nha!','Có vé thì quay miễn phí đó!']});
  put(mkCage(),790,486,[776,480,804,486]);
  dyn(485,()=>psCage(790,456,tmNow()));
  hit(766,430,48,56,'🎰 Vòng quay số — bấm để xem vé của bạn','cv:ps:lot',[790,496]);
@@ -306,7 +309,7 @@ function build(){
  // người
  for(const n of PS.npcs){if(n.cat)continue;dyn(n.sit?n.y+1.5:n.y,()=>drawNpc(n,tmNow()))}
  // ----- nhãn -----
- for(const l of[['NGÕ → NÔNG TRẠI',72,520]])PS.lb.push(l);
+ for(const l of[['NGÕ → NÔNG TRẠI',72,520],['VÒNG QUAY MAY MẮN',168,512]])PS.lb.push(l);
  hit(40,478,64,30,'🚪 Ngõ ra — bấm để về Nông Trại','gate',[72,490]);
  // thùng nước, bồn trên mái phía sau
  for(const x of[120,360,640,860])put(mkTank(),x,606);
@@ -387,6 +390,67 @@ window.psLotRev=()=>{PS.view='rev';const L=lotS(),now=Date.now(),t=L.t.find(t=>!
 setInterval(()=>{if(MAP!='ps')return;const L=lotS(),now=Date.now(),due=L.t.filter(t=>!t.paid&&t.at<=now).length;
  if(due>PS.dueN)toast('🎰 Đã đến giờ xổ số! Ra sạp vé số xem kết quả nhé');PS.dueN=due;
  if(PS.view=='lot'&&UI&&$('lotl'))lotList()},1000);
+
+
+const WHS=[{xu:2,c:'#8fd0ff',t:'2'},{xu:20,c:'#ffd27a',t:'20'},{xu:5,c:'#b9ec8a',t:'5'},{dia:1,c:'#ff9de0',t:'💎'},{xu:10,c:'#ffb08a',t:'10'},{xu:50,c:'#c9a8ff',t:'50'}];
+const mkWheelStall=()=>mk(60,66,(g,r)=>{
+ r('rgba(0,0,0,.15)',4,62,52,3);
+ r('#6b4220',9,38,4,26);r('#a8794a',9,38,1,26);r('#6b4220',47,38,4,26);r('#a8794a',47,38,1,26);
+ for(let x=2;x<58;x+=6){r('#e0584a',x,0,3,6);r('#fff6e0',x+3,0,3,6)}r('#b83a30',2,6,56,2);
+ const X=30,Y=28,R=19;
+ for(let y=-R;y<=R;y++)for(let x=-R;x<=R;x++){const d=Math.hypot(x,y);if(d>R)continue;
+  if(d>R-2){r((x+y)%4?'#7a4a26':'#ffe14a',X+x,Y+y,1,1);continue}
+  const a=(Math.atan2(y,x)+Math.PI*2.5)%(Math.PI*2),i=Math.floor(a/(Math.PI/3))%6;
+  r(Math.abs(a%(Math.PI/3))<.05||Math.abs(a%(Math.PI/3)-Math.PI/3)<.05?'#fff8e0':WHS[i].c,X+x,Y+y,1,1)}
+ r('#f6e7b4',X-3,Y-3,6,6);r('#7a4a26',X-3,Y-3,6,1);r('#7a4a26',X-3,Y+2,6,1);r('#7a4a26',X-3,Y-3,1,6);r('#7a4a26',X+2,Y-3,1,6);
+ r('#d9302a',X-1,Y-R-2,3,6);r('#fff',X,Y-R-1,1,2);
+ r('#b58d52',4,50,52,12);r('#d9b36a',4,50,52,2);r('#8d6b3f',4,60,52,2);
+ r('#fff6e0',10,52,8,6);r('#e0584a',10,52,8,1);r('#ffd23f',22,52,6,6);r('#fff',40,52,10,6);r('#9a5ad0',43,54,4,3)});
+
+// ============================================================
+//  VÒNG QUAY MAY MẮN: vé nhận khi giao khí cầu, 20 Xu/lượt nếu không có vé, ô Kim cương rất hiếm
+// ============================================================
+const WH_COST=20,WH_PITY=100,WHP=[.45,.09,.25,.02,.15,.04]; // tỉ lệ từng ô (WHS); 💎 ≈ 1/50, chắc chắn có ở lượt thứ 100
+const whS=()=>{if(!ST.wh||typeof ST.wh!='object')ST.wh={n:0,p:0};if(!(ST.wh.p>=0))ST.wh.p=0;if(!(ST.wh.n>=0))ST.wh.n=0;return ST.wh};
+function whRoll(){const W=whS();W.n++;W.p++;let i=0;
+ if(W.p>=WH_PITY)i=3;else{const u=Math.random();let a=0;for(let k=0;k<6;k++){a+=WHP[k];if(u<a){i=k;break}}}
+ if(i==3)W.p=0;return i}
+const whName=i=>WHS[i].dia?'💎 1 Kim cương':'🪙 '+WHS[i].xu+' Xu';
+let WTH=0,WA=null,WTOK=0;
+function whDraw(c,th){const g=c.getContext('2d'),W=c.width,cxp=W/2,cyp=W/2+14,R=W/2-18;g.clearRect(0,0,W,c.height);
+ g.save();g.translate(cxp,cyp);g.fillStyle='#7a4a26';g.beginPath();g.arc(0,0,R+9,0,7);g.fill();g.rotate(th);
+ for(let i=0;i<6;i++){const a0=-Math.PI/2+i*Math.PI/3,a1=a0+Math.PI/3;g.fillStyle=WHS[i].c;g.beginPath();g.moveTo(0,0);g.arc(0,0,R,a0,a1);g.closePath();g.fill();g.strokeStyle='#fff8e0';g.lineWidth=3;g.stroke();
+  g.save();g.rotate(a0+Math.PI/6+Math.PI/2);g.fillStyle='#3a2412';g.textAlign='center';g.textBaseline='middle';g.font='800 24px Nunito,Arial,sans-serif';g.fillText(WHS[i].t,0,-R*.62);
+  if(WHS[i].xu){g.font='800 11px Nunito,Arial,sans-serif';g.fillText('Xu',0,-R*.62+17)}g.restore()}
+ g.fillStyle='#f6e7b4';g.beginPath();g.arc(0,0,15,0,7);g.fill();g.strokeStyle='#7a4a26';g.lineWidth=3;g.stroke();g.restore();
+ const bl=Math.floor(performance.now()/280);for(let i=0;i<20;i++){const a=i/20*Math.PI*2;g.fillStyle=(i+bl)%2?'#ffe14a':'#fff';g.beginPath();g.arc(cxp+Math.cos(a)*(R+4.5),cyp+Math.sin(a)*(R+4.5),2.6,0,7);g.fill()}
+ g.fillStyle='#d9302a';g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.moveTo(cxp,cyp-R+10);g.lineTo(cxp-11,cyp-R-18);g.lineTo(cxp+11,cyp-R-18);g.closePath();g.fill();g.stroke()}
+function whLoop(){const c=$('whc');if(!c||!UI||PS.view!='wheel')return;
+ if(WA){const e=Math.min(1,(performance.now()-WA.t0)/WA.d);WTH=WA.f+(WA.to-WA.f)*(1-Math.pow(1-e,3.2));if(e>=1){const fn=WA.fin;WA=null;WTH%=Math.PI*2;fn()}}
+ whDraw(c,WTH);requestAnimationFrame(whLoop)}
+function whInfo(){const el=$('whi');if(!el)return;const tk=ST.tk|0,W=whS(),busy=!!WA;
+ el.innerHTML='<div class="sg" style="grid-template-columns:repeat(3,1fr)"><div class="sq" style="cursor:default"><span class="e">🎟️</span><b>'+tk+'</b><small>Vé quay</small></div><div class="sq" style="cursor:default"><span class="e">🪙</span><b>'+fmtXu(ST.xu)+'</b><small>Xu</small></div><div class="sq" style="cursor:default"><span class="e">💎</span><b>'+(ST.dia|0)+'</b><small>Kim cương</small></div></div>'+
+ '<div class="mut" style="text-align:center;margin:4px 0">Mỗi đơn khí cầu giao xong = 1 vé • Hết vé quay tốn '+WH_COST+' Xu/lượt<br><small>Chắc chắn có 1 💎 trong tối đa '+WH_PITY+' lượt (đang '+W.p+'/'+WH_PITY+')</small></div>';
+ const b=$('whb');if(!b)return;const useT=Math.min(tk,10),cost10=(10-useT)*WH_COST,ok1=!busy&&(tk>0||ST.xu>=WH_COST),ok10=!busy&&ST.xu>=cost10;
+ b.innerHTML='<button class="b w'+(ok1?'':' z')+'" onclick="whGo(1)">🎡 Quay 1 lần ('+(tk>0?'dùng 1 vé':WH_COST+' Xu')+')</button><button class="b w'+(ok10?'':' z')+'" onclick="whGo(10)">⚡ Quay nhanh x10 ('+(useT?useT+' vé':'')+(useT&&cost10?' + ':'')+(cost10?cost10+' Xu':'')+')</button>'}
+window.wheelUI=()=>{PS.view='wheel';WA=null;whS();
+ openUI(head('🎡 Vòng quay may mắn')+'<div style="text-align:center"><canvas id="whc" width="260" height="276" style="width:100%;max-width:300px"></canvas></div><div id="whr" style="text-align:center;min-height:38px;font-weight:800;color:#3a2412;font-size:14px;margin:2px 0"></div><div id="whb" class="pf"></div><div id="whi"></div>'+
+  '<div class="mut"><b>Các ô thưởng</b></div><div class="sg" style="grid-template-columns:repeat(3,1fr)">'+WHS.map(s=>'<div class="sq" style="cursor:default;background:'+s.c+'55"><span class="e">'+(s.dia?'💎':'🪙')+'</span><b>'+(s.dia?'Kim cương':s.xu+' Xu')+'</b></div>').join('')+'</div>');
+ whInfo();whLoop()};
+window.whGo=n=>{if(WA)return;const tk=ST.tk|0,useT=Math.min(tk,n),cost=(n-useT)*WH_COST;
+ if(ST.xu<cost||(n==1&&!tk&&ST.xu<WH_COST))return toast('🪙 Không đủ Xu để quay (cần '+cost+' Xu)');
+ ST.tk=tk-useT;ST.xu-=cost;
+ const res=[];for(let k=0;k<n;k++){const i=whRoll();res.push(i);const s=WHS[i];if(s.xu)ST.xu+=s.xu;else ST.dia=(ST.dia|0)+s.dia}
+ xuUp();save();
+ const last=res[res.length-1];let msg;
+ if(n==1)msg=res[0]==3?'💎 KIM CƯƠNG!!! Chúc mừng bạn!':'🎉 Trúng '+whName(res[0])+'!';
+ else{const c={};res.forEach(i=>c[i]=(c[i]||0)+1);const xu=res.reduce((a,i)=>a+(WHS[i].xu||0),0),dia=c[3]||0;
+  msg='⚡ x10: '+Object.keys(c).sort((a,b)=>WHS[a].xu-WHS[b].xu).map(i=>(WHS[i].dia?'💎':WHS[i].xu+' Xu')+' ×'+c[i]).join(' • ')+'<br>Tổng: +'+xu+' Xu'+(dia?' • +'+dia+' 💎':'')}
+ const from=WTH%(Math.PI*2),jit=(Math.random()-.5)*Math.PI/3*.7,to=from+Math.PI*2*(n==1?5:2)+(((-(last+.5)*Math.PI/3+jit)-from)%(Math.PI*2)+Math.PI*2)%(Math.PI*2),tok=++WTOK,
+  fin=()=>{const r=$('whr');if(r)r.innerHTML=msg;whInfo();if(res.includes(3))toast('💎 Bạn vừa trúng Kim cương!')};
+ WA={t0:performance.now(),d:n==1?3200:1500,f:from,to,fin};whInfo();const r=$('whr');if(r)r.textContent='🎡 Đang quay...';
+ setTimeout(()=>{if(WA&&WTOK==tok){WA=null;WTH=to%(Math.PI*2);toast(msg.replace(/<br>/g,' '));whInfo()}},(n==1?3200:1500)+250);
+};
 
 // ============================================================
 //  MIẾU CẦU PHÚC
@@ -497,6 +561,7 @@ window.psFurnBuy=k=>{if(!CAT[k])return;if(typeof hmInit=='function')hmInit();con
 function psAct(a,h){const[t,v]=a.split(':');
  if(t=='shop')return psShop(v);
  if(t=='lot')return psLot();
+ if(t=='wheel')return wheelUI();
  if(t=='furn')return psFurn();
  if(t=='mieu')return mieuUI()}
 })();

@@ -278,6 +278,11 @@ HAIRFX.lwave=(u,o,K)=>{
   u(_sh(cy(6),.4),mx(8,3),6,3,1);u(cy(9),mx(10,3),9,3,1);
   for(let y=9;y<=27;y++){const d=W(y),s=o.mv?(y>=22?2:y>=16?1:0):0;row(mx(3+d-s,7),y,7)}
  }
+ // bông hoa cài đầu (trắng / vàng) cho đỡ giống đầu trọc
+ {const Y=_hs(K).fl=='y',P=Y?'#ffe45c':'#ffffff',S=Y?'#f2b81e':'#dfe6f2',C=Y?'#ff8a1e':'#ffc83d',
+  fx=back?11:side?mx(6,5):5,fy=3;
+  [[2,0],[1,1],[2,1],[3,1],[0,2],[1,2],[3,2],[4,2],[1,3],[2,3],[3,3],[2,4]].forEach(([a,b])=>u(b>2?S:P,fx+a,fy+b,1,1));
+  if(!back)u(C,fx+2,fy+2,1,1)}
 };
 
 // ---- Hai chùm đuôi dài buộc nơ (nữ) ----
