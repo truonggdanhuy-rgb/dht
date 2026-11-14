@@ -18,14 +18,17 @@ window.setNm=()=>{const n=clean($('pnm').value);if(!n)return toast('Tên không 
 
 // ---------- vẽ tên + bong bóng chat trên đầu ----------
 const bub={}; // id -> {t,until}
-const tag=(t,x,y,col)=>{cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';cx.lineWidth=3;cx.lineJoin='round';cx.strokeStyle='rgba(30,20,10,.85)';cx.strokeText(t,x,y);cx.fillStyle=col;cx.fillText(t,x,y)};
+const tag=(t,x,y,col,bf)=>{cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';
+ let tx=x;const L=window.idLogo?window.idLogo(bf):null; // logo Bạn thân đứng trước tên, luôn cao 11px dù ảnh gốc to/bé
+ if(L){const h=11,w=Math.round(L.width*h/L.height),tw=cx.measureText(t).width,sx=x-(w+2+tw)/2;cx.save();cx.imageSmoothingEnabled=true;cx.drawImage(L,Math.round(sx),Math.round(y-9),w,h);cx.restore();tx=sx+w+2+tw/2}
+ cx.lineWidth=3;cx.lineJoin='round';cx.strokeStyle='rgba(30,20,10,.85)';cx.strokeText(t,tx,y);cx.fillStyle=col;cx.fillText(t,tx,y)};
 const bubble=(t,x,y)=>{cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';const w=Math.min(150,cx.measureText(t).width)+10;
  cx.fillStyle='rgba(30,20,10,.55)';cx.fillRect(x-w/2+1,y-9,w,13);cx.fillStyle='#fffdf0';cx.fillRect(x-w/2,y-10,w,13);cx.fillRect(x-2,y+3,4,2);cx.fillStyle='#3a2412';cx.fillText(t,x,y,w-6)};
 window.drawNames=tm=>{const now=performance.now(),dt=Math.min(.05,(now-lastT)/1000);lastT=now;
  if(CVON&&CV.fx)CV.fx(tm,dt);
  if(!(HMA&&HMA.hide)){let x,y;if(CVON){const p=cvHeadPos();x=p.x;y=p.y}else{x=Math.round(Pl.x);y=Math.round(Pl.y)-(Pl.sit?34:tagOff(ST.av.m,Pl.d))}
-  tag(ST.name,x,y,'#fff6c0');const b=bub[ME.id];if(b&&b.until>now)bubble(b.t,x,y-8)}
- if(CVON)for(const o of CV.others.values()){if(o.hx==null)continue;tag(o.n||'?',o.hx,o.hy,'#d8f4ff');const b=bub[o.id];if(b&&b.until>now)bubble(b.t,o.hx,o.hy-8)}};
+  tag(ST.name,x,y,'#fff6c0',ST.id&&ST.id.bf);const b=bub[ME.id];if(b&&b.until>now)bubble(b.t,x,y-8)}
+ if(CVON)for(const o of CV.others.values()){if(o.hx==null)continue;tag(o.n||'?',o.hx,o.hy,'#d8f4ff',o.bf);const b=bub[o.id];if(b&&b.until>now)bubble(b.t,o.hx,o.hy-8)}};
 
 // ---------- tạo nhân vật lần đầu ----------
 window.welcomeName=()=>{openUI('<div class="uh"><span>🌾 Chào mừng đến Tinyland!</span></div><div class="mut">Hãy đặt tên nhân vật. Tên hiện trên đầu bạn và bạn bè trong Công viên sẽ thấy tên này (không phải tên đăng nhập DHT). Sau này vẫn đổi được khi bấm avatar.</div><div style="display:flex;gap:4px;margin:8px 0"><input id="pnm0" maxlength="16" value="'+escH(ST.name)+'" style="flex:1;min-width:0;font:inherit;padding:6px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" onclick="welcomeOk()">Bắt đầu</button></div>');
@@ -92,7 +95,7 @@ CV.snd=localStorage.cv_snd!='0';$('cvsn').textContent=CV.snd?'🔊':'🔇';
 $('cvsn').onclick=()=>{CV.snd=!CV.snd;localStorage.cv_snd=CV.snd?'1':'0';$('cvsn').textContent=CV.snd?'🔊':'🔇'};
 
 // ---------- mạng ----------
-const me=()=>({id:ME.id,u:myUid(),n:ST.name,h:ST.av.h,s:ST.av.s,e:ST.av.e|0,m:ST.av.m,x:Math.round(Pl.x),y:Math.round(Pl.y),ts:ME.ts,q:ME.q,qt:ME.qt,z:ME.z,zt:ME.zt});
+const me=()=>({id:ME.id,u:myUid(),n:ST.name,h:ST.av.h,s:ST.av.s,e:ST.av.e|0,m:ST.av.m,x:Math.round(Pl.x),y:Math.round(Pl.y),ts:ME.ts,q:ME.q,qt:ME.qt,z:ME.z,zt:ME.zt,bf:(ST.id&&ST.id.bf)|0});
 function track(){if(ch&&PK.in)try{ch.track(me())}catch(e){}}
 function bcast(ev,p){if(ch)try{ch.send({type:'broadcast',event:ev,payload:p})}catch(e){}}
 const loadLib=()=>window.supabase?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';s.onload=ok;s.onerror=()=>no(new Error('không tải được thư viện Supabase'));document.head.appendChild(s)});
@@ -102,7 +105,7 @@ function sync(){if(!ch)return;const st=ch.presenceState(),all=[];for(const k in 
  const okIds=new Set(PK.all.map(p=>p.id));
  for(const p of PK.all){if(p.id==ME.id)continue;let o=CV.others.get(p.id);
   if(!o){o={id:p.id,x:p.x,y:p.y,tx:p.x,ty:p.y,d:0,a:0,mv:0};CV.others.set(p.id,o)}
-  o.u=p.u||'';o.n=p.n;o.hair=p.h;o.set=p.s;o.e=p.e|0;o.m=p.m==null?-1:p.m;o.seat=p.q==null?-1:p.q;o.hz=p.z==null?-1:p.z;o.qt=p.qt||0;o.zt=p.zt||0}
+  o.u=p.u||'';o.n=p.n;o.hair=p.h;o.set=p.s;o.e=p.e|0;o.m=p.m==null?-1:p.m;o.seat=p.q==null?-1:p.q;o.hz=p.z==null?-1:p.z;o.qt=p.qt||0;o.zt=p.zt||0;o.bf=p.bf|0}
  for(const id of[...CV.others.keys()])if(!okIds.has(id))CV.others.delete(id);
  if(PK.in){chatUI();
   if(PK.rank>=MAXP){toast('🚫 Công viên đã đủ người, bạn được mời ra ngoài');switchMap('nt');return}
