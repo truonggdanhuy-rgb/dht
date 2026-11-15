@@ -12,7 +12,7 @@
 (()=>{
 'use strict';
 const SW=3200,SH=1100,CV=window.CV;
-const SEA={sp:[],hits:[],lb:[],seats:[],horses:[],tbls:[],pos:{x:58,y:446},fx:null,built:0,bg:null};
+const SEA={sp:[],hits:[],lb:[],seats:[],horses:[],tbls:[],pos:{x:96,y:446},fx:null,built:0,bg:null};
 (window.CVMAPS=window.CVMAPS||{}).bn={d:SEA,w:SW,h:SH};
 SEA.fx=seaFx;   // gán NGAY khi đăng ký map (trước đây gán trong build() → lần vào Biển đầu tiên bị mất hải âu / thoại bạch tuộc)
 const tmNow=()=>performance.now()/1000;
@@ -26,8 +26,9 @@ const lbl=(t,x,y)=>SEA.lb.push([t,x,y]);
 
 // ---------- hình dạng bờ biển + vùng đi được ----------
 const TOPY=150,BOTY=1004;                    // cát đi được từ y=150 đến y=1004 (trên/dưới là đụn cỏ)
-const shoreX=y=>{const t=Math.max(0,Math.min(1,(y-330)/160)),s=t*t*(3-2*t);   // bãi hẹp ~100px ở chỗ nhân vật xuất hiện, nở ra thành vịnh nhỏ ở chỗ tiệm
- return 168-70*s+9*Math.sin(y/70)+4*Math.sin(y/23+1.3)+50*Math.exp(-(((y-800)/85)**2))};
+const BW=70;   // độ nới rộng bãi cát (px). Muốn bãi rộng/hẹp hơn thì sửa số này
+const shoreX=y=>{const t=Math.max(0,Math.min(1,(y-330)/160)),s=t*t*(3-2*t);   // bãi ~170px ở chỗ nhân vật xuất hiện, nở ra thành vịnh nhỏ ở chỗ tiệm
+ return BW+168-70*s+9*Math.sin(y/70)+4*Math.sin(y/23+1.3)+50*Math.exp(-(((y-800)/85)**2))};
 const PIER={y0:548,y1:578,x0:0,x1:0};PIER.x0=Math.round(shoreX(563))-34;PIER.x1=PIER.x0+232;
 const inPier=(x,y)=>x>=PIER.x0&&x<=PIER.x1&&y>=PIER.y0&&y<=PIER.y1;
 const bnSolid=(x,y)=>{
@@ -269,7 +270,7 @@ function build(){
  for(let i=0;i<520;i++)SPK.push({x:shoreX(100)+60+rn()*(SW-420),y:rn()*SH,ph:rn()*6.3});
  for(let i=0;i<14;i++)GULL.push({y:60+rn()*(SH-120),sp:20+rn()*18,ph:rn()*SW,dir:rn()<.5?1:-1,fl:rn()*6});
  // người chơi mới vào: bãi biển nằm ở góc TRÁI màn hình
- SEA.pos.x=58;SEA.pos.y=446}
+ SEA.pos.x=96;SEA.pos.y=446}
 
 // ---------- cua đi ngang ----------
 const CR=['#e2574c','#c4382e','#f58a7e'];
@@ -399,7 +400,7 @@ function sail(){
  const d=dockSpot();
  CV.boat=1;CV.bk=o.use=='swan'?3:2;CV.bdir=1;CV.dock=null;SEAB.dock=0;Pl.x=d.x;Pl.y=d.y;Pl.d=3;Pl.mv=0;Pl.pend=0;goal=null;pa=null;
  if(window.PKO)PKO.onBoat();
- toast('⛵ Bạn đã lên '+(o.use=='swan'?'Thuyền thiên nga':'Thuyền mini')+'!\nBấm mặt nước để CÂU • giữ ngón tay (hoặc WASD) để chèo • nút ⚓ để cập bến')}
+ toast('⛵ Bấm giữ mặt nước để di chuyển')}
 function landSea(){
  const d=dockSpot();CV.boat=0;CV.bk=0;CV.dock=null;SEAB.dock=0;
  Pl.x=PIER.x1-26;Pl.y=d.y;Pl.d=2;Pl.mv=0;goal=null;pa=null;
@@ -436,7 +437,7 @@ function zoneTick(){
   if(!ZN.next)ZN.next=n+(15+Math.random()*20)*1000;
   if(n>=ZN.next){
    for(let k=0;k<40;k++){const x=PIER.x1+200+Math.random()*1000,y=190+Math.random()*700;
-    if(!boatSolid(x,y)&&!boatSolid(x+80,y)&&!boatSolid(x-80,y)&&!boatSolid(x,y+60)&&!boatSolid(x,y-60)){ZN.z={x,y,r:96,t0:n,until:n+100000};toast('🌑 Có vùng nước tối xuất hiện ngoài khơi!\nLái thuyền vào đó câu — dễ nhận quà hơn');break}}
+    if(!boatSolid(x,y)&&!boatSolid(x+80,y)&&!boatSolid(x-80,y)&&!boatSolid(x,y+60)&&!boatSolid(x,y-60)){ZN.z={x,y,r:96,t0:n,until:n+100000};toast('🌑 Vùng tối đã xuất hiện, câu ở đó sẽ nhận thêm quà');break}}
    if(!ZN.z)ZN.next=n+5000}}}
 function zoneArrow(){ // mũi tên chỉ hướng vùng nước tối khi nó nằm ngoài màn hình
  const z=ZN.z;if(!z||!CV.boat||performance.now()>z.until)return;
@@ -462,17 +463,51 @@ window.bnBuy=k=>{const o=sbs();
  o.use=k;try{xuUp()}catch(e){}try{save()}catch(e){}
  toast('🎉 Đã mua '+(k=='swan'?'Thuyền thiên nga':'Thuyền mini')+' và trang bị luôn! Ra cầu tàu bấm RA BIỂN nhé');bnShop()};
 window.bnEquip=k=>{const o=sbs();if(!o[k])return;o.use=k;try{save()}catch(e){}toast('✅ Đã trang bị '+(k=='swan'?'Thuyền thiên nga':'Thuyền mini'));bnShop()};
+// ---------- ĐỒ BIỂN bán bằng Xu quái vật ----------
+// t: 'k' kem chống nắng • 'h' tóc/nón • 's' set • 'a' phụ kiện cầm tay • k = khóa trong HAIRS/SETS/ACCS • p = GIÁ (xu quái vật)
+// Cân bằng: câu ~10 phút ≈ 1.000 xu quái vật → mỗi món 500–900 là khoảng 5–10 phút. Muốn đổi giá chỉ cần sửa số p.
+const QSHOP=[
+ {t:'k',n:'Kem chống nắng',p:10},
+ {t:'h',k:'hawaii',p:500},
+ {t:'s',k:'hwm',p:900},
+ {t:'s',k:'hwf',p:900},
+ {t:'a',k:'starfish',p:500},
+ {t:'a',k:'octobub',p:500}];
+const qArr=t=>t=='h'?HAIRS:t=='s'?SETS:ACCS;
+const qItem=q=>{if(q.t=='k')return{n:q.n,i:-1};const A=qArr(q.t),i=A.findIndex(x=>x.k==q.k);return i<0?null:{n:A[i].n,i,it:A[i]}};
+const qOwn=(q,m)=>q.t!='k'&&(ST.own&&ST.own[q.t]||[]).includes(m.i);
+const QBAG={h:'Túi › Tóc',s:'Túi › Set',a:'Túi › Phụ kiện',k:'Túi › Biển'};
+window.bnBuyItem=n=>{const q=QSHOP[n],m=q&&qItem(q);if(!m)return;
+ if(qOwn(q,m))return toast('✓ Bạn đã có món này rồi');
+ if((ST.qv|0)<q.p)return toast('Không đủ Xu quái vật! Cần '+fmtXu(q.p)+', bạn có '+fmtXu(ST.qv|0));
+ ST.qv-=q.p;
+ if(q.t=='k')ST.kcn=(ST.kcn|0)+1;
+ else{ST.own=ST.own||{};const a=ST.own[q.t]=ST.own[q.t]||[];if(!a.includes(m.i))a.push(m.i)}
+ try{xuUp()}catch(e){}try{save()}catch(e){}
+ toast('🎉 Đã mua '+m.n+' → '+QBAG[q.t]);bnShop()};
+let BRAF=0;
+function bnPrev(c,t){const q=QSHOP[+c.dataset.q],m=q&&qItem(q);if(!m)return;const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);g.imageSmoothingEnabled=false;
+ if(q.t=='k'){if(window.MQ)MQ.paint(g,100,c);return}
+ const A=ST.av||{},K=2;g.save();g.scale(K,K);const W=c.width/K,H=c.height/K;
+ const d=q.t=='a'?(m.it.t=='pull'?3:0):[0,3,1,2][Math.floor(t/1.6)%4];
+ drawAv(g,Math.round(W/2)-10,H-33+(q.t=='a'&&m.it.t=='float'?6:0),{d,a:t,mv:q.t=='a'?1:0,sit:0,hair:q.t=='h'?m.i:(A.h|0),set:q.t=='s'?m.i:(A.s|0),e:A.e|0,acc:q.t=='a'?m.i:-1});
+ g.restore()}
+function bnAnim(){const cs=document.querySelectorAll('canvas.bsc');if(!cs.length||!UI){BRAF=0;return}const t=performance.now()/1000;cs.forEach(c=>bnPrev(c,t));BRAF=requestAnimationFrame(bnAnim)}
+{const st=document.createElement('style');st.textContent='.bsg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.bst{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 3px;background:#fff3cf;border:2px solid #c9a06a;text-align:center}.bst b{font-size:12px;line-height:1.15}.bst small{font-size:11px}canvas.bsc{width:88px;height:96px;image-rendering:pixelated;background:linear-gradient(#cfeeff,#eaf7ff 66%,#e8d49c 66%);border-radius:6px}.bst .b{padding:3px 8px;font-size:12px}';document.head.appendChild(st)}
 function bnShop(){
  const o=sbs();
- const B=[['mini','🛶','Thuyền mini','Thuyền gỗ nhỏ xinh để ra khơi câu quái vật',fmtXu(SB_MINI)+' 🪙 xu vàng',o.mini],
-  ['swan','🦢','Thuyền thiên nga','Thuyền thiên nga ở Công viên, nay ra tới tận biển khơi!',fmtXu(SB_SWAN)+' '+qvImg()+' xu quái vật',o.swan]];
+ const B=[['mini','🛶','Thuyền mini',fmtXu(SB_MINI)+' 🪙',o.mini],['swan','🦢','Thuyền thiên nga',fmtXu(SB_SWAN)+' '+qvImg(),o.swan]];
+ const tile=(q,n)=>{const m=qItem(q);if(!m)return '';const own=qOwn(q,m);
+  return '<div class="bst"><canvas class="bsc" data-q="'+n+'" width="88" height="96"></canvas><b>'+m.n+'</b>'+
+   (own?'<small>✓ Đã có</small>':'<small>'+qvImg()+' <b>'+fmtXu(q.p)+'</b>'+(q.t=='k'&&(ST.kcn|0)>0?' • có x'+(ST.kcn|0):'')+'</small><button class="b" onclick="bnBuyItem('+n+')">Mua</button>')+'</div>'};
  openUI(head('🎣 Tiệm câu Quái vật')+
-  '<div class="mut" style="text-align:center">🐙 <i>"Đồ câu quái vật đây! Có thuyền mới ra khơi câu được nha~"</i></div>'+
-  '<div class="mut" style="text-align:center">Bạn có 🪙 <b>'+fmtXu(ST.xu|0)+'</b> Xu vàng • '+qvImg()+' <b>'+fmtXu(ST.qv|0)+'</b> Xu quái vật</div>'+
-  '<button class="b w" style="font-size:14px;padding:9px" onclick="MQ.sellUI()">💰 Thu mua quái vật <small>(bán quái đã câu lấy Xu quái vật)</small></button>'+
-  '<div class="fh2">⛵ Thuyền ra khơi</div>'+
-  '<div class="g1">'+B.map(b=>{const k=b[0],own=b[5],eq=o.use==k;
-   return '<div class="it"><span>'+b[1]+' <b>'+b[2]+'</b><br><small>'+b[3]+'</small>'+(own?'':'<br><small>Giá: <b>'+b[4]+'</b></small>')+'</span>'+
+  '<div class="mut" style="text-align:center">🪙 <b>'+fmtXu(ST.xu|0)+'</b> • '+qvImg()+' <b>'+fmtXu(ST.qv|0)+'</b></div>'+
+  '<button class="b w" style="font-size:14px;padding:9px" onclick="MQ.sellUI()">💰 Thu mua quái vật</button>'+
+  '<div class="fh2">⛵ Thuyền</div>'+
+  '<div class="g1">'+B.map(b=>{const k=b[0],own=b[4],eq=o.use==k;
+   return '<div class="it"><span>'+b[1]+' <b>'+b[2]+'</b>'+(own?'':'<br><small>'+b[3]+'</small>')+'</span>'+
     (own?(eq?'<b>✅ Đang dùng</b>':'<button class="b" onclick="bnEquip(\''+k+'\')">Trang bị</button>'):'<button class="b" onclick="bnBuy(\''+k+'\')">Mua</button>')+'</div>'}).join('')+'</div>'+
-  '<div class="mut">Cách câu: ra cuối cầu tàu → bấm <b>RA BIỂN</b> → nhân vật lên thuyền bạn đang trang bị → bấm mặt nước để câu. Giữ ngón tay (hoặc WASD) để chèo, bấm ⚓ để cập bến. Thỉnh thoảng có <b>vùng nước tối</b> ngoài khơi: câu ở đó dính quái có 15% nhận thêm 1 vé quay hoặc 1 món ăn từ máy chế biến!</div>')}
+  '<div class="fh2">🛍️ Đồ biển</div>'+
+  '<div class="bsg">'+QSHOP.map(tile).join('')+'</div>');
+ if(!BRAF)BRAF=requestAnimationFrame(bnAnim)}
 })();

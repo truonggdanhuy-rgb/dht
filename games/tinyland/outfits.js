@@ -396,3 +396,40 @@ HAIRFX.earfur=(u,o,K)=>{
  }
 };
 
+
+/* ============================== HAWAII (mua ở Tiệm câu Quái vật, bằng Xu quái vật) ============================== */
+
+// ---- Nón rộng vành Hawaii: cói vàng, dải xanh ngọc, cài hoa dâm bụt ----
+HAIRFX.hawaii=(u,o,K)=>{
+ const{side,Rt,back,HC}=K,mx=(x,w)=>Rt?x:20-x-w,
+ S1='#f3d684',S2='#e2b95a',S3='#c99a3a',SL='#fff0b8',BD='#1fa6b4',BDd='#12808a',FR='#ff4d6d',FY='#ffd23f',LF='#3fae5a';
+ const weave=(x,y,w,h)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)if(((x+i+y+j)&1)==0)u(SL,x+i,y+j,1,1)};
+ // tóc lòi dưới vành
+ if(!side){if(!back){u(HC,6,8,1,3);u(HC,13,8,1,3)}}else u(HC,mx(5,2),8,2,3);
+ // chỏm + dải + vành
+ u(S1,7,1,6,1);u(S1,6,2,8,3);weave(6,2,8,3);u(S2,6,4,8,1);u(S3,13,2,1,3);
+ u(BD,6,5,8,1);u(BDd,13,5,1,1);
+ u(S1,3,6,14,1);weave(3,6,14,1);u(S2,2,7,16,1);u(S3,16,7,2,1);u(S3,2,7,1,1);
+ // hoa trang trí trên dải
+ if(!back){u(FR,7,5,1,1);u(FY,10,5,1,1);u(FR,12,5,1,1)}
+ // đóa dâm bụt to bên mặt nón
+ if(!back){const fx=side?mx(14,3):14;u(FR,fx+1,4,1,1);u(FR,fx,5,3,1);u(FR,fx+1,6,1,1);u(FY,fx+1,5,1,1);u(LF,side?mx(16,2):16,6,2,1)}
+};
+
+// ---- Set Hawaii (nam / nữ): họa tiết hoa + vòng hoa lei ở cổ ----
+SETFX.hawaii=(u,o,S,K)=>{
+ const{side,Rt,back,rd}=K,mx=(x,w)=>Rt?x:20-x-w,fa=S.fa,fb=S.fb,Y='#ffd23f',
+ LEI=['#ff5d8f','#ffd23f','#ff8a3c','#fff1f5','#ff4d4d','#ffd23f'];
+ const fl=(x,y,c)=>{u(c,x,y,2,2);u(Y,x,y,1,1)};
+ // hoa trên áo
+ const T=side?[[8,17,fa],[11,18,fb],[9,20,fb],[12,20,fa]]:[[6,17,fa],[11,18,fb],[7,20,fb],[12,20,fa]];
+ T.forEach(q=>fl(q[0],q[1],q[2]));
+ // hoa trên váy (bản nữ)
+ if(S.hw=='f'&&!rd){const V=side?[[8,24],[11,25],[13,24],[9,26],[14,26]]:[[6,24],[10,25],[13,24],[8,26],[12,26]];V.forEach((q,i)=>u(i%2?S.fa:S.fb,q[0],q[1],1,1))}
+ // vòng hoa lei
+ if(!side){
+  for(let i=0;i<8;i++)u(LEI[i%6],6+i,15,1,1);
+  if(!back){[7,8,11,12].forEach((x,i)=>u(LEI[(i+2)%6],x,16,1,1));u(LEI[1],8,17,1,1);u(LEI[3],11,17,1,1);u(LEI[0],9,18,1,1);u(LEI[2],10,18,1,1)}
+  else for(let i=0;i<6;i++)u(LEI[i%6],7+i,16,1,1)}
+ else{for(let i=0;i<6;i++)u(LEI[i],mx(7,6)+i,15,1,1);for(let i=0;i<4;i++)u(LEI[i+2],mx(8,4)+i,16,1,1)}
+};
