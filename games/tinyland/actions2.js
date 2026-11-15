@@ -1,7 +1,7 @@
 /* =====================================================================
    TINYLAND — HÀNH ĐỘNG MỚI (file riêng, không đụng vào code cũ)
      ⚡ Siêu bá khí            — 💎 20
-     👑 Hoàng thượng giá đáo   — 💎 50
+     👑 Hoàng thượng giá đáo   — 💎 30
    Nạp ở CUỐI index.html (sau food-icons.js):  <script src="actions2.js"></script>
    File tự đăng ký vào ACTS / ACTFX / APOSE của index.html → tự có trong Shop kim cương,
    bảng Hành động, xem trước hoạt hình và đồng bộ online (thêm ở CUỐI ACTS nên không lệch số thứ tự).
@@ -206,7 +206,7 @@ APOSE.hoangthuong=t=>({d:0,lift:0});
 // luôn ở CUỐI mảng ACTS (số thứ tự được đồng bộ online)
 ACTS.push(
  {id:'sbk',n:'Siêu bá khí',e:'⚡',pr:20,k:'solo',ds:'Hào quang vàng bùng cháy quanh người như Siêu Xayda, tay cầm quyền trượng vung hạt sáng bắn lên trời nổ như pháo hoa'},
- {id:'hoangthuong',n:'Hoàng thượng giá đáo',e:'👑',pr:50,k:'solo',ds:'Ngồi kiệu vàng lấp lánh, 2 cung nhân khiêng hai bên, 2 cung nữ cầm quạt lớn quạt hầu ở rìa'});
+ {id:'hoangthuong',n:'Hoàng thượng giá đáo',e:'👑',pr:30,k:'solo',ds:'Ngồi kiệu vàng lấp lánh, 2 cung nhân khiêng hai bên, 2 cung nữ cầm quạt lớn quạt hầu ở rìa'});
 
 // khung xem trước rộng/cao hơn bình thường cho cảnh lớn: [nhân chiều rộng, nhân chiều cao]
 window.ACTWIDE=Object.assign(window.ACTWIDE||{},{sbk:[1,1.1],hoangthuong:[1.8,1.15]});
