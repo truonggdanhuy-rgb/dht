@@ -212,7 +212,7 @@ function ttView(){
  let h='<div class="uh"><span><button class="b x" onclick="idTTBack()">‹ Thẻ</button> '+(isL?'⭐ Danh hiệu Level':'💞 Danh hiệu Bạn thân')+'</span><button class="b x" onclick="closeUI()">X</button></div>';
  imgs.forEach((src,i)=>{
   const need=isL?'Lv '+LV_FROM[i]+(i<4?' – '+(LV_FROM[i+1]-1):'+'):(i?bfExpAt[i]+' EXP tình bạn':'Kết bạn thân');
-  const st=i==cur?'✅ Đang dùng':i<cur?'Đã đạt':'🔒 Chưa đạt';
+  const st=i==cur?'✅ Đang dùng':i<cur?'🔓 Đã mở khóa':'🔒 Chưa mở khóa';
   h+='<div class="ttr'+(i==cur?' cur':i>cur?' lock':'')+'"><img alt="'+names[i]+'" src="'+src+'"><small><b>'+st+'</b> • '+need+'</small></div>'});
  openIdc(h)}
 window.idMenu=()=>{const m=$('idmenu');if(m)m.classList.toggle('on')};

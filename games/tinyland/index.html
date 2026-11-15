@@ -2311,7 +2311,7 @@ function lvUi(){const e=$('hlv');if(!e)return;const mx=ST.lv>=100;e.textContent=
 function addExp(n){if(ST.lv>=100){ST.exp=0;return ''}let up=0;ST.exp+=n;while(ST.lv<100&&ST.exp>=lvNeed(ST.lv)){ST.exp-=lvNeed(ST.lv);ST.lv++;up++}if(ST.lv>=100)ST.exp=0;lvUi();return up?'\n🎉 Lên cấp '+ST.lv+'!':''}
 const head=t=>'<div class="uh"><span>'+t+'</span><button class="b x" onclick="closeUI()">X</button></div>';
 var UIT=0;
-function openUI(h){$('ui').classList.remove('wui','tgn');if(!UI)UIT=performance.now();UI=1;MUI=-1;BUI=0;$('ui').style.top='';$('ui').innerHTML=h;$('ui').style.display='block';try{fmBarUp()}catch(e){}}
+function openUI(h){$('ui').classList.remove('wui','tgn','bbui');if(!UI)UIT=performance.now();UI=1;MUI=-1;BUI=0;$('ui').style.top='';$('ui').innerHTML=h;$('ui').style.display='block';try{fmBarUp()}catch(e){}}
 function closeUI(){if(fish&&fish.ph==0){ST.bait++}UI=0;MUI=-1;fish=null;$('ui').style.display='none';save();try{barUp()}catch(e){}try{fmBarUp()}catch(e){}}
 const rd=h=>Math.hypot(Math.max(h[0]-Pl.x,0,Pl.x-h[0]-h[2]),Math.max(h[1]-Pl.y,0,Pl.y-h[1]-h[3]));
 function act(h){const a=h[5];if(!a)return toast(h[4]);if(a.startsWith('cv:'))return cvAct(a.slice(3),h);if(a.startsWith('bench:')){const q=a.split(':');return benchSit(+q[1],+q[2])}if(a.startsWith('sitf:')){const q=a.split(':');SEAT.x=+q[1];SEAT.y=+q[2];return sitGo()}if(a=='sit')return sitGo();if(a=='gate')return switchMap('nt');if(a=='chb')return chbAct();if(a=='qb')return qUI();if(a=='home')return switchMap('hm');if(a.startsWith('hm:'))return hmAct(a.slice(3));if(a=='tug')return tugGame();if(a=='hd')return hdAct();if(a=='bench')return benchAct();if(a=='nc')return ncAct();if(a=='ln')return lnAct();if(a=='wr')return wrAct();if(a=='rr')return rrGame();if(a=='santa')return santaAct();if(a.startsWith('wchair:'))return wChair(a);if(a=='gift')return giftAct();if(a=='tl')return tlAct();if(a=='bl')return blAct();const[t,v]=a.split(':');
@@ -3143,7 +3143,63 @@ function tnLeft(){const ms=tnWk()+7*864e5-Date.now(),d=Math.floor(ms/864e5),h=Ma
  +'.tnb{height:12px;background:#e6d9b8;border:2px solid #7a4a26;margin-top:4px;position:relative}.tnb i{display:block;height:100%;background:linear-gradient(#ffb3dc,#c58bff)}'
  +'.tnq{background:linear-gradient(#fff6fb,#f6e6ff);border:2px solid #c9a0e0;padding:6px 8px;margin:5px 0;color:#4a2a5a;font-size:13px}.tnq.ok{background:linear-gradient(#f2ffe8,#dcf6c8);border-color:#8cc66a;color:#2f5a1c}.tnq b{display:block}.tnq small{color:#7a5a8a}'
  +'@media (max-width:700px){#hevrow{transform:scale(.82);transform-origin:top right;margin-top:-14px}}';document.head.appendChild(css)})();
-function bbUI(){openUI(head('🍼 Bé bỏng')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🍼</span><b>Sắp ra mắt!</b>Nhận nuôi baby và chăm sóc mỗi ngày.</div>')}
+(function(){const css=document.createElement('style');css.textContent=
+ '#ui.bbui{width:min(94vw,440px);max-height:90vh;background:linear-gradient(170deg,#f1fbf5 0%,#fff8e6 55%,#eef6ff 100%);border-color:#a9d3bc;box-shadow:0 3px 0 #86b79d;color:#4a6a5a;border-radius:18px}'
+ +'#ui.bbui .b.x{background:#dff3e8;border-color:#86b79d;box-shadow:0 2px 0 #86b79d;color:#3f6a55}'
+ +'.bbsc{border-radius:16px;overflow:hidden;border:2px solid #cfe6d9;background:#fff;line-height:0}.bbsc svg{width:100%;height:auto;display:block}'
+ +'.bbsw{transform-origin:150px 176px;animation:bbsw 4.2s ease-in-out infinite}@keyframes bbsw{0%,100%{transform:rotate(-1.8deg)}50%{transform:rotate(1.8deg)}}'
+ +'.bbmo{transform-origin:150px 22px;animation:bbsw 5.4s ease-in-out infinite reverse}'
+ +'.bbz{animation:bbz 3.2s ease-in-out infinite;opacity:0}.bbz2{animation-delay:1.4s}@keyframes bbz{0%{opacity:0;transform:translate(0,6px)}30%{opacity:.9}100%{opacity:0;transform:translate(8px,-14px)}}'
+ +'.bbtw{animation:bbtw 2.6s ease-in-out infinite}.bbtw2{animation-delay:1.1s}@keyframes bbtw{0%,100%{opacity:.25}50%{opacity:1}}'
+ +'.bbcard{background:rgba(255,255,255,.78);border:2px solid #d6eadf;border-radius:14px;padding:10px 12px;margin-top:8px}'
+ +'.bbnm{display:flex;justify-content:space-between;align-items:baseline;font-weight:800;font-size:15px;color:#3f6a55}.bbnm small{font-size:11px;color:#7b9a8a;font-weight:700}'
+ +'.bbbar{height:12px;border-radius:8px;background:#e8f1ec;border:2px solid #cfe6d9;overflow:hidden;box-sizing:content-box;margin-top:4px}.bbbar i{display:block;height:100%;border-radius:6px}'
+ +'.bbrow{margin-top:8px}.bbrow:first-child{margin-top:0}.bbrl{display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#5a7d6c}.bbrl b{color:#9bb5a7}'
+ +'.bbq{text-align:center;font-size:14px;font-weight:800;color:#3f6a55}.bbq small{display:block;font-size:11px;color:#7b9a8a;font-weight:700;margin-top:2px}'
+ +'.bbbt{display:block;width:100%;box-sizing:border-box;margin-top:8px;padding:9px;font:inherit;font-weight:800;font-size:14px;border-radius:12px;border:2px solid #cfe6d9;background:#eef6f1;color:#9bb5a7;cursor:default}'
+ +'.bbch{display:flex;gap:8px;margin-top:8px}.bbch .bbbt{margin-top:0;flex:1}'
+ +'.bbsoon{text-align:center;margin-top:10px;font-size:12px;font-weight:800;color:#7b9a8a}.bbsoon span{display:inline-block;padding:4px 12px;border-radius:12px;background:#fff3c9;border:2px solid #f0d98a;color:#9a7a1a}';
+ document.head.appendChild(css)})();
+const bbSoon=()=>toast('🍼 Bé bỏng sắp ra mắt, chờ chút nha!');
+function bbUI(){
+ const svg='<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+ +'<defs><linearGradient id="bbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e4f6ec"/><stop offset="1" stop-color="#fff4d8"/></linearGradient></defs>'
+ +'<rect width="300" height="200" fill="url(#bbg)"/>'
+ +'<ellipse cx="60" cy="40" rx="26" ry="9" fill="#fff" opacity=".8"/><ellipse cx="76" cy="34" rx="16" ry="8" fill="#fff" opacity=".8"/>'
+ +'<ellipse cx="248" cy="62" rx="22" ry="8" fill="#fff" opacity=".7"/>'
+ +'<g class="bbtw" fill="#ffd86b"><path d="M34 90l3 6 6 1-5 4 1 6-5-3-5 3 1-6-5-4 6-1z"/></g><g class="bbtw bbtw2" fill="#ffc9a8"><path d="M262 108l2 5 5 1-4 3 1 5-4-3-4 3 1-5-4-3 5-1z"/></g>'
+ +'<g class="bbtw" fill="#bfe8d4"><circle cx="46" cy="140" r="3"/><circle cx="256" cy="150" r="2.5"/></g>'
+ +'<g class="bbmo"><line x1="150" y1="0" x2="150" y2="22" stroke="#c9a56b" stroke-width="2"/><line x1="96" y1="22" x2="204" y2="22" stroke="#c9a56b" stroke-width="3" stroke-linecap="round"/>'
+ +'<line x1="100" y1="22" x2="100" y2="46" stroke="#d8c39a" stroke-width="1.5"/><path d="M100 44l3 6 6 1-5 4 1 6-5-3-5 3 1-6-5-4 6-1z" fill="#ffd86b"/>'
+ +'<line x1="150" y1="22" x2="150" y2="54" stroke="#d8c39a" stroke-width="1.5"/><path d="M150 52a9 9 0 1 0 8 13 7 7 0 0 1-8-13z" fill="#ffe6a8"/>'
+ +'<line x1="200" y1="22" x2="200" y2="42" stroke="#d8c39a" stroke-width="1.5"/><g fill="#fff" stroke="#cfe3f5" stroke-width="1"><circle cx="195" cy="48" r="6"/><circle cx="204" cy="46" r="7"/><circle cx="210" cy="50" r="5"/><rect x="192" y="48" width="20" height="7" rx="3.5" stroke="none"/></g></g>'
+ +'<ellipse cx="150" cy="184" rx="92" ry="8" fill="#000" opacity=".08"/>'
+ +'<g class="bbsw"><path d="M92 176q58 14 116 0" fill="none" stroke="#c99a5b" stroke-width="5" stroke-linecap="round"/>'
+ +'<path d="M58 118C62 160 100 172 150 172S238 160 242 118Z" fill="#f3d6a4" stroke="#d6b073" stroke-width="3" stroke-linejoin="round"/>'
+ +'<g fill="none" stroke="#e6c48c" stroke-width="2" stroke-linecap="round"><path d="M70 134q80 22 160 0"/><path d="M80 150q70 18 140 0"/><path d="M100 164q50 10 100 0"/><path d="M110 120v46M150 124v48M190 120v46" opacity=".6"/></g>'
+ +'<ellipse cx="150" cy="118" rx="92" ry="13" fill="#e9c88c" stroke="#d6b073" stroke-width="3"/><ellipse cx="150" cy="119" rx="82" ry="9" fill="#fff6dc"/>'
+ +'<ellipse cx="146" cy="104" rx="22" ry="12" fill="#fff" opacity=".9"/>'
+ +'<circle cx="146" cy="98" r="21" fill="#ffe3cc"/><path d="M128 92q18-18 36 0q-18-8-36 0z" fill="#fff0c9"/>'
+ +'<path d="M137 99q4 4 8 0M149 99q4 4 8 0" fill="none" stroke="#7a5a4a" stroke-width="2" stroke-linecap="round"/>'
+ +'<ellipse cx="135" cy="107" rx="4.5" ry="3" fill="#ffb7a0" opacity=".7"/><ellipse cx="159" cy="107" rx="4.5" ry="3" fill="#ffb7a0" opacity=".7"/>'
+ +'<path d="M144 108q3 3 6 0" fill="none" stroke="#c9806a" stroke-width="1.8" stroke-linecap="round"/>'
+ +'<path d="M84 121Q150 104 216 121L212 128Q150 146 88 128Z" fill="#bfe8d4"/><g fill="#fff" opacity=".85"><circle cx="110" cy="124" r="2"/><circle cx="135" cy="128" r="2"/><circle cx="165" cy="128" r="2"/><circle cx="190" cy="124" r="2"/></g>'
+ +'<path d="M58 118Q150 150 242 118" fill="none" stroke="#d6b073" stroke-width="6" stroke-linecap="round"/><path d="M58 118Q150 150 242 118" fill="none" stroke="#e9c88c" stroke-width="3" stroke-linecap="round"/></g>'
+ +'<g font-family="sans-serif" font-weight="800" fill="#9bb5d6"><text class="bbz" x="190" y="88" font-size="14">z</text><text class="bbz bbz2" x="200" y="74" font-size="18">Z</text></g>'
+ +'</svg>';
+ const bar=(ic,n,c)=>'<div class="bbrow"><div class="bbrl"><span>'+ic+' '+n+'</span><b>—</b></div><div class="bbbar"><i style="width:0;background:'+c+'"></i></div></div>';
+ openUI(head('🍼 Bé bỏng')
+  +'<div class="bbsc">'+svg+'</div>'
+  +'<div class="bbcard"><div class="bbnm"><span>Em bé</span><small>Nằm trong nôi</small></div>'
+  +'<div class="bbrow"><div class="bbrl"><span>⭐ EXP</span><b>0 / 100</b></div><div class="bbbar"><i style="width:0;background:linear-gradient(90deg,#ffe08a,#ffc24d)"></i></div></div>'
+  +'<div class="bbq" style="margin-top:6px;font-size:11px;color:#7b9a8a;font-weight:700">Đủ 100 EXP bé sẽ lớn</div></div>'
+  +'<div class="bbcard">'+bar('😊','Vui vẻ','linear-gradient(90deg,#ffe08a,#ffb84d)')+bar('🍼','No bụng','linear-gradient(90deg,#b5e8d0,#6cc7a3)')+'</div>'
+  +'<div class="bbcard"><div class="bbq">Bạn muốn nhận nuôi em bé không?</div>'
+  +'<button class="bbbt" onclick="bbSoon()">💝 Nhận nuôi</button>'
+  +'<div class="bbq" style="margin-top:12px">Bạn muốn em bé gọi bạn là<small>Không thể thay đổi sau này</small></div>'
+  +'<div class="bbch"><button class="bbbt" onclick="bbSoon()">Anh</button><button class="bbbt" onclick="bbSoon()">Chị</button></div></div>'
+  +'<div class="bbsoon"><span>✨ Sắp ra mắt</span></div>');
+ $('ui').classList.add('bbui')}
 function evUI(){tnEnsure();
  openUI(head('🎉 Sự kiện')
   +'<button class="b w" style="font-size:15px;padding:12px;margin-top:6px" onclick="evTnUI()">🧚 Sự kiện Tiên Nữ</button>'
@@ -4736,6 +4792,37 @@ Object.assign(window.FMANI,{gate:(a,X,Y)=>{const t=performance.now()/1000;cx.dra
  PET.forEach(([x,ph])=>{const u=(t*.18+ph*.17)%1,px=a.x+1+x+Math.sin(t*1.3+ph)*4,py=a.y+1+14+u*34;r('rgba(255,170,200,'+(.9*(1-u)).toFixed(2)+')',Math.round(px),Math.round(py),2,1)})}});
 })();
 
+/* ---- Cối xay gió (2x2, cao) & Tua bin gió (1x1, cao hơn) — cánh quạt quay ---- */
+const wmBl=(g,hx,hy,a,n,len,mode)=>{g.save();g.translate(Math.round(hx),Math.round(hy));
+ for(let k=0;k<n;k++){g.save();g.rotate(a+k*Math.PI*2/n);
+  if(mode=='mill'){g.fillStyle='#8a5a2e';g.fillRect(0,-1,len,2);g.fillStyle='#b98350';g.fillRect(0,-1,len,1);
+   g.fillStyle='#f6efd8';g.fillRect(5,-7,len-6,6);g.fillStyle='#c9a066';g.fillRect(5,-7,len-6,1);g.fillRect(5,-2,len-6,1);
+   for(let x=8;x<len;x+=4)g.fillRect(x,-7,1,6)}
+  else{g.beginPath();g.moveTo(0,-1.6);g.lineTo(len,-.5);g.lineTo(len,.5);g.lineTo(0,1.6);g.closePath();g.fillStyle='#f7fafc';g.fill();
+   g.fillStyle='#e5484d';g.fillRect(len-4,-.7,4,1.4)}
+  g.restore()}
+ g.fillStyle=mode=='mill'?'#7a4a26':'#c9d1d8';g.beginPath();g.arc(0,0,mode=='mill'?3.2:2.6,0,7);g.fill();
+ g.fillStyle=mode=='mill'?'#d9a566':'#ffffff';g.beginPath();g.arc(0,0,1.3,0,7);g.fill();g.restore()};
+S_.windB=mk(52,62,(g,r)=>{
+ E(r,'rgba(0,0,0,.2)',26,60,17,2);
+ for(let y=22;y<=59;y++){const w=Math.round(14+(y-22)*12/37),x=26-(w>>1),br=((y-22)>>2)%2;
+  r(br?'#e9d6ad':'#f2e2c0',x,y,w,1);r('#d4bd8c',x+w-3,y,3,1);if((y-22)%4==3)r('#cdb482',x,y,w,1)}
+ r('#7a4a26',22,50,8,10);r('#7a4a26',23,49,6,1);r('#a8794a',22,50,1,10);r('#ffd23f',28,55,1,1);
+ r('#7a4a26',23,33,6,7);r('#bfe6ff',24,34,4,5);r('#7a4a26',25,34,1,5);r('#7a4a26',24,36,4,1);
+ for(let i=0;i<10;i++){const w=2+i*2;r(i%3?'#c0502f':'#d96a48',26-(w>>1),12+i,w,1);r('#9a3a22',26+(w>>1)-2,12+i,2,1)}
+ r('#7a2f1f',15,22,22,1);r('#ffd9a8',25,10,2,2)});
+S_.wind=mk(52,62,g=>{g.drawImage(S_.windB,0,0);wmBl(g,26,24,.45,4,21,'mill')});
+S_.turbB=mk(40,84,(g,r)=>{
+ E(r,'rgba(0,0,0,.2)',20,82,9,1);
+ for(let y=22;y<=80;y++){const w=3+Math.round((y-22)*3/58),x=20-(w>>1);r('#f4f6f8',x,y,w,1);r('#c9d1d8',x+w-1,y,1,1)}
+ r('#9aa3ab',13,79,14,3);r('#c9d1d8',13,79,14,1);
+ r('#e8edf1',15,18,11,7);r('#c9d1d8',15,24,11,1);r('#e5484d',13,19,2,5);r('#ffffff',16,19,3,1)});
+S_.turb=mk(40,84,g=>{g.drawImage(S_.turbB,0,0);wmBl(g,20,21,-Math.PI/2,3,19,'turb')});
+const oWm=outl(S_.windB),oTb=outl(S_.turbB);
+Object.assign(window.FMANI,{
+ coixay:(a,X,Y)=>{cx.drawImage(oWm,a.x,a.y);wmBl(cx,a.x+1+26,a.y+1+24,performance.now()/1000*.9,4,21,'mill')},
+ tuabin:(a,X,Y)=>{cx.drawImage(oTb,a.x,a.y);wmBl(cx,a.x+1+20,a.y+1+21,performance.now()/1000*2.4,3,19,'turb')}});
+
 const FMP=10;/* giá mọi món decor: 10 Xu */
 const FMD={
  cau:['Cây cau',()=>S_.cau,1,1,1,'c'],chuoi:['Cây chuối',()=>S_.chuoi,1,1,1,'c'],ban:['Cây bàng',()=>S_.ban,1,1,1,'c'],dua:['Cây dừa',()=>S_.dua,1,1,1,'c'],nipa:['Dừa nước',()=>S_.nipa,1,1,0,'c'],
@@ -4743,7 +4830,8 @@ const FMD={
  rom:['Đống rơm',()=>S_.rom,2,1,1,'v'],hay:['Bó rơm',()=>S_.hay,1,1,0,'v'],chum:['Chum sành',()=>S_.chum,1,1,0,'v'],well:['Giếng làng',()=>S_.well,2,1,1,'v'],
  bunhin:['Bù nhìn',()=>S_.bunhin,1,1,0,'v'],gian:['Giàn bầu',()=>S_.gian,3,1,1,'v'],mieu:['Miếu thổ địa',()=>S_.mieu,2,1,1,'v'],
  nong_d9302a:['Nia đỏ',()=>nong('#d9302a'),2,1,0,'v'],nong_e8c040:['Nia vàng',()=>nong('#e8c040'),2,1,0,'v'],
- hosen:['Hồ sen',()=>S_.hosen,6,3,1,'k',200],choi:['Chòi nghỉ',()=>S_.choi,4,1,1,'k',150]};
+ hosen:['Hồ sen',()=>S_.hosen,6,3,1,'k',200],choi:['Chòi nghỉ',()=>S_.choi,4,1,1,'k',150],
+ coixay:['Cối xay gió',()=>S_.wind,2,2,1,'k',500],tuabin:['Tua bin gió',()=>S_.turb,1,1,1,'k',200]};
 const fmPr=k=>(FMD[k]&&FMD[k][6])||FMP;
 const FMHOA=hoa();
 [['ff6f91','hồng'],['ffd23f','vàng'],['ffffff','trắng'],['c77dff','tím'],['ff9f45','cam']].forEach(([c,n])=>{FMD['b'+c]=['Bụi hoa '+n,()=>S_.bush('#'+c),1,1,0,'b']});
