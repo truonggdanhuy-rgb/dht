@@ -3096,22 +3096,25 @@ function tickMach(dt){let ch=false;const n=now(),done={};let xp=0;
 /* ===================================================================================
    SỰ KIỆN TIÊN NỮ  (nút 🎉 Sự kiện dưới panel avatar)
    • Mỗi tuần (từ 0h Thứ Hai, giờ máy) có 1 danh sách 6 nhiệm vụ: 5 món nấu khác nhau + 1 nhiệm vụ câu quái vật.
-     Danh sách sinh theo số tuần (ai cũng giống nhau), hết tuần là mất & đổi chuỗi mới (mảnh ghép đã nhận thì giữ).
+     Danh sách sinh theo số tuần (ai cũng giống nhau), 15 món xoay vòng 3 tuần/vòng, hết tuần là mất & đổi chuỗi mới (mảnh ghép đã nhận thì giữ).
    • Xong 1 nhiệm vụ → tự nhận 1 🧩 Mảnh ghép Tiên Nữ. Đủ 10 mảnh → ra NPC Tiên Nữ (Công viên) ghép 1 🎫 Phiếu Tiên Giới.
    • DỮ LIỆU: ST.tn = {wk:mốc đầu tuần, q:[{k:'cook'|'mon',n:tên món,need,p,done}], pc:số mảnh, tk:số phiếu}
    • Muốn đổi món/số lượng: sửa TN_DISH (tên món PHẢI trùng tên trong MACHS) và TN_MON bên dưới.
    =================================================================================== */
 const TN_NEED=10;
-const TN_DISH=['Cơm trắng','Cơm trứng','Xôi trắng','Xôi bắp','Cà chua đóng hộp','Dưa leo muối','Cơm cà chua trứng','Xôi đậu xanh'];   // món dễ, rẻ, nguyên liệu cơ bản
-const TN_MON=[10,12];   // số quái vật phải câu: từ..đến
+const TN_DISH=['Cơm trắng','Cơm trứng','Xôi trắng','Xôi bắp','Cà chua đóng hộp','Dưa leo muối','Cơm cà chua trứng','Xôi đậu xanh','Bắp cải muối','Mướp đóng hộp','Xôi gà','Cơm xào','Mướp xào trứng','Khoai lang chiên','Dưa leo ngâm ớt'];   // 15 món dễ/rẻ = 3 tuần xoay vòng (mỗi tuần 5 món, hết 1 vòng mới xáo lại)
+const TN_MON=[50,60],TN_V=2;   // số quái vật phải câu: từ..đến • TN_V: tăng số này để ép sinh lại danh sách khi đổi cân bằng
+const TN_COOK=[25,40],TN_COOK2=[20,35];   // số lần nấu: món thường • món nhiều nguyên liệu (từ 3 loại trở lên hoặc từ 4 phần trở lên)
 function tnWk(){const d=new Date(),k=(d.getDay()+6)%7;return new Date(d.getFullYear(),d.getMonth(),d.getDate()-k).getTime()}
 function tnRng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
-function tnGen(wk){const R=tnRng(Math.floor(wk/864e5)*7919+13),pool=TN_DISH.slice(),q=[];
- for(let i=0;i<5;i++){const j=Math.floor(R()*pool.length),n=pool.splice(j,1)[0],o=PRODS.find(x=>x.n==n),slow=o&&o.min>=8;
-  q.push({k:'cook',n,need:3+Math.floor(R()*(slow?2:3)),p:0,done:0})}
+function tnGen(wk){const wi=Math.round((wk/864e5-4)/7),per=Math.floor(TN_DISH.length/5),cyc=Math.floor(wi/per),ph=((wi%per)+per)%per,R0=tnRng(cyc*7919+13),pool=TN_DISH.slice();
+ for(let i=pool.length-1;i>0;i--){const j=Math.floor(R0()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+ const R=tnRng(wi*104729+7),q=[];
+ pool.slice(ph*5,ph*5+5).forEach(n=>{const o=PRODS.find(x=>x.n==n),hard=o&&(o.ing.length>=3||o.ing.reduce((a,i)=>a+i.n,0)>=4),r=hard?TN_COOK2:TN_COOK;
+  q.push({k:'cook',n,need:r[0]+Math.floor(R()*(r[1]-r[0]+1)),p:0,done:0})});
  q.push({k:'mon',n:'',need:TN_MON[0]+Math.floor(R()*(TN_MON[1]-TN_MON[0]+1)),p:0,done:0});return q}
 function tnEnsure(){const wk=tnWk();if(!ST.tn||typeof ST.tn!='object')ST.tn={};const T=ST.tn;T.pc=T.pc|0;T.tk=T.tk|0;
- if(T.wk!==wk||!Array.isArray(T.q)){T.wk=wk;T.q=tnGen(wk)}return T}
+ if(T.wk!==wk||T.v!==TN_V||!Array.isArray(T.q)){T.wk=wk;T.v=TN_V;T.q=tnGen(wk)}return T}
 function tnProg(kind,name){const T=tnEnsure();let g=0;
  for(const q of T.q){if(q.done||q.k!=kind||(kind=='cook'&&q.n!=name))continue;q.p=Math.min(q.need,q.p+1);if(q.p>=q.need){q.done=1;T.pc++;g++}}
  if(g)setTimeout(()=>toast('🧚 Hoàn thành nhiệm vụ Tiên Nữ!\n+'+g+' 🧩 Mảnh ghép Tiên Nữ ('+T.pc+')'),1500)}
