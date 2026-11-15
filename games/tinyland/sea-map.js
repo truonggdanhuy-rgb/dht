@@ -478,6 +478,8 @@ const QSHOP=[
  {t:'h',k:'hawaii',p:500},
  {t:'s',k:'hwm',p:900},
  {t:'s',k:'hwf',p:900},
+ {t:'s',k:'duckm',p:3000},
+ {t:'s',k:'duckf',p:3000},
  {t:'h',k:'luffy',p:1200},
  {t:'a',k:'starfish',p:3000},
  {t:'a',k:'octobub',p:3000}];
