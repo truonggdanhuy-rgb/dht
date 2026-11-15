@@ -252,7 +252,9 @@ const MH=[
  {n:'Luffy mũ rơm',p:1500,r:0,w:8},
  {n:'Tom & Jerry',p:2000,r:0,w:7},
  {n:'Batman',p:2500,r:1,w:5},
- {n:'Spiderman',p:3000,r:1,w:4}
+ {n:'Spiderman',p:3000,r:1,w:4},
+ {n:'Minion',p:1200,r:0,w:9},
+ {n:'SpongeBob',p:1800,r:0,w:8}
 ];
 // tỉ lệ rơi: mô hình hiếm chỉ ít hơn một chút
 const MHW=MH.map(m=>m.w),MHT=MHW.reduce((a,b)=>a+b,0);
@@ -757,7 +759,84 @@ function dTJ(g,t){
  [[30,8,0],[58,30,.5],[34,20,.8]].forEach(s=>{const a=fr(t*.8+s[2]);spk(g,s[0],s[1],2,Math.sin(a*Math.PI)*.9,'#fff7c0')});
 }
 
-const ART=[(g,t)=>dStar(g,t,'g'),(g,t)=>dStar(g,t,'r'),dRobot,dCinder,dCat,dPirate,dDragon,dFox,dShin,dLuffy,dTJ,dBat,dSpider];
+/* ---------- MINION (nhảy tưng tưng, vẫy tay cầm chuối, mắt đảo) ---------- */
+function dMinion(g,t){
+ const O='#5a4a10',Y=lg(g,16,0,48,0,[[0,'#ffe45c'],[.5,'#ffd51f'],[1,'#e8b610']]);
+ const hop=Math.abs(Math.sin(t*3))*3.2;
+ shadow(g,32,58,13-hop*.5,.14);
+ g.save();g.translate(32,57);g.scale(1+(hop<.4?.04:0),1-(hop<.4?.04:0));g.translate(-32,-57-hop);
+ // chân + giày
+ for(const x of[25,33]){rr(g,x,48,6,6,2);fs(g,'#2f6fb8',O,.8);ell(g,x+3,55.4,4.6,2.4,'#2a2a30');}
+ // thân
+ rr(g,21,10,22,42,11);fs(g,Y,O,1.1);
+ g.save();rr(g,21,10,22,42,11);g.clip();g.fillStyle='#3a79c8';g.fillRect(20,37,24,18);
+ g.fillStyle='rgba(255,255,255,.22)';g.fillRect(20,37,24,1.6);g.restore();
+ rr(g,26.6,38.6,10.8,7,2);fs(g,'#4a8ad6','#245a9a',.8);
+ g.lineWidth=2;g.lineCap='round';g.strokeStyle='#3a79c8';g.beginPath();g.moveTo(24,36);g.lineTo(21.4,33.6);g.moveTo(40,36);g.lineTo(42.6,33.6);g.stroke();
+ ell(g,24.2,37.2,1.1,1.1,'#ffd51f');ell(g,39.8,37.2,1.1,1.1,'#ffd51f');
+ ell(g,27,15,2.2,5.4,'rgba(255,255,255,.35)',.2);
+ // tóc
+ g.lineWidth=.9;g.strokeStyle='#2a2a30';g.beginPath();[[-3,-1],[0,0],[3,1]].forEach(s=>{g.moveTo(32,10.4);g.quadraticCurveTo(32+s[0]*1.4,6,32+s[0]*2.2+s[1],5)});g.stroke();
+ // kính
+ rr(g,20.4,19.8,23.2,4.6,0);fs(g,'#4a4f5c',null);
+ for(const x of[27.4,36.6]){ell(g,x,22,5.7,5.7,lg(g,x-5,16,x+5,28,[[0,'#e8ecf4'],[1,'#8a93a8']]));g.beginPath();g.arc(x,22,5.7,0,TAU);g.lineWidth=1;g.strokeStyle='#3a3f4c';g.stroke();ell(g,x,22,4.2,4.2,'#fff')}
+ const b=blink(t,.2),lx=Math.sin(t*1.4)*1.1;
+ for(const x of[27.4,36.6]){ell(g,x+lx,22.2,2.1,2.1*Math.max(.15,b),'#7a4a24');if(b>.5){ell(g,x+lx,22.2,1,1,'#14101a');ell(g,x+lx-.6,21.5,.5,.5,'#fff')}}
+ spk(g,23.6+fr(t*.6)*7,19.6,1.4,Math.sin(fr(t*.6)*Math.PI)*.8,'#fff');
+ // miệng
+ const mo=1.4+Math.max(0,Math.sin(t*5))*1.4;
+ g.beginPath();g.moveTo(26.4,30);g.quadraticCurveTo(32,30+mo*2.4,37.6,30);g.closePath();fs(g,'#6a2a22','#3a1a14',.7);g.save();g.clip();rr(g,26,29.6,12,1.6,0);fs(g,'#fff',null);ell(g,32,30+mo*1.6,2.6,1,'#e8607a');g.restore();
+ // tay
+ limb(g,21.4,38,15.6,43.6,3.4,'#ffd51f',O);ell(g,15,44.4,2.2,2.2,'#2a2a30');
+ const hx=47+Math.sin(t*5)*1.2,hy=33+Math.sin(t*5+1)*2;limb(g,42.6,38,hx,hy,3.4,'#ffd51f',O);ell(g,hx+.4,hy-.4,2.3,2.3,'#2a2a30');
+ // chuối
+ g.save();g.translate(hx+.6,hy-1.6);g.rotate(.5+Math.sin(t*5)*.1);g.beginPath();g.moveTo(-1.4,0);g.quadraticCurveTo(-3.6,-6,.8,-11);g.quadraticCurveTo(1.6,-11.6,2.2,-10.8);g.quadraticCurveTo(-.4,-6,1.6,0);g.closePath();fs(g,'#ffe84a','#8a6a10',.7);rr(g,-.2,-12.8,1.6,2.4,.6);fs(g,'#6a5a20',null);g.restore();
+ g.restore();
+ [[10,16,0],[55,14,.4],[8,44,.7]].forEach(s=>{const a=fr(t*.8+s[2]);spk(g,s[0],s[1],2,Math.sin(a*Math.PI)*.9,'#fff7c0')});
+ rise(g,t,2,20,22,5,14,3,3,(g,x,y,ph,i)=>note(g,x,y,.8,i?'#ffb300':'#ff7a9a',i==0,Math.sin(ph*Math.PI)*.9));
+}
+
+/* ---------- SPONGEBOB (cười ha ha, nảy người, bong bóng bay lên) ---------- */
+function dSponge(g,t){
+ const O='#7a5a10',Y=lg(g,0,10,0,40,[[0,'#ffee6a'],[1,'#f2c818']]);
+ const hop=Math.abs(Math.sin(t*3.2))*2.8;
+ shadow(g,32,58,16-hop*.5,.14);
+ // bong bóng phía sau
+ rise(g,t,5,48,40,8,34,3.6,1,(g,x,y,ph,i)=>{const r=1.6+rnd(i+5)*2,a=Math.sin(ph*Math.PI)*.9;g.save();g.globalAlpha=a;g.beginPath();g.arc(x,y,r,0,TAU);g.fillStyle='rgba(190,230,255,.35)';g.fill();g.lineWidth=.6;g.strokeStyle='rgba(120,180,230,.9)';g.stroke();ell(g,x-r*.35,y-r*.35,r*.28,r*.28,'rgba(255,255,255,.9)');g.restore()});
+ g.save();g.translate(32,57);g.scale(1+Math.sin(t*6.4)*.012,1);g.translate(-32,-57-hop);
+ // chân
+ for(const x of[24.6,39.4]){g.lineCap='round';g.beginPath();g.moveTo(x,49);g.lineTo(x,54);g.lineWidth=3.6;g.strokeStyle=O;g.stroke();g.lineWidth=2;g.strokeStyle='#ffe040';g.stroke();
+  rr(g,x-1.7,51.4,3.4,3,.4);fs(g,'#fff','#8a8a8a',.5);rr(g,x-1.7,52.4,3.4,.9,0);fs(g,'#d9433b',null);ell(g,x+(x<32?-1.2:1.2),56,3.8,2,'#2a2a30')}
+ // quần + sơ mi + cà vạt
+ rr(g,17,41.4,30,8.4,2);fs(g,'#a8743a',O,1);ell(g,32,45.6,1.1,1.1,'#ffd23f');
+ rr(g,17,37.6,30,4.6,1.4);fs(g,'#fff','#8a8a8a',.8);
+ g.beginPath();g.moveTo(30.4,38);g.lineTo(33.6,38);g.lineTo(34,41.4);g.lineTo(32,43);g.lineTo(30,41.4);g.closePath();fs(g,'#e63946','#8a1f2a',.6);
+ // tay
+ limb(g,17.4,31,10.4,36.6,2.6,'#ffe040',O);ell(g,9.6,37.4,2,2,'#ffe040');
+ const wy=26+Math.sin(t*5)*2.4;limb(g,46.6,31,53,wy,2.6,'#ffe040',O);ell(g,53.6,wy-.8,2.1,2.1,'#ffe040');
+ // thân bọt biển
+ rr(g,16,9.4,32,29,3.4);fs(g,Y,O,1.2);
+ g.save();rr(g,16,9.4,32,29,3.4);g.clip();
+ [[21,13,2.2,1.5],[41,12,1.8,1.3],[43,32,2.4,1.6],[20,33,2,1.4],[37,36,1.5,1.1],[24,11.6,1.2,.8]].forEach(h=>ell(g,h[0],h[1],h[2],h[3],'rgba(200,150,20,.55)'));
+ g.restore();
+ // mắt
+ const b=blink(t,.1);
+ for(const x of[26.4,37.6]){ell(g,x,19.4,5.2,5.4*Math.max(.12,b),'#fff');g.beginPath();g.ellipse(x,19.4,5.2,5.4*Math.max(.12,b),0,0,TAU);g.lineWidth=.9;g.strokeStyle='#4a4a4a';g.stroke();
+  if(b>.5){ell(g,x+Math.sin(t*1.3)*.5,19.8,2.7,2.8,'#4aa8e8');ell(g,x+Math.sin(t*1.3)*.5,19.8,1.2,1.3,'#14101a');ell(g,x-.6,18.8,.7,.7,'#fff')}
+  g.lineWidth=.8;g.lineCap='round';g.strokeStyle='#14101a';g.beginPath();[[-3,-1],[0,-1.6],[3,-1]].forEach(s=>{g.moveTo(x+s[0]*.9,14.2);g.lineTo(x+s[0]*1.5,12.2+s[1]*.3)});g.stroke()}
+ ell(g,32,24.6,1.2,1.9,'#e8b610');
+ // má + tàn nhang
+ ell(g,22.4,27.6,3,3,'rgba(255,170,130,.55)');ell(g,41.6,27.6,3,3,'rgba(255,170,130,.55)');
+ [[21.2,27.4],[23,28.4],[22.2,26.4],[40.8,28.4],[42.6,27.4],[41.8,26.4]].forEach(f=>ell(g,f[0],f[1],.35,.35,'#c4642a'));
+ // miệng cười + răng cửa
+ const mo=Math.max(0,Math.sin(t*6.4))*1.4;
+ g.beginPath();g.moveTo(23.4,28.8);g.quadraticCurveTo(32,35.6+mo*2.4,40.6,28.8);g.quadraticCurveTo(32,31.4,23.4,28.8);g.closePath();fs(g,'#7a2a22','#4a1a14',.7);
+ rr(g,29.4,30.2,2.6,3.2,.5);fs(g,'#fff','#8a8a8a',.5);rr(g,32.2,30.2,2.6,3.2,.5);fs(g,'#fff','#8a8a8a',.5);
+ g.restore();
+ [[8,12,0],[56,10,.5],[7,46,.8]].forEach(s=>{const a=fr(t*.8+s[2]);spk(g,s[0],s[1],2,Math.sin(a*Math.PI)*.9,'#fff7c0')});
+}
+
+const ART=[(g,t)=>dStar(g,t,'g'),(g,t)=>dStar(g,t,'r'),dRobot,dCinder,dCat,dPirate,dDragon,dFox,dShin,dLuffy,dTJ,dBat,dSpider,dMinion,dSponge];
 return function(g,i,t){
  if(MH[i]&&MH[i].r){glow(g,32,32,32,'255,214,90',.2+.07*Math.sin(t*2));}
  ART[i](g,t);
