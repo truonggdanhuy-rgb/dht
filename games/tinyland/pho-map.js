@@ -491,7 +491,7 @@ window.whGo=n=>{if(WA)return;const tk=ST.tk|0,useT=Math.min(tk,n),cost=(n-useT)*
  if(ST.xu<cost||(n==1&&!tk&&ST.xu<WH_COST))return toast('🪙 Không đủ Xu để quay (cần '+cost+' Xu)');
  ST.tk=tk-useT;ST.xu-=cost;
  const res=[];for(let k=0;k<n;k++){const i=whRoll();res.push(i);const s=WHS[i];if(s.xu)ST.xu+=s.xu;else ST.dia=(ST.dia|0)+s.dia}
- let xpGot=0,lvMsg='';if(n==10&&ST.lv<100){for(let k=0;k<n;k++)xpGot+=1+Math.floor(Math.random()*2);lvMsg=addExp(xpGot)}   // x10: mỗi lượt quay nhận ngẫu nhiên 1-2 EXP (quay lẻ x1 không có)
+ let xpGot=0,lvMsg='';if(n==10&&ST.lv<100){xpGot=1+Math.floor(Math.random()*2);lvMsg=addExp(xpGot)}   // x10: cả lượt quay nhanh chỉ nhận ngẫu nhiên 1-2 EXP 1 lần (quay lẻ x1 không có)
  xuUp();save();
  const last=res[res.length-1];let msg;
  if(n==1)msg=res[0]==3?'💎 KIM CƯƠNG!!! Chúc mừng bạn!':'🎉 Trúng '+whName(res[0])+'!';
