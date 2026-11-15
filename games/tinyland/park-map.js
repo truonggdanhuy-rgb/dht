@@ -769,7 +769,7 @@ function boatTick(){ // gọi mỗi khung hình khi đang ở trên thuyền
 
 window.cvAct=(a,h)=>{const[t,v]=a.split(':');
  if(t=='tn')return tnNpcUI();if(t=='ti')return tiNpcUI();if(t=='boat')return boardBoat();if(t=='seat')return trySeat(+v);if(t=='horse')return tryHorse(+v);
- if(t=='npc')return toast(['🧋 Cô Ba: "Trà đá 3 nghìn nè con!"','🧋 Cô Ba: "Nước mía mới ép, mát lắm nghen!"','🧋 Cô Ba: "Ngồi ghế nhựa đi con, nghỉ chân chút!"'][Math.floor(Math.random()*3)])};
+ if(t=='npc')return window.buffShopUI?buffShopUI('nm'):toast(['🧋 Cô Ba: "Trà đá 3 nghìn nè con!"','🧋 Cô Ba: "Nước mía mới ép, mát lắm nghen!"','🧋 Cô Ba: "Ngồi ghế nhựa đi con, nghỉ chân chút!"'][Math.floor(Math.random()*3)])};
 
 // ---------- người chơi khác ----------
 function drawOther(o,tm){let X,Y,sit=0,lift=0;

@@ -307,7 +307,7 @@ function build(){
  hit(368,222,70,34,'🍜 Bàn ghế nhựa trước quán phở');
  // xe bánh mì
  put(mkBmCart(),500,258,[464,242,536,258]);
- hit(462,208,76,50,'🥖 Xe bánh mì — "Bánh mì nóng giòn đây!"');
+ hit(462,208,76,50,'🥖 Xe bánh mì — "Bánh mì nóng giòn đây!"','cv:ps:bm');
  mkNpc({id:'bm',x:550,y:252,d:2,set:0,hair:0,prop:'',lines:['Bánh mì nóng giòn đây!','Cho thêm ớt hông con?','Hết ổ này là nghỉ nha!','Pate nhà làm, thơm lắm nè.']});
  mkNpc({id:'k1',x:482,y:267,d:1,set:2,hair:1,prop:'bm',lines:['Cho tui ổ không hành nghen.','Thơm quá trời luôn!','Chú ơi, nhanh nhanh giùm nha.']});
  mkNpc({id:'k2',x:518,y:269,d:1,set:5,hair:2,prop:'',lines:['Cho 2 ổ mang đi nha chú!','Bánh mì chú này ngon nhất phố.']});
@@ -491,11 +491,12 @@ window.whGo=n=>{if(WA)return;const tk=ST.tk|0,useT=Math.min(tk,n),cost=(n-useT)*
  if(ST.xu<cost||(n==1&&!tk&&ST.xu<WH_COST))return toast('🪙 Không đủ Xu để quay (cần '+cost+' Xu)');
  ST.tk=tk-useT;ST.xu-=cost;
  const res=[];for(let k=0;k<n;k++){const i=whRoll();res.push(i);const s=WHS[i];if(s.xu)ST.xu+=s.xu;else ST.dia=(ST.dia|0)+s.dia}
+ let xpGot=0,lvMsg='';if(n==10&&ST.lv<100){for(let k=0;k<n;k++)xpGot+=1+Math.floor(Math.random()*2);lvMsg=addExp(xpGot)}   // x10: mỗi lượt quay nhận ngẫu nhiên 1-2 EXP (quay lẻ x1 không có)
  xuUp();save();
  const last=res[res.length-1];let msg;
  if(n==1)msg=res[0]==3?'💎 KIM CƯƠNG!!! Chúc mừng bạn!':'🎉 Trúng '+whName(res[0])+'!';
  else{const c={};res.forEach(i=>c[i]=(c[i]||0)+1);const xu=res.reduce((a,i)=>a+(WHS[i].xu||0),0),dia=c[3]||0;
-  msg='⚡ x10: '+Object.keys(c).sort((a,b)=>WHS[a].xu-WHS[b].xu).map(i=>(WHS[i].dia?'💎':WHS[i].xu+' Xu')+' ×'+c[i]).join(' • ')+'<br>Tổng: +'+xu+' Xu'+(dia?' • +'+dia+' 💎':'')}
+  msg='⚡ x10: '+Object.keys(c).sort((a,b)=>WHS[a].xu-WHS[b].xu).map(i=>(WHS[i].dia?'💎':WHS[i].xu+' Xu')+' ×'+c[i]).join(' • ')+'<br>Tổng: +'+xu+' Xu'+(dia?' • +'+dia+' 💎':'')+(xpGot?' • +'+xpGot+' EXP'+lvMsg.replace(/\n/g,'<br>'):'')}
  const from=WTH%(Math.PI*2),jit=(Math.random()-.5)*Math.PI/3*.7,to=from+Math.PI*2*(n==1?5:2)+(((-(last+.5)*Math.PI/3+jit)-from)%(Math.PI*2)+Math.PI*2)%(Math.PI*2),tok=++WTOK,
   fin=()=>{const r=$('whr');if(r)r.innerHTML=msg;whInfo();if(res.includes(3))toast('💎 Bạn vừa trúng Kim cương!')};
  WA={t0:performance.now(),d:n==1?3200:1500,f:from,to,fin};whInfo();const r=$('whr');if(r)r.textContent='🎡 Đang quay...';
@@ -612,6 +613,7 @@ window.psFurnBuy=k=>{if(!CAT[k])return;if(typeof hmInit=='function')hmInit();con
 function psAct(a,h){const[t,v]=a.split(':');
  if(t=='shop')return psShop(v);
  if(t=='lot')return psLot();
+ if(t=='bm')return buffShopUI('bm');
  if(t=='wheel')return wheelUI();
  if(t=='furn')return psFurn();
  if(t=='dia')return diaShop();

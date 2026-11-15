@@ -2141,8 +2141,8 @@ const PETS=[{n:'Mèo con',k:'cat',fn:drawPetCat},{n:'Mây Mây',k:'cloud',fn:dra
  {n:'Bánh quy gừng',k:'ginger',fn:drawPetGinger,ach:1,bd:3},{n:'Mây tuyết',k:'snowcloud',fn:drawPetSnowCloud,fly:1,ach:1,bd:10}];
 const drawPet=(g,x,y,d,mv,a,t,pi)=>(PETS[pi]||PETS[0]).fn(g,x,y,d,mv,a,t);
 const PET={x:560,y:292,d:0,a:0,mv:0,k:0};
-function petReset(){PET.x=Pl.x-19;PET.y=Pl.y+3;PET.mv=0;PET.k=0}
-function petUpdate(dt){if(ST.av.p<0)return;if(CVON&&CV.boat)return;const dx=Pl.x-PET.x,dy=Pl.y-PET.y,L=Math.hypot(dx,dy),stop=ST.av.m>=0?33:27;
+function petReset(){PET.x=Pl.x-38;PET.y=Pl.y+4;PET.mv=0;PET.k=0}
+function petUpdate(dt){if(ST.av.p<0)return;if(CVON&&CV.boat)return;const dx=Pl.x-PET.x,dy=Pl.y-PET.y,L=Math.hypot(dx,dy),stop=ST.av.m>=0?58:46;   // khoảng cách pet đứng cách nhân vật (xa hơn để không che phụ kiện/cánh)
  if(L>170){petReset();return}
  if(L>stop){const sp=Math.min(150,50+L*1.6)*dt,mx=dx/L*sp,my=dy/L*sp;let ok=0;
   if(PETS[ST.av.p].fly){PET.x+=mx;PET.y+=my;ok=1}else{if(can(PET.x+mx,PET.y)){PET.x+=mx;ok=1}if(can(PET.x,PET.y+my)){PET.y+=my;ok=1}}
@@ -4983,7 +4983,7 @@ let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||ke
 if(HMA){HMA.t+=dt;if(HMA.t>HMA.d||(HMA.t>.7&&(ptr||dx||dy)))hmEnd();dx=dy=0;goal=null;ptr=null}if(UI){dx=dy=0;goal=null;ptr=null}if(dx||dy)goal=null;
 if(!dx&&!dy&&ptr&&!ptr.pan&&!FMODE&&performance.now()-ptr.t>150){ptr.walk=1;goal=null;const gx=ptr.x/S+camX-Pl.x,gy=ptr.y/S+camY-Pl.y,L=Math.hypot(gx,gy);if(L>4){dx=gx/L;dy=gy/L}}
 else if(!dx&&!dy&&goal){const gx=goal.x-Pl.x,gy=goal.y-Pl.y,L=Math.hypot(gx,gy);goal.t+=dt;if(L<3||goal.t>4)goal=null;else{dx=gx/L;dy=gy/L}}
-if((dx||dy)&&!Pl.sit){const L=Math.hypot(dx,dy);dx/=L;dy/=L;const sp=78*(CVON&&CV.boat?.72:1)*(HUNGRY?.3:(ST.av.m>=0?MOUNTS[ST.av.m].spd:1))*dt,ox=Pl.x,oy=Pl.y;
+if((dx||dy)&&!Pl.sit){const L=Math.hypot(dx,dy);dx/=L;dy/=L;const sp=78*(CVON&&CV.boat?.72:1)*(HUNGRY?.3:(ST.av.m>=0?MOUNTS[ST.av.m].spd:(window.spdBuff&&spdBuff()?1.4:1)))*dt,ox=Pl.x,oy=Pl.y;
  if(can(Pl.x+dx*sp,Pl.y))Pl.x+=dx*sp;if(can(Pl.x,Pl.y+dy*sp))Pl.y+=dy*sp;
  Pl.mv=Math.abs(Pl.x-ox)+Math.abs(Pl.y-oy)>.01;if(!Pl.mv)goal=null;Pl.a+=dt*(ST.av.m>=0?1.5:1);
  Pl.d=Math.abs(dx)>Math.abs(dy)?(dx<0?2:3):(dy<0?1:0)}else Pl.mv=0;

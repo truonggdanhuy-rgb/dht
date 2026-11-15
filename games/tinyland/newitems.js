@@ -238,3 +238,41 @@ window.diaBuyM=i=>{const x=MOUNTS[i];if(!x||!x.dia||ST.own.m.includes(i))return;
  ST.dia-=x.dia;ST.own.m.push(i);xuUp();save();toast('🎉 Đã mua '+x.n+'!\nMở 🎒 Túi → Thú cưỡi để dùng');diaShop()};
 window.diaWearM=i=>{if(!ST.own.m.includes(i))return;ST.av.m=ST.av.m==i?-1:i;if(ST.av.m>=0&&Pl.sit){Pl.sit=0;Pl.mv=0}save();toast(ST.av.m==i?'✨ Đã cưỡi '+MOUNTS[i].n:'Đã xuống '+MOUNTS[i].n);diaShop()};
 })();
+
+/* ===================================================================================
+   🥖 BÁNH MÌ (xe bánh mì ở Phố xá) & 🧋 NƯỚC MÍA (quán cô Ba ở Công viên)
+   • Bấm vào quầy → hộp thoại mua. Mỗi lần mua tốn BUFF_COST xu và ăn/uống NGAY (không vào Túi).
+   • Hiệu ứng: đi bộ nhanh hơn (x1.4) trong 10 phút. Chỉ tính khi đi bộ — đang cưỡi thú thì dùng tốc độ thú cưỡi, KHÔNG cộng dồn.
+   • Mua lại khi còn hiệu ứng = làm mới lại đủ 10 phút (không cộng dồn thời gian).
+   • Hết hạn lưu theo giờ thật (ST.spdEnd) nên thoát game vẫn tính giờ.
+   Muốn đổi giá/thời gian/tốc độ: BUFF_COST, BUFF_MIN ở đây; hệ số 1.4 nằm ở dòng tính tốc độ trong index.html (spdBuff()?1.4).
+   =================================================================================== */
+(function(){
+const BUFF_COST=50,BUFF_MIN=10;
+const KIND={
+ bm:{e:'🥖',n:'Bánh mì',t:'Xe bánh mì',say:'Bánh mì nóng giòn đây con ơi!',act:'Ăn',did:'🥖 Bạn ăn ổ bánh mì nóng giòn, thơm phức!'},
+ nm:{e:'🧋',n:'Nước mía',t:'Quán nước cô Ba',say:'Nước mía mới ép, mát lắm nghen!',act:'Uống',did:'🧋 Bạn uống ly nước mía mát lạnh, đã quá!'}};
+// còn hiệu ứng không? (tự dọn khi hết hạn)
+window.spdBuff=function(){
+ if(!(ST.spdEnd>0))return 0;
+ if(Date.now()>=ST.spdEnd){ST.spdEnd=0;try{save()}catch(e){}toast('🍃 Hiệu ứng đi nhanh đã hết');return 0}
+ return 1};
+const left=()=>Math.max(0,Math.ceil((ST.spdEnd-Date.now())/1000));
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+window.buffShopUI=function(k){
+ const K=KIND[k];if(!K)return;
+ const on=window.spdBuff(),ok=ST.xu>=BUFF_COST;
+ openUI(head(K.e+' '+K.t)
+  +'<div style="text-align:center;font-size:44px;margin:4px 0">'+K.e+'</div>'
+  +'<div class="mut" style="text-align:center">“'+K.say+'”</div>'
+  +'<div class="mut" style="text-align:center">'+K.n+' <b>🪙 '+BUFF_COST+' Xu</b> • '+K.act+' ngay tại chỗ<br>⚡ Đi bộ nhanh hơn trong <b>'+BUFF_MIN+' phút</b><br><small>Không cộng dồn với thú cưỡi (chỉ tính khi đi bộ)</small></div>'
+  +(on?'<div class="mut" style="text-align:center">⏱️ Đang có hiệu ứng, còn <b>'+fmt(left())+'</b> (mua thêm sẽ làm mới lại '+BUFF_MIN+' phút)</div>':'')
+  +'<div class="mut" style="text-align:center">Bạn có 🪙 <b>'+fmtXu(ST.xu)+'</b> Xu</div>'
+  +'<div class="pf"><button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="buffBuy(\''+k+'\')">'+K.e+' Mua & '+K.act.toLowerCase()+' — '+BUFF_COST+' Xu</button><button class="b" onclick="closeUI()">Thôi</button></div>')};
+window.buffBuy=function(k){
+ const K=KIND[k];if(!K)return;
+ if(ST.xu<BUFF_COST)return toast('🪙 Chưa đủ Xu — cần '+BUFF_COST+' Xu, bạn có '+ST.xu);
+ ST.xu-=BUFF_COST;ST.spdEnd=Date.now()+BUFF_MIN*60000;xuUp();save();
+ toast(K.did+'\n⚡ Đi bộ nhanh hơn trong '+BUFF_MIN+' phút!');
+ buffShopUI(k)};
+})();
