@@ -623,3 +623,48 @@ function accSpear(P){
  R('#c8201a',0,ty+9,2,2);R('#8a1010',1,ty+9,1,2);                             // nút tua
  [-1,0,1,2].forEach((x,i)=>{for(let k=0;k<4;k++){const sw=k<2?0:Math.round(Math.sin(t*5+i*1.3+k*.5)*(k-1)*.5);R(k%2?'#e23a2a':'#c8201a',x+sw,ty+11+k,1,1)}});
 }
+
+/* ---------------------- ĐÀN GUITAR (t:'hold') — bán ở Shop Phố xá: 3000 Xu ----------------------
+   Đàn to, đeo nghiêng trước người; nhún nhảy theo nhịp (thân nhân vật nhún cùng nhịp trong drawAv/drawAcc),
+   tay trái bấm cần đàn, tay phải gảy, nốt nhạc ♪ ♫ bay lên. Hình thân đàn được "rasterize" 1 lần rồi cache lại. */
+const GT_CACHE={};
+function gtBuild(mode,deg){
+ const key=mode+deg;if(GT_CACHE[key])return GT_CACHE[key];
+ // mode: front (nhìn thẳng) | side (nhìn nghiêng, thu nhỏ nhẹ) | back (chỉ lộ cần đàn + đầu đàn)
+ const cx=mode=='side'?1.2:8.6,cy=mode=='side'?21:21.4,sc=mode=='side'?.95:1.1,th=deg*Math.PI/180,ax=Math.sin(th),ay=-Math.cos(th),px=Math.cos(th),py=Math.sin(th);
+ const q=(x,y)=>{const vx=x+.5-cx,vy=y+.5-cy,s=(vx*ax+vy*ay)/sc,n=(vx*px+vy*py)/sc;
+  const body=mode!='back'&&(((s+1.8)/6)**2+(n/5.4)**2<=1||((s-3.6)/4)**2+(n/4.2)**2<=1);
+  const neck=s>=6&&s<=13.4&&Math.abs(n)<=1.3,head=s>13.4&&s<=16.4&&Math.abs(n)<=1.8;
+  return{s,n,body,neck,head,any:body||neck||head}};
+ const out=[];
+ for(let y=-8;y<34;y++)for(let x=-6;x<26;x++){const k=q(x,y);if(!k.any)continue;
+  const edge=[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>!q(x+a,y+b).any);let c;
+  if(k.head)c=edge?'#2a160a':'#4a2a14';
+  else if(k.neck&&!k.body)c=edge?'#4a2a14':(Math.floor(k.s)%2?'#8a5a2c':'#a8743a');
+  else if(edge)c='#6b3414';
+  else if(Math.hypot(k.s+.2,k.n)<=1.7)c='#2a1408';                       // lỗ thoát âm
+  else if(Math.abs(k.s+4.4)<.8&&Math.abs(k.n)<=2.2)c='#3a1d0c';          // ngựa đàn
+  else if(k.n<-2.2)c='#f2b872';else if(k.n>2.6||k.s<-4.5)c='#c47a38';else c='#e0944a';
+  out.push([x,y,c])}
+ return GT_CACHE[key]={out,cx,cy,sc,ax,ay,px,py}}
+function gtHexA(h,a){const n=parseInt(h.slice(1),16);return'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+Math.max(0,Math.min(1,a)).toFixed(2)+')'}
+function accGuitar(P){
+ const R=P.R,t=P.t,SK='#f1c08a',SKD='#d99e6a',beat=Math.floor(t/.21)%2,mode=P.side?'side':P.back?'back':'front',
+  G=gtBuild(mode,(P.side?50:42)+(beat?-3:0)),off=P.side?0:-16;                  // front/back: x tuyệt đối -> dx so với bàn tay
+ for(const[x,y,c]of G.out)R(c,x+off,y,1,1);
+ const at=(s,n)=>[G.cx+G.ax*s*G.sc+G.px*n*G.sc+off,G.cy+G.ay*s*G.sc+G.py*n*G.sc];
+ // dây đàn: 1 đường sáng dọc cần
+ if(mode!='back'){for(let s=-3;s<=13;s+=1){const[x,y]=at(s,0);R(s>=6?'#f4ead0':'rgba(244,234,208,.55)',Math.round(x-.5),Math.round(y-.5),1,1)}}
+ // đầu đàn: các khóa chỉnh dây
+ for(const n of[-1,1]){const[x,y]=at(14.6,n);R('#e6e6ee',Math.round(x-.5),Math.round(y-.5),1,1)}
+ if(mode!='back'){
+  const[hx,hy]=at(8.4,0),[sx,sy]=at(-3.4+Math.sin(t*(beat?14:12))*1.9,.4);       // tay bấm + tay gảy
+  R(SK,Math.round(hx-1),Math.round(hy-1),3,2);R(SKD,Math.round(hx-1),Math.round(hy+1),3,1);
+  R(SK,Math.round(sx-1),Math.round(sy-1),3,2);R(SKD,Math.round(sx-1),Math.round(sy+1),3,1)}
+ // nốt nhạc bay lên (♪ ♫): bắt đầu ở thân đàn, bay chếch về phía sau-trái người, nhỏ dần rồi tan
+ const NC=['#ff7aa8','#4aa8ff','#ffc21f','#5fd06a'],nx=P.side?-8:-19;
+ for(let k=0;k<4;k++){const p=(t*.5+k/4)%1,al=p<.12?p/.12:p>.7?(1-p)/.3:1,x=Math.round(nx-p*(P.side?5:7)+Math.sin(p*7+k*2.1)*2),y=Math.round(20-p*24);
+  const d=(c,ox,oy)=>{R(c,x+ox,y+4+oy,2,2);R(c,x+2+ox,y+oy,1,5);if(k%2){R(c,x+4+ox,y+4+oy,2,2);R(c,x+6+ox,y+oy,1,5);R(c,x+2+ox,y+oy,5,1)}else{R(c,x+3+ox,y+oy,1,1);R(c,x+4+ox,y+1+oy,1,1)}};
+  d('rgba(255,255,255,'+(al*.55).toFixed(2)+')',1,1);d(gtHexA(NC[k],al),0,0)}
+ const[tx,ty]=at(15.5,0);if(Math.sin(t*5)>.55){const X=Math.round(tx),Y=Math.round(ty);for(const[a,b]of[[0,-2],[0,2],[-2,0],[2,0]])R('rgba(255,255,255,.9)',X+a,Y+b,1,1);R('#ffffff',X,Y,1,1)}
+}
