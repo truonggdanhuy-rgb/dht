@@ -752,7 +752,9 @@ const SETS=[
   {n:'Set giữ nhiệt (đã đổi thành Mũ giữ nhiệt)',k:'warm',fx:'warm',gone:1,ach:1,bd:3,sh:'#efd9b8',shl:'#fbeed6',shd:'#c9a878',scarf:'#c0392b',trim:'#f6ecd8',hs:'#c0392b',belt:'#c9a878',pt:'#5a4538',rpt:'#5a4538',shoe:'#3a2a22'},
   // ---- Set mascot KHÔNG che mặt — mua bằng 💎 ở Shop kim cương ----
   {n:'Tiệc mùa đông (Nam)',k:'deerm',deer:'m',ach:1,dia:10,ds:'Bộ Noel cả người, tóc ngắn, sừng & tai tuần lộc đổi màu lấp lánh. Không che mặt.',sh:'#d42a35',scarf:'#ffffff',belt:'#2a2230',pt:'#2d2535',rpt:'#2d2535',shoe:'#2a2028'},
-  {n:'Tiệc mùa đông (Nữ)',k:'deerf',deer:'f',ach:1,dia:10,ds:'Bộ Noel cả người, tóc dài xoăn hai bên, sừng & tai tuần lộc đổi màu lấp lánh. Không che mặt.',sh:'#d42a35',scarf:'#ffffff',belt:'#2a2230',pt:'#2d2535',rpt:'#2d2535',shoe:'#2a2028'}];
+  {n:'Tiệc mùa đông (Nữ)',k:'deerf',deer:'f',ach:1,dia:10,ds:'Bộ Noel cả người, tóc dài xoăn hai bên, sừng & tai tuần lộc đổi màu lấp lánh. Không che mặt.',sh:'#d42a35',scarf:'#ffffff',belt:'#2a2230',pt:'#2d2535',rpt:'#2d2535',shoe:'#2a2028'},
+  {n:'Dạ nguyệt (Nam)',k:'dnm',dn:'m',ach:1,dia:20,ds:'Long bào vàng ánh trăng, tóc búi củ tỏi cài trâm, đội mão. Vầng sáng ẩn hiện trên trang phục. Không che mặt.',sh:'#eea02c',scarf:'#fff7dc',belt:'#2a2230',pt:'#eea02c',rpt:'#eea02c',shoe:'#8a1822'},
+  {n:'Dạ nguyệt (Nữ)',k:'dnf',dn:'f',ach:1,dia:20,ds:'Váy cung đình vàng ánh trăng, kim quan phượng, trâm & bộ dao rủ châu. Vầng sáng ẩn hiện trên trang phục. Không che mặt.',sh:'#f7bb3a',scarf:'#fff7dc',belt:'#c92a35',pt:'#f7bb3a',rpt:'#f7bb3a',shoe:'#8a1822'}];
 const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'},{n:'Tóc nâu buộc',k:'tail',c:'#6a3e1e'},{n:'Tóc vàng',k:'short',c:'#e0b84a'},{n:'Mũ len đỏ',k:'beanie',c:'#c0392b',hr:'#2b1d12'},{n:'Mũ len xanh',k:'beanie',c:'#2f6fe0',hr:'#6a3e1e'},
  {n:'Tóc Sailor Moon',k:'sailor',c:'#f6d96b'},{n:'Tóc 2 chùm',k:'bun2',c:'#2a2224'},{n:'Tóc nữ yêu kiều',k:'longf',c:'#201a24'},{n:'Tóc xinh yêu',k:'bobf',c:'#17151c'},
  {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'},
@@ -1107,6 +1109,127 @@ function drawDeerSet(g,r,u,o,S,k){
  DEER_DUST.forEach(([x,y,off,col])=>{const a=Math.sin(Math.PI*(((t*.7+off)%1)));if(a<.35)return;r('rgba('+col+','+(a*.85).toFixed(2)+')',x,y,1,1)});
 }
 
+/* ===================================================================================
+   SET "DẠ NGUYỆT" (Nam / Nữ) — mua ở Shop kim cương (💎 20 / set)
+   • Thuộc nhóm MASCOT (mặc cả bộ, không tách rời): có sẵn tóc + mão/trâm + áo + váy.
+     KHÔNG che mặt: khuôn mặt & biểu cảm người chơi đang trang bị, cùng phụ kiện cầm tay vẫn hiện.
+   • Nam: tóc búi củ tỏi cài trâm vàng, đội mão có dây châu rủ hai bên, long bào vàng cam, đai đen khóa vàng.
+   • Nữ: kim quan phượng + hai búi tóc cài trâm, bộ dao rủ châu đung đưa, hoa điền trán, nơ đỏ trước ngực.
+   • Hiệu ứng: vầng sáng vàng thở nhẹ phía sau, dải sáng trôi ẩn hiện trên trang phục,
+     ngọc trên mão lấp lánh, bụi sáng ánh trăng bay quanh người.
+   • Vẽ theo khung chuẩn 20x31 (giống Tiệc mùa đông). Hai bản chỉ khác nhau ở TÓC/MÃO/trang trí (S.dn:'m'|'f').
+   =================================================================================== */
+const DN_SP=[[-3,13,0,'255,236,150'],[22,11,.27,'255,250,210'],[-1,23,.5,'255,214,120'],[21,24,.72,'255,236,150'],[5,0,.15,'255,255,255'],[15,-1,.62,'255,240,170'],[-4,5,.4,'255,250,210'],[24,18,.88,'255,224,140']];
+function drawDaNguyet(g,r,u,o,S,k){
+ const {lg,side,Rt,back,sit,rd}=k,t=performance.now()/1000,fem=S.dn=='f';
+ const RB=fem?'#f7bb3a':'#eea02c',GL='#ffe27a',GH='#fff6c0',GD=fem?'#c98a1c':'#bf7a14',GDD='#8f5a12',G='#f6b93a',
+  RD='#c92a35',RL='#ef5a66',RK='#8a1822',TL='#2fd6cf',TLD='#1a9c9c',WH='#fff7dc',BK='#2a2230',
+  SK='#f1c08a',HC=fem?'#5f3b26':'#58361f',HL=fem?'#87593a':'#7d5030',HD='#33190e';
+ const M=(c,x,y,w,h)=>u(c,Rt?x:20-x-w,y,w,h),UM=(c,x,y,w,h)=>{u(c,x,y,w,h);u(c,20-x-w,y,w,h)};
+ const mk=new Set(),pm=(c,x,y,w,h)=>{u(c,x,y,w,h);for(let j=0;j<h;j++)for(let i=0;i<w;i++)mk.add((y+j)*64+x+i+16)},
+  PM=(c,x,y,w,h)=>pm(c,Rt?x:20-x-w,y,w,h),PU=(c,x,y,w,h)=>{pm(c,x,y,w,h);pm(c,20-x-w,y,w,h)};
+ // ---- vầng sáng trăng thở nhẹ phía sau người + bóng ----
+ if(!o.nosh){const a=.06+.035*Math.sin(t*1.5);E(r,'rgba(255,222,130,'+(a*.7).toFixed(3)+')',10,19,12,14);E(r,'rgba(255,232,160,'+a.toFixed(3)+')',10,19,9,11)}
+ if(!sit&&!rd&&!o.nosh)E(r,'rgba(0,0,0,.2)',10,30,8,2);
+ // ---- giày ----
+ const foot=(x,l)=>{r(RK,x,29-l,3,1);r(GD,x,29-l,1,1)};
+ let sx=0;
+ if(rd){}
+ else if(sit){r(RK,6,29,3,1);r(RK,11,29,3,1);r(GD,6,29,1,1);r(GD,11,29,1,1)}
+ else if(!side){if(lg>0){foot(11,0);foot(6,1)}else if(lg<0){foot(6,0);foot(11,1)}else{foot(6,0);foot(11,0)}}
+ else{sx=lg*(Rt?2:-2);const x1=8+sx,x2=10-sx;if(lg>0){foot(x2,0);foot(x1,1)}else if(lg<0){foot(x1,0);foot(x2,1)}else{foot(x1,0);foot(x2,0)}}
+ // ---- váy xòe tròn như bánh trăng (3 tầng: vàng / dải đỏ / viền hoa văn) ----
+ {const SR=side?[24,25,26,27,28].map((y,i)=>[y,5-i]):[24,25,26,27,28].map((y,i)=>[y,i>3?1:4-i]);
+  if(side)SR[4][1]=2;
+  const sh=side?0:lg;
+  SR.forEach(([y,x0])=>{
+   if(rd&&y>26)return;
+   const w=20-2*x0;
+   if(y==26){pm(RD,x0,y,w,1);for(let x=x0+1;x<20-x0-1;x+=3)u(GL,x,y,1,1);u(RK,x0,y,1,1);u(RK,19-x0,y,1,1)}
+   else if(y==28){for(let x=x0;x<20-x0;x++){const m=(x-x0)%4;u(m==0?RD:m==2?TL:WH,x+sh,y,1,1)}}
+   else{pm(RB,x0,y,w,1);u(GL,x0,y,2,1);u(GD,18-x0,y,2,1);if(y==27)for(let x=x0+2;x<18-x0;x+=4){u(GL,x,y,1,1);u(GH,x+1,y,1,1)}}});
+  if(!rd&&!sit){const e=side?2:1;u(RD,e+sh,29,1,1);u(RD,19-e+sh,29,1,1);u(TL,e+2+sh,29,1,1);u(TL,17-e+sh,29,1,1);u(GD,9+sh,29,2,1)}}
+ // ---- thân + tay áo rộng ----
+ const cuffL=(x,ay)=>{ // tay áo rộng: x = mép trái ống tay trên
+  pm(RB,x,17+ay,3,2);pm(RB,x-1,19+ay,5,2);u(GL,x-1,19+ay,1,2);u(GD,x+3,19+ay,1,2);
+  u(RD,x-1,21+ay,5,1);u(GL,x+1,21+ay,1,1);u(SK,x,22+ay,3,2)};
+ if(!side){
+  pm(RB,6,16,8,1);pm(RB,5,17,10,5);pm(GL,5,17,2,5);pm(GD,13,17,2,5);
+  if(back){ // huy hiệu trăng sau lưng
+   u(GL,8,17,4,1);u(GL,7,18,6,3);u(GH,8,18,2,1);u(GD,9,19,2,1);u(GL,8,21,4,1);u(GD,10,18,1,1)}
+  else{
+   u(WH,8,16,4,1);u(WH,9,17,2,1);u(RD,7,16,1,1);u(RD,12,16,1,1);u(RD,8,17,1,1);u(RD,11,17,1,1);u(RD,9,18,2,1);
+   if(fem){u(RD,7,19,2,2);u(RD,11,19,2,2);u(RK,9,19,2,2);u(RL,7,19,1,1);u(RL,11,19,1,1);u(RD,9,21,1,1)}
+   else{u(GD,9,19,2,2);u(GH,9,19,1,1);u(GDD,10,20,1,1)}}
+  pm(fem?RD:BK,5,22,10,1);pm(fem?RK:'#3b3142',6,23,8,1);u(GL,9,22,2,1);u(GH,9,22,1,1);
+  u(SK,9,15,2,1);
+  if(o.aup){const up=(x,h,ox)=>{const ty=17-h;u(SK,x+ox,ty,3,3);u('rgba(0,0,0,.12)',x+ox,ty+2,3,1);u(RD,x,ty+3,3,1);u(RB,x,ty+4,3,3);u(GL,x,ty+4,1,3);u(GD,x+2,ty+4,1,3)};up(2,o.aup[0],-1);up(15,o.aup[1],1)}
+  else{cuffL(2,lg);cuffL(15,-lg)}
+ }else{
+  pm(RB,8,16,6,1);pm(RB,7,17,7,5);PM(RD,12,17,1,4);u(GD,Rt?7:12,17,2,4);
+  u(SK,9,15,2,1);u(WH,Rt?11:8,16,1,1);
+  pm(fem?RD:BK,7,22,7,1);pm(fem?RK:'#3b3142',8,23,6,1);PM(GL,12,22,1,1);
+  const ax=9-sx;if(!o.noarm){pm(RB,ax,17,3,2);pm(RB,ax-1,19,5,2);u(GL,ax-1,19,1,2);u(GD,ax+3,19,1,2);u(RD,ax-1,21,5,1);u(GL,ax+1,21,1,1);u(SK,ax,22,3,2)}
+ }
+ // ---- dải sáng ẩn hiện trôi trên trang phục ----
+ {const br=.5+.5*Math.sin(t*1.4);
+  mk.forEach(key=>{const x=(key&63)-16,y=key>>6,ph=((t*.42-(x*.055+y*.085))%1+1)%1,a=Math.pow(Math.max(0,Math.sin(ph*Math.PI*2)),6)*(.2+.32*br);
+   if(a>.05)u('rgba(255,248,196,'+a.toFixed(2)+')',x,y,1,1);
+   const tw=Math.sin(t*2.1+x*1.7+y*2.3);if(tw>.965)u('rgba(255,255,235,.75)',x,y,1,1)})}
+ // ---- đầu: khuôn mặt + biểu cảm của người chơi vẫn hiện ----
+ const tw=Math.sin(t*4),gem=(x,y,w)=>{if(tw>.2)u('rgba(255,255,255,'+(.5+.4*tw).toFixed(2)+')',x,y,w||1,1)};
+ const sway=Math.round(Math.sin(t*2.2));
+ // phần đỉnh đầu dùng chung nhìn trước/sau
+ const top=()=>{
+  if(!fem){ // NAM: búi củ tỏi + trâm + mão
+   UM(G,3,2,4,1);UM(TL,2,2,1,1);UM(GL,4,2,2,1);
+   u(HC,9,0,2,1);u(HL,9,0,1,1);u(HC,8,1,4,1);u(HL,8,1,1,1);u(HC,7,2,6,1);u(HL,7,2,2,1);u(HD,12,2,1,1);
+   u(G,6,3,8,1);u(GL,6,3,3,1);u(GD,12,3,2,1);
+   u(G,4,4,12,1);u(GL,4,4,4,1);u(GD,13,4,3,1);u(GDD,4,4,1,1);u(GDD,15,4,1,1);u(RD,9,4,2,1);u(RL,9,4,1,1);u(TL,7,4,1,1);u(TL,12,4,1,1);gem(9,4);
+   UM(TL,4,5,1,1);UM(GL,4,6,1,1);UM(TL,4,7,1,1);UM(RD,4,8,1,1);
+  }else{ // NỮ: kim quan phượng + 2 búi + bộ dao
+   UM(HC,3,2,3,4);UM(HL,4,3,1,2);UM(RD,3,5,3,1);
+   UM(G,0,3,3,1);UM(TL,0,3,1,1);UM(GL,1,3,1,1);
+   u(RD,9,0,2,1);u(RL,9,0,1,1);u(G,8,1,4,1);u(GL,8,1,2,1);u(G,6,2,8,1);u(GL,7,2,2,1);u(GD,12,2,2,1);
+   u(G,6,3,8,1);u(RD,9,3,2,1);u(RL,9,3,1,1);u(GD,6,3,1,1);u(GD,13,3,1,1);
+   u(G,5,4,10,1);u(GL,5,4,3,1);u(GD,13,4,2,1);u(TL,6,4,1,1);u(TL,13,4,1,1);gem(9,0,2);
+   const bd=['#ffe27a',TL,'#ffe27a','#ffe27a',TL,'#ffe27a','#ffe27a',RD];
+   bd.forEach((c,i)=>{const s=i>=3?sway:0;u(c,1+s,4+i,1,1);u(c,18+s,4+i,1,1)});
+  }};
+ if(back){
+  E(u,HC,10,11,4,4);
+  if(!fem){u(HC,5,7,10,7);u(HL,7,8,2,5);u(HD,5,13,10,1);u(HD,9,8,2,5);UM(HD,5,8,1,5)}
+  else{u(HC,4,6,12,15);u(HL,6,8,2,11);u(HL,12,8,1,9);u(HD,4,19,12,2);u(HD,9,8,2,11);UM(HD,4,9,1,11);for(let i=0;i<6;i++)u(HD,5+i*2,18+(i&1),1,1)}
+  top();
+ }else if(!side){
+  E(u,SK,10,11,4,4);u('rgba(70,35,15,.28)',7,8,6,1);
+  if(o.e>0)faceFx(u,o.e,0,0);else if(typeof faceDef=='function')faceDef(u,0,0);else{u('#2b1d12',8,11,1,2);u('#2b1d12',11,11,1,2);u('#b5604a',9,13,2,1)}
+  top();
+  if(!fem){u(HC,6,5,8,1);u(HC,5,6,10,2);u(HL,7,6,3,1);UM(HC,5,8,2,1);UM(HC,4,9,3,1);UM(HC,4,10,2,4);UM(HD,4,13,2,1);UM(HL,5,10,1,2)}
+  else{u(HC,5,5,10,1);u(HC,4,6,12,2);u(HL,7,6,3,1);u(HD,9,5,2,1);UM(HC,4,8,3,1);UM(HC,6,9,1,1);UM(HC,3,9,3,8);UM(HD,3,10,1,6);UM(HL,5,10,1,5);UM(HD,3,16,3,1);
+   u(G,8,8,1,1);u(G,11,8,1,1);u(RD,9,8,2,1);u(RL,9,8,1,1)}
+ }else{
+  E(u,HC,Rt?8:12,11,3,4);E(u,SK,Rt?11:9,11,3,4);u('rgba(70,35,15,.28)',Rt?8:6,8,6,1);
+  if(o.e>0)faceFx(u,o.e,1,Rt);else if(typeof faceDef=='function')faceDef(u,1,Rt);else{u('#2b1d12',Rt?12:7,11,1,2);u('#b5604a',Rt?13:6,13,1,1)}
+  if(!fem){
+   M(G,5,2,8,1);M(TL,12,2,1,1);M(HC,8,0,2,1);M(HC,7,1,4,1);M(HC,6,2,5,1);M(GL,8,2,2,1);
+   M(G,6,3,6,1);M(GL,6,3,2,1);M(G,5,4,8,1);M(GL,5,4,3,1);M(GD,11,4,2,1);M(RD,12,4,1,1);M(TL,8,5,1,1);M(GL,8,6,1,1);M(TL,8,7,1,1);M(RD,8,8,1,1);
+   M(HC,6,5,7,1);M(HC,5,6,9,2);M(HL,7,6,3,1);M(HC,5,8,3,1);M(HC,4,9,4,5);M(HD,4,13,4,1);
+  }else{
+   M(HC,5,1,5,4);M(HL,6,2,1,2);M(RD,5,5,5,1);M(G,5,3,3,1);M(TL,4,3,1,1);
+   M(RD,10,0,2,1);M(G,9,1,3,1);M(G,7,2,6,1);M(GL,8,2,2,1);M(G,7,3,6,1);M(RD,11,3,1,1);M(G,6,4,8,1);M(GL,6,4,3,1);M(GD,12,4,2,1);M(TL,13,4,1,1);gem(Rt?10:9,0,2);
+   const bd=['#ffe27a',TL,'#ffe27a','#ffe27a',TL,'#ffe27a','#ffe27a',RD];
+   bd.forEach((c,i)=>{const s=i>=3?(Rt?-sway:sway):0;M(c,5+s,4+i,1,1)});
+   M(HC,6,5,7,1);M(HC,4,6,10,2);M(HL,7,6,3,1);M(HC,5,8,3,1);M(HC,3,8,5,13);M(HD,3,9,1,11);M(HL,6,9,1,10);M(HD,3,19,5,2);M(HC,8,9,2,6);M(HD,8,14,2,1);
+  }
+ }
+ // ---- bụi sáng ánh trăng bay quanh người ----
+ DN_SP.forEach(([x,y,off,col])=>{const ph=((t*.4+off)%1),a=Math.sin(Math.PI*ph);if(a<.15)return;
+  const yy=Math.round(y-ph*3),al=Math.min(1,a*1.4);
+  r('rgba('+col+','+al.toFixed(2)+')',x,yy,1,1);const c2='rgba('+col+','+(al*.6).toFixed(2)+')';
+  r(c2,x-1,yy,1,1);r(c2,x+1,yy,1,1);r(c2,x,yy-1,1,1);r(c2,x,yy+1,1,1);if(a>.85)r('rgba(255,255,255,.9)',x,yy,1,1)});
+}
+
 // ve nhan vat (dung chung: ngoai map, xem truoc trong Tui, ngoi tren thu cuoi)
 function drawAv(g,ox,oy,o){
  const r=(c,a,b,w,h)=>{g.fillStyle=c;g.fillRect(ox+a,oy+b,w,h)};
@@ -1115,6 +1238,7 @@ function drawAv(g,ox,oy,o){
  const SK='#f1c08a',SKS='#d99e6a',EY='#2b1d12',SH=S.sh,SHL=S.shl||shade(SH,.18),SHD=S.shd||shade(SH,-.28),PT=S.pt,PTL=shade(PT,.25),SD=S.shoe,RD='#c0392b',KN=S.knot||shade(S.scarf,-.3);
  const bob=o.mv&&!o.nobob&&(f==1||f==3)?-1:0,u=(c,a,b,w,h)=>r(c,a,b+bob,w,h);
  if(S.deer)return drawDeerSet(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});
+ if(S.dn)return drawDaNguyet(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});
  if(S.mascot)return drawMascot(r,u,o,S,{f,lg,side,Rt,back,sit,rd});
  if(!sit&&!rd&&!o.nosh)E(r,'rgba(0,0,0,.2)',10,30,8,2);
  if(S.cape&&!rd&&!back){const cd=shade(S.cape,-.3);if(!side){u(S.cape,3,16,14,12);u(cd,3,16,2,12);u(cd,15,16,2,12);u(cd,3,27,14,1)}else{const fl=o.mv?Math.round(Math.sin(performance.now()/110)*1):0,cx0=Rt?2-fl:12+fl;u(S.cape,cx0,16,6,12);u(cd,cx0,16,1,12);u(cd,cx0,27,6,1);u(shade(S.cape,.2),cx0+2,17,1,9)}}
@@ -2691,6 +2815,7 @@ const avCur=k=>avItems(k).findIndex(x=>x.idx==ST.av[k]);
 function bagUI(t){AVTAB=t||AVTAB;const old=$('ui').scrollTop,L=avItems(AVTAB),cur=avCur(AVTAB),mt=AVTAB=='m';
  let h=head('🎒 Túi nhân vật')+'<div style="text-align:center"><canvas id="avp" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#bfe6ff,#d9f0b8 70%);border:2px solid #7a4a26;cursor:pointer" onclick="avTurn()"></canvas><div class="mut" style="margin:2px 0 6px">Chạm vào hình để xoay nhân vật</div></div>';
  if(SETS[ST.av.s]&&SETS[ST.av.s].mascot)h+='<div class="mut">🧸 Đang mặc Mascot — đã gồm cả tóc & khuôn mặt nên tóc/biểu cảm tạm ẩn.</div>';
+ else if(SETS[ST.av.s]&&SETS[ST.av.s].dn)h+='<div class="mut">🌕 Đang mặc Dạ nguyệt — bộ có sẵn tóc & mão/trâm (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].deer)h+='<div class="mut">🦌 Đang mặc Tiệc mùa đông — bộ này có sẵn tóc riêng (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt & biểu cảm vẫn hiện</b>.</div>';
  h+='<div class="tabs" style="flex-wrap:wrap">'+AVTABS.map(([k,n])=>'<button class="b'+(k==AVTAB?' on':'')+'" onclick="bagUI(\''+k+'\')">'+n+'</button>').join('')+'</div>';
  h+='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+L.map((x,i)=>'<button class="sq'+(i==cur?' sel':'')+'" onclick="avPick('+i+')"><canvas class="avt" data-i="'+i+'" width="'+(mt?72:44)+'" height="'+(mt?68:AVTAB=='p'?52:44)+'" style="width:'+(mt?88:57)+'px;height:'+(mt?83:AVTAB=='p'?68:57)+'px;image-rendering:pixelated"></canvas><b>'+x.n+'</b><small>'+(i==cur?'✓ Đang dùng':'&nbsp;')+'</small></button>').join('')+'</div>';
@@ -4829,11 +4954,11 @@ function actAsk(id){const a=ACTS[actIdx(id)];if(!a||!actHas(a))return;
  openUI(head('⚡ Hành động')+'<div class="aq2">'+actCv(id,72,100,'big')+'<b>'+a.n+'</b><div class="mut" style="margin:2px 0">'+a.ds+'<br>Di chuyển bất cứ lúc nào để dừng lại.</div></div><div class="pf"><button class="b" onclick="actStart(\''+id+'\')">✅ Thực hiện</button><button class="b" onclick="actUI()">⬅ Quay lại</button></div>');actAnimGo()}
 function diaShop(){const L=ACTS.filter(a=>a.k=='solo'&&!a.bd);
  openUI(head('💎 Shop kim cương')+'<div class="mut" style="text-align:center">Bạn có <b>💎 '+(ST.dia|0)+'</b> kim cương</div>'
- +'<div class="dsh">🎄 Set</div><div class="dg">'+diaSetRows()+'</div><div class="dsh">⚡ Hành động cá nhân</div><div class="dg">'
+ +'<div class="dsh">✨ Set mascot</div><div class="dg">'+diaSetRows()+'</div><div class="dsh">⚡ Hành động cá nhân</div><div class="dg">'
  +L.map(a=>{const have=!!ST.acts[a.id],ok=(ST.dia|0)>=a.pr;
   return '<div class="dcd">'+actCv(a.id,72,100,'mini')+'<b>'+a.n+'</b>'+(have?'<button class="b" onclick="actUI()">✓ Đã có</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuy(\''+a.id+'\')">💎 '+a.pr+'</button>')+'</div>'}).join('')
  +'</div>');actAnimGo();if(!dsRaf)dsLoop()}
-const DSETS=['deerm','deerf'];let dsRaf=0;
+const DSETS=['deerm','deerf','dnm','dnf'];let dsRaf=0;
 function diaSetRows(){return DSETS.map(k=>{const i=SETS.findIndex(x=>x.k==k),S=SETS[i];if(!S)return '';const have=ST.own.s.includes(i),ok=(ST.dia|0)>=S.dia;
  return '<div class="dcd"><canvas class="dsc" data-i="'+i+'" width="144" height="176"></canvas><b>'+S.n+'</b>'+(have?'<button class="b" onclick="diaWear('+i+')">'+(ST.av.s==i?'✓ Đang mặc':'✓ Đã có')+'</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuySet('+i+')">💎 '+S.dia+'</button>')+'</div>'}).join('')}
 function diaBuySet(i){const S=SETS[i];if(!S||!S.dia||ST.own.s.includes(i))return;
