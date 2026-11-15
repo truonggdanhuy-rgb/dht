@@ -99,7 +99,10 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 </style></head><body>
 <canvas id="c"></canvas>
 <div id="hud">
+ <div id="hleft">
  <div class="hb" id="hpanel" onclick="infoUI()" style="cursor:pointer"><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><canvas id="hav" width="20" height="20" style="width:44px;height:44px;image-rendering:pixelated;background:linear-gradient(#bfe6ff,#d9f0b8);border:2px solid #7a4a26;border-radius:8px"></canvas><span id="hlv" style="display:none">Lv.1</span><div style="display:none"><div id="hlb"></div></div></div><span id="hxu">0</span></div>
+ <button class="hb" id="hev" onclick="evUI()">🎉<small>Sự kiện</small></button>
+ </div>
  <div id="hgrid">
   <button class="hb" onclick="mapUI()">🗺️<small>Map</small></button>
   <button class="hb" onclick="bagUI()">🎒<small>Túi</small></button>
@@ -3087,9 +3090,53 @@ function cancelSlot(mi,i){const q=mq(mi),it=q[i];if(!it)return;const o=MACHS[mi]
  o.ing.forEach(g=>ST[g.ref[0]][g.ref[1]]=stock(g.ref)+g.n);q[i]=null;save();toast('↩️ Đã hủy '+o.n+', hoàn lại nguyên liệu');machAct(mi)}
 let mUiT=0;
 function tickMach(dt){let ch=false;const n=now(),done={};let xp=0;
- ST.mq.forEach((q,mi)=>{for(let i=0;i<3;i++){const it=q[i];if(it&&n>=it.e){xp++;const o=MACHS[mi].rec[it.r];add('vp',o.id,1);q[i]=null;ch=true;const k=o.e+' '+o.n;done[k]=(done[k]||0)+1}}});
+ ST.mq.forEach((q,mi)=>{for(let i=0;i<3;i++){const it=q[i];if(it&&n>=it.e){xp++;const o=MACHS[mi].rec[it.r];add('vp',o.id,1);try{tnProg('cook',o.n)}catch(e){}q[i]=null;ch=true;const k=o.e+' '+o.n;done[k]=(done[k]||0)+1}}});
  if(ch){qAdd('cook',xp);const mx=ST.lv>=100,lu=addExp(xp);save();const ks=Object.keys(done),sh=ks.slice(0,6).map(k=>k+(done[k]>1?' x'+done[k]:'')).join(', ');toast('✅ Xong: '+sh+(ks.length>6?' ...':'')+' → Kho vật phẩm'+(mx?'':' • +'+xp+' EXP')+lu)}
  if(MUI>=0&&UI){mUiT-=dt;if(mUiT<=0){mUiT=.5;mRefresh()}if(ch){const st=$('ui').scrollTop,mi=MUI;machAct(mi);$('ui').scrollTop=st}}}
+/* ===================================================================================
+   SỰ KIỆN TIÊN NỮ  (nút 🎉 Sự kiện dưới panel avatar)
+   • Mỗi tuần (từ 0h Thứ Hai, giờ máy) có 1 danh sách 6 nhiệm vụ: 5 món nấu khác nhau + 1 nhiệm vụ câu quái vật.
+     Danh sách sinh theo số tuần (ai cũng giống nhau), hết tuần là mất & đổi chuỗi mới (mảnh ghép đã nhận thì giữ).
+   • Xong 1 nhiệm vụ → tự nhận 1 🧩 Mảnh ghép Tiên Nữ. Đủ 10 mảnh → ra NPC Tiên Nữ (Công viên) ghép 1 🎫 Phiếu Tiên Giới.
+   • DỮ LIỆU: ST.tn = {wk:mốc đầu tuần, q:[{k:'cook'|'mon',n:tên món,need,p,done}], pc:số mảnh, tk:số phiếu}
+   • Muốn đổi món/số lượng: sửa TN_DISH (tên món PHẢI trùng tên trong MACHS) và TN_MON bên dưới.
+   =================================================================================== */
+const TN_NEED=10;
+const TN_DISH=['Cơm trắng','Cơm trứng','Xôi trắng','Xôi bắp','Cà chua đóng hộp','Dưa leo muối','Cơm cà chua trứng','Xôi đậu xanh'];   // món dễ, rẻ, nguyên liệu cơ bản
+const TN_MON=[10,12];   // số quái vật phải câu: từ..đến
+function tnWk(){const d=new Date(),k=(d.getDay()+6)%7;return new Date(d.getFullYear(),d.getMonth(),d.getDate()-k).getTime()}
+function tnRng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function tnGen(wk){const R=tnRng(Math.floor(wk/864e5)*7919+13),pool=TN_DISH.slice(),q=[];
+ for(let i=0;i<5;i++){const j=Math.floor(R()*pool.length),n=pool.splice(j,1)[0],o=PRODS.find(x=>x.n==n),slow=o&&o.min>=8;
+  q.push({k:'cook',n,need:3+Math.floor(R()*(slow?2:3)),p:0,done:0})}
+ q.push({k:'mon',n:'',need:TN_MON[0]+Math.floor(R()*(TN_MON[1]-TN_MON[0]+1)),p:0,done:0});return q}
+function tnEnsure(){const wk=tnWk();if(!ST.tn||typeof ST.tn!='object')ST.tn={};const T=ST.tn;T.pc=T.pc|0;T.tk=T.tk|0;
+ if(T.wk!==wk||!Array.isArray(T.q)){T.wk=wk;T.q=tnGen(wk)}return T}
+function tnProg(kind,name){const T=tnEnsure();let g=0;
+ for(const q of T.q){if(q.done||q.k!=kind||(kind=='cook'&&q.n!=name))continue;q.p=Math.min(q.need,q.p+1);if(q.p>=q.need){q.done=1;T.pc++;g++}}
+ if(g)setTimeout(()=>toast('🧚 Hoàn thành nhiệm vụ Tiên Nữ!\n+'+g+' 🧩 Mảnh ghép Tiên Nữ ('+T.pc+')'),1500)}
+function tnLeft(){const ms=tnWk()+7*864e5-Date.now(),d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d>0?d+' ngày '+h+' giờ':h+' giờ'}
+(function(){const css=document.createElement('style');css.textContent='#hleft{display:flex;flex-direction:column;align-items:flex-end;gap:4px}#hev{width:100%;box-sizing:border-box;justify-content:center;font-size:14px;padding:5px 8px;border-radius:8px;border-width:2px;box-shadow:0 2px 0 #4e2f16;cursor:pointer;font-family:inherit;background:#f7c3e0;position:relative}#hev small{font-size:11px}#hev:active{transform:translateY(2px);box-shadow:none}'
+ +'.tnb{height:12px;background:#e6d9b8;border:2px solid #7a4a26;margin-top:4px;position:relative}.tnb i{display:block;height:100%;background:linear-gradient(#ffb3dc,#c58bff)}'
+ +'.tnq{background:linear-gradient(#fff6fb,#f6e6ff);border:2px solid #c9a0e0;padding:6px 8px;margin:5px 0;color:#4a2a5a;font-size:13px}.tnq.ok{background:linear-gradient(#f2ffe8,#dcf6c8);border-color:#8cc66a;color:#2f5a1c}.tnq b{display:block}.tnq small{color:#7a5a8a}'
+ +'@media (max-width:700px){#hev{transform:scale(.82);transform-origin:top right;margin-top:-14px}}';document.head.appendChild(css)})();
+function evUI(){tnEnsure();
+ openUI(head('🎉 Sự kiện')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧚</span><b>Sự kiện Tiên Nữ</b>Tiên Nữ đứng ở Công viên, bạn ra đó đổi quà nha.</div>'
+  +'<button class="b w" style="font-size:14px;padding:10px" onclick="tnQuestUI()">📜 Nhiệm vụ Tiên Nữ</button>')}
+function tnQuestUI(){const T=tnEnsure(),nd=T.q.filter(q=>q.done).length;
+ let h=head('📜 Nhiệm vụ Tiên Nữ')+'<div class="mut" style="text-align:center">⏳ Làm mới sau <b>'+tnLeft()+'</b> • Xong 1 nhiệm vụ nhận 1 🧩<br>🧩 Mảnh ghép: <b>'+T.pc+'</b> • Hoàn thành tuần này: <b>'+nd+'/'+T.q.length+'</b></div>';
+ T.q.forEach(q=>{const o=q.k=='cook'?PRODS.find(x=>x.n==q.n):null,tx=q.k=='cook'?'🍳 Nấu '+(o?ic(o.e,o.n)+' ':'')+'<b style="display:inline">'+q.n+'</b> '+q.need+' lần':'🎣 Câu <b style="display:inline">'+q.need+' quái vật</b>',pc=Math.round(q.p/q.need*100);
+  h+='<div class="tnq'+(q.done?' ok':'')+'"><b>'+tx+(q.done?' ✅':'')+'</b><div class="tnb"><i style="width:'+pc+'%"></i></div><small>'+q.p+'/'+q.need+(q.done?' • Đã nhận 🧩 +1':' • Thưởng: 🧩 +1')+'</small></div>'});
+ openUI(h+'<div class="pf"><button class="b" onclick="evUI()">⬅ Quay lại</button></div>')}
+function tnNpcUI(){const T=tnEnsure();
+ openUI(head('🧚 Tiên Nữ')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧚</span><b>"Chào con~ ta là Tiên Nữ!"</b>Gom đủ '+TN_NEED+' mảnh ghép thì ta ghép thành Phiếu Tiên Giới cho nè.<br><small>🧩 '+T.pc+' mảnh • 🎫 '+T.tk+' Phiếu Tiên Giới</small></div>'
+  +'<button class="b w" style="font-size:14px;padding:9px" onclick="tnMergeUI()">🧩 Ghép mảnh Tiên Nữ</button>'
+  +'<button class="b w z" style="font-size:14px;padding:9px;margin-top:6px" onclick="toast(\'🛍️ Shop Tiên Nữ sắp ra mắt, chờ nhé!\')">🛍️ Shop Tiên Nữ (sắp ra mắt)</button>')}
+function tnMergeUI(){const T=tnEnsure(),ok=T.pc>=TN_NEED;
+ openUI(head('🧩 Ghép mảnh Tiên Nữ')+'<div class="tnq" style="text-align:center"><span style="font-size:30px">🧩➜🎫</span><b>'+TN_NEED+' Mảnh ghép = 1 Phiếu Tiên Giới</b><div class="tnb"><i style="width:'+Math.min(100,Math.round(T.pc/TN_NEED*100))+'%"></i></div><small>Bạn có '+T.pc+' mảnh • '+T.tk+' Phiếu Tiên Giới</small></div>'
+  +'<button class="b w'+(ok?'':' z')+'" style="font-size:14px;padding:9px" onclick="tnMerge()">✨ Ghép thành Phiếu Tiên Giới</button><div class="pf"><button class="b" onclick="tnNpcUI()">⬅ Quay lại</button></div>')}
+function tnMerge(){const T=tnEnsure();if(T.pc<TN_NEED)return toast('Chưa đủ '+TN_NEED+' mảnh ghép (đang có '+T.pc+')');
+ T.pc-=TN_NEED;T.tk++;save();toast('🎫 Ghép thành công 1 Phiếu Tiên Giới!\nBạn có '+T.tk+' phiếu');tnMergeUI()}
 // ---------- chuong thu ----------
 const PENS=[{n:'Chuồng gà',a:'🐔',id:'trung',e:'🥚',p:'Trứng gà',min:10,f:'m15_0',fn:'Cám gà'},
 {n:'Chuồng heo',a:'🐖',id:'heo',e:'🥓',p:'Thịt heo',min:25,f:'m15_1',fn:'Cám heo'},

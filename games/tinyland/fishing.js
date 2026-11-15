@@ -227,7 +227,7 @@ function startBite(){F.ph='bite';F.t=0;const R=RAR[F.rar];F.zone=R.zone;F.zx=rr(
 const markPos=()=>Math.abs(((F.t*F.spd+F.p0)%2)-1);
 function hideBar(){const z=$('mqz'),k=$('mqk'),b=$('mqb');if(z)z.style.display='none';if(k)k.style.display='none';if(b)b.classList.remove('on')}
 function pull(){const p=markPos(),ok=p>=F.zx-.015&&p<=F.zx+F.zone+.015;
- if(ok){const m=F.mon,b=bag();b[m.id]=(b[m.id]|0)+1;let bonus='';try{const zn=window.seaZoneHere&&seaZoneHere();if(zn&&Math.random()<ZB)bonus=giveBonus()}catch(e){}try{save()}catch(e){}
+ if(ok){const m=F.mon,b=bag();b[m.id]=(b[m.id]|0)+1;try{tnProg('mon')}catch(e){}let bonus='';try{const zn=window.seaZoneHere&&seaZoneHere();if(zn&&Math.random()<ZB)bonus=giveBonus()}catch(e){}try{save()}catch(e){}
   try{sunCatch()}catch(e){}let broke=false;try{broke=rodRoll()}catch(e){}F.ph='win';F.t=0;F.parts=[];for(let i=0;i<(m.r==2?46:m.r==1?18:9);i++)F.parts.push({a:rr(0,6.283),v:rr(20,m.r==2?70:46),l:rr(.5,1.3),t:0,c:m.r==2?['#fff','#ffe27a','#ffcf3a','#ffb0e8'][i%4]:m.r==1?'#ffe27a':'#bfe8ff'});
   F.rip.push({x:HX,t:0});hideBar();
   say('🎉 Câu được <b style="color:'+RAR[m.r].col+';text-shadow:0 0 1px #000">'+m.n+'</b> ('+RAR[m.r].n.toLowerCase()+')!<br><small>Đã vào Túi › Biển • bán ở Tiệm câu: '+m.p+' xu quái vật</small>'+(bonus?'<br>'+bonus:'')+(broke?'<br><b style="color:#c4382e">🔧 Cần câu bị hư rồi!</b>':''),'#2a7a2a');

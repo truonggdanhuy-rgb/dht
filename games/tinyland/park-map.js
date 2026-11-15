@@ -400,7 +400,7 @@ function build(){
    const sn=Math.sin(t*1.8),L=8+Math.round(sn*2),d=[0,0,3,0,0,2][Math.floor(t/4)%6];
    E(R0,'rgba(0,0,0,'+(.15-.04*sn).toFixed(2)+')',fx,fy,Math.round(8-sn),2);   // bóng mờ trên mặt đất (bay cao nên nhỏ)
    drawAv(cx,fx-10,fy-30-L,{d,a:t,mv:0,sit:0,hair:0,set:ti,e:0,nosh:1})});
-  hits.push([fx-14,fy-64,28,62,'🧚 Tiên nữ — cô ấy đang mải ngắm đài phun nước, chưa nói chuyện được đâu...']);
+  hits.push([fx-14,fy-64,28,62,'🧚 Tiên Nữ — bấm để nói chuyện','cv:tn',[fx,fy+16]]);
   lb.push(['TIÊN NỮ',fx,fy-64])}
  // ----- ghế đá (2 chỗ) -----
  const BEN=mkBench();
@@ -648,7 +648,7 @@ function boatTick(){ // gọi mỗi khung hình khi đang ở trên thuyền
  if(!goal){if(Pl.mv){CV.dock=null}else landBoat()}}                                   // tự lái tay → hủy vào bờ; kẹt → lên bờ luôn
 
 window.cvAct=(a,h)=>{const[t,v]=a.split(':');
- if(t=='boat')return boardBoat();if(t=='seat')return trySeat(+v);if(t=='horse')return tryHorse(+v);
+ if(t=='tn')return tnNpcUI();if(t=='boat')return boardBoat();if(t=='seat')return trySeat(+v);if(t=='horse')return tryHorse(+v);
  if(t=='npc')return toast(['🧋 Cô Ba: "Trà đá 3 nghìn nè con!"','🧋 Cô Ba: "Nước mía mới ép, mát lắm nghen!"','🧋 Cô Ba: "Ngồi ghế nhựa đi con, nghỉ chân chút!"'][Math.floor(Math.random()*3)])};
 
 // ---------- người chơi khác ----------
