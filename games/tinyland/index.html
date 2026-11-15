@@ -771,7 +771,10 @@ const SETS=[
   {n:'Set Hawaii (Nữ)',k:'hwf',fx:'hawaii',hw:'f',ach:1,sh:'#ff7f9c',shl:'#ffa6ba',shd:'#d9566f',scarf:'#ff7f9c',belt:'#ffe27a',skirt:'#18b3a0',pt:'#f1c08a',rpt:'#18b3a0',shoe:'#8a5a30',fa:'#fff3d0',fb:'#ffe066'},
   // ---- Set Phao bơi vịt (Nam / Nữ): bán ở Tiệm câu Quái vật (Biển) bằng 3000 Xu quái vật — ach:1 = không hiện ở Shop Phố xá. Giá nằm ở QSHOP trong sea-map.js, hình vẽ nằm ở SETFX.duckfloat trong outfits.js ----
   {n:'Phao bơi vịt (Nam)',k:'duckm',fx:'duckfloat',dk:'m',ach:1,sh:'#f1c08a',shl:'#f8d3a8',shd:'#d99e6a',scarf:'#f1c08a',belt:'#ffd23a',pt:'#f1c08a',rpt:'#f1c08a',shoe:'#ff9a2a'},
-  {n:'Phao bơi vịt (Nữ)',k:'duckf',fx:'duckfloat',dk:'f',ach:1,sh:'#ff8fb8',shl:'#ffb3cf',shd:'#d9638f',scarf:'#ff8fb8',belt:'#ff8fb8',pt:'#f1c08a',rpt:'#f1c08a',shoe:'#ff9a2a'}];
+  {n:'Phao bơi vịt (Nữ)',k:'duckf',fx:'duckfloat',dk:'f',ach:1,sh:'#ff8fb8',shl:'#ffb3cf',shd:'#d9638f',scarf:'#ff8fb8',belt:'#ff8fb8',pt:'#f1c08a',rpt:'#f1c08a',shoe:'#ff9a2a'},
+  // ---- Bán ở Shop Phố xá: Vua đầu bếp (nam/nữ đều mặc, không chữ) 900 Xu • Lính Việt 700 Xu. Giá: SHOP.s.pr trong pho-map.js, hình vẽ: SETFX.chef / SETFX.linh trong outfits.js ----
+  {n:'Vua đầu bếp',k:'chef',fx:'chef',sh:'#f8f8fb',shl:'#ffffff',shd:'#cdd3dd',scarf:'#d8232a',belt:'#4b5060',pt:'#4b5060',rpt:'#4b5060',shoe:'#2a2a2e'},
+  {n:'Lính Việt',k:'linh',fx:'linh',sh:'#e0561f',shl:'#f58a4a',shd:'#b23c10',scarf:'#f6cf4a',belt:'#7a1a10',pt:'#6b2a16',rpt:'#6b2a16',shoe:'#3a2a22'}];
 const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'},{n:'Tóc nâu buộc',k:'tail',c:'#6a3e1e'},{n:'Tóc vàng',k:'short',c:'#e0b84a'},{n:'Mũ len đỏ',k:'beanie',c:'#c0392b',hr:'#2b1d12'},{n:'Mũ len xanh',k:'beanie',c:'#2f6fe0',hr:'#6a3e1e'},
  {n:'Tóc Sailor Moon',k:'sailor',c:'#f6d96b'},{n:'Tóc 2 chùm',k:'bun2',c:'#2a2224'},{n:'Tóc nữ yêu kiều',k:'longf',c:'#201a24'},{n:'Tóc xinh yêu',k:'bobf',c:'#17151c'},
  {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'},
@@ -780,7 +783,10 @@ const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'}
  {n:'Gai hồng',k:'spike',p:['#d94a8c','#ff8ec4']},{n:'Gai đen xanh',k:'spike',p:['#20282a','#2fe0a0']},{n:'Gai trắng xanh',k:'spike',p:['#f2f6ff','#6fb8ff']},{n:'Gai cầu vồng',k:'spike',m:'r',p:['#ff6b6b','#ffc24a','#fff06b','#6fe38a','#5ab8ff','#b184ff']},{n:'Gai hồng lam',k:'spike',p:['#ff7fc0','#46e0d4']},{n:'Gai cam lửa',k:'spike',p:['#d8321c','#ffa23a']},
  {n:'Mũ giữ nhiệt',k:'earfur',ach:1,bd:3},
  {n:'Nón rộng vành',k:'hawaii',c:'#2b1d12',ach:1},
- {n:'Mũ rơm',k:'luffy',c:'#1a1418',ach:1}];
+ {n:'Mũ rơm',k:'luffy',c:'#1a1418',ach:1},
+ // ---- Bán ở Shop Phố xá: Mũ Vua đầu bếp 800 Xu • Mũ lính Việt 500 Xu (hình vẽ: HAIRFX.chef / HAIRFX.linh trong outfits.js) ----
+ {n:'Mũ Vua đầu bếp',k:'chef',c:'#2b1d12'},
+ {n:'Mũ lính Việt',k:'linh',c:'#2b1d12'}];
 // ---- Bieu cam nhan vat ----
 const EXPRS=[{n:'Mặc định'},{n:'😎 Ngầu'},{n:'😍 Iu iu'},{n:'🤤 Đói bụng'},{n:'😢 Sad'},{n:'😄 Vui vẻ'},{n:'🍬 Bong bóng kẹo'}];
 // 6 biểu cảm đầu miễn phí (ai cũng có); từ số 6 trở đi mua ở Shop Phố xá
@@ -1315,7 +1321,10 @@ function drawAv(g,ox,oy,o){
 // (giữ nguyên thứ tự trong ACCS vì ST.own.a / ST.av.a lưu theo số thứ tự)
 const ACCS=[{n:'Lồng đèn trăng rằm',k:'moon',t:'hang',art:accMoon},{n:'Xe kéo vịt',k:'duck',t:'pull',art:accDuck},
  {n:'Hộp quà kéo',k:'gift',t:'pull',art:accGift,ach:1,bd:5},{n:'Bong bóng tuyết',k:'snowbub',t:'float',art:accSnow,ach:1,bd:5},
- {n:'Sao biển đồ chơi',k:'starfish',t:'pull',art:accStar,ach:1},{n:'Bóng bạch tuộc',k:'octobub',t:'float',art:accOcto,ach:1}];
+ {n:'Sao biển đồ chơi',k:'starfish',t:'pull',art:accStar,ach:1},{n:'Bóng bạch tuộc',k:'octobub',t:'float',art:accOcto,ach:1},
+ // t:'hold' = cầm thẳng trong tay (hình vẽ ở outfits.js). Bán ở Shop Phố xá: Song kiếm 5000 • iPad 1500 • Muôi đầu bếp 300 • Giáo lính Việt 800
+ {n:'Song kiếm',k:'dsword',t:'hold',art:accSword},{n:'iPad',k:'ipad',t:'hold',art:accIpad},
+ {n:'Muôi đầu bếp',k:'ladle',t:'hold',art:accLadle},{n:'Giáo lính Việt',k:'spear',t:'hold',art:accSpear}];
 //   t:'float' = cầm DÂY dài, vật bay lơ lửng phía trên đầu -> art(P) giống 'hang'
 // ===== Pet đổi bằng Huy hiệu tuyết: Bánh quy gừng + Mây tuyết =====
 function drawPetGinger(g,x,y,d,mv,a,t){
@@ -1456,6 +1465,8 @@ function drawAcc(r0,o,c){const A=ACCS[o.acc];if(!A)return;const t=performance.no
   R('#bfe0ff',-1,hy,2,2);R('#eef6ff',-1,hy,1,1);                       // vòng cầm dây trong tay
   line('#8fb0d8',0,hy+1,bx+1,by+8,1);line('#eef6ff',0,hy,bx,by+7,1);  // dây dài nối lên bong bóng
   A.art({R,E:(col,x,y,a,b)=>E(R,col,x,y,a,b),ax:bx,ay:by,sw:0,t,o});
+ }else if(A.t=='hold'){
+  A.art({R,line,hy,hyL:22+c.lg,lx:-13,side:c.side,back:c.back,Rt:c.Rt,t,o})
  }else{
   const mf=o.mv?Math.floor(o.a*9)%2:0,tb=o.mv&&mf?-1:0,tx=c.side?-27:12,ty=22,fl=!c.side,hx=c.side?11:0;
   const T=(col,x,y,w,h)=>R(col,tx+(fl?11-x-w+1:x),ty+y+tb,w,h);

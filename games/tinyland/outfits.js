@@ -499,3 +499,127 @@ SETFX.duckfloat=(u,o,S,K)=>{
   u(YH,mx(2,1),18,1,1);u(Y1,mx(2,2),19,2,1);u(Y1,mx(2,3),20,3,1);u(Y2,mx(3,3),21,3,1);
  }
 };
+
+/* =====================================================================
+   ĐỒ MỚI (Shop Phố xá): Vua đầu bếp • Lính Việt • Song kiếm • iPad • Muôi đầu bếp • Giáo lính Việt
+   - Set  : SETFX.chef / SETFX.linh   (dữ liệu màu + giá nằm ở SETS trong index.html, SHOP.s.pr trong pho-map.js)
+   - Mũ   : HAIRFX.chef / HAIRFX.linh (SHOP.h.pr)
+   - Cầm tay: loại t:'hold' trong ACCS — hàm vẽ art(P) bên dưới (SHOP.a.pr). Xem drawAcc trong index.html.
+   ===================================================================== */
+
+// ---- Mũ Vua đầu bếp: mũ trắng cao, xếp nếp ----
+HAIRFX.chef=(u,o,K)=>{
+ const{side,Rt,back,HC}=K,W='#f8f8fb',WL='#ffffff',WS='#dde3ec',WD='#b9c2d0';
+ if(!side){if(!back){u(HC,6,9,1,2);u(HC,13,9,1,2)}}else u(HC,Rt?6:12,9,2,2);
+ // thân mũ phồng cao (y0..6) + dải quấn đầu (y7..8)
+ u(W,7,0,6,1);u(W,5,1,10,1);u(W,4,2,12,4);u(W,5,6,10,1);
+ u(WL,5,1,2,1);u(WL,4,2,2,3);u(WS,14,2,2,4);u(WS,13,1,2,1);u(WS,12,0,1,1);
+ for(const x of[7,10,13])u(WS,x,3,1,3);                 // nếp gấp
+ u(WS,5,6,10,1);
+ u(W,5,7,10,2);u(WL,5,7,10,1);u(WD,5,8,10,1);u(WS,13,7,2,1);
+};
+
+// ---- Mũ lính Việt: nón chóp tam giác đỏ cam, viền & chóp vàng, quai ----
+HAIRFX.linh=(u,o,K)=>{
+ const{side,Rt}=K,RO='#e0561f',ROL='#f58a4a',ROD='#b23c10',GO='#f6cf4a',GOD='#c9961a',QU='#8a2a10';
+ const rows=[[9,2],[8,4],[7,6],[6,8],[5,10],[4,12],[3,14]];
+ rows.forEach(([a,w],i)=>{u(RO,a,i,w,1);u(ROL,a,i,1,1);u(ROD,a+w-2,i,2,1);
+  if(i==0)u(GO,a,i,w,1);if(i==3||i==5){u(GO,a+1,i,w-2,1);u(GOD,a+w-3,i,2,1)}});
+ u(GO,2,7,16,1);u(GOD,11,7,7,1);u(GO,2,7,2,1);       // vành viền vàng
+ u(ROD,3,8,14,1);                                      // bóng dưới vành
+ u(GO,9,-1,2,1);                                       // chóp nhọn vàng
+ // quai nón + tua đỏ
+ if(!side){u(QU,5,9,1,5);u(QU,14,9,1,5)}else u(QU,Rt?9:10,9,1,5);
+};
+
+// ---- Set Vua đầu bếp (nam/nữ đều mặc): áo trắng cài 2 hàng cúc vàng + khăn đỏ, không chữ ----
+SETFX.chef=(u,o,S,K)=>{
+ const{side,Rt,back}=K,W='#f8f8fb',WL='#ffffff',WS='#dde3ec',GOLD='#f2c94c',RED='#d8232a',REDD='#9c1219';
+ if(!side){
+  if(!back){
+   u(W,7,15,6,1);u(WL,7,15,2,1);u('#f1c08a',9,15,2,1);                     // cổ áo
+   u(WS,9,17,2,6);u(W,10,17,1,6);u(WL,6,17,3,6);                          // vạt áo chéo
+   u(RED,8,15,4,1);u(RED,9,16,2,1);u(REDD,9,17,2,1);                        // khăn đỏ
+   for(const y of[18,20,22]){u(GOLD,7,y,1,1);u(GOLD,12,y,1,1)}             // 2 hàng cúc vàng
+  }else{u(W,7,15,6,1);u(WS,9,17,2,6)}
+ }else{
+  u(W,8,15,5,1);u(RED,8,15,5,1);u(REDD,Rt?8:11,16,2,1);
+  const fx=Rt?12:8;for(const y of[18,20,22])u(GOLD,fx,y,1,1);
+ }
+};
+
+// ---- Set Lính Việt: áo đỏ cam viền vàng ----
+SETFX.linh=(u,o,S,K)=>{
+ const{side,Rt,back,lg,sx}=K,GO='#f6cf4a',GOD='#c9961a';
+ if(!side){
+  u(GO,7,15,2,1);u(GO,11,15,2,1);u(GO,8,16,1,1);u(GO,11,16,1,1);          // cổ áo
+  if(!back){u(GO,9,16,2,7);u(GOD,10,16,1,7);for(const y of[18,20])u('#b23c10',9,y,2,1)}   // nẹp giữa
+  u(GO,6,23,8,1);                                                         // viền gấu áo
+  u(GO,2,17+lg,3,1);u(GO,15,17-lg,3,1);                                    // vai
+  u(GO,2,21+lg,3,1);u(GO,15,21-lg,3,1);                                    // cổ tay
+  if(!back)u(GO,9,22,2,1);                                                // khóa thắt lưng
+ }else{
+  u(GO,8,15,5,1);u(GO,Rt?13:7,17,1,6);u(GO,7,23,7,1);
+  if(!o.noarm){const ax=9-sx;u(GO,ax,17,3,1);u(GO,ax,21,3,1)}
+  u(GO,Rt?11:8,22,2,1);
+ }
+};
+
+/* ---------------------- PHỤ KIỆN CẦM TAY (t:'hold') ----------------------
+   art(P): P.R(màu,dx,y,w,h) vẽ tương đối bàn tay (dx>0 = hướng nhân vật nhìn); P.hy = y bàn tay phải,
+   P.hyL = y bàn tay trái; P.lx = dx bàn tay trái (chỉ khi nhìn thẳng/sau); P.side / P.back; P.t = giây. */
+
+// Song kiếm: 2 thanh kiếm, tay trái + tay phải (nhìn nghiêng: bắt chéo trong 1 tay)
+function accSword(P){
+ const R=P.side?(c,x,y,w,h)=>P.R(c,x+2,y,w,h):P.R,t=P.t;
+ const sword=(dx,hy,out,dark)=>{
+  const B1=dark?'#8d98a8':'#f4f8fc',B2=dark?'#68727f':'#aab6c6',G='#e7b93a',GR='#6a3a1c';
+  R(GR,dx,hy,2,3);R(G,dx,hy+3,2,1);R(G,dx-2,hy-1,6,1);R('#b8871c',dx-2,hy-1,1,1);R('#b8871c',dx+3,hy-1,1,1);
+  for(let k=0;k<15;k++){const x=dx+Math.round(out*k*.22),y=hy-2-k,w=k==14?1:2;R(B1,x,y,1,1);if(w==2)R(B2,x+1,y,1,1)}
+  if(!dark){const k=Math.floor((t*9)%22);if(k<15)R('#ffffff',dx+Math.round(out*k*.22),hy-2-k,1,1)}};
+ if(P.side){sword(0,P.hy,-1,1);sword(0,P.hy,1,0)}
+ else{sword(P.lx,P.hyL,-1,0);sword(0,P.hy,1,0)}
+}
+
+// iPad: cầm trước ngực, màn hình đổi màu + vệt sáng chạy
+function accIpad(P){
+ const R=P.R,t=P.t,SK='#f1c08a',hy=P.hy;
+ if(P.side){
+  R('#2b2f3a',1,hy-8,2,10);const j=Math.floor(t*6)%8;
+  for(let i=0;i<8;i++)R('hsl('+((t*70+i*28)%360|0)+',75%,62%)',1,hy-7+i,1,1);
+  R('#ffffff',1,hy-7+j,1,1);R(SK,-1,hy,3,2);return}
+ if(P.back){R('#c9ced6',2,hy-8,1,9);return}
+ R('#2b2f3a',-5,hy-9,8,11);R('#454b5a',-5,hy-9,8,1);R('#8a92a3',-2,hy-9,2,1);       // viền + camera
+ for(let j=0;j<8;j++)R('hsl('+((t*70+j*26)%360|0)+',78%,60%)',-4,hy-8+j,6,1);         // màn hình
+ const b=Math.floor((t*7)%12)-2;if(b>=0&&b<8){R('rgba(255,255,255,.55)',-4,hy-8+b,6,1)}
+ R('rgba(255,255,255,.7)',-3,hy-8,1,1);                                              // chấm sáng
+ for(const [x,y] of [[-3,hy-6],[0,hy-5],[-2,hy-3]])R('rgba(255,255,255,.9)',x,y,1,1); // icon nhỏ
+ R(SK,-1,hy,3,2)                                                                      // bàn tay đỡ
+}
+
+// Muôi đầu bếp: muôi bạc to
+function accLadle(P){
+ const R=P.side?(c,x,y,w,h)=>P.R(c,x+2,y,w,h):P.R,t=P.t,hy=P.hy,H1='#e6ebf2',H2='#8f99a6';
+ for(let y=hy+3;y>=hy-13;y--){R(H1,0,y,1,1);R(H2,1,y,1,1)}                // cán
+ R('#c9d1dc',-1,hy+4,3,1);                                                // đầu cán
+ const top=hy-18;
+ R(H1,-3,top,8,1);R('#c9d1dc',-3,top+1,8,1);R('#7d8896',-2,top+1,6,1);          // miệng muôi (lòng sâu)
+ R(H1,-3,top+2,8,1);R('#9aa5b3',-2,top+2,6,1);R(H2,4,top+2,1,1);
+ R(H1,-2,top+3,6,1);R('#aab4c1',-1,top+3,4,1);R(H2,3,top+3,1,1);
+ R(H1,-1,top+4,4,1);R(H2,2,top+4,1,1);
+ R(H2,0,top+5,2,1);
+ R('#ffffff',-2,top,1,1);
+ if(Math.sin(t*4)>.7)R('#ffffff',3,top,1,1);
+}
+
+// Giáo lính Việt: cán gỗ dài, mũi giáo thép, tua rua đỏ
+function accSpear(P){
+ const R=P.side?(c,x,y,w,h)=>P.R(c,x+2,y,w,h):P.R,t=P.t,hy=P.hy;
+ for(let y=hy-17;y<=hy+6;y++){R('#a8703a',0,y,1,1);R('#6e4420',1,y,1,1)}
+ R('#4a2c14',0,hy+7,2,1);
+ const ty=hy-27;                                                            // mũi giáo
+ [[0,0,2],[1,0,2],[2,-1,4],[3,-1,4],[4,-1,4],[5,0,2],[6,0,2]].forEach(([i,x,w],k)=>{R('#f4f8fc',x,ty+i,1,1);for(let q=1;q<w;q++)R(q==w-1?'#8d98a8':'#d4dce6',x+q,ty+i,1,1)});
+ R('#f6cf4a',-1,ty+7,4,1);R('#c9961a',-1,ty+8,4,1);                          // đai vàng
+ R('#c8201a',0,ty+9,2,2);R('#8a1010',1,ty+9,1,2);                             // nút tua
+ [-1,0,1,2].forEach((x,i)=>{for(let k=0;k<4;k++){const sw=k<2?0:Math.round(Math.sin(t*5+i*1.3+k*.5)*(k-1)*.5);R(k%2?'#e23a2a':'#c8201a',x+sw,ty+11+k,1,1)}});
+}
