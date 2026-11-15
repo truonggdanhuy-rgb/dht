@@ -35,7 +35,7 @@ const FOODM=[2,3,4,6,7,8,9,10,13,14,17];
 function foodPick(){try{const L=[];for(const mi of FOODM){const M=MACHS[mi];if(M&&M.rec)for(const o of M.rec)if(!/^Vắt /.test(o.n))L.push(o)}return L.length?L[Math.floor(Math.random()*L.length)]:null}catch(e){return null}}
 function giveBonus(){
  const f=Math.random()<.5?foodPick():null;
- if(f){ST.vp=ST.vp||{};ST.vp[f.id]=(ST.vp[f.id]|0)+1;toast('🎁 Vùng nước tối tặng bạn 1 '+f.e+' '+f.n+'!');return '🎁 Quà vùng nước tối: <b>'+f.e+' '+f.n+'</b> (đã vào Kho)'}
+ if(f){ST.vp=ST.vp||{};ST.vp[f.id]=(ST.vp[f.id]|0)+1;toast('🎁 Vùng nước tối tặng bạn 1 '+f.e+' '+f.n+'!');return '🎁 Quà vùng nước tối: <b>'+ic(f.e,f.n)+' '+f.n+'</b> (đã vào Kho)'}
  ST.tk=(ST.tk|0)+1;toast('🎁 Vùng nước tối tặng bạn 1 🎟️ vé quay!');return '🎁 Quà vùng nước tối: <b>+1 🎟️ vé quay</b>'}
 
 // ---------- vẽ quái vật (đơn giản) ----------

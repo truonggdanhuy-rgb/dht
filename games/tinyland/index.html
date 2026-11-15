@@ -2894,7 +2894,7 @@ function machAct(mi){MUI=-1;const m=MACHS[mi];
  let h=head(m[2]+' '+m[0])+'<div class="mut">3 ô nấu cùng lúc, mỗi ô một món (có thể khác nhau). Xong tự vào Kho vật phẩm.</div><div class="ml">';
  for(let i=0;i<3;i++)h+='<div class="sl" id="sl'+i+'"><span id="st'+i+'"></span><button class="b x" id="sx'+i+'" style="display:none" onclick="cancelSlot('+mi+','+i+')">Hủy</button><div class="pb" id="pb'+i+'"></div></div>';
  h+='</div><div>';
- m.rec.forEach((o,ri)=>h+='<button class="b rc'+(canMake(o)?'':' z')+'" onclick="enq('+mi+','+ri+')"><b>'+o.n+'</b> • '+o.min+' phút<small>'+o.txt+'</small></button>');
+ m.rec.forEach((o,ri)=>h+='<button class="b rc'+(canMake(o)?'':' z')+'" onclick="enq('+mi+','+ri+')"><b>'+ic(o.e,o.n)+' '+o.n+'</b> • '+o.min+' phút<small>'+o.txt+'</small></button>');
  const st=$('ui').scrollTop;openUI(h+'</div>');MUI=mi;mRefresh();$('ui').scrollTop=st}
 function mRefresh(){if(MUI<0)return;const q=mq(MUI),n=now();
  for(let i=0;i<3;i++){const el=$('sl'+i);if(!el)return;const it=q[i];
@@ -3005,7 +3005,7 @@ function tlAct(){const n=now();
  tlUI()}
 function tlUI(){const od=tlList();let tot=0,ok=true,h=head('🛶 Thương lái')+'<div class="mut">Ông thương lái muốn mua các món sau. Đủ hàng thì bấm Giao hàng để nhận Xu và EXP.</div><div class="g1">';
  od.forEach(x=>{const have=ST.vp[x.p.id]||0;tot+=x.p.price*x.q;if(have<x.q)ok=false;
-  h+='<div class="it'+(have<x.q?' z':'')+'"><span>'+x.p.e+' '+x.p.n+' <b>x'+x.q+'</b><br><small>'+x.p.price+' Xu/món • trong kho: '+have+'</small></span><span><b>'+x.p.price*x.q+'</b> Xu</span></div>'});
+  h+='<div class="it'+(have<x.q?' z':'')+'"><span>'+ic(x.p.e,x.p.n)+' '+x.p.n+' <b>x'+x.q+'</b><br><small>'+x.p.price+' Xu/món • trong kho: '+have+'</small></span><span><b>'+x.p.price*x.q+'</b> Xu</span></div>'});
  openUI(h+'</div><div class="mut">Tổng đơn: <b>'+tot+' Xu</b> • Thưởng: <b>+5 EXP</b></div><button class="b w'+(ok?'':' z')+'" onclick="tlGive()">📦 Giao hàng</button><button class="b w" onclick="tlRe()">🔄 Đổi đơn khác ('+TL_RE+' Xu)</button>')}
 function tlRe(){if(!ST.od)return;if(ST.xu<TL_RE)return toast('Không đủ Xu! Cần '+TL_RE+' Xu');const old=JSON.stringify(ST.od.it);let k=0;do{tlGen()}while(JSON.stringify(ST.od.it)==old&&k++<5);ST.xu-=TL_RE;xuUp();save();tlUI();toast('🔄 Đã đổi sang đơn mới (−'+TL_RE+' Xu)')}
 function tlGive(){const od=tlList();if(!od.length)return;
@@ -5035,4 +5035,5 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="frames.js"></script>
 <script src="idcard.js"></script>
 <script src="snow-village.js"></script>
+<script src="food-icons.js"></script>
 </body></html>
