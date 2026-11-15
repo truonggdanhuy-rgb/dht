@@ -190,7 +190,7 @@ const SKY=['#4fb0ec','#62bdf0','#76c9f3','#8bd4f6','#a2dff9','#bce9fb','#d6f3fd'
 const PATHS=[[680,780,760,962],[690,214,750,580],[40,216,1400,252],[840,668,1400,716],[40,668,600,716],[1130,252,1190,296],[880,380,900,444]];
 const SIDEW=[44,728,404,952],PLAY=[884,292,1396,532],GPLZ=[944,724,1396,946];
 const PLAZA={x:720,y:690,r:118};
-const BEDS=[[616,812,672,912],[768,812,824,912],[880,548,1392,580]];
+const BEDS=[];   // đã bỏ các luống hướng dương (thay bằng bảng chỉ đường + hoa anh đào)
 const PTONE=['#d6c69c','#dccda4','#cfbf94'];
 
 function buildBG(){return mk(CW,CH,(g,R)=>{
@@ -372,12 +372,12 @@ function build(){
  for(let ty=0;ty<GR;ty++)for(let tx=0;tx<GC;tx++)if(Math.hypot((tx*TS+8-720)/44,(ty*TS+8-694)/22)<1)SOL[ty*GC+tx]=1;
  for(const[a,b,c,d]of BEDS)blk(a-2,b-2,c+2,d+2);
  // sân chơi: rào quanh, chừa 2 cổng
- {const[a,b,c,d]=PLAY;blk(a-4,b-4,c+4,b+4);blk(a-4,d-4,c+4,d+4);blk(c-4,b-4,c+4,d+4);blk(a-4,b-4,a+4,d+4);blk(1130,b-6,1190,b+8,0);blk(a-6,380,a+10,444,0)}
+ {const[a,b,c,d]=PLAY;blk(a-4,b-4,c+4,b+4);blk(a-4,d-4,c+4,d+4);blk(c-4,b-4,c+4,d+4);blk(a-4,b-4,a+4,d+4);blk(1090,b-8,1230,b+10,0);blk(a-8,350,a+12,470,0);blk(1090,d-8,1230,d+10,0)}
  // ----- cây cối -----
  const tree=(k,x,by)=>{const im=TREE[k];put(im,x,by);blk(x-8,by-12,x+8,by)};
- for(const[k,x,y]of[['g1',70,330],['yl',62,520],['g2',68,640],['ph',800,296],['g1',860,450],['pk',832,556],['g2',868,330],['g1',1380,650],
+ for(const[k,x,y]of[['g1',70,330],['yl',62,520],['g2',68,640],['ph',800,296],['g1',1380,650],
    ['g2',430,756],['ph',590,744],['g1',620,956],['yl',420,950],['ph',870,744],['g1',915,740],['yl',1400,820],['g1',1396,940],
-   ['g1',1250,600],['ph',1020,600],['g2',1110,590]]){if(y>940&&x>500&&x<900)continue;tree(k,x,Math.min(y,952))}
+   ]){if(y>940&&x>500&&x<900)continue;tree(k,x,Math.min(y,952))}
  put(WILLOW,ISL.x,ISL.y+8);
  // ----- cổng -----
  put(GATE_L,664,976);put(GATE_L,776,976);
@@ -542,11 +542,34 @@ function build(){
    blk(x-12,y-6,x+12,y);hits.push([x-14,y-44,28,46,'🐎 Ngựa nhún — bấm E để leo lên nhún!','cv:horse:'+i,[x,y+18]])});
  put(SEESAW,1240,458,[1210,448,1270,458]);hits.push([1208,430,64,30,'⚖️ Bập bênh (sắp có thể chơi)']);
  put(SLIDE,1330,462,[1300,430,1360,462]);hits.push([1296,408,70,56,'🛝 Cầu trượt (sắp có thể chơi)']);
- put(mkSign('KHU VUI CHƠI',86,null),1160,298);
+ put(mkSign('KHU VUI CHƠI',86,null),1066,274);
  // ----- hoa hướng dương -----
- for(const y of[834,854,874,894,908])sunRow(624,664,y,20),sunRow(776,816,y,20);
- for(const y of[560,576])sunRow(888,1384,y,18);
- hits.push([616,812,56,100,'🌻 Hàng hoa hướng dương rực rỡ']);hits.push([768,812,56,100,'🌻 Hàng hoa hướng dương rực rỡ']);hits.push([880,548,512,32,'🌻 Luống hướng dương dài']);
+
+ // ----- hoa anh đào (lấy từ map Nông Trại) decor quanh khu vui chơi — đặt xa lối vào -----
+ {const hs2=i=>hsh(i,77);
+  const CHERRY=mk(136,112,(g,r)=>{const cxp=68;
+   for(let i=0;i<52;i++){const x=cxp+Math.round(2*Math.sin(i/12)),w=Math.round(12-i*.12);r('#6b4a38',x-w/2,111-i,w,1);r('#8a6048',x-w/2,111-i,2,1);r('#4e3428',x+w/2-2,111-i,2,1)}
+   E(r,'#6b4a38',cxp,110,10,2);E(r,'#4e3428',cxp+5,111,5,1);
+   for(const[dx,dy]of[[-1,-1],[1,-1],[-2,-1],[2,-1],[0,-1]])for(let i=0;i<26;i++)r('#6b4a38',cxp+dx*(4+i*.9)|0,64-i*.9+(dx?0:-i*.4)|0,2,2);
+   const cl=[[68,36,38,22],[36,50,28,18],[100,50,28,18],[18,62,18,12],[118,62,18,12],[68,16,26,14],[50,28,22,14],[88,28,22,14],[68,58,30,10]];
+   for(const[x,y,a,b]of cl)E(r,'#e8789a',x,y+3,a,b);for(const[x,y,a,b]of cl)E(r,'#ff9fb8',x,y,a,b);for(const[x,y,a,b]of cl)E(r,'#ffb7c8',x-3,y-3,a-6,b-5);
+   for(let i=0;i<620;i++){const x=Math.round(hs2(i)*136),y=Math.round(hs2(i+700)*80);if(cl.some(([a,b,p,q])=>((x-a)/p)**2+((y-b)/q)**2<.9)){const c=hs2(i+33);r(c<.3?'#fff0f5':c<.6?'#ffd1dc':c<.85?'#ff8fb0':'#ffffff',x,y,2,2)}}});
+  for(const[x,y]of[[860,330],[846,556],[950,612],[1300,612],[1384,604]]){put(CHERRY,x,y,[x-8,y-12,x+8,y]);hits.push([x-40,y-100,80,100,'🌸 Cây hoa anh đào']);
+   const ph=[...Array(7)].map((_,i)=>({x:x-50+hs2(i+x)*100,p:hs2(i+y)*6.28,sp:5+hs2(i+3)*5,o:hs2(i+9)}));
+   dyn(y+30,()=>{const t=performance.now()/1000;if(x<camX-90||x>camX+vw+90||y<camY||y-110>camY+vh)return;for(const f of ph){const q=(t*f.sp*.06+f.o)%1;cx.fillStyle=['#ffc2d4','#ff9fb8','#ffe0ea'][(f.o*3)|0];cx.fillRect(Math.round(f.x+Math.sin(t+f.p)*6),Math.round(y-70+q*72),2,2)}})}}
+ // ----- BẢNG CHỈ ĐƯỜNG: Tiên Nữ / Vui chơi / Tí Nị / Trò chơi / Đạp vịt (mỗi bảng 1 tầng, không chồng nhau) -----
+ {const SIGNP=mk(130,110,(g,r)=>{
+   E(r,'rgba(0,0,0,.22)',65,107,22,3);r('#8a5a34',61,2,8,104);r('#a8703c',61,2,3,104);r('#5a3519',67,2,2,104);r('#6a4a2a',56,102,18,6);r('#8a6a44',56,102,18,2);
+   r('#ffd23f',60,0,10,3);
+   const poly=(pts,c)=>{g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fillStyle=c;g.fill()};
+   g.textAlign='center';g.font='800 9px Nunito, sans-serif';
+   const txt=(t,x,y)=>{g.fillStyle='rgba(0,0,0,.45)';g.fillText(t,x+.5,y+.5);g.fillStyle='#fff';g.fillText(t,x,y)};
+   // Tiên Nữ — mũi tên chỉ lên (hướng đài phun nước)
+   poly([[34,23],[34,10],[65,1],[96,10],[96,23]],'#7a3aa8');poly([[36,22],[36,11],[65,3],[94,11],[94,22]],'#b36fe0');txt('TIÊN NỮ',65,19);
+   const L=(y,c,d,t)=>{poly([[3,y+8],[13,y],[62,y],[62,y+15],[13,y+15]],d);poly([[6,y+8],[14,y+1],[62,y+1],[62,y+13],[14,y+14]],c);txt(t,38,y+11)};
+   const Rr=(y,c,d,t)=>{poly([[68,y],[117,y],[127,y+8],[117,y+15],[68,y+15]],d);poly([[68,y+1],[116,y+1],[124,y+8],[116,y+14],[68,y+13]],c);txt(t,92,y+11)};
+   Rr(27,'#f0a030','#a8681a','VUI CHƠI');L(45,'#e8587a','#a22a4a','TÍ NỊ');Rr(63,'#2fb0a4','#1a6e66','TRÒ CHƠI');L(81,'#4a92e0','#2a5a9a','ĐẠP VỊT')});
+  put(SIGNP,878,906,[870,896,886,906]);hits.push([814,800,128,104,'🪧 Bảng chỉ đường: ↑ Tiên Nữ • → Vui chơi • ← Tí Nị • → Trò chơi • ← Đạp vịt']);}
  // ----- đèn đường, thùng rác, biển hồ -----
  for(const[x,y]of[[676,900],[764,900],[676,810],[764,810],[684,300],[756,300],[684,520],[756,520],[1130,700],[1376,700],[560,700],[300,700],[100,700],[960,240],[430,240],[1280,240]])put(LAMP,x,y);
  for(const[x,y]of[[640,700],[800,650],[1000,708],[432,266]])put(BIN,x,y);
