@@ -227,25 +227,26 @@ function santaAct(){const d=new Date().toDateString();
  if(ST.sbd!=d){ST.sbd=d;ST.sb=(ST.sb|0)+1;try{SF.t0=performance.now()}catch(e){}save();
   return toast('🎅 Ho ho ho! Bạn nhận được 1 ❄️ Huy hiệu tuyết!\nĐang có '+ST.sb+' huy hiệu • bấm lại ông để xem gian hàng')}
  santaPanel()}
-/* ---- Gian hàng đổi Huy hiệu tuyết: thêm món mới = thêm 1 dòng vào SBSHOP (loại 'p' pet / 's' set / 'a' phụ kiện, k = khóa trong PETS/SETS/ACCS) ---- */
-const SBSHOP=[{t:'p',k:'ginger'},{t:'p',k:'snowcloud'},{t:'s',k:'warm'},{t:'a',k:'gift'},{t:'a',k:'snowbub'}];
-const sbArr=t=>t=='p'?PETS:t=='s'?SETS:ACCS;
-const sbItem=q=>{const A=sbArr(q.t),i=A.findIndex(x=>x.k==q.k);return i<0?null:{t:q.t,i,it:A[i]}};
+/* ---- Gian hàng đổi Huy hiệu tuyết: thêm món mới = thêm 1 dòng vào SBSHOP (loại 'p' pet / 's' set / 'h' tóc-mũ / 'a' phụ kiện / 'x' hành động; k = khóa trong PETS/SETS/HAIRS/ACCS, riêng 'x' là id trong ACTS; giá = bd) ---- */
+const SBSHOP=[{t:'p',k:'ginger'},{t:'p',k:'snowcloud'},{t:'h',k:'earfur'},{t:'x',k:'bell'},{t:'a',k:'gift'},{t:'a',k:'snowbub'}];
+const sbArr=t=>t=='p'?PETS:t=='s'?SETS:t=='h'?HAIRS:t=='x'?ACTS:ACCS;
+const sbItem=q=>{const A=sbArr(q.t),i=A.findIndex(x=>(q.t=='x'?x.id:x.k)==q.k);return i<0?null:{t:q.t,i,it:A[i]}};
+const sbOwn=m=>m.t=='x'?!!(ST.acts&&ST.acts[m.it.id]):(ST.own&&ST.own[m.t]||[]).includes(m.i);
 var SBRAF=0;
 function sbPrev(c,t){const g=c.getContext('2d'),q=SBSHOP[+c.dataset.q],m=sbItem(q);if(!m)return;g.clearRect(0,0,c.width,c.height);g.imageSmoothingEnabled=false;
  const A=ST.av||{},K=m.t=='p'?3:2;g.save();g.scale(K,K);const W=c.width/K,H=c.height/K;
  if(m.t=='p'){g.fillStyle='rgba(80,110,60,.15)';drawPet(g,Math.round(W/2),H-6,Math.floor(t/2)%2?3:0,1,t,t,m.i)}
- else{const d=m.t=='s'?[0,3,1,2][Math.floor(t/1.6)%4]:(m.it.t=='pull'?3:0);
-  drawAv(g,Math.round(W/2)-10,H-33+(m.it.t=='float'?6:0),{d,a:t,mv:m.t=='a'?1:0,sit:0,hair:A.h|0,set:m.t=='s'?m.i:(A.s|0),e:A.e|0,acc:m.t=='a'?m.i:-1})}
+ else{const d=(m.t=='s'||m.t=='h')?[0,3,1,2][Math.floor(t/1.6)%4]:(m.it.t=='pull'?3:0);
+  drawAv(g,Math.round(W/2)-10,H-33+(m.it.t=='float'?6:0),{d,a:t,mv:m.t=='a'?1:0,sit:0,hair:m.t=='h'?m.i:(A.h|0),set:m.t=='s'?m.i:(A.s|0),e:A.e|0,acc:m.t=='a'?m.i:-1})}
  g.restore()}
 function sbAnim(){const cs=document.querySelectorAll('canvas.sbc');if(!cs.length||!UI){SBRAF=0;return}const t=performance.now()/1000;cs.forEach(c=>sbPrev(c,t));SBRAF=requestAnimationFrame(sbAnim)}
-function sbBuy(n){const q=SBSHOP[n],m=q&&sbItem(q);if(!m)return;ST.own=ST.own||{};const own=ST.own[m.t]=ST.own[m.t]||[];
- if(own.includes(m.i))return toast('✓ Bạn đã có món này rồi, mở 🎒 Túi để dùng');
+function sbBuy(n){const q=SBSHOP[n],m=q&&sbItem(q);if(!m)return;ST.own=ST.own||{};ST.acts=ST.acts||{};const own=m.t=='x'?[]:(ST.own[m.t]=ST.own[m.t]||[]);
+ if(sbOwn(m))return toast(m.t=='x'?'✓ Bạn đã có hành động này rồi, mở ⚡ Hành động để dùng':'✓ Bạn đã có món này rồi, mở 🎒 Túi để dùng');
  const c=m.it.bd|0;if((ST.sb|0)<c)return toast('❄️ Chưa đủ huy hiệu — cần '+c+', bạn có '+(ST.sb|0)+'\nMỗi ngày ghé ông Noel nhận 1 huy hiệu nhé!');
- ST.sb-=c;own.push(m.i);save();toast('🎁 Ông Noel: "Ho ho ho! Chúc mừng con nhận được '+m.it.n+'!"\nMở 🎒 Túi để dùng');santaPanel()}
+ ST.sb-=c;if(m.t=='x')ST.acts[m.it.id]=1;else own.push(m.i);save();toast('🎁 Ông Noel: "Ho ho ho! Chúc mừng con nhận được '+m.it.n+'!"\n'+(m.t=='x'?'Mở ⚡ Hành động để dùng':'Mở 🎒 Túi để dùng'));santaPanel()}
 function santaPanel(){const n=ST.sb|0;
- const tile=(q,qi)=>{const m=sbItem(q);if(!m)return '';const own=(ST.own&&ST.own[m.t]||[]).includes(m.i),c=m.it.bd|0,ok=n>=c,kind=m.t=='p'?'Pet':m.t=='s'?'Set':'Phụ kiện';
-  return '<div class="sbt on"><canvas class="sbc" data-q="'+qi+'" width="88" height="96"></canvas><b>'+m.it.n+'</b><small>'+kind+'</small>'
+ const tile=(q,qi)=>{const m=sbItem(q);if(!m)return '';const own=sbOwn(m),c=m.it.bd|0,ok=n>=c,kind=m.t=='p'?'Pet':m.t=='s'?'Set':m.t=='h'?'Mũ':m.t=='x'?'Hành động':'Phụ kiện';
+  return '<div class="sbt on">'+(m.t=='x'?actCv(m.it.id,72,100,'sbx'):'<canvas class="sbc" data-q="'+qi+'" width="88" height="96"></canvas>')+'<b>'+m.it.n+'</b><small>'+kind+'</small>'
    +(own?'<button class="sbb own" disabled>✓ Đã có</button>':'<button class="sbb'+(ok?'':' lack')+'" onclick="sbBuy('+qi+')">❄ '+c+' • Đổi</button>')+'</div>'};
  openUI(head('🎅 Ông già Noel')
  +'<div class="sbtop"><div class="sbav">🎅</div><div class="sbsay">“Ho ho ho! Con gom huy hiệu tuyết đem lại đây, ông đổi quà Giáng Sinh cho nhé!”</div></div>'
@@ -253,5 +254,5 @@ function santaPanel(){const n=ST.sb|0;
  +'<div class="sbshop"><div class="sbsh"><span>🎁 Gian hàng quy đổi</span><span class="sbcs">'+SBSHOP.length+' MÓN</span></div>'
  +'<div class="sbgrid">'+SBSHOP.map(tile).join('')+'</div>'
  +'<div class="sbnote">Mỗi ngày bấm ông Noel 1 lần để nhận 1 huy hiệu tuyết. Đồ đổi được nằm trong 🎒 Túi.</div></div>');
- $('ui').classList.add('wui');if(!SBRAF)SBRAF=requestAnimationFrame(sbAnim)}
-(function(){const css=document.createElement('style');css.textContent='.sbt.on{border:2px solid #b9d0ea;background:linear-gradient(#f4f9ff,#e6f0fc);color:#3d5f8f}.sbt.on b{font-size:12px;line-height:1.15;text-align:center}.sbt.on small{font-size:10px;color:#7d97b8}canvas.sbc{width:88px;height:96px;image-rendering:pixelated;background:linear-gradient(#cfe6ff,#eaf4ff 66%,#d6e8c4 66%);border-radius:8px}.sbb{margin-top:2px;font:inherit;font-weight:800;font-size:12px;padding:4px 8px;border-radius:14px;border:2px solid #7da3cc;background:linear-gradient(#ffffff,#cfe3fa);color:#2f5a96;cursor:pointer}.sbb.lack{opacity:.6}.sbb.own{background:#e5f4e0;border-color:#9ccc90;color:#3a7a35;cursor:default}';document.head.appendChild(css)})();
+ $('ui').classList.add('wui');if(!SBRAF)SBRAF=requestAnimationFrame(sbAnim);if(typeof actAnimGo=='function')actAnimGo()}
+(function(){const css=document.createElement('style');css.textContent='.sbt.on{border:2px solid #b9d0ea;background:linear-gradient(#f4f9ff,#e6f0fc);color:#3d5f8f}.sbt.on b{font-size:12px;line-height:1.15;text-align:center}.sbt.on small{font-size:10px;color:#7d97b8}canvas.actc.sbx{width:88px;height:122px;margin:0;border-radius:8px;border:0}canvas.sbc{width:88px;height:96px;image-rendering:pixelated;background:linear-gradient(#cfe6ff,#eaf4ff 66%,#d6e8c4 66%);border-radius:8px}.sbb{margin-top:2px;font:inherit;font-weight:800;font-size:12px;padding:4px 8px;border-radius:14px;border:2px solid #7da3cc;background:linear-gradient(#ffffff,#cfe3fa);color:#2f5a96;cursor:pointer}.sbb.lack{opacity:.6}.sbb.own{background:#e5f4e0;border-color:#9ccc90;color:#3a7a35;cursor:default}';document.head.appendChild(css)})();

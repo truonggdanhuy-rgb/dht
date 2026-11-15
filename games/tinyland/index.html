@@ -679,7 +679,7 @@ const SETS=[
  {n:'Tứ thân truyền thống',fx:'tuthan',sh:'#8a5a34',shl:'#a8794a',shd:'#5f3b1f',scarf:'#8a5a34',belt:'#8a5a34',trim:'#c9a06a',yem:'#f4a0ae',yd:'#c9566a',vay:'#2a2a30',hemc:'#c9a06a',sash:'#4aa05a',pt:'#2a2a30',rpt:'#2a2a30',shoe:'#3a2a22'},
  {n:'Tứ thân hoa sen',fx:'tuthan',sh:'#f6a9c6',shl:'#fcd0e0',shd:'#d97fa3',scarf:'#f6a9c6',belt:'#f6a9c6',trim:'#fff0f6',yem:'#fffaf0',yd:'#d97fa3',vay:'#3f9b6a',lotus:'#f9a5c4',sash:'#f4cf47',pt:'#3f9b6a',rpt:'#3f9b6a',shoe:'#fff0f6'},
   // ---- đổi bằng Huy hiệu tuyết (Ông già Noel) ----
-  {n:'Set giữ nhiệt',k:'warm',fx:'warm',ach:1,bd:3,sh:'#efd9b8',shl:'#fbeed6',shd:'#c9a878',scarf:'#c0392b',trim:'#f6ecd8',hs:'#c0392b',belt:'#c9a878',pt:'#5a4538',rpt:'#5a4538',shoe:'#3a2a22'},
+  {n:'Set giữ nhiệt (đã đổi thành Mũ giữ nhiệt)',k:'warm',fx:'warm',gone:1,ach:1,bd:3,sh:'#efd9b8',shl:'#fbeed6',shd:'#c9a878',scarf:'#c0392b',trim:'#f6ecd8',hs:'#c0392b',belt:'#c9a878',pt:'#5a4538',rpt:'#5a4538',shoe:'#3a2a22'},
   // ---- Set mascot KHÔNG che mặt — mua bằng 💎 ở Shop kim cương ----
   {n:'Tiệc mùa đông (Nam)',k:'deerm',deer:'m',ach:1,dia:10,ds:'Bộ Noel cả người, tóc ngắn, sừng & tai tuần lộc đổi màu lấp lánh. Không che mặt.',sh:'#d42a35',scarf:'#ffffff',belt:'#2a2230',pt:'#2d2535',rpt:'#2d2535',shoe:'#2a2028'},
   {n:'Tiệc mùa đông (Nữ)',k:'deerf',deer:'f',ach:1,dia:10,ds:'Bộ Noel cả người, tóc dài xoăn hai bên, sừng & tai tuần lộc đổi màu lấp lánh. Không che mặt.',sh:'#d42a35',scarf:'#ffffff',belt:'#2a2230',pt:'#2d2535',rpt:'#2d2535',shoe:'#2a2028'}];
@@ -688,7 +688,8 @@ const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'}
  {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'},
  {n:'Sóng xanh hồng',k:'lwave',fl:'w',p:['#74c8ff','#9fb0ff','#d9a0ff','#ff9ccf']},{n:'Sóng bạch kim',k:'lwave',fl:'y',p:['#ffffff','#ece8fb','#cfc6ee','#b9aee0']},{n:'Sóng cầu vồng',k:'lwave',fl:'w',p:['#ff7a8a','#ffb36b','#ffe66b','#8fe388','#6fc8ff','#a98cff']},
  {n:'Hai chùm hồng',k:'twt',p:['#ff9fcf','#ff79b8','#ff5aa5'],b:'#7a5cff'},{n:'Hoa sương',k:'pony',p:['#ffb6d9','#ff8fc2','#f06aa8'],b:'#fff3a8'},{n:'Đuôi ngựa bạc hà',k:'pony',p:['#9ff0d6','#6fdcc0','#4cc2a6'],b:'#ffffff'},
- {n:'Gai hồng',k:'spike',p:['#d94a8c','#ff8ec4']},{n:'Gai đen xanh',k:'spike',p:['#20282a','#2fe0a0']},{n:'Gai trắng xanh',k:'spike',p:['#f2f6ff','#6fb8ff']},{n:'Gai cầu vồng',k:'spike',m:'r',p:['#ff6b6b','#ffc24a','#fff06b','#6fe38a','#5ab8ff','#b184ff']},{n:'Gai hồng lam',k:'spike',p:['#ff7fc0','#46e0d4']},{n:'Gai cam lửa',k:'spike',p:['#d8321c','#ffa23a']}];
+ {n:'Gai hồng',k:'spike',p:['#d94a8c','#ff8ec4']},{n:'Gai đen xanh',k:'spike',p:['#20282a','#2fe0a0']},{n:'Gai trắng xanh',k:'spike',p:['#f2f6ff','#6fb8ff']},{n:'Gai cầu vồng',k:'spike',m:'r',p:['#ff6b6b','#ffc24a','#fff06b','#6fe38a','#5ab8ff','#b184ff']},{n:'Gai hồng lam',k:'spike',p:['#ff7fc0','#46e0d4']},{n:'Gai cam lửa',k:'spike',p:['#d8321c','#ffa23a']},
+ {n:'Mũ giữ nhiệt',k:'earfur',ach:1,bd:3}];
 // ---- Bieu cam nhan vat ----
 const EXPRS=[{n:'Mặc định'},{n:'😎 Ngầu'},{n:'😍 Iu iu'},{n:'🤤 Đói bụng'},{n:'😢 Sad'},{n:'😄 Vui vẻ'},{n:'🍬 Bong bóng kẹo'}];
 // 6 biểu cảm đầu miễn phí (ai cũng có); từ số 6 trở đi mua ở Shop Phố xá
@@ -2608,6 +2609,9 @@ ST.av=Object.assign({h:0,s:0,m:-1,p:0,e:0,a:-1},ST.av||{});
 ST.own=Object.assign({h:[0],s:[0],m:[],p:[],a:[]},ST.own||{});
 for(const k of['h','s','m','p','a']){if(!Array.isArray(ST.own[k]))ST.own[k]=[];const v=ST.av[k];if(v>=0&&!ST.own[k].includes(v))ST.own[k].push(v)}
 for(const k of['h','s'])if(!ST.own[k].includes(0))ST.own[k].push(0);
+// Đổi 'Set giữ nhiệt' cũ -> 'Mũ giữ nhiệt' (ai đã có set cũ được tặng mũ mới, set cũ được gỡ)
+{const wi=SETS.findIndex(x=>x.k=='warm'),hi=HAIRS.findIndex(x=>x.k=='earfur');
+ if(wi>=0&&hi>=0){const k=ST.own.s.indexOf(wi);if(k>=0){ST.own.s.splice(k,1);if(!ST.own.h.includes(hi))ST.own.h.push(hi)}if(ST.av.s==wi)ST.av.s=0}}
 ownE();
 const AVTABS=[['h','Tóc'],['s','Set'],['e','Biểu cảm'],['m','Thú cưỡi'],['p','Pet'],['a','Phụ kiện']],AVDIR=[0,3,1,2];let AVTAB='h',AVI=0,avRaf=0;
 const avItems=k=>{if(k=='f')return[];if(k=='e'){const oe=ownE();return EXPRS.map((x,i)=>({n:x.n,idx:i})).filter(x=>oe.includes(x.idx))}const all=k=='h'?HAIRS:k=='s'?SETS:k=='m'?MOUNTS:k=='a'?ACCS:PETS,own=ST.own[k],L=[];
@@ -4325,7 +4329,8 @@ const ACTS=[
  {id:'khangau',n:'Khá ngầu',e:'😎',pr:5,k:'solo',ds:'Nhún nhảy đeo kính, hộp thoại pastel “Khá ngầu” lấp lánh'},
  {id:'aihoi',n:'Ai hỏi?',e:'❓',pr:5,k:'solo',ds:'Nhún vai chất vấn “Ai hỏi?”, dấu ? bay vòng quanh người'},
  {id:'che',n:'Chê',e:'👎',pr:5,k:'solo',ds:'Giơ tấm biển “Chê” lên rồi hạ xuống'},
- {id:'live',n:'Livestream',e:'📱',pr:10,k:'solo',ds:'Giá kẹp điện thoại + đèn ring, vừa nhún nhảy hát vừa phát live, tim và like bay lên'}];
+ {id:'live',n:'Livestream',e:'📱',pr:10,k:'solo',ds:'Giá kẹp điện thoại + đèn ring, vừa nhún nhảy hát vừa phát live, tim và like bay lên'},
+ {id:'bell',n:'Rung chuông Noel',e:'🔔',bd:5,k:'solo',ds:'Rung qua rung lại chiếc chuông Giáng Sinh có lá, ruy băng và đèn nhấp nháy'}];   // bd = giá bằng Huy hiệu tuyết (đổi ở Ông già Noel, không bán ở Shop kim cương)
 var ACTTAB='solo';
 ST.acts=ST.acts||{};
 const actIdx=id=>ACTS.findIndex(a=>a.id==id);
@@ -4519,6 +4524,52 @@ ACTFX.live={
   for(let i=0;i<4;i++){const a=Math.sin(t*3.2+i*1.7);if(a>.3){const an=i*1.7+t*.4;star4(SX+Math.cos(an)*(R+4),RY+Math.sin(an)*(R+4),a>.8?2:1,'rgba(255,240,250,.95)')}}}};
 
 /* ---- âm thanh chiêng: kim loại ngân + vang (echo), nhỏ nhẹ ---- */
+/* ================= 🔔 RUNG CHUÔNG NOEL (đổi bằng Huy hiệu tuyết) ================= */
+const BELL_T=.56;
+APOSE.bell=t=>{const s=Math.sin(t*2*Math.PI/BELL_T);return{d:0,lift:0,aup:[1,s>0?10:9],e:5,noacc:1}};   // tay phải giơ chuông lắc qua lại, mặt vui
+const BELL_SPR=[          // chuông 11 cột: tay cầm đỏ (hàng 2 là chỗ nắm), vòng lá ô-rô + quả đỏ trên đỉnh, dải ruy băng đỏ quanh miệng, quả lắc
+ '....rRr....',
+ '....rRr....',
+ '....rRr....',
+ '.lLoooooLl.',
+ '..oGBBBgo..',
+ '.oGgBBggdo.',
+ '.oGgggggdo.',
+ '.oGgggggdo.',
+ 'oGgggggggdo',
+ 'oGggggggddo',
+ 'orRrRrRrRro',
+ '.oddddddddo',
+ '..ooooooo..',
+ '....odo....',
+ '....ooo....'];
+const BELL_COL={r:'#a8201a',R:'#d9302a',o:'#6a4010',G:'#fff3a8',g:'#f2c53d',d:'#c9921e',L:'#2f8f4a',l:'#5cc46c',B:'#e8283a'};
+const BELL_LT=[[1,8],[2,10],[4,11],[6,11],[8,11],[9,10],[10,8]],LTC=['#ff4d4d','#ffd23f','#5ad2ff','#7be07b','#ff8ad8'];
+const bellAng=t=>-(0.24+0.46*Math.sin(t*2*Math.PI/BELL_T));
+ACTFX.bell={
+ back:(X,Y,t)=>{const pu=.5+.5*Math.sin(t*3);E(r,'rgba(255,90,90,'+(.10+.07*pu).toFixed(2)+')',X-5,Y,12,4);E(r,'rgba(110,220,130,'+(.10+.07*(1-pu)).toFixed(2)+')',X+5,Y,12,4);E(r,'rgba(255,248,210,.12)',X,Y,7,2)},
+ front:(X,Y,t,o,p)=>{const th=bellAng(t),c=Math.cos(th),s=Math.sin(th),h=p?p.aup[1]:10,px=X+7,py=Y-12-h,g=AG();
+  // vầng sáng quanh chuông
+  const bx=px-Math.round(s*7),by=py+Math.round(c*7);E(r,'rgba(255,236,150,'+(.07+.03*Math.sin(t*9)).toFixed(2)+')',bx,by,7,6);
+  // vẽ chuông xoay quanh tay (lấy mẫu ngược để không bị lỗ pixel)
+  for(let dy=-8;dy<=22;dy++)for(let dx=-14;dx<=14;dx++){
+   const sx=dx*c+dy*s,sy=-dx*s+dy*c,col=Math.round(sx)+5,row=Math.round(sy)+2;
+   if(row<0||row>=BELL_SPR.length||col<0||col>10)continue;const ch=BELL_SPR[row][col];
+   if(ch&&ch!='.')r(BELL_COL[ch],px+dx,py+dy,1,1)}
+  // dây đèn nhấp nháy quanh chuông
+  BELL_LT.forEach((q,i)=>{const lx=q[0]-5,ly=q[1]-2,fx=Math.round(lx*c-ly*s),fy=Math.round(lx*s+ly*c),on=Math.sin(t*7+i*1.9)>-.25;
+   r(on?LTC[(i+Math.floor(t*2))%LTC.length]:'#6a4010',px+fx,py+fy,1,1);
+   if(on&&Math.sin(t*7+i*1.9)>.7)star4(px+fx,py+fy,1,'rgba(255,255,255,.55)')});
+  // vệt rung hai bên + nốt nhạc bay lên
+  const ph=(t%BELL_T)/BELL_T;
+  if(Math.abs(Math.cos(ph*Math.PI*2))>.8){const dir=Math.sin(ph*Math.PI*2)>0?-1:1;   // vệt 'ting' ở hai đầu cú lắc
+   for(let j=0;j<3;j++)r('rgba(255,244,170,.85)',px-Math.round(s*12)+(dir>0?9:-10)+dir*j,py+10+j*3,1,2)}
+  for(let i=0;i<2;i++){const v=((t*.7+i/2)%1);if(v<.9){g.save();g.globalAlpha=Math.max(0,1-v/.9);note(px+11+Math.sin(v*6+i*2)*4,py-6-v*20,0,i%2?'#ffe27a':'#ff9aa8');g.restore()}}
+  // tuyết nhỏ lấp lánh quanh người
+  for(let i=0;i<5;i++){const v=((t*.45+i/5)%1);star4(X-16+i*8+Math.sin(t+i*2)*3,Y-52+v*46,0,'rgba(235,246,255,'+(1-Math.abs(v*2-1)).toFixed(2)+')')}}};
+function sndBell(){try{if(window.CV&&CV.snd===false)return;const ac=actAC();if(!ac)return;const t0=ac.currentTime,out=ac.createGain();out.gain.value=.4;out.connect(ac.destination);
+ [[1568,.10,.55],[2093,.08,.48],[2637,.06,.40],[3136,.04,.32],[4186,.025,.22]].forEach(([f,v,d])=>{const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=f*(1+Math.random()*.01);
+  g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(v,t0+.003);g.gain.exponentialRampToValueAtTime(.0006,t0+d);o.connect(g);g.connect(out);o.start(t0);o.stop(t0+d+.05)})}catch(e){}}
 function actAC(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;if(!window.__cvAC)window.__cvAC=new A();if(window.__cvAC.state=='suspended')window.__cvAC.resume();return window.__cvAC}catch(e){return null}}
 function sndChieng(){try{if(window.CV&&CV.snd===false)return;const ac=actAC();if(!ac)return;const t0=ac.currentTime,out=ac.createGain();out.gain.value=.55;out.connect(ac.destination);
  const dl=ac.createDelay(1),fb=ac.createGain(),lp=ac.createBiquadFilter();dl.delayTime.value=.19;fb.gain.value=.34;lp.type='lowpass';lp.frequency.value=3200;
@@ -4528,7 +4579,8 @@ function sndChieng(){try{if(window.CV&&CV.snd===false)return;const ac=actAC();if
  const n=Math.floor(ac.sampleRate*.1),buf=ac.createBuffer(1,n,ac.sampleRate),dd=buf.getChannelData(0);for(let i=0;i<n;i++)dd[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.2);
  const s=ac.createBufferSource(),hp=ac.createBiquadFilter(),g2=ac.createGain();s.buffer=buf;hp.type='highpass';hp.frequency.value=3000;g2.gain.value=.12;s.connect(hp);hp.connect(g2);g2.connect(out);s.start(t0)}catch(e){}}
 var ACTSFX={t:null};
-function actSfx(id,t){if(id!='chieng'){ACTSFX.t=null;return}
+function actSfx(id,t){if(id=='bell'){const p=ACTSFX.t==null?t-.001:ACTSFX.t;ACTSFX.t=t;if(Math.floor(t/(BELL_T/2))>Math.floor(p/(BELL_T/2))&&t-p<.5)sndBell();return}
+ if(id!='chieng'){ACTSFX.t=null;return}
  const p=ACTSFX.t==null?t-.001:ACTSFX.t;ACTSFX.t=t;
  for(const h of CH_HIT)if(Math.floor((t-h)/CH_T)>Math.floor((p-h)/CH_T)&&t-p<.5)sndChieng()}
 /* ---- vẽ 1 nhân vật đang làm hành động (dùng chung: người chơi, người khác, xem trước) ---- */
@@ -4577,7 +4629,7 @@ function actUI(){const own=ACTS.filter(a=>actHas(a)&&a.k==ACTTAB);
  openUI(h);actAnimGo()}
 function actAsk(id){const a=ACTS[actIdx(id)];if(!a||!actHas(a))return;
  openUI(head('⚡ Hành động')+'<div class="aq2">'+actCv(id,72,100,'big')+'<b>'+a.n+'</b><div class="mut" style="margin:2px 0">'+a.ds+'<br>Di chuyển bất cứ lúc nào để dừng lại.</div></div><div class="pf"><button class="b" onclick="actStart(\''+id+'\')">✅ Thực hiện</button><button class="b" onclick="actUI()">⬅ Quay lại</button></div>');actAnimGo()}
-function diaShop(){const L=ACTS.filter(a=>a.k=='solo');
+function diaShop(){const L=ACTS.filter(a=>a.k=='solo'&&!a.bd);
  openUI(head('💎 Shop kim cương')+'<div class="mut" style="text-align:center">Bạn có <b>💎 '+(ST.dia|0)+'</b> kim cương</div>'
  +'<div class="dsh">🎄 Set</div><div class="dg">'+diaSetRows()+'</div><div class="dsh">⚡ Hành động cá nhân</div><div class="dg">'
  +L.map(a=>{const have=!!ST.acts[a.id],ok=(ST.dia|0)>=a.pr;
@@ -4594,7 +4646,7 @@ function dsLoop(){const cs=document.querySelectorAll('canvas.dsc');if(!cs.length
  const t=performance.now()/1000,d=[0,3,1,2][Math.floor(t/2.4)%4];
  cs.forEach(c=>{const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);g.save();g.scale(5,5);drawAv(g,4,3,{d,a:t,mv:0,sit:0,hair:0,set:+c.dataset.i,e:ST.av.e});g.restore()});
  dsRaf=requestAnimationFrame(dsLoop)}
-function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||ST.acts[id])return;
+function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
  if((ST.dia|0)<a.pr)return toast('💎 Chưa đủ kim cương — cần '+a.pr+', bạn có '+(ST.dia|0));
  ST.dia-=a.pr;ST.acts[id]=1;xuUp();save();toast('🎉 Đã mua hành động '+a.n+'!\nMở ⚡ Hành động để dùng');diaShop()}
 (function(){const css=document.createElement('style');css.textContent='.aq{background:linear-gradient(#e6f6ff,#d2ecfb)!important;border-color:#8fc4e6!important;color:#1f4a6a}.aq small{color:#4f7f9f!important}.aq2{text-align:center;padding:10px;background:linear-gradient(#e6f6ff,#d2ecfb);border:2px solid #8fc4e6;margin-bottom:8px;color:#1f4a6a}.aq2 .e{font-size:44px}.dsay{display:flex;gap:8px;align-items:center;background:#e6f6ff;border:2px solid #8fc4e6;padding:6px 8px;margin-bottom:6px;color:#1f4a6a;font-size:13px}.dsay span{font-size:26px}'
