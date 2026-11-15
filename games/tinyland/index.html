@@ -23,7 +23,7 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 #ui .g,#ui .g2{display:grid;grid-template-columns:1fr 1fr;gap:5px}#ui .g2{gap:4px}
 .it{background:#fff3cf;border:1px solid #c9a06a;padding:4px;display:flex;justify-content:space-between;gap:4px}.it.z{opacity:.45}
 .mut{color:#7a4a26;margin:6px 0;font-size:12px}
-.g1{display:grid;grid-template-columns:1fr;gap:4px}
+.g1{display:grid;grid-template-columns:1fr;gap:4px}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.fcd{background:#fff3cf;border:1px solid #c9a06a;padding:4px 3px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:3px;text-align:center;min-width:0}.fcd canvas{width:100%;max-width:84px;height:auto;aspect-ratio:60/52;image-rendering:pixelated;background:#f3ead3;border-radius:6px}.fcd b{font-size:12px;line-height:1.15}.fcd small{font-size:10.5px;color:#7a4a26}.fcd .b{padding:3px 6px;font-size:12px}
 .b.r{display:flex;justify-content:space-between;align-items:center;text-align:left;gap:8px;width:100%}
 .b.r i{font-style:normal;color:#7a4a26;white-space:nowrap}
 .it small{font-size:11px;color:#7a4a26}.sb{display:flex;gap:3px;align-items:center}
@@ -2842,7 +2842,7 @@ function mapUI(){const here='<i style="color:#2e7d32">✓ đang ở đây</i>',s
  '<button class=\"b r\" onclick=\"goMap(\'wt\')\"><span>❄️ Làng Tuyết Giáng Sinh</span>'+(MAP=='wt'?here:'')+'</button>'+
  '<button class="b r" onclick="goMap(\'congvien\')"><span>🌳 Công viên (online)</span>'+(MAP=='cv'?here:'')+'</button>'+
  '<button class="b r" onclick="goMap(\'phoxa\')"><span>🏘️ Phố xá (online • shop)</span>'+(MAP=='ps'?here:'')+'</button>'+
- '</div><div class="mut">🦁 Múa lân • 🐉 Múa rồng • 🤼 Đô vật • 🎯 Ném còn • 🪢 Kéo co • 🌸 Thả hoa đăng • 🎼 Đờn ca tài tử</div>')}
+ '</div>')}
 function goMap(w){if(w=='congvien'||w=='cv'||w=='phoxa'||w=='ps'){const rm=(w=='phoxa'||w=='ps')?'ps':'cv';if(MAP==rm){closeUI();return toast(rm=='ps'?'🏘️ Bạn đang ở Phố xá rồi!':'🌳 Bạn đang ở Công viên rồi!')}return cvEnter(rm)}w=({nongtrai:'nt',lehoi:'lh',nha:'hm'})[w]||w;if(w==MAP){closeUI();toast(w=='hm'?'🏠 Bạn đang ở nhà rồi!':w=='wt'?'❄️ Bạn đang ở Làng Tuyết rồi!':w=='lh'?'🏮 Bạn đang ở Đêm Hội mà!':'🌾 Bạn đang ở Nông Trại rồi!')}
  else switchMap(w)}
 const LPX=1088;
@@ -4571,21 +4571,21 @@ function actStart(id){if(Pl.sit)return toast('Hãy đứng dậy trước khi l�
 function actStop(){if(!ACT)return;ACT=0;ACTSFX.t=null;try{if(window.PKO&&PKO.act)PKO.act()}catch(e){}}
 function actUI(){const own=ACTS.filter(a=>actHas(a)&&a.k==ACTTAB);
  let h=head('⚡ Hành động')+'<div class="tabs"><button class="b'+(ACTTAB=='solo'?' on':'')+'" onclick="ACTTAB=\'solo\';actUI()">🧍 Cá nhân</button><button class="b'+(ACTTAB=='duo'?' on':'')+'" onclick="ACTTAB=\'duo\';actUI()">🤝 Tương tác</button></div>';
- if(ACTTAB=='duo')h+='<div class="mut">🤝 Hành động tương tác dùng khi <b>chạm vào người chơi khác</b> → bấm <b>🎭 Hành động</b> → chọn hành động. (Dùng được ở 🌳 Công viên và 🏘️ Phố xá)</div><div class="sg" style="grid-template-columns:repeat(2,1fr)">'+own.map(a=>'<div class="sq aq" style="cursor:default">'+actCv(a.id,96,100,'',1)+'<b>'+a.n+'</b><small>'+a.ds+'</small></div>').join('')+'</div>';
+ if(ACTTAB=='duo')h+='<div class="mut">🤝 Hành động tương tác dùng khi <b>chạm vào người chơi khác</b> → bấm <b>🎭 Hành động</b> → chọn hành động. (Dùng được ở 🌳 Công viên và 🏘️ Phố xá)</div><div class="sg" style="grid-template-columns:repeat(2,1fr)">'+own.map(a=>'<div class="sq aq" style="cursor:default">'+actCv(a.id,96,100,'mini',1)+'<b>'+a.n+'</b><small>'+a.ds+'</small></div>').join('')+'</div>';
  else if(!own.length)h+='<div class="mut">Bạn chưa có hành động cá nhân nào.<br>Ghé <b>Trùm kim cương</b> ở 🏘️ Phố xá để mua nhé!</div>';
- else h+='<div class="mut">Chọn một hành động để thực hiện. Hành động lặp lại đến khi bạn di chuyển.</div><div class="sg" style="grid-template-columns:repeat(2,1fr)">'+own.map(a=>'<button class="sq aq" onclick="actAsk(\''+a.id+'\')">'+actCv(a.id,72,100)+'<b>'+a.n+'</b><small>Bấm để dùng</small></button>').join('')+'</div>';
+ else h+='<div class="mut">Chọn một hành động để thực hiện. Hành động lặp lại đến khi bạn di chuyển.</div><div class="sg" style="grid-template-columns:repeat(3,1fr)">'+own.map(a=>'<button class="sq aq" onclick="actAsk(\''+a.id+'\')">'+actCv(a.id,72,100,'mini')+'<b>'+a.n+'</b><small>Bấm để dùng</small></button>').join('')+'</div>';
  openUI(h);actAnimGo()}
 function actAsk(id){const a=ACTS[actIdx(id)];if(!a||!actHas(a))return;
  openUI(head('⚡ Hành động')+'<div class="aq2">'+actCv(id,72,100,'big')+'<b>'+a.n+'</b><div class="mut" style="margin:2px 0">'+a.ds+'<br>Di chuyển bất cứ lúc nào để dừng lại.</div></div><div class="pf"><button class="b" onclick="actStart(\''+id+'\')">✅ Thực hiện</button><button class="b" onclick="actUI()">⬅ Quay lại</button></div>');actAnimGo()}
 function diaShop(){const L=ACTS.filter(a=>a.k=='solo');
- openUI(head('💎 Shop kim cương')+'<div class="dsay"><span>🕶️</span><i>“Muốn phát kim cương cho cả phố hả? Mua đi, nhìn là mê liền!”</i></div><div class="mut" style="text-align:center">Bạn có <b>💎 '+(ST.dia|0)+'</b> kim cương</div>'
- +'<div class="dsh">🎄 Set đặc biệt <small>(mascot không che mặt)</small></div>'+diaSetRows()+'<div class="dsh">⚡ Hành động cá nhân</div>'
+ openUI(head('💎 Shop kim cương')+'<div class="mut" style="text-align:center">Bạn có <b>💎 '+(ST.dia|0)+'</b> kim cương</div>'
+ +'<div class="dsh">🎄 Set</div><div class="dg">'+diaSetRows()+'</div><div class="dsh">⚡ Hành động cá nhân</div><div class="dg">'
  +L.map(a=>{const have=!!ST.acts[a.id],ok=(ST.dia|0)>=a.pr;
-  return '<div class="arow">'+actCv(a.id,72,100,'sm')+'<div class="ainf"><b>'+a.n+'</b><small>'+a.ds+'</small>'+(have?'<button class="b" onclick="actUI()">✓ Đã có — mở Hành động</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuy(\''+a.id+'\')">💎 '+a.pr+' — Mua</button>')+'</div></div>'}).join('')
- +'<div class="mut" style="text-align:center">Hành động đã mua nằm trong nút ⚡ Hành động. Set đã mua nằm trong 🎒 Túi → Set. Dùng được mãi mãi.</div>');actAnimGo();if(!dsRaf)dsLoop()}
+  return '<div class="dcd">'+actCv(a.id,72,100,'mini')+'<b>'+a.n+'</b>'+(have?'<button class="b" onclick="actUI()">✓ Đã có</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuy(\''+a.id+'\')">💎 '+a.pr+'</button>')+'</div>'}).join('')
+ +'</div>');actAnimGo();if(!dsRaf)dsLoop()}
 const DSETS=['deerm','deerf'];let dsRaf=0;
 function diaSetRows(){return DSETS.map(k=>{const i=SETS.findIndex(x=>x.k==k),S=SETS[i];if(!S)return '';const have=ST.own.s.includes(i),ok=(ST.dia|0)>=S.dia;
- return '<div class="arow"><canvas class="dsc" data-i="'+i+'" width="144" height="176"></canvas><div class="ainf"><b>🦌 '+S.n+'</b><small>'+S.ds+'</small>'+(have?'<button class="b" onclick="diaWear('+i+')">'+(ST.av.s==i?'✓ Đang mặc':'✨ Mặc ngay')+'</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuySet('+i+')">💎 '+S.dia+' — Mua</button>')+'</div></div>'}).join('')}
+ return '<div class="dcd"><canvas class="dsc" data-i="'+i+'" width="144" height="176"></canvas><b>'+S.n+'</b>'+(have?'<button class="b" onclick="diaWear('+i+')">'+(ST.av.s==i?'✓ Đang mặc':'✓ Đã có')+'</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuySet('+i+')">💎 '+S.dia+'</button>')+'</div>'}).join('')}
 function diaBuySet(i){const S=SETS[i];if(!S||!S.dia||ST.own.s.includes(i))return;
  if((ST.dia|0)<S.dia)return toast('💎 Chưa đủ kim cương — cần '+S.dia+', bạn có '+(ST.dia|0));
  ST.dia-=S.dia;ST.own.s.push(i);xuUp();save();toast('🎉 Đã mua set '+S.n+'!\nMở 🎒 Túi → Set để mặc');diaShop()}
@@ -4598,8 +4598,8 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||ST.acts[id])return;
  if((ST.dia|0)<a.pr)return toast('💎 Chưa đủ kim cương — cần '+a.pr+', bạn có '+(ST.dia|0));
  ST.dia-=a.pr;ST.acts[id]=1;xuUp();save();toast('🎉 Đã mua hành động '+a.n+'!\nMở ⚡ Hành động để dùng');diaShop()}
 (function(){const css=document.createElement('style');css.textContent='.aq{background:linear-gradient(#e6f6ff,#d2ecfb)!important;border-color:#8fc4e6!important;color:#1f4a6a}.aq small{color:#4f7f9f!important}.aq2{text-align:center;padding:10px;background:linear-gradient(#e6f6ff,#d2ecfb);border:2px solid #8fc4e6;margin-bottom:8px;color:#1f4a6a}.aq2 .e{font-size:44px}.dsay{display:flex;gap:8px;align-items:center;background:#e6f6ff;border:2px solid #8fc4e6;padding:6px 8px;margin-bottom:6px;color:#1f4a6a;font-size:13px}.dsay span{font-size:26px}'
- +'canvas.actc{display:block;margin:0 auto 2px;width:126px;height:175px;image-rendering:pixelated;border:2px solid #9ccbe6;background:linear-gradient(#bfe4ff,#e6f5ff 64%,#cfe6b8 64%)}canvas.actc.big{width:200px;height:278px;margin-bottom:6px}canvas.actc.sm{width:104px;height:144px;margin:0;flex:none}canvas.dsc{width:104px;height:127px;flex:none;image-rendering:pixelated;border:2px solid #9ccbe6;background:linear-gradient(#27315f,#4d5f9e 62%,#dfeaf7 62%)}.dsh{font-weight:800;color:#1f4a6a;margin:10px 0 2px;text-align:center}.dsh small{font-weight:400;color:#4f7f9f}'
- +'.arow{display:flex;gap:10px;align-items:center;background:linear-gradient(#e6f6ff,#d2ecfb);border:2px solid #8fc4e6;padding:6px;margin:6px 0;color:#1f4a6a}.arow .ainf{display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:0}.arow small{color:#4f7f9f;font-size:11.5px;line-height:1.25}';
+ +'canvas.actc{display:block;margin:0 auto 2px;width:126px;height:175px;image-rendering:pixelated;border:2px solid #9ccbe6;background:linear-gradient(#bfe4ff,#e6f5ff 64%,#cfe6b8 64%)}canvas.actc.big{width:200px;height:278px;margin-bottom:6px}canvas.actc.sm{width:104px;height:144px;margin:0;flex:none}canvas.actc.mini{width:100%;max-width:104px;height:auto;aspect-ratio:72/100;margin:0 auto 3px}canvas.dsc{width:100%;max-width:104px;height:auto;aspect-ratio:144/176;image-rendering:pixelated;border:2px solid #9ccbe6;background:linear-gradient(#27315f,#4d5f9e 62%,#dfeaf7 62%)}.dsh{font-weight:800;color:#1f4a6a;margin:10px 0 2px;text-align:center}.dsh small{font-weight:400;color:#4f7f9f}'
+ +'.dg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:4px 0}.dcd{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:4px;background:linear-gradient(#e6f6ff,#d2ecfb);border:2px solid #8fc4e6;padding:5px 3px;color:#1f4a6a;text-align:center;min-width:0}.dcd canvas{margin:0 auto}.dcd b{font-size:12px;line-height:1.15}.dcd .b{padding:3px 6px;font-size:12px;white-space:nowrap}.arow{display:flex;gap:10px;align-items:center;background:linear-gradient(#e6f6ff,#d2ecfb);border:2px solid #8fc4e6;padding:6px;margin:6px 0;color:#1f4a6a}.arow .ainf{display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:0}.arow small{color:#4f7f9f;font-size:11.5px;line-height:1.25}';
  document.head.appendChild(css)})();
 
 </script>

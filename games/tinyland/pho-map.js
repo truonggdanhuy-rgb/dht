@@ -593,10 +593,10 @@ window.psUse=i=>{const k=SH_TAB;if(!ST.own[k].includes(i))return;ST.av[k]=i;if(k
 const FURN_PR={clk:100,cal:100,chr:100,mir:120,lmp:120,drw:130,bsk:140,tbl:140,plt:150,cat:160,rug:170,pic:180,shf:190,wrd:200,tv:220,arm:230,din:260,sofa:300};
 window.FURN_PR=FURN_PR;
 window.psFurn=()=>{PS.view='furn';if(typeof hmInit=='function')hmInit();const I=ST.hm.i,P=ST.hm.p,ks=Object.keys(CAT).sort((a,b)=>(FURN_PR[a]||200)-(FURN_PR[b]||200));
- let h=head('🛋️ Tiệm nội thất')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu • đồ mua về nằm trong <b>🎒 Túi nội thất</b> (vào nhà → 🛠️ Trang trí để bày)</div><div class="g1">';
+ let h=head('🛋️ Tiệm nội thất')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu • đồ mua về nằm trong <b>🎒 Túi nội thất</b> (vào nhà → 🛠️ Trang trí để bày)</div><div class="g3">';
  h+=ks.map(k=>{const c=CAT[k],pr=FURN_PR[k]||200,own=(I[k]||0)+P.filter(o=>o[0]==k).length;
-  return '<div class="it"><span style="display:flex;align-items:center;gap:8px"><canvas class="fc" data-k="'+k+'" width="60" height="52" style="width:60px;height:52px;image-rendering:pixelated;background:#f3ead3;border-radius:6px"></canvas><span><b>'+c[0]+'</b><br><small>'+c[1]+'×'+c[2]+(c[3]=='w'?' • treo tường':c[3]=='r'?' • thảm':'')+(own?' • đã có '+own:'')+'</small></span></span>'+
-   '<span class="sb"><button class="b" onclick="psFurnBuy(\''+k+'\')">🪙 '+pr+'</button></span></div>'}).join('');
+  return '<div class="fcd"><canvas class="fc" data-k="'+k+'" width="60" height="52"></canvas><b>'+c[0]+'</b><small>'+c[1]+'×'+c[2]+(c[3]=='w'?' • treo tường':c[3]=='r'?' • thảm':'')+(own?' • có '+own:'')+'</small>'+
+   '<button class="b" onclick="psFurnBuy(\''+k+'\')">🪙 '+pr+'</button></div>'}).join('');
  openUI(h+'</div>');
  document.querySelectorAll('canvas.fc').forEach(c=>{try{const g=c.getContext('2d'),im=dspr(c.dataset.k,0),sc=Math.max(1,Math.min(Math.floor(56/im.width),Math.floor(48/im.height),3));g.imageSmoothingEnabled=false;g.clearRect(0,0,60,52);
   g.drawImage(im,Math.round((60-im.width*sc)/2),Math.round((52-im.height*sc)/2),im.width*sc,im.height*sc)}catch(e){}})};
