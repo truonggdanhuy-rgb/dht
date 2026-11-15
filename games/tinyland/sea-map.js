@@ -200,13 +200,13 @@ function buildBG(){return mk(SW,SH,(g,r)=>{
 function build(){
  SEA.built=1;SEA.bg=buildBG();
  // --- nước: chạm vào nước (không bấm được thì nhắc cần thuyền) — các lát theo bờ, chừa cầu tàu ---
- const wm='🌊 Biển rộng mênh mông! Cần có THUYỀN mới ra khơi câu quái vật được — sắp mở nhé!';
+ const wm='🎣 Mặt biển — bấm để câu quái vật!',FG=[PIER.x1-18,Math.round((PIER.y0+PIER.y1)/2)],hw=(x,y,w,h)=>hit(x,y,w,h,wm,'cv:bn:fish',FG);
  for(let y=0;y<SH;y+=60){const y1=y+60,sx=Math.round(shoreX(y+30))+16;
   if(y1>PIER.y0-2&&y<PIER.y1+4){
-   if(y<PIER.y0-2)hit(sx,y,SW,PIER.y0-2-y,wm);
-   hit(PIER.x1+4,Math.max(y,PIER.y0-2),SW,Math.min(y1,PIER.y1+4)-Math.max(y,PIER.y0-2),wm);
-   if(y1>PIER.y1+4)hit(sx,PIER.y1+4,SW,y1-PIER.y1-4,wm)}
-  else hit(sx,y,SW,60,wm)}
+   if(y<PIER.y0-2)hw(sx,y,SW,PIER.y0-2-y);
+   hw(PIER.x1+4,Math.max(y,PIER.y0-2),SW,Math.min(y1,PIER.y1+4)-Math.max(y,PIER.y0-2));
+   if(y1>PIER.y1+4)hw(sx,PIER.y1+4,SW,y1-PIER.y1-4)}
+  else hw(sx,y,SW,60)}
  // --- TIỆM CÂU QUÁI VẬT ---
  const SX=76,SY=402;
  put(mkShop(),SX,SY,[SX-62,SY-22,SX+62,SY-2]);
@@ -217,7 +217,7 @@ function build(){
  hit(OCT.x-40,OCT.y-52,64,58,'🐙 Bạch tuộc: "Đồ câu quái vật đây! Vào tiệm xem thử nha!"','cv:bn:shop',[SX,SY+16]);
  // --- cầu tàu + thuyền: sắp mở ---
  {const ex=PIER.x1;put(mkSignPost(),ex-14,PIER.y0-4,[ex-30,PIER.y0-8,ex-2,PIER.y0-2]);
-  hit(ex-44,PIER.y0-70,56,68,'🚣 Bến thuyền — cần có THUYỀN mới ra khơi câu quái vật. Sắp mở nhé!');
+  hit(ex-44,PIER.y0-70,56,68,'🚣 Bến thuyền — ra khơi bằng thuyền sắp mở. Giờ bạn có thể bấm ra mặt nước để câu quái vật nhé!');
   const bm=mkBoat(),bo=outl(bm);dyn(PIER.y1+22,()=>{const t=tmNow(),bb=Math.round(Math.sin(t*1.6)*1);cx.drawImage(bo,Math.round(ex-84)-1,PIER.y1+4+bb-1)});
   hit(ex-84,PIER.y1+4,64,26,'⛵ Chiếc thuyền gỗ đang buộc ở bến — chưa thể lên được, sắp mở!');
   }
@@ -315,7 +315,7 @@ window.cvSetup=()=>{
  window.cvUseMap('bn');if(!SEA.built)build();
  CVON=1;setA(SP,CV.sp);setA(hits,CV.hits);setA(LB,CV.lb);
  Pl.x=SEA.pos.x;Pl.y=SEA.pos.y;Pl.d=1;CV.seat=-1;CV.hz=-1;CV.boat=0;CV.dock=null;
- toast('🌊 Chào mừng tới Biển! Ghé Tiệm câu Quái vật, nhặt vỏ sò, trò chuyện cùng mọi người nhé');
+ toast('🌊 Chào mừng tới Biển! Bấm ra mặt nước để CÂU QUÁI VẬT, ghé Tiệm câu để bán nhé');
  if(window.PKO)PKO.onEnter()};
 window.cvSolid=(x,y)=>MAP=='bn'?bnSolid(x,y):pSolid(x,y);
 window.cvAct=(a,h)=>a.startsWith('bn:')?bnAct(a.slice(3),h):pAct(a,h);
@@ -324,12 +324,15 @@ window.cvAct=(a,h)=>a.startsWith('bn:')?bnAct(a.slice(3),h):pAct(a,h);
 //  TƯƠNG TÁC
 // ============================================================
 function bnAct(a){const t=a.split(':')[0];
- if(t=='shop')return bnShop()}
+ if(t=='shop')return bnShop();
+ if(t=='fish')return window.MQ&&MQ.open()}
+window.bnShop=()=>bnShop();
 function bnShop(){
  const L=[['🎣','Cần câu quái vật','Chắc tay, bền, hợp với quái vật biển'],['🪝','Lưỡi câu thép','Đủ sắc để móc quái vật'],['🪱','Mồi quái vật','Quái vật nào cũng mê'],['⛵','Thuyền gỗ','Cần có thuyền mới ra khơi được']];
  openUI(head('🎣 Tiệm câu Quái vật')+
   '<div class="mut" style="text-align:center">🐙 <i>"Đồ câu quái vật đây! Hàng sắp về, khách ghé lại sau nha~"</i></div>'+
   '<div class="mut" style="text-align:center">Bạn có <img src="'+QVI+'" style="width:15px;height:15px;vertical-align:-3px;image-rendering:pixelated"> <b>'+fmtXu(ST.qv)+'</b> Xu quái vật</div>'+
+  '<button class="b w" style="font-size:14px;padding:9px" onclick="MQ.sellUI()">💰 Thu mua quái vật <small>(bán quái đã câu lấy Xu quái vật)</small></button>'+
   '<div class="g1">'+L.map(x=>'<div class="it z"><span>'+x[0]+' <b>'+x[1]+'</b><br><small>'+x[2]+'</small></span><b>🔒 Sắp mở</b></div>').join('')+'</div>'+
-  '<div class="mut">Xu quái vật là đơn vị tiền tệ mới của vùng Biển. Cửa hàng và chuyến ra khơi đang được hoàn thiện — sắp mở!</div>')}
+  '<div class="mut">Xu quái vật là tiền tệ của vùng Biển: ra mặt nước câu quái vật rồi bán ở đây. Cửa hàng đồ câu và chuyến ra khơi đang được hoàn thiện — sắp mở!</div>')}
 })();

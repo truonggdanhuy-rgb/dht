@@ -1922,7 +1922,7 @@ function petUpdate(dt){if(ST.av.p<0)return;if(CVON&&CV.boat)return;const dx=Pl.x
  else{PET.mv=0;PET.k=0}}
 function drawPlayer(){if(HMA&&HMA.hide)return;if(CVON&&CV.boat)return cvBoatMe();const A=ST.av,o={d:Pl.d,a:Pl.a,mv:Pl.mv,sit:Pl.sit,hair:A.h,set:A.s,e:A.e,acc:A.m>=0?-1:A.a},X=Math.round(Pl.x)+(CVON?cvRockMe():0),Y=Math.round(Pl.y)-(CVON?cvLiftMe():0);
  if(ACT&&!Pl.sit&&A.m<0){const t=(performance.now()-ACT_T)/1000;actSfx(ACT,t);actDraw(cx,X,Y,t,o,ACT);return}
- if(A.m>=0&&!Pl.sit)drawRide(cx,X,Y,o,A.m,performance.now()/1000);else drawAv(cx,X-10,Y-30,o)}
+ if(A.m>=0&&!Pl.sit)drawRide(cx,X,Y,o,A.m,performance.now()/1000);else{if(window.MQH&&Pl.mv&&window.MQ)MQ.clear();if(window.MQH&&!Pl.sit)o.acc=-1;drawAv(cx,X-10,Y-30,o);if(window.MQH&&!Pl.sit&&window.MQ)MQ.drawHold(X,Y,o.d)}}
 const note=(x,y,k,c)=>{x=Math.round(x);y=Math.round(y);const d=(c2,ox,oy)=>{r(c2,x+ox,y+5+oy,3,2);r(c2,x+2+ox,y+oy,1,6);r(c2,x+3+ox,y+oy,2,1);r(c2,x+4+ox,y+1+oy,1,1);
  if(k){r(c2,x+5+ox,y+3+oy,3,2);r(c2,x+7+ox,y-2+oy,1,6);r(c2,x+2+ox,y-1+oy,6,1)}};d('#3a2412',1,1);d(c,0,0)};
 var SEAT={x:612,y:382};
@@ -2818,8 +2818,8 @@ for(const k of['h','s'])if(!ST.own[k].includes(0))ST.own[k].push(0);
 {const wi=SETS.findIndex(x=>x.k=='warm'),hi=HAIRS.findIndex(x=>x.k=='earfur');
  if(wi>=0&&hi>=0){const k=ST.own.s.indexOf(wi);if(k>=0){ST.own.s.splice(k,1);if(!ST.own.h.includes(hi))ST.own.h.push(hi)}if(ST.av.s==wi)ST.av.s=0}}
 ownE();
-const AVTABS=[['h','Tóc'],['s','Set'],['e','Biểu cảm'],['m','Thú cưỡi'],['p','Pet'],['a','Phụ kiện']],AVDIR=[0,3,1,2];let AVTAB='h',AVI=0,avRaf=0;
-const avItems=k=>{if(k=='f')return[];if(k=='e'){const oe=ownE();return EXPRS.map((x,i)=>({n:x.n,idx:i})).filter(x=>oe.includes(x.idx))}const all=k=='h'?HAIRS:k=='s'?SETS:k=='m'?MOUNTS:k=='a'?ACCS:PETS,own=ST.own[k],L=[];
+const AVTABS=[['h','Tóc'],['s','Set'],['e','Biểu cảm'],['m','Thú cưỡi'],['p','Pet'],['a','Phụ kiện'],['b','Biển']],AVDIR=[0,3,1,2];let AVTAB='h',AVI=0,avRaf=0;
+const avItems=k=>{if(k=='f')return[];if(k=='b')return window.MQ?MQ.items():[];if(k=='e'){const oe=ownE();return EXPRS.map((x,i)=>({n:x.n,idx:i})).filter(x=>oe.includes(x.idx))}const all=k=='h'?HAIRS:k=='s'?SETS:k=='m'?MOUNTS:k=='a'?ACCS:PETS,own=ST.own[k],L=[];
  if(k=='m'||k=='p'||k=='a')L.push({n:k=='m'?'Không cưỡi':'Không dùng',idx:-1});
  all.forEach((x,i)=>{if(own.includes(i))L.push({n:x.n,idx:i})});return L};
 const avCur=k=>avItems(k).findIndex(x=>x.idx==ST.av[k]);
@@ -2829,13 +2829,15 @@ function bagUI(t){AVTAB=t||AVTAB;const old=$('ui').scrollTop,L=avItems(AVTAB),cu
  else if(SETS[ST.av.s]&&SETS[ST.av.s].dn)h+='<div class="mut">🌕 Đang mặc Dạ nguyệt — bộ có sẵn tóc & mão/trâm (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].deer)h+='<div class="mut">🦌 Đang mặc Tiệc mùa đông — bộ này có sẵn tóc riêng (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt & biểu cảm vẫn hiện</b>.</div>';
  h+='<div class="tabs" style="flex-wrap:wrap">'+AVTABS.map(([k,n])=>'<button class="b'+(k==AVTAB?' on':'')+'" onclick="bagUI(\''+k+'\')">'+n+'</button>').join('')+'</div>';
- h+='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+L.map((x,i)=>'<button class="sq'+(i==cur?' sel':'')+'" onclick="avPick('+i+')"><canvas class="avt" data-i="'+i+'" width="'+(mt?72:44)+'" height="'+(mt?68:AVTAB=='p'?52:44)+'" style="width:'+(mt?88:57)+'px;height:'+(mt?83:AVTAB=='p'?68:57)+'px;image-rendering:pixelated"></canvas><b>'+x.n+'</b><small>'+(i==cur?'✓ Đang dùng':'&nbsp;')+'</small></button>').join('')+'</div>';
+ h+='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+L.map((x,i)=>'<button class="sq'+(i==cur?' sel':'')+'" onclick="avPick('+i+')"><canvas class="avt" data-i="'+i+'" width="'+(mt?72:44)+'" height="'+(mt?68:AVTAB=='p'?52:44)+'" style="width:'+(mt?88:57)+'px;height:'+(mt?83:AVTAB=='p'?68:57)+'px;image-rendering:pixelated"></canvas><b>'+x.n+'</b><small>'+(x.sm||(i==cur?'✓ Đang dùng':'&nbsp;'))+'</small></button>').join('')+'</div>';
  if(L.length<=1&&(AVTAB=='m'||AVTAB=='p'||AVTAB=='a'))h+='<div class="mut">Bạn chưa có '+(mt?'thú cưỡi':AVTAB=='a'?'phụ kiện':'pet')+' nào. Ghé Phố xá để mua nhé!</div>';
+ if(AVTAB=='b'){h+=L.length?'<div class="mut">🖐️ Bấm vào quái vật để cầm trên tay. Di chuyển là tự cất, quay lại phụ kiện cầm tay cũ (nếu có).</div>':'<div class="mut">Bạn chưa câu được quái vật nào. Ra cầu tàu ở Biển để câu nhé! 🎣</div>'}
  if(AVTAB=='a')h+='<div class="mut">🎀 Phụ kiện cầm tay chỉ hiện khi đi bộ, tự ẩn khi cưỡi thú hoặc ngồi nghỉ. Mỗi lần dùng 1 món.</div>';
  if(mt)h+='<div class="mut">Khi cưỡi, nhân vật chạy nhanh hơn. Ngồi nghỉ ở chòi/ghế sẽ tự xuống thú.</div>';
- h+='<button class="b w" onclick="goMap(\'phoxa\')">🏘️ Đến Phố xá mua thêm</button>';
+ h+=AVTAB=='b'?'<button class="b w" onclick="goMap(\'bien\')">🌊 Đến Biển câu thêm</button>':'<button class="b w" onclick="goMap(\'phoxa\')">🏘️ Đến Phố xá mua thêm</button>';
  openUI(h);$('ui').scrollTop=old;avPaint();if(!avRaf)avLoop()}
 function avPick(i){const A=ST.av,x=avItems(AVTAB)[i];if(!x)return;
+ if(AVTAB=='b'){MQ.hold(x.idx);return}
  if(AVTAB=='h')A.h=x.idx;else if(AVTAB=='s')A.s=x.idx;else if(AVTAB=='e')A.e=x.idx;else if(AVTAB=='a')A.a=x.idx;else if(AVTAB=='m'){A.m=x.idx;if(x.idx>=0&&Pl.sit){Pl.sit=0;Pl.mv=0}}else{A.p=x.idx;if(x.idx>=0)petReset()}
  save();bagUI()}
 function avTurn(){AVI=(AVI+1)%4}
@@ -2844,6 +2846,7 @@ function avPaint(){const A=ST.av,t=performance.now()/1000,L=avItems(AVTAB);docum
  else if(AVTAB=='s'){o.set=ix;drawAv(g,12,5,o)}
  else if(AVTAB=='e'){o.e=ix;g.save();g.scale(3,3);const dr=()=>drawAv(g,-3,-4,o);if(ix==6)tlFreeze(2500,dr);else dr();g.restore()}
  else if(AVTAB=='a'){o.acc=ix;drawAv(g,4,5,o)}
+ else if(AVTAB=='b'){MQ.paint(g,ix,c)}
  else if(AVTAB=='m'){if(ix>=0)drawRide(g,36,64,Object.assign({},o,{d:3,a:t,mv:0}),ix,t);else drawAv(g,26,30,o)}
  else{if(ix>=0){g.save();g.scale(2,2);drawPet(g,11,24,0,0,0,t,ix);g.restore()}else{g.font='22px sans-serif';g.textAlign='center';g.fillText('🚫',22,34)}}})}
 function avLoop(){const c=$('avp');if(!c||!UI){avRaf=0;return}
@@ -4993,6 +4996,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="park-map.js"></script>
 <script src="pho-map.js"></script>
 <script src="sea-map.js"></script>
+<script src="fishing.js"></script>
 <script src="park-online.js"></script>
 <script src="frames.js"></script>
 <script src="idcard.js"></script>
