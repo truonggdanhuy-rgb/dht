@@ -122,6 +122,7 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 window.onerror=function(m,s,l){try{var t=document.getElementById('toast');t.textContent='LỖI: '+m+' (dòng '+l+')';t.style.opacity=1}catch(e){}};
 </script>
 <script src="outfits.js"></script>
+<script src="aulac.js"></script>
 <script>
 const $=id=>document.getElementById(id),cv=$('c'),cx=cv.getContext('2d');
 const T=16,W=108,H=52,PX=W*T,PY=H*T,RY=672;
@@ -779,7 +780,10 @@ const SETS=[
   {n:'Vua đầu bếp',k:'chef',fx:'chef',sh:'#f8f8fb',shl:'#ffffff',shd:'#cdd3dd',scarf:'#d8232a',belt:'#4b5060',pt:'#4b5060',rpt:'#4b5060',shoe:'#2a2a2e'},
   {n:'Lính Việt',k:'linh',fx:'linh',sh:'#e0561f',shl:'#f58a4a',shd:'#b23c10',scarf:'#f6cf4a',belt:'#7a1a10',pt:'#6b2a16',rpt:'#6b2a16',shoe:'#3a2a22'},
   // ---- Set Tiên nữ (mascot, không che mặt) — bán ở Shop kim cương 💎 50. LUÔN để ở CUỐI mảng SETS để không lệch số thứ tự đồ đã mua ----
-  {n:'Tiên nữ',k:'tn',tn:1,ach:1,dia:50,ds:'Váy voan nhiều tầng lơ lửng, dải lụa trong suốt lấp lánh quấn thân, mão hoa & búi tóc to, tay cầm gậy phép chớp sáng. Bling quanh người. Không che mặt.',sh:'#fff1fa',scarf:'#ffc6e0',belt:'#ffd45a',pt:'#d9c8ff',rpt:'#d9c8ff',shoe:'#ffd45a'}];
+  {n:'Tiên nữ',k:'tn',tn:1,ach:1,dia:50,ds:'Váy voan nhiều tầng lơ lửng, dải lụa trong suốt lấp lánh quấn thân, mão hoa & búi tóc to, tay cầm gậy phép chớp sáng. Bling quanh người. Không che mặt.',sh:'#fff1fa',scarf:'#ffc6e0',belt:'#ffd45a',pt:'#d9c8ff',rpt:'#d9c8ff',shoe:'#ffd45a'},
+  // ---- Set Chiến binh Âu Lạc (Nam / Nữ) — mascot KHÔNG che mặt. Đổi ở Shop Tiên Nữ (Công viên) bằng 1 🎫 Phiếu Tiên Giới / set. Hình vẽ: aulac.js. LUÔN để ở CUỐI mảng SETS ----
+  {n:'Chiến binh Âu Lạc (Nam)',k:'aulm',aul:'m',ach:1,tk:1,ds:'Mão lông vũ đỏ thẫm cao vút, tóc dài bay, giáp đồng nâu đỏ, khăn đỏ vắt vai, kiếm lưỡi xanh thép. Không che mặt.',sh:'#7a2c1f',scarf:'#e03a4a',belt:'#2a1c18',pt:'#3a2a24',rpt:'#3a2a24',shoe:'#2a1c18'},
+  {n:'Chiến binh Âu Lạc (Nữ)',k:'aulf',aul:'f',ach:1,tk:1,ds:'Mão vàng cài lông vũ, tóc đen dài ánh vàng, giáp đỏ nâu viền vàng ngọc lục bảo, dải lụa xanh ngọc bay. Không che mặt.',sh:'#8f3322',scarf:'#3fd18a',belt:'#f2c14e',pt:'#8f3322',rpt:'#8f3322',shoe:'#6b4a22'}];
 const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'},{n:'Tóc nâu buộc',k:'tail',c:'#6a3e1e'},{n:'Tóc vàng',k:'short',c:'#e0b84a'},{n:'Mũ len đỏ',k:'beanie',c:'#c0392b',hr:'#2b1d12'},{n:'Mũ len xanh',k:'beanie',c:'#2f6fe0',hr:'#6a3e1e'},
  {n:'Tóc Sailor Moon',k:'sailor',c:'#f6d96b'},{n:'Tóc 2 chùm',k:'bun2',c:'#2a2224'},{n:'Tóc nữ yêu kiều',k:'longf',c:'#201a24'},{n:'Tóc xinh yêu',k:'bobf',c:'#17151c'},
  {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'},
@@ -1430,6 +1434,7 @@ function drawAv(g,ox,oy,o){
  if(S.deer)return drawDeerSet(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});
  if(S.dn)return drawDaNguyet(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});
  if(S.tn)return drawTienNu(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});
+ if(S.aul)return drawAuLac(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});
  if(S.mascot)return drawMascot(r,u,o,S,{f,lg,side,Rt,back,sit,rd});
  if(!sit&&!rd&&!o.nosh)E(r,'rgba(0,0,0,.2)',10,30,8,2);
  if(S.cape&&!rd&&!back){const cd=shade(S.cape,-.3);if(!side){u(S.cape,3,16,14,12);u(cd,3,16,2,12);u(cd,15,16,2,12);u(cd,3,27,14,1)}else{const fl=o.mv?Math.round(Math.sin(performance.now()/110)*1):0,cx0=Rt?2-fl:12+fl;u(S.cape,cx0,16,6,12);u(cd,cx0,16,1,12);u(cd,cx0,27,6,1);u(shade(S.cape,.2),cx0+2,17,1,9)}}
@@ -1869,21 +1874,25 @@ const MOUNTS=[{n:'Trâu Việt',hw:9,drop:8,spd:1.8,seat:{0:[0,-22],1:[0,-22],si
     if(d==0){wt();basket(-5,10);bloom(-4,-20,'#ff7aa8');bloom(-1,-22,'#ffffff');bloom(2,-20,'#b58ad8');R('#3f9d4a',-3,-18,1,2);R('#3f9d4a',0,-20,1,2);R('#3f9d4a',3,-18,1,2);R(CM,-1,-23,2,2)}
     else{wt();R('#ff4040',-1,-12,2,1);R(CM,-3,-14,6,1)}}
   }
- }}
+ }},
+// ===== Cá Chép (đổi ở Shop Tiên Nữ bằng 1 🎫 Phiếu Tiên Giới; hình vẽ nằm ở aulac.js; LUÔN để ở CUỐI mảng MOUNTS) =====
+{n:'Cá Chép',k:'carp',ach:1,tk:1,hw:10,drop:0,spd:2.8,nobob:1,noarm:1,sh:[26,18],seat:{0:[0,-15],1:[0,-15],side:[-2,-15]},
+ legs(){},hov:(t,mv)=>window.aulHov?aulHov(t,mv):0,
+ draw(R,d,f,b,t,pt,c){aulFish(R,d,f,b,t,pt,c)}}
 ];
 // nguoi ngoi tren thu cuoi
 function drawRide(g,x,y,o,mi,t){
- const M=MOUNTS[mi],d=o.d,f=o.mv?Math.floor(o.a*9)%4:0,bob=o.mv&&!M.nobob&&(f==1||f==3)?-1:0,mir=d==2,side=d>1,S=SETS[o.set]||SETS[0],ph=o.a*9,C={ph,S,mv:!!o.mv};
+ const M=MOUNTS[mi],d=o.d,f=o.mv?Math.floor(o.a*9)%4:0,bob=o.mv&&!M.nobob&&(f==1||f==3)?-1:0,hv=M.hov?M.hov(t,!!o.mv):0,mir=d==2,side=d>1,S=SETS[o.set]||SETS[0],ph=o.a*9,C={ph,S,mv:!!o.mv};
  const R=(c,a,b,w,h)=>{g.fillStyle=c;g.fillRect(x+(mir?-a-w:a),y+b,w,h)};
  const st=M.seat[d>1?'side':d],sx=st[0],sy=st[1];
  E((c,a,b,w,h)=>{g.fillStyle=c;g.fillRect(a,b,w,h)},'rgba(0,0,0,.22)',x,y+1,M.sh?M.sh[side?0:1]:(side?15:11),2);
- M.draw(R,d,f,bob,t,0,C);
+ M.draw(R,d,f,bob+hv,t,0,C);
  const PT=S.rpt||S.pt,SD=S.shoe,dr=M.drop;
  if(M.legs)M.legs(R,d,ph,sx,sy,PT,SD,S);
  else if(side){R(shade(PT,-.15),sx-2,sy-3+bob,8,3);R(PT,sx+3,sy-1+bob,3,dr);R(shade(PT,.25),sx+3,sy-1+bob,1,dr);R(SD,sx+3,sy-1+bob+dr,5,2)}
  else for(const x0 of[-M.hw-2,M.hw]){R(PT,x0,sy-3+bob,3,dr+2);R(shade(PT,.25),x0,sy-3+bob,1,dr+2);R(SD,x0,sy-1+bob+dr,3,2)}
- drawAv(g,x+(mir?-sx:sx)-10,y+sy-24,Object.assign({},o,{ride:1,nobob:M.nobob,noarm:M.noarm&&side}));
- M.draw(R,d,f,bob,t,1,C)}
+ drawAv(g,x+(mir?-sx:sx)-10,y+sy-24+hv,Object.assign({},o,{ride:1,nobob:M.nobob,noarm:M.noarm&&side}));
+ M.draw(R,d,f,bob+hv,t,1,C)}
 // pet meo con (4 huong), di theo nhan vat
 function drawPetCat(g,x,y,d,mv,a,t){
  const side=d>1,mir=d==2,f=mv?Math.floor(a*10)%4:0,lg=f==1?1:f==3?-1:0,b=mv&&(f==1||f==3)?-1:0,sw=Math.round(Math.sin(t*(mv?9:3))),bl=Math.sin(t*1.7)>.96;
@@ -3037,6 +3046,7 @@ function bagUI(t){AVTAB=t||AVTAB;const old=$('ui').scrollTop,L=avItems(AVTAB),cu
  let h=head('🎒 Túi nhân vật')+'<div style="text-align:center"><canvas id="avp" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#bfe6ff,#d9f0b8 70%);border:2px solid #7a4a26;cursor:pointer" onclick="avTurn()"></canvas><div class="mut" style="margin:2px 0 6px">Chạm vào hình để xoay nhân vật</div></div>';
  if(SETS[ST.av.s]&&SETS[ST.av.s].mascot)h+='<div class="mut">🧸 Đang mặc Mascot — đã gồm cả tóc & khuôn mặt nên tóc/biểu cảm tạm ẩn.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].dn)h+='<div class="mut">🌕 Đang mặc Dạ nguyệt — bộ có sẵn tóc & mão/trâm (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
+ else if(SETS[ST.av.s]&&SETS[ST.av.s].aul)h+='<div class="mut">⚔️ Đang mặc Chiến binh Âu Lạc — bộ có sẵn tóc & mão (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].tn)h+='<div class="mut">🧚 Đang mặc Tiên nữ — bộ có sẵn tóc búi & mão hoa (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].deer)h+='<div class="mut">🦌 Đang mặc Tiệc mùa đông — bộ này có sẵn tóc riêng (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt & biểu cảm vẫn hiện</b>.</div>';
  h+='<div class="tabs" style="flex-wrap:wrap">'+AVTABS.map(([k,n])=>'<button class="b'+(k==AVTAB?' on':'')+'" onclick="bagUI(\''+k+'\')">'+n+'</button>').join('')+'</div>';
@@ -3134,7 +3144,7 @@ function tnQuestUI(){const T=tnEnsure(),nd=T.q.filter(q=>q.done).length;
 function tnNpcUI(){const T=tnEnsure();
  openUI(head('🧚 Tiên Nữ')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧚</span><b>"Chào con~ ta là Tiên Nữ!"</b>Gom đủ '+TN_NEED+' mảnh ghép thì ta ghép thành Phiếu Tiên Giới cho nè.<br><small>🧩 '+T.pc+' mảnh • 🎫 '+T.tk+' Phiếu Tiên Giới</small></div>'
   +'<button class="b w" style="font-size:14px;padding:9px" onclick="tnMergeUI()">🧩 Ghép mảnh Tiên Nữ</button>'
-  +'<button class="b w z" style="font-size:14px;padding:9px;margin-top:6px" onclick="toast(\'🛍️ Shop Tiên Nữ sắp ra mắt, chờ nhé!\')">🛍️ Shop Tiên Nữ (sắp ra mắt)</button>')}
+  +'<button class="b w" style="font-size:14px;padding:9px;margin-top:6px" onclick="tnShopUI()">🛍️ Shop Tiên Nữ — quy đổi Phiếu</button>')}
 function tnMergeUI(){const T=tnEnsure(),ok=T.pc>=TN_NEED;
  openUI(head('🧩 Ghép mảnh Tiên Nữ')+'<div class="tnq" style="text-align:center"><span style="font-size:30px">🧩➜🎫</span><b>'+TN_NEED+' Mảnh ghép = 1 Phiếu Tiên Giới</b><div class="tnb"><i style="width:'+Math.min(100,Math.round(T.pc/TN_NEED*100))+'%"></i></div><small>Bạn có '+T.pc+' mảnh • '+T.tk+' Phiếu Tiên Giới</small></div>'
   +'<button class="b w'+(ok?'':' z')+'" style="font-size:14px;padding:9px" onclick="tnMerge()">✨ Ghép thành Phiếu Tiên Giới</button><div class="pf"><button class="b" onclick="tnNpcUI()">⬅ Quay lại</button></div>')}
@@ -5367,7 +5377,7 @@ function actSfx(id,t){if(id=='bell'){const p=ACTSFX.t==null?t-.001:ACTSFX.t;ACTS
  const p=ACTSFX.t==null?t-.001:ACTSFX.t;ACTSFX.t=t;
  for(const h of CH_HIT)if(Math.floor((t-h)/CH_T)>Math.floor((p-h)/CH_T)&&t-p<.5)sndChieng()}
 /* ---- vẽ 1 nhân vật đang làm hành động (dùng chung: người chơi, người khác, xem trước) ---- */
-function actDraw(g,X,Y,t,o,id){const p=actPose(id,t),F=ACTFX[id];o.d=p.d;o.mv=0;if(p.e!=null)o.e=p.e;o.aup=p.aup||null;if(o.aup&&o.aup[0]==null){const S0=SETS[o.set];if(S0&&(S0.dn||S0.tn||S0.mascot||S0.dk||S0.fx=='duckfloat'))o.aup=[1,o.aup[1]]}o.nosh=p.nosh||0;if(p.noacc)o.acc=-1;
+function actDraw(g,X,Y,t,o,id){const p=actPose(id,t),F=ACTFX[id];o.d=p.d;o.mv=0;if(p.e!=null)o.e=p.e;o.aup=p.aup||null;if(o.aup&&o.aup[0]==null){const S0=SETS[o.set];if(S0&&(S0.dn||S0.tn||S0.aul||S0.mascot||S0.dk||S0.fx=='duckfloat'))o.aup=[1,o.aup[1]]}o.nosh=p.nosh||0;if(p.noacc)o.acc=-1;
  if(F&&F.back)F.back(X,Y,t,o,p);drawAv(g,X-10,Y-30-Math.round(p.lift),o);if(F&&F.front)F.front(X,Y-Math.round(p.lift*.5),t,o,p)}
 /* ---- trái tim bay (Bắn tim) ---- */
 const HRTC=['#ff4d7a','#ff7aa8','#ff4d7a','#ff6fa0','#ff4d7a'],HRTS=[5,3,5,3,5];
