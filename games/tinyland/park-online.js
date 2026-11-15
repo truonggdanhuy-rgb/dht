@@ -122,7 +122,7 @@ const elC=mkEl('cvc','<div class="n" id="cvn" style="pointer-events:auto"></div>
  elI=mkEl('cvi','<input id="cvt" maxlength="60" placeholder="Nhập tin nhắn..." autocomplete="off"><button class="b" id="cvs">Gửi</button><button class="b" id="cvx">✕</button>'),
  elG=mkEl('cvg','');elG.className='p';
 const lines=[];
-function chatUI(){$('cvn').textContent='👥 '+(PK.all.length||1)+'/'+MAXP+(CV.room=='ps'?' trong phố xá':' trong công viên');
+function chatUI(){$('cvn').textContent='👥 '+(PK.all.length||1)+'/'+MAXP+(CV.room=='ps'?' trong phố xá':CV.room=='bn'?' ở biển':' trong công viên');
  $('cvl').innerHTML=lines.map(l=>'<div class="l"><b>'+escH(l[0])+':</b> '+escH(l[1])+'</div>').join('')}
 function addLine(n,t){lines.push([n,t]);while(lines.length>3)lines.shift();chatUI()}
 const showUI=v=>{elC.style.display=v?'block':'none';elB.style.display=v?'flex':'none';if(!v){elI.style.display='none';elG.style.display='none'}};
@@ -177,7 +177,7 @@ function connect(room,keep){return new Promise((ok,no)=>{
  const tm=setTimeout(()=>fin(no,new Error('hết thời gian chờ')),15000);
  // vào xong khi đã SUBSCRIBED và thấy mình trong danh sách (hoặc chờ tối đa 3s sau khi subscribe)
  poll=setInterval(()=>{if(subAt&&(PK.rank>=0||performance.now()-subAt>3000))fin(ok,PK.rank>=MAXP?'full':'ok')},200);
- const mine=ch=sb.channel(room=='ps'?'pho-xa':'cong-vien',{config:{presence:{key:ME.id},broadcast:{self:false}}});
+ const mine=ch=sb.channel(room=='ps'?'pho-xa':room=='bn'?'bien':'cong-vien',{config:{presence:{key:ME.id},broadcast:{self:false}}});
  mine.on('presence',{event:'sync'},()=>{if(mine===ch)sync()});
  mine.on('broadcast',{event:'mv'},({payload:p})=>{const o=CV.others.get(p.i);if(!o){askRetrack(p.i);return}o.seen=performance.now();o.tx=p.x;o.ty=p.y;o.d=p.d;if(Math.hypot(o.tx-o.x,o.ty-o.y)>160){o.x=o.tx;o.y=o.ty}});
  mine.on('broadcast',{event:'chat'},({payload:p})=>{if(!PK.in||!CV.others.has(p.i))return;const t=String(p.t||'').slice(0,60);addLine(String(p.n||'?').slice(0,16),t);bub[p.i]={t,until:performance.now()+5000}});
@@ -219,8 +219,8 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&PK.in){pl
 addEventListener('online',()=>plog('có mạng lại'));addEventListener('offline',()=>plog('mất mạng'));
 // nhịp tim: đăng ký lại vị trí mỗi 40 giây (nhẹ), chỉ khi kênh đang ổn
 setInterval(()=>{if(PK.in&&!document.hidden&&ch&&ch.state==='joined')track()},40000);
-window.cvEnter=async(room)=>{room=room==='ps'?'ps':'cv';const nm=room=='ps'?'Phố xá':'Công viên',was=MAP=='cv'||MAP=='ps';
- if(PK.busy)return;PK.busy=1;closeUI();toast((room=='ps'?'🏘️':'🌳')+' Đang vào '+nm+'...');
+window.cvEnter=async(room)=>{room=room==='ps'?'ps':room==='bn'?'bn':'cv';const nm=room=='ps'?'Phố xá':room=='bn'?'Biển':'Công viên',was=MAP=='cv'||MAP=='ps'||MAP=='bn';
+ if(PK.busy)return;PK.busy=1;closeUI();toast((room=='ps'?'🏘️':room=='bn'?'🌊':'🌳')+' Đang vào '+nm+'...');
  try{await loadLib();if(ch){showUI(0);gLeave();await disconnect()}CV.room=room;const r=await connect(room);
   if(r=='full'){toast('🚫 '+nm+' đã đủ '+MAXP+' người, thử lại sau nhé!');await disconnect();if(was)switchMap('nt')}else switchMap(room)}
  catch(e){toast('❌ Chưa vào được '+nm+': '+(e.message||e));await disconnect();if(was)switchMap('nt')}

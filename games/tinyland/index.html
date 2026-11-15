@@ -47,9 +47,15 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 .hi{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:23px;background:#e8b86a;border:2px solid #7a4a26;border-radius:8px;flex:none}
 .hib{cursor:pointer;padding:0}
 .hib:active{transform:translateY(2px);box-shadow:none}
-#hxu{font-size:15px}
 #hud{align-items:flex-start}
-#hpanel{min-height:80px;box-sizing:border-box;flex-direction:column;justify-content:center;gap:2px;padding:4px 6px}
+#hpanel{min-height:0;box-sizing:border-box;flex-direction:row;justify-content:center;align-items:center;gap:6px;padding:5px 6px}
+#hxu{display:flex;flex-direction:column;gap:3px}
+#hxu .cu{display:flex;align-items:center;justify-content:space-between;gap:5px;min-width:64px;height:17px;box-sizing:border-box;padding:0 6px 0 3px;background:rgba(255,255,255,.5);border:1px solid #c9a06a;border-radius:6px;font-weight:800;line-height:1}
+#hxu .cu i{font-style:normal;width:15px;height:15px;flex:none;display:flex;align-items:center;justify-content:center;font-size:12px}
+#hxu .cu i img{width:15px;height:15px;image-rendering:pixelated;display:block}
+#hxu .cu b{font-size:12px;font-weight:800;margin-left:auto}
+#hxu .cu.d b{color:#a23bb5}#hxu .cu.q b{color:#13808a}
+@media(max-width:640px){#cvc{max-width:calc(100vw - 196px)!important}}
 #hgrid{display:grid;grid-template-columns:repeat(2,38px);grid-template-rows:repeat(3,38px);gap:4px}#hgrid #hact{width:auto}
 #hgrid .hb{width:38px;height:38px;box-sizing:border-box;padding:0;border-width:2px;box-shadow:0 2px 0 #4e2f16;border-radius:8px;background:#e8b86a;flex-direction:column;justify-content:center;gap:1px;font-size:17px;line-height:1;cursor:pointer;font-family:inherit}
 #hgrid .hb:active{transform:translateY(2px);box-shadow:none}
@@ -123,6 +129,11 @@ const mk=(w,h,f)=>{const c=document.createElement('canvas');c.width=w;c.height=h
 const E=(r,c,x,y,a,b)=>{a=Math.round(a);b=Math.max(1,Math.round(b));for(let d=-b;d<=b;d++){const w=Math.round(a*Math.sqrt(Math.max(0,1-d*d/(b*b+.01))));r(c,x-w,y+d,w*2,1)}};
 let r=RR(cx);   // (let: để vẽ xem trước hoạt hình tạm đổi sang canvas khác)
 const outl=c=>{const w=c.width+2,h=c.height+2,o=document.createElement('canvas');o.width=w;o.height=h;const g=o.getContext('2d');for(const[dx,dy]of[[0,1],[2,1],[1,0],[1,2]])g.drawImage(c,dx,dy);g.globalCompositeOperation='source-in';g.fillStyle='rgba(30,38,20,.5)';g.fillRect(0,0,w,h);g.globalCompositeOperation='source-over';g.drawImage(c,1,1);const edge=(ox,oy,col)=>{const t=document.createElement('canvas');t.width=w;t.height=h;const u=t.getContext('2d');u.drawImage(c,1,1);u.globalCompositeOperation='destination-out';u.drawImage(c,1+ox,1+oy);u.globalCompositeOperation='source-in';u.fillStyle=col;u.fillRect(0,0,w,h);g.drawImage(t,0,0)};edge(1,1,'rgba(255,255,230,.28)');edge(-1,-1,'rgba(20,10,0,.22)');return o};
+// icon Xu quái vật (pixel 16x16, dùng ở panel avatar + tiệm câu)
+const QVI=mk(16,16,(g,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const d=Math.hypot(x-7.5,y-7.5);if(d<=7.7)r(d>6.2?'#0f6a76':d>5.1?'#25a8a6':'#47d0c6',x,y,1,1)}
+ r('#a6f2e8',3,3,3,1);r('#a6f2e8',2,4,1,2);r('#0f6a76',4,3,3,1);r('#0f6a76',9,3,3,1);
+ r('#fff',5,4,6,5);r('#fff',4,5,8,3);r('#2a1a3a',7,5,3,3);r('#fff',7,5,1,1);
+ r('#12354a',4,10,8,2);r('#12354a',5,12,6,1);for(const x of[5,7,9,10])r('#fff',x,10,1,1);r('#fff',6,12,1,1);r('#fff',9,12,1,1)}).toDataURL();
 const mkG=()=>[...Array(H)].map(()=>Array(W).fill(0)),solid=mkG(),occ=mkG();
 const blk=(x0,y0,x1,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)solid[y][x]=occ[y][x]=1};
 const mark=(x0,y0,x1,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)occ[y][x]=1};
@@ -2049,7 +2060,7 @@ const POTS=[['Xương rồng','🌵',20,5,8,'#5aa83c'],['Lưỡi hổ hồng','�
 const FRUITS={xoai:['Xoài','🥭',25,3,18],dua:['Dừa','🥥',35,3,22],mit:['Mít','🍈',40,3,25],sr:['Sầu riêng','🌰',45,2,50]};
 const VPI=[['trung','🥚','Trứng gà',12],['heo','🥓','Thịt heo',35],['sua','🥛','Sữa',28],['bo','🥩','Thịt bò',50],['ca','🐟','Cá đồng',15],['tom','🦐','Tôm',18],['cua','🦀','Cua',20],['luon','🐍','Lươn',22],['bac','🥈','Quặng bạc',18],['vang','🥇','Quặng vàng',30],['mat','🍯','Mật ong',30]];
 const NETS=[['Lưới thường',25,4,45],['Lưới lớn',60,10,60]],MIN=60000,now=()=>Date.now();
-let ST={xu:500,dia:0,tk:0,wh:{n:0,p:0},ns:{},vp:{},plots:Array(40).fill(null),pots:Array(20).fill(null),tree:{},nets:[null,null,null],mine:null,lv:1,exp:0,od:null,odT:0,bo:null},UI=0,fish=null,pa=null,LASTC=-1;
+let ST={xu:500,dia:0,qv:0,tk:0,wh:{n:0,p:0},ns:{},vp:{},plots:Array(40).fill(null),pots:Array(20).fill(null),tree:{},nets:[null,null,null],mine:null,lv:1,exp:0,od:null,odT:0,bo:null},UI=0,fish=null,pa=null,LASTC=-1;
 try{const sv=JSON.parse(localStorage.getItem('nt_save')||'null');if(sv&&sv.plots)ST=Object.assign(ST,sv)}catch(e){}
 function lvFix(){ST.lv=Math.max(1,Math.min(100,ST.lv|0||1));ST.exp=Math.max(0,ST.exp|0);if(ST.od&&!Array.isArray(ST.od.it))ST.od=null;ST.odT=+ST.odT||0}
 lvFix();
@@ -2060,7 +2071,7 @@ function fmtXu(n){n=Math.floor(n||0);
  const tr=Math.floor(n/1e6),rest=n-tr*1e6;let s=tr+'tr';
  if(rest>=1000)s+=Math.floor(rest/1000)+'k';else if(rest>0)s+=rest;
  return s}
-let LASTS='';const snapJ=()=>{try{if(typeof FMSEL!=='undefined'&&FMSEL&&FMSEL.o&&ST.fm&&ST.fm.p){return JSON.stringify(Object.assign({},ST,{fm:Object.assign({},ST.fm,{p:ST.fm.p.concat([FMSEL.o])})}))}}catch(e){}return JSON.stringify(ST)};const persist=()=>{try{const j=snapJ();if(j!==LASTS){LASTS=j;localStorage.setItem('nt_save',j);try{parent!==window&&parent.postMessage('dht-save','*')}catch(e){}}}catch(e){}},save=()=>{ST.ts=Date.now();persist()},add=(w,k,n)=>{ST[w][k]=(ST[w][k]||0)+n},xuUp=()=>{if(!(ST.dia>=0))ST.dia=0;if(!(ST.tk>=0))ST.tk=0;$('hxu').innerHTML='🪙 '+fmtXu(ST.xu)+'<small style="display:block;font-size:12px;line-height:1.15;color:#a23bb5">💎 '+(ST.dia|0)+'</small>';lvUi()};xuUp();
+let LASTS='';const snapJ=()=>{try{if(typeof FMSEL!=='undefined'&&FMSEL&&FMSEL.o&&ST.fm&&ST.fm.p){return JSON.stringify(Object.assign({},ST,{fm:Object.assign({},ST.fm,{p:ST.fm.p.concat([FMSEL.o])})}))}}catch(e){}return JSON.stringify(ST)};const persist=()=>{try{const j=snapJ();if(j!==LASTS){LASTS=j;localStorage.setItem('nt_save',j);try{parent!==window&&parent.postMessage('dht-save','*')}catch(e){}}}catch(e){}},save=()=>{ST.ts=Date.now();persist()},add=(w,k,n)=>{ST[w][k]=(ST[w][k]||0)+n},xuUp=()=>{if(!(ST.dia>=0))ST.dia=0;if(!(ST.tk>=0))ST.tk=0;if(!(ST.qv>=0))ST.qv=0;$('hxu').innerHTML='<div class="cu" title="Xu"><i>🪙</i><b>'+fmtXu(ST.xu)+'</b></div><div class="cu d" title="Kim cương"><i>💎</i><b>'+fmtXu(ST.dia|0)+'</b></div><div class="cu q" title="Xu quái vật"><i><img src="'+QVI+'" alt=""></i><b>'+fmtXu(ST.qv|0)+'</b></div>';lvUi()};xuUp();
 /* Sức khỏe & độ no: tính theo mốc thời gian thật nên giảm đều cả khi tắt game */
 const VT_H=100/(12*60),VT_F=100/(8*60);/* mỗi phút: hết sức khỏe sau 12 giờ, hết no sau 8 giờ */
 function vit(){let v=ST.vt;if(!v||typeof v.t!='number'){v=ST.vt={t:now(),h:100,f:100}}const m=Math.max(0,(now()-v.t)/60000);return{h:Math.max(0,Math.min(100,v.h-m*VT_H)),f:Math.max(0,Math.min(100,v.f-m*VT_F))}}
@@ -3041,8 +3052,9 @@ function mapUI(){const here='<i style="color:#2e7d32">✓ đang ở đây</i>',s
  '<button class=\"b r\" onclick=\"goMap(\'wt\')\"><span>❄️ Làng Tuyết Giáng Sinh</span>'+(MAP=='wt'?here:'')+'</button>'+
  '<button class="b r" onclick="goMap(\'congvien\')"><span>🌳 Công viên (online)</span>'+(MAP=='cv'?here:'')+'</button>'+
  '<button class="b r" onclick="goMap(\'phoxa\')"><span>🏘️ Phố xá (online • shop)</span>'+(MAP=='ps'?here:'')+'</button>'+
+ '<button class="b r" onclick="goMap(\'bien\')"><span>🌊 Biển (online • tiệm câu)</span>'+(MAP=='bn'?here:'')+'</button>'+
  '</div>')}
-function goMap(w){if(w=='congvien'||w=='cv'||w=='phoxa'||w=='ps'){const rm=(w=='phoxa'||w=='ps')?'ps':'cv';if(MAP==rm){closeUI();return toast(rm=='ps'?'🏘️ Bạn đang ở Phố xá rồi!':'🌳 Bạn đang ở Công viên rồi!')}return cvEnter(rm)}w=({nongtrai:'nt',lehoi:'lh',nha:'hm'})[w]||w;if(w==MAP){closeUI();toast(w=='hm'?'🏠 Bạn đang ở nhà rồi!':w=='wt'?'❄️ Bạn đang ở Làng Tuyết rồi!':w=='lh'?'🏮 Bạn đang ở Đêm Hội mà!':'🌾 Bạn đang ở Nông Trại rồi!')}
+function goMap(w){if(w=='congvien'||w=='cv'||w=='phoxa'||w=='ps'||w=='bien'||w=='bn'){const rm=(w=='phoxa'||w=='ps')?'ps':(w=='bien'||w=='bn')?'bn':'cv';if(MAP==rm){closeUI();return toast(rm=='ps'?'🏘️ Bạn đang ở Phố xá rồi!':rm=='bn'?'🌊 Bạn đang ở Biển rồi!':'🌳 Bạn đang ở Công viên rồi!')}return cvEnter(rm)}w=({nongtrai:'nt',lehoi:'lh',nha:'hm'})[w]||w;if(w==MAP){closeUI();toast(w=='hm'?'🏠 Bạn đang ở nhà rồi!':w=='wt'?'❄️ Bạn đang ở Làng Tuyết rồi!':w=='lh'?'🏮 Bạn đang ở Đêm Hội mà!':'🌾 Bạn đang ở Nông Trại rồi!')}
  else switchMap(w)}
 const LPX=1088;
 // ---------- MAP LE HOI ----------
@@ -4395,13 +4407,13 @@ function foodUI(){const v=vit(),old=$('ui').scrollTop;let h=head('🎒 Túi nhâ
  h+='</div><button class="b w" onclick="goMap(\'lehoi\')">🏮 Đến Lễ hội mua đồ ăn</button>';
  openUI(h);$('ui').scrollTop=old}
 
-function switchMap(m){if(MAP==m)return;if(ACT)actStop();if(MAP=='nt'&&FMODE)fmExit();if(MAP=='cv'||MAP=='ps')cvLeave();if(MAP=='hm'){setA(RB,RBSAVE);HMA=null;DECO=0;SEL=null;barUp();$('dbtn').style.display='none'}if(MAP=='nt')MPOS.nt={x:Pl.x,y:Pl.y};if(m=='hm'){MPOS.nt={x:560,y:268};RBSAVE=RB.slice();setA(RB,HM.rb);if(ST.av.m>=0)ST.av.m=-1;WW=HW;WH=HH}else if(m=='wt'){WW=640;WH=432}MAP=m;WTM=m=='wt'?1:0;WTON=m=='hm'?1:0;resize();
+function switchMap(m){if(MAP==m)return;if(ACT)actStop();if(MAP=='nt'&&FMODE)fmExit();if(MAP=='cv'||MAP=='ps'||MAP=='bn')cvLeave();if(MAP=='hm'){setA(RB,RBSAVE);HMA=null;DECO=0;SEL=null;barUp();$('dbtn').style.display='none'}if(MAP=='nt')MPOS.nt={x:Pl.x,y:Pl.y};if(m=='hm'){MPOS.nt={x:560,y:268};RBSAVE=RB.slice();setA(RB,HM.rb);if(ST.av.m>=0)ST.av.m=-1;WW=HW;WH=HH}else if(m=='wt'){WW=640;WH=432}MAP=m;WTM=m=='wt'?1:0;WTON=m=='hm'?1:0;resize();
  if(m=='hm'){setA(SP,HM.sp);setA(hits,HM.hits);setA(LB,HM.lb);for(let y=0;y<H;y++)for(let x=0;x<W;x++)solid[y][x]=0;Pl.x=HM.pos.x;Pl.y=HM.pos.y;Pl.d=1;$('dbtn').style.display='block';$('dbtn').textContent='🛠️ Trang trí';hmInit();toast('🏠 Chào mừng về nhà! Bấm 🛠️ Trang trí để bày nội thất')}
  else if(m=='lh'){setA(SP,LH.sp);setA(hits,LH.hits);setA(LB,LH.lb);
   for(let y=0;y<H;y++)for(let x=0;x<W;x++)solid[y][x]=LH.solid[y][x];
   Pl.x=LH.pos.x;Pl.y=LH.pos.y;toast('🏮 Chào mừng tới Hội Làng — múa lân, múa rồng, đô vật, ném còn!')}
  else if(m=='wt'){setA(SP,WT.sp);setA(hits,WT.hits);setA(LB,WT.lb);for(let y=0;y<H;y++)for(let x=0;x<W;x++)solid[y][x]=WT.solid[y][x];Pl.x=WT.pos.x;Pl.y=WT.pos.y;toast('❄️ Chào mừng tới Làng Tuyết Giáng Sinh!')}
- else if(m=='cv'||m=='ps'){cvSetup()}
+ else if(m=='cv'||m=='ps'||m=='bn'){cvSetup()}
  else{setA(SP,SPNT);setA(hits,HNT);setA(LB,LNT);
   for(let y=0;y<H;y++)for(let x=0;x<W;x++)solid[y][x]=SNT[y][x];
   Pl.x=MPOS.nt.x;Pl.y=MPOS.nt.y;toast('🌾 Đã về Nông Trại')}
@@ -4501,8 +4513,8 @@ cx.imageSmoothingEnabled=false;
 cx.save();
 cx.translate(-Math.round(camX),-Math.round(camY));
 const fh=MAP=='nt';
-if(MAP=='cv'||MAP=='ps')cvDrawBG(tm);else if(MAP=='hm')cx.drawImage(HB,0,0,HW,HH);else{if(MAP=='wt')drawWExt(tm);cx.drawImage(fh?A:MAP=='wt'?WB:B2,0,0);if(MAP=='wt')drawWFx(tm)}
-if(MAP!='wt'&&MAP!='hm'&&MAP!='cv'&&MAP!='ps'){for(const c of CL)cx.drawImage(CLD[c.im],Math.round(c.x),Math.round(c.y));
+if(MAP=='cv'||MAP=='ps'||MAP=='bn')cvDrawBG(tm);else if(MAP=='hm')cx.drawImage(HB,0,0,HW,HH);else{if(MAP=='wt')drawWExt(tm);cx.drawImage(fh?A:MAP=='wt'?WB:B2,0,0);if(MAP=='wt')drawWFx(tm)}
+if(MAP!='wt'&&MAP!='hm'&&MAP!='cv'&&MAP!='ps'&&MAP!='bn'){for(const c of CL)cx.drawImage(CLD[c.im],Math.round(c.x),Math.round(c.y));
 drawSwallows(tm);drawFlock(tm)}
 if(fh){
  for(const w of WV){const a=.25+.2*Math.sin(tm*2+w[3]),xx=(w[0]+tm*14)%PX;
@@ -4980,6 +4992,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 </script>
 <script src="park-map.js"></script>
 <script src="pho-map.js"></script>
+<script src="sea-map.js"></script>
 <script src="park-online.js"></script>
 <script src="frames.js"></script>
 <script src="idcard.js"></script>

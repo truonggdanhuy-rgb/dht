@@ -21,8 +21,10 @@ const hit=(x,y,w,h,msg,act,goal)=>PS.hits.push(act?[x,y,w,h,msg,act,goal]:[x,y,w
 
 // ---------- bản đồ: hoán đổi dữ liệu giữa Công viên và Phố xá ----------
 const KEYS=['sp','hits','lb','seats','horses','tbls','pos','fx'],STASH={};CV.cur='cv';
+const MAPS=window.CVMAPS=window.CVMAPS||{};MAPS.ps={d:PS,w:PW,h:PH};   // map online khác (vd. Biển: sea-map.js) tự đăng ký thêm vào đây
 function useMap(id){if(CV.cur===id)return;const sv={};KEYS.forEach(k=>sv[k]=CV[k]);STASH[CV.cur]=sv;
- const to=id=='ps'?PS:STASH[id];KEYS.forEach(k=>CV[k]=to[k]);CV.cur=id;CW=id=='ps'?PW:1440;CH=id=='ps'?PH:1008}
+ const M=MAPS[id],to=M?M.d:STASH[id];KEYS.forEach(k=>CV[k]=to[k]);CV.cur=id;CW=M?M.w:1440;CH=M?M.h:1008}
+window.cvUseMap=useMap;
 const pSetup=window.cvSetup,pAct=window.cvAct,pSolid=window.cvSolid;
 window.cvSetup=()=>{
  if(MAP!='ps'){useMap('cv');return pSetup()}
