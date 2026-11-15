@@ -1435,6 +1435,7 @@ function drawAv(g,ox,oy,o){
  const gtr=o.acc>=0&&!rd&&!sit&&ACCS[o.acc]&&ACCS[o.acc].k=='guitar',bob=o.nobob?0:o.mv?((f==1||f==3)?-1:0):(gtr?gtBob():0),u=(c,a,b,w,h)=>r(c,a,b+bob,w,h);
  // FIX: set Mascot (hươu/dạ nguyệt/tiên nữ/âu lạc/mascot) trước đây return sớm nên phụ kiện cầm tay bị ẩn -> vẽ phụ kiện sau khi vẽ xong set
  const MACC=()=>{if(o.acc>=0&&!rd&&!sit)drawAcc(r,o,{side,Rt,back,lg,sx:side?lg*(Rt?2:-2):0})};
+ if(window.WingBack)WingBack(r,o,{side,Rt,back,sit,rd});   // cánh nằm SAU thân (nhìn trước / cánh xa khi nhìn ngang)
  if(S.deer){drawDeerSet(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});return MACC()}
  if(S.dn){drawDaNguyet(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});return MACC()}
  if(S.tn){drawTienNu(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});return MACC()}
@@ -1500,7 +1501,9 @@ const ACCS=[{n:'Lồng đèn trăng rằm',k:'moon',t:'hang',art:accMoon},{n:'Xe
  // t:'hold' = cầm thẳng trong tay (hình vẽ ở outfits.js). Bán ở Shop Phố xá: Song kiếm 5000 • iPad 1500 • Muôi đầu bếp 300 • Giáo lính Việt 800
  {n:'Song kiếm',k:'dsword',t:'hold',art:accSword},{n:'iPad',k:'ipad',t:'hold',art:accIpad},
  {n:'Muôi đầu bếp',k:'ladle',t:'hold',art:accLadle},{n:'Giáo lính Việt',k:'spear',t:'hold',art:accSpear},
- {n:'Đàn guitar',k:'guitar',t:'hold',art:accGuitar}];   // guitar 3000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accGuitar trong outfits.js
+ {n:'Đàn guitar',k:'guitar',t:'hold',art:accGuitar},
+ // t:'wing' = CÁNH đeo sau lưng (hình vẽ ở newitems.js). dia = giá Kim cương, chỉ bán ở Shop kim cương. Cánh ẩn khi cưỡi thú / ngồi nghỉ.
+ {n:'Cánh Dực Ưng',k:'wingeagle',t:'wing',wing:'eagle',dia:10},{n:'Cánh Đại dương',k:'wingocean',t:'wing',wing:'ocean',dia:10}];   // guitar 3000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accGuitar trong outfits.js
 //   t:'float' = cầm DÂY dài, vật bay lơ lửng phía trên đầu -> art(P) giống 'hang'
 // ===== Pet đổi bằng Huy hiệu tuyết: Bánh quy gừng + Mây tuyết =====
 function drawPetGinger(g,x,y,d,mv,a,t){
@@ -1623,7 +1626,7 @@ function accDuck(T,mf){
  T('#ffd23f',2,2,7,3);T('#ffe680',3,2,4,1);T('#e8b820',2,4,7,1);T('#ffd23f',1,2,1,2);T('#f0b820',3,3,3,1);  // thân vịt
  T('#ffd23f',6,0,4,3);T('#2b1d12',8,1,1,1);T('#ff9a2a',10,1,2,2);            // đầu + mắt + mỏ
  T('#a8382e',11,6,1,2)}                                                      // móc buộc dây
-function drawAcc(r0,o,c){const A=ACCS[o.acc];if(!A)return;const t=performance.now()/1000,f=o.mv?Math.floor(o.a*9)%4:0,bob=o.mv?((f==1||f==3)?-1:0):(A.k=='guitar'?gtBob():0),
+function drawAcc(r0,o,c){const A=ACCS[o.acc];if(!A)return;if(A.t=='wing'){if(window.WingFront)WingFront(r0,o,c);return}const t=performance.now()/1000,f=o.mv?Math.floor(o.a*9)%4:0,bob=o.mv?((f==1||f==3)?-1:0):(A.k=='guitar'?gtBob():0),
  dir=c.side?(c.Rt?1:-1):1,h0=c.side?10-c.sx:16,hy=22+(c.side?0:-c.lg);
  const R=(col,dx,y,w,h)=>r0(col,dir>0?h0+dx:h0-dx-w+1,y+bob,w,h);
  // vẽ đường thẳng/võng nhẹ bằng từng điểm 1px (dây, gậy)
@@ -1882,7 +1885,10 @@ const MOUNTS=[{n:'Trâu Việt',hw:9,drop:8,spd:1.8,seat:{0:[0,-22],1:[0,-22],si
 // ===== Cá Chép (đổi ở Shop Tiên Nữ bằng 1 🎫 Phiếu Tiên Giới; hình vẽ nằm ở aulac.js; LUÔN để ở CUỐI mảng MOUNTS) =====
 {n:'Cá Chép',k:'carp',ach:1,tk:1,hw:10,drop:0,spd:2.8,nobob:1,noarm:1,sh:[26,18],seat:{0:[0,-15],1:[0,-15],side:[-2,-15]},
  legs(){},hov:(t,mv)=>window.aulHov?aulHov(t,mv):0,
- draw(R,d,f,b,t,pt,c){aulFish(R,d,f,b,t,pt,c)}}
+ draw(R,d,f,b,t,pt,c){aulFish(R,d,f,b,t,pt,c)}},
+// ===== Xe bí ngô (💎15 ở Shop kim cương; hình vẽ nằm ở newitems.js; món mới LUÔN thêm vào CUỐI mảng MOUNTS) =====
+{n:'Xe bí ngô',k:'pumpkin',dia:15,hw:10,drop:0,spd:2.3,sh:[30,24],seat:{0:[0,-12],1:[0,-12],side:[0,-12]},legs(){},
+ draw(R,d,f,b,t,pt,c){if(window.pumpkinDraw)pumpkinDraw(R,d,f,b,t,pt,c)}}
 ];
 // nguoi ngoi tren thu cuoi
 function drawRide(g,x,y,o,mi,t){
@@ -3057,7 +3063,7 @@ function bagUI(t){AVTAB=t||AVTAB;const old=$('ui').scrollTop,L=avItems(AVTAB),cu
  h+='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+L.map((x,i)=>'<button class="sq'+(i==cur?' sel':'')+'" onclick="avPick('+i+')"><canvas class="avt" data-i="'+i+'" width="'+(mt?72:44)+'" height="'+(mt?68:AVTAB=='p'?52:44)+'" style="width:'+(mt?88:57)+'px;height:'+(mt?83:AVTAB=='p'?68:57)+'px;image-rendering:pixelated"></canvas><b>'+x.n+'</b><small>'+(x.sm||(i==cur?'✓ Đang dùng':'&nbsp;'))+'</small></button>').join('')+'</div>';
  if(L.length<=1&&(AVTAB=='m'||AVTAB=='p'||AVTAB=='a'))h+='<div class="mut">Bạn chưa có '+(mt?'thú cưỡi':AVTAB=='a'?'phụ kiện':'pet')+' nào. Ghé Phố xá để mua nhé!</div>';
  if(AVTAB=='b'){h+=L.length?'<div class="mut">🖐️ Bấm vào quái vật để cầm trên tay. Di chuyển là tự cất, quay lại phụ kiện cầm tay cũ (nếu có).</div>':'<div class="mut">Bạn chưa câu được quái vật nào. Ra cầu tàu ở Biển để câu nhé! 🎣</div>'}
- if(AVTAB=='a')h+='<div class="mut">🎀 Phụ kiện cầm tay chỉ hiện khi đi bộ, tự ẩn khi cưỡi thú hoặc ngồi nghỉ. Mỗi lần dùng 1 món.</div>';
+ if(AVTAB=='a')h+='<div class="mut">🎀 Phụ kiện cầm tay & cánh chỉ hiện khi đi bộ, tự ẩn khi cưỡi thú hoặc ngồi nghỉ. Mỗi lần dùng 1 món.</div>';
  if(mt)h+='<div class="mut">Khi cưỡi, nhân vật chạy nhanh hơn. Ngồi nghỉ ở chòi/ghế sẽ tự xuống thú.</div>';
  h+=AVTAB=='b'?'<button class="b w" onclick="goMap(\'bien\')">🌊 Đến Biển câu thêm</button>':'<button class="b w" onclick="goMap(\'phoxa\')">🏘️ Đến Phố xá mua thêm</button>';
  openUI(h);$('ui').scrollTop=old;avPaint();if(!avRaf)avLoop()}
@@ -3070,7 +3076,7 @@ function avPaint(){const A=ST.av,t=performance.now()/1000,L=avItems(AVTAB);docum
  if(AVTAB=='h'){o.hair=ix;g.save();g.scale(2,2);drawAv(g,1,1,o);g.restore()}
  else if(AVTAB=='s'){o.set=ix;drawAv(g,12,5,o)}
  else if(AVTAB=='e'){o.e=ix;g.save();g.scale(3,3);const dr=()=>drawAv(g,-3,-4,o);if(ix==6)tlFreeze(2500,dr);else if(ix==7)tlFreeze(500,dr);else dr();g.restore()}
- else if(AVTAB=='a'){o.acc=ix;drawAv(g,4,5,o)}
+ else if(AVTAB=='a'){o.acc=ix;const wg=ix>=0&&ACCS[ix]&&ACCS[ix].t=='wing';drawAv(g,wg?12:4,5,o)}
  else if(AVTAB=='b'){MQ.paint(g,ix,c)}
  else if(AVTAB=='m'){if(ix>=0)drawRide(g,36,64,Object.assign({},o,{d:3,a:t,mv:0}),ix,t);else drawAv(g,26,30,o)}
  else{if(ix>=0){g.save();g.scale(2,2);drawPet(g,11,24,0,0,0,t,ix);g.restore()}else{g.font='22px sans-serif';g.textAlign='center';g.fillText('🚫',22,34)}}})}
@@ -5549,7 +5555,7 @@ function actAsk(id){const a=ACTS[actIdx(id)];if(!a||!actHas(a))return;
  openUI(head('Hành động')+'<div class="aq2">'+actCv(id,72,100,'big')+'<b>'+a.n+'</b><div class="mut" style="margin:2px 0">'+a.ds+'<br>Di chuyển bất cứ lúc nào để dừng lại.</div></div><div class="pf"><button class="b" onclick="actStart(\''+id+'\')">✅ Thực hiện</button><button class="b" onclick="actUI()">⬅ Quay lại</button></div>');actAnimGo()}
 function diaShop(){const L=ACTS.filter(a=>a.k=='solo'&&!a.bd);
  openUI(head('💎 Shop kim cương')+'<div class="mut" style="text-align:center">Bạn có <b>💎 '+(ST.dia|0)+'</b> kim cương</div>'
- +'<div class="dsh">✨ Set mascot</div><div class="dg">'+diaSetRows()+'</div><div class="dsh">😄 Biểu cảm</div><div class="dg">'+diaExprRows()+'</div><div class="dsh">⚡ Hành động cá nhân</div><div class="dg">'
+ +'<div class="dsh">✨ Set mascot</div><div class="dg">'+diaSetRows()+'</div><div class="dsh">😄 Biểu cảm</div><div class="dg">'+diaExprRows()+'</div><div class="dsh">🪽 Cánh <small>(phụ kiện)</small></div><div class="dg">'+(window.diaWingRows?diaWingRows():'')+'</div><div class="dsh">🎃 Thú cưỡi</div><div class="dg">'+(window.diaMountRows?diaMountRows():'')+'</div><div class="dsh">⚡ Hành động cá nhân</div><div class="dg">'
  +L.map(a=>{const have=!!ST.acts[a.id],ok=(ST.dia|0)>=a.pr;
   return '<div class="dcd">'+actCv(a.id,72,100,'mini')+'<b>'+a.n+'</b>'+(have?'<button class="b" onclick="actUI()">✓ Đã có</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuy(\''+a.id+'\')">💎 '+a.pr+'</button>')+'</div>'}).join('')
  +'</div>');actAnimGo();if(!dsRaf)dsLoop()}
@@ -5570,7 +5576,9 @@ function diaWear(i){if(!ST.own.s.includes(i))return;ST.av.s=i;save();toast('✨ 
 function dsLoop(){const cs=document.querySelectorAll('canvas.dsc,canvas.dec');if(!cs.length||!UI){dsRaf=0;return}
  const t=performance.now()/1000,d=[0,3,1,2][Math.floor(t/2.4)%4],de=[0,3,0,2][Math.floor(t/2.4)%4];
  cs.forEach(c=>{const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);g.save();
-  if(c.classList.contains('dec')){const A=ST.av||{},S=SETS[A.s|0];g.scale(3,3);drawAv(g,14,26,{d:de,a:t,mv:0,sit:0,hair:A.h|0,set:S&&S.mascot?0:(A.s|0),e:+c.dataset.i})}   // chừa chỗ phía trên đầu cho tim bay lên
+  if(c.classList.contains('dac')){const A=ST.av||{},S=SETS[A.s|0],ix=+c.dataset.i;g.scale(3,3);drawAv(g,12,14,{d,a:t,mv:1,sit:0,hair:A.h|0,set:A.s|0,e:A.e|0,acc:ix,nosh:0})}
+  else if(c.classList.contains('dmc')){const A=ST.av||{},ix=+c.dataset.i;g.scale(3,3);drawRide(g,24,52,{d:[3,0,2,1][Math.floor(t/2.4)%4],a:t,mv:Math.floor(t/2.4)%4==0?1:0,sit:0,hair:A.h|0,set:A.s|0,e:A.e|0},ix,t)}
+  else if(c.classList.contains('dec')){const A=ST.av||{},S=SETS[A.s|0];g.scale(3,3);drawAv(g,14,26,{d:de,a:t,mv:0,sit:0,hair:A.h|0,set:S&&S.mascot?0:(A.s|0),e:+c.dataset.i})}   // chừa chỗ phía trên đầu cho tim bay lên
   else{g.scale(5,5);drawAv(g,4,3,{d,a:t,mv:0,sit:0,hair:0,set:+c.dataset.i,e:ST.av.e})}
   g.restore()});
  dsRaf=requestAnimationFrame(dsLoop)}
@@ -5593,4 +5601,5 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="snow-village.js"></script>
 <script src="food-icons.js"></script>
 <script src="actions2.js"></script>
+<script src="newitems.js"></script>
 </body></html>
