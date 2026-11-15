@@ -20,10 +20,11 @@ window.setNm=()=>{const n=clean($('pnm').value);if(!n)return toast('Tên không 
 const bub={}; // id -> {t,until}
 // Đang làm HÀNH ĐỘNG CÁ NHÂN (k:'solo') thì ẩn tên cho khỏi che cảnh. ac = số thứ tự hành động + 1 (0 = không làm gì)
 const actHideName=ac=>{const a=ac>0&&ACTS[ac-1];return !!(a&&a.k=='solo')};
-const tag=(t,x,y,col,bf)=>{cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';
+const TAG_FONT='600 7px Nunito,"Segoe UI",Arial,sans-serif',TAG_LOGO_H=8,TAG_STROKE=2;   // cỡ chữ / cao logo / viền của tên trên đầu: chỉnh 3 số này nếu muốn to-nhỏ khác
+const tag=(t,x,y,col,bf)=>{cx.font=TAG_FONT;cx.textAlign='center';
  let tx=x;const L=window.idLogo?window.idLogo(bf):null; // logo Bạn thân đứng trước tên, luôn cao 11px dù ảnh gốc to/bé
- if(L){const h=11,w=Math.round(L.width*h/L.height),tw=cx.measureText(t).width,sx=x-(w+2+tw)/2;cx.save();cx.imageSmoothingEnabled=true;cx.drawImage(L,Math.round(sx),Math.round(y-9),w,h);cx.restore();tx=sx+w+2+tw/2}
- cx.lineWidth=3;cx.lineJoin='round';cx.strokeStyle='rgba(30,20,10,.85)';cx.strokeText(t,tx,y);cx.fillStyle=col;cx.fillText(t,tx,y)};
+ if(L){const h=TAG_LOGO_H,w=Math.round(L.width*h/L.height),tw=cx.measureText(t).width,sx=x-(w+2+tw)/2;cx.save();cx.imageSmoothingEnabled=true;cx.drawImage(L,Math.round(sx),Math.round(y-h+2),w,h);cx.restore();tx=sx+w+2+tw/2}
+ cx.lineWidth=TAG_STROKE;cx.lineJoin='round';cx.strokeStyle='rgba(30,20,10,.8)';cx.strokeText(t,tx,y);cx.fillStyle=col;cx.fillText(t,tx,y)};
 const bubble=(t,x,y)=>{cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';const w=Math.min(150,cx.measureText(t).width)+10;
  cx.fillStyle='rgba(30,20,10,.55)';cx.fillRect(x-w/2+1,y-9,w,13);cx.fillStyle='#fffdf0';cx.fillRect(x-w/2,y-10,w,13);cx.fillRect(x-2,y+3,4,2);cx.fillStyle='#3a2412';cx.fillText(t,x,y,w-6)};
 window.drawNames=tm=>{const now=performance.now(),dt=Math.min(.05,(now-lastT)/1000);lastT=now;
