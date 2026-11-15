@@ -275,7 +275,7 @@ function build(){
   [264,92,152,{wall:PAL.pink,aw:['#e7b4ae','#f8ece6'],balc:1,tile:1,shelf:['#e0a099','#8fb8e0','#f2d79a','#9ccaa6'],sign:{t:'TIỆM MAY & MŨ NÓN',bg:'#f0c8c2',fg:'#8a4a44'},shut:'#cfe0cf'}],
   [356,80,128,{wall:PAL.sky,aw:['#dba9a0','#f6efe6'],tank:1,shelf:['#f2d79a','#e8c7a0'],sign:{t:'PHỞ BÒ',bg:'#e8c4be',fg:'#8a3f38'},shut:'#e8d9a8'}],
   [436,98,152,{wall:PAL.sage,aw:['#a9c4dc','#f4f0e4'],balc:1,tile:1,shelf:['#8fb8e0','#e0a099','#9ccaa6'],sign:{t:'TIỆM THÚ CƯỠI',bg:'#bcd6e6',fg:'#3f607a'},shut:'#e8c6b0'}],
-  [534,78,136,{wall:PAL.lemon,aw:['#b9d6bf','#f6f2e2'],laundry:1,sign:{t:'HIỆU THUỐC',bg:'#c8e2cc',fg:'#3f7a54'},shelf:['#f4f0e4','#b9d6bf']}],
+  [534,78,136,{wall:PAL.lemon,aw:['#b9d6bf','#f6f2e2'],laundry:1,sign:{t:'SHOP MINISET',bg:'#ffd9e6',fg:'#b04a72'},shelf:['#f4f0e4','#b9d6bf']}],
   [612,98,152,{wall:PAL.peach,aw:['#d9c4e6','#f8f0ea'],balc:1,tile:1,shelf:['#e8c06a','#e0a099','#c9b0dc'],sign:{t:'TIỆM THÚ CƯNG',bg:'#e3d0ee',fg:'#6a4a86'},shut:'#c9dbe8'}],
   [710,80,126,{wall:PAL.mauve,aw:['#a9c9d6','#f4f0e4'],tank:1,door:'shutter',sign:{t:'CẮT TÓC',bg:'#d6e8ee',fg:'#4a6f80'}}],
   [790,84,140,{wall:PAL.sky,aw:['#e2b89a','#f8efe2'],balc:1,laundry:1,shelf:['#c99a6a','#f2e0b8'],sign:{t:'CÀ PHÊ SÁNG',bg:'#e8cfb4',fg:'#7a5236'}}],
@@ -290,7 +290,7 @@ function build(){
  hit(616,96,90,60,'🐾 Tiệm thú cưng — mèo, thỏ, gà, Mây Mây...','cv:ps:shop:p',[662,178]);
  hit(358,100,76,56,'🍜 Phở bò — thơm nức mũi, chưa mở bán đâu nhé!');
  hit(190,100,72,56,'🛋️ Tiệm nội thất — mua đồ trang trí cho nhà (100–4000 Xu)','cv:ps:furn',[226,178]);
- hit(536,100,74,56,'💊 Hiệu thuốc — kệ thuốc ngăn nắp');
+ hit(536,100,74,56,'🧸 Shop Miniset — thời trang cho Bé bỏng','cv:ps:mini',[572,178]);
  hit(712,100,76,56,'✂️ Tiệm cắt tóc — chú thợ đi ăn sáng rồi');
  hit(792,100,80,56,'☕ Cà phê sáng — mùi cà phê phin ngào ngạt');
  hit(876,100,82,56,'🥇 Tiệm vàng — lấp lánh sau tủ kính');
@@ -612,6 +612,7 @@ window.psFurnBuy=k=>{if(!CAT[k])return;if(typeof hmInit=='function')hmInit();con
 
 function psAct(a,h){const[t,v]=a.split(':');
  if(t=='shop')return psShop(v);
+ if(t=='mini')return window.bbShop?bbShop():toast('🧸 Shop Miniset đang chuẩn bị');
  if(t=='lot')return psLot();
  if(t=='bm')return buffShopUI('bm');
  if(t=='wheel')return wheelUI();

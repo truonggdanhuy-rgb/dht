@@ -35,10 +35,30 @@ const BB_GIFTS=[['xu',45],['tk',42],['ti',9],['dia',4]],BB_XU=[80,160],BB_TK=2;
       hm:{k:'short',c:'#màu'}   ← tóc khi là bé trai   (cùng định dạng phần tử HAIRS)
       hf:{k:'longf',c:'#màu'}   ← tóc khi là bé gái}
    Bé chỉ mặc được CẢ SET (gồm tóc), không đổi riêng tóc hay biểu cảm.                                        */
+const XMAS={n:'Miniset Mùa đông',sh:'#c8202a',shl:'#e8454e',shd:'#8f1a22',scarf:'#fbfbfd',tail:1,belt:'#8f1a22',trim:'#fbfbfd',pt:'#2f5d3a',rpt:'#2f5d3a',shoe:'#3a2a22'};
+/* mũ Noel + tóc (bé trai: tóc ngắn lòi ra; bé gái: tóc dài xõa) + sao lấp lánh trên đỉnh mũ (nam vàng, nữ hồng) */
+HAIRFX.bbxm=(u,o,K)=>{const{side,Rt,back,HS}=K,HC=HS.c,fe=HS.f,tw=Math.floor(performance.now()/300)%3,R='#c8202a',Rl='#e8454e',Rd='#8f1a22',W='#fbfbfd',Wd='#d6dae6',sc=HS.sc,scl=shade(sc,.55);
+ const star=(x,y)=>{u(sc,x+1,y,1,3);u(sc,x,y+1,3,1);u(tw?scl:'#ffffff',x+1,y+1,1,1);if(tw==1){u('#ffffff',x-1,y-1,1,1);u('#ffffff',x+3,y+3,1,1)}else if(tw==2){u('#ffffff',x+3,y-1,1,1);u('#ffffff',x-1,y+3,1,1)}};
+ if(!side&&!back){
+  if(fe){u(HC,5,9,2,13);u(HC,13,9,2,13);u(HC,5,22,2,1);u(HC,13,22,2,1)}else{u(HC,6,9,1,3);u(HC,13,9,1,3)}
+  u(R,6,5,8,3);u(R,5,7,10,1);u(Rl,7,5,2,2);u(Rd,12,5,2,3);u(R,7,4,7,1);u(R,8,3,5,1);u(R,10,2,3,1);star(10,-1);
+  u(W,5,8,10,2);u(Wd,5,9,10,1)}
+ else if(back){
+  if(fe){u(HC,5,9,10,14)}else{u(HC,6,9,8,3)}
+  u(R,5,5,10,3);u(R,6,4,8,1);u(R,7,3,6,1);u(R,9,2,4,1);u(Rd,5,5,1,3);u(Rd,14,5,1,3);star(10,-1);
+  u(W,5,8,10,2);u(Wd,5,9,10,1)}
+ else{
+  const x0=Rt?5:6,tipx=Rt?5:12;
+  if(fe)u(HC,Rt?5:12,9,3,13);else u(HC,Rt?5:12,9,3,3);
+  u(R,x0,5,9,3);u(R,Rt?6:7,4,7,1);u(R,Rt?6:8,3,5,1);u(R,Rt?6:8,2,3,1);u(Rd,Rt?5:13,5,2,3);u(Rl,Rt?8:8,5,2,2);star(Rt?5:8,-1);
+  u(W,x0,8,9,2);u(Wd,x0,9,9,1)}};
 const MINISETS=[
  {id:'warm',n:'Miniset Ấm áp',
   set:{n:'Miniset Ấm áp',sh:'#fbfbfd',shl:'#ffffff',shd:'#d5d9e6',scarf:'#fbfbfd',knot:'#e3e6ee',belt:'#e3e6ee',pt:'#1c1c22',rpt:'#1c1c22',shoe:'#f4f4f6'},
-  hm:{n:'Tóc ngắn',k:'short',c:'#2b1d12'},hf:{n:'Tóc dài',k:'longf',c:'#201a24'}}
+  hm:{n:'Tóc ngắn',k:'short',c:'#2b1d12'},hf:{n:'Tóc dài',k:'longf',c:'#201a24'}},
+ /* ---- Miniset Mùa đông: bán ở 🧸 Shop Miniset (Phố xá, chỗ Hiệu thuốc cũ). g = chỉ bé trai ('m') / bé gái ('f') mua & mặc được. shop:1 = có bán trong shop ---- */
+ {id:'winm',n:'Miniset Mùa đông',g:'m',xu:250,shop:1,set:XMAS,hm:{n:'Mũ Noel',k:'bbxm',c:'#2b1d12',f:0,sc:'#ffd23f'}},
+ {id:'winf',n:'Miniset Mùa đông',g:'f',xu:250,shop:1,set:XMAS,hf:{n:'Mũ Noel',k:'bbxm',c:'#201a24',f:1,sc:'#ff7ab8'}}
 ];
 const msGet=id=>MINISETS.find(x=>x.id==id)||MINISETS[0];
 
@@ -52,7 +72,7 @@ const fmtLeft=ms=>{const s=Math.max(0,Math.ceil(ms/1000)),h=Math.floor(s/3600),m
 function bbFix(){const b=ST.bb;if(!b||!b.on)return;
  b.g=b.g=='f'?'f':'m';b.c=b.c=='chi'?'chi':'anh';b.n=cleanName(b.n)||'Bé';b.ad=+b.ad||tNow();b.big=b.big?1:0;b.exp=cl(b.exp|0,0,BB_EXP);
  b.h=cl(+b.h||0,0,100);b.f=cl(+b.f||0,0,100);b.t=+b.t||tNow();b.gt=+b.gt||tNow()+BB_GIFT_MS;b.fl=b.fl?1:0;b.pp=(b.pp|0)>=0?b.pp|0:-1;
- if(!Array.isArray(b.own))b.own=[];if(!b.own.includes('warm'))b.own.push('warm');if(!MINISETS.some(x=>x.id==b.set)||!b.own.includes(b.set))b.set='warm'}
+ if(!Array.isArray(b.own))b.own=[];if(!b.own.includes('warm'))b.own.push('warm');b.own=b.own.filter(id=>MINISETS.some(x=>x.id==id));const cs=MINISETS.find(x=>x.id==b.set);if(!cs||!b.own.includes(b.set)||(cs.g&&cs.g!=b.g))b.set='warm'}
 bbFix();
 
 /* thanh Vui vẻ / No bụng: tính theo mốc thời gian thật nên vẫn tụt khi tắt game (giống thanh Sức khỏe / Độ no) */
@@ -64,9 +84,9 @@ function statusTxt(b){const m=mood(b);
  return m=='hungry'?'Đói bụng, khóc nhè 😭':m=='bored'?'Buồn chán, đòi chơi 🥺':'Đang ngủ ngon 💤'}
 
 /* ---------------- VẼ NHÂN VẬT BÉ (dùng lại drawAv của nhân vật chính) ---------------- */
-function avObj(b,d,mv,a){const m=msGet(b.set);return{d,a:a||0,mv:mv?1:0,sit:0,e:0,acc:-1,setObj:m.set,hairObj:b.g=='f'?m.hf:m.hm}}
+function avObj(b,d,mv,a){const m=msGet(b.set);return{d,a:a||0,mv:mv?1:0,sit:0,e:0,acc:-1,setObj:m.set,hairObj:(m.g||b.g)=='f'?m.hf:m.hm}}
 const SPC={};
-function sprite(b,d,mv,f){const key=b.set+b.g+'_'+d+(mv?'w'+f:'i');let c=SPC[key];if(c)return c;
+function sprite(b,d,mv,f){const key=b.set+b.g+'_'+d+(mv?'w'+f:'i')+(msGet(b.set).hm&&msGet(b.set).hm.k=='bbxm'||msGet(b.set).hf&&msGet(b.set).hf.k=='bbxm'?'t'+Math.floor(performance.now()/300)%3:'');let c=SPC[key];if(c)return c;
  c=document.createElement('canvas');c.width=48;c.height=72;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.scale(2,2);
  try{drawAv(g,2,2,avObj(b,d,mv,(f+.5)/9))}catch(e){}return SPC[key]=c}
 function drawFollow(){const b=B();if(!b||!b.big||!b.fl||(CVON&&CV.boat)||(HMA&&HMA.hide))return;
@@ -141,11 +161,11 @@ function cradle(md){
  +'#hbb.rdy::after{content:"";position:absolute;top:-4px;right:-4px;width:11px;height:11px;border-radius:50%;background:#ff5a5a;border:2px solid #fff;box-shadow:0 1px 0 rgba(0,0,0,.25)}'
  +'.bbav{border-radius:16px;overflow:hidden;border:2px solid #cfe6d9;line-height:0;cursor:pointer;background:linear-gradient(#cfeefc,#e4f6ec 62%,#bfe3a8 62%,#a9d68e)}.bbav canvas{width:100%;height:auto;display:block;image-rendering:pixelated}'
  +'.bbfl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}.bbft{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;border-radius:12px;border:2px solid #cfe6d9;background:#fff;font:inherit;color:#4a6a5a;cursor:pointer}'
- +'.bbft.sel{border-color:#e6c25a;background:#fff6d6}.bbft b{font-size:12px}.bbft small{font-size:10.5px;color:#7b9a8a;font-weight:700}.bbft canvas{width:56px;height:56px;image-rendering:pixelated}';
+ +'.bbft.sel{border-color:#e6c25a;background:#fff6d6}.bbft b{font-size:12px}.bbft small{font-size:10.5px;color:#7b9a8a;font-weight:700}.bbft canvas{width:56px;height:72px;image-rendering:pixelated}';
  document.head.appendChild(css)})();
 
 /* ---------------- GIAO DIỆN ---------------- */
-let VIEW='main',SEL={g:'',c:'',n:''},CONF=0,CONFT=0,BBDIR=0,BBANI=0,LASTMOOD='';
+let VIEW='main',SEL={g:'',c:'',n:''},RENN='',RENT=0,CONF=0,CONFT=0,BBDIR=0,BBANI=0,LASTMOOD='';
 const isOpen=()=>UI&&$('ui').classList.contains('bbui');
 const bar=(id,ic,nm,v,col)=>'<div class="bbrow"><div class="bbrl"><span>'+ic+' '+nm+'</span><b id="'+id+'v">'+Math.round(v)+'%</b></div><div class="bbbar"><i id="'+id+'" style="width:'+v+'%;background:'+col+'"></i></div></div>';
 const COL_H='linear-gradient(90deg,#ffe08a,#ffb84d)',COL_F='linear-gradient(90deg,#b5e8d0,#6cc7a3)',COL_X='linear-gradient(90deg,#ffe08a,#ffc24d)';
@@ -199,11 +219,12 @@ function viewMain(){const b=B();if(!b)return viewAdopt();
  +'<div class="bbcard"><table class="bbtb"><tr><td>Tên bé</td><td id="bbtn">'+nm+'</td></tr><tr><td>Ngày nhận nuôi</td><td>'+fmtDay(b.ad)+'</td></tr>'
  +'<tr><td>Giới tính</td><td>'+(b.g=='f'?'Bé gái':'Bé trai')+'</td></tr><tr><td>Bé gọi bạn là</td><td>'+(b.c=='chi'?'Chị':'Anh')+'</td></tr>'
  +'<tr><td>Giai đoạn</td><td>'+(b.big?'🌟 Đã lớn':'🍼 Em bé')+'</td></tr></table>'
- +'<div class="bbrn"><input id="bbrn" maxlength="'+BB_NAME_MAX+'" value="'+nm+'" placeholder="Tên mới"><button class="bbbt on" onclick="bbRename()">✏️ Đổi tên</button></div></div>'
+ +'<div class="bbrn"><input id="bbrn" maxlength="'+BB_NAME_MAX+'" value="'+esc(RENN||b.n)+'" placeholder="Tên mới">'+(RENN?'':'<button class="bbbt on" onclick="bbRename()">✏️ Đổi tên</button>')+'</div>'
+ +(RENN?'<div class="bbch"><button class="bbbt warn" onclick="bbRename()">⚠️ Xác nhận đổi tên (−'+BB_DIA_NAME+' 💎)</button><button class="bbbt on" style="flex:none;width:30%" onclick="bbRenCancel()">Hủy</button></div>':'')+'</div>'
  +'<button class="bbbt on" onclick="bbFashion()">👗 Thời trang</button>';
  show(h,'main');guard($('bbrn'));if(b.big)paintHero()}
 
-window.bbUI=()=>{const b=B();CONF=0;if(!b){SEL={g:'',c:'',n:''};return viewAdopt()}viewMain()};
+window.bbUI=()=>{const b=B();CONF=0;RENN='';if(!b){SEL={g:'',c:'',n:''};return viewAdopt()}viewMain()};
 function refresh(){if(!isOpen())return;if(VIEW=='fash')viewFashion();else if(VIEW=='main')viewMain()}
 
 window.bbAct=k=>{const b=B();if(!b)return;settle(b);const feed=k=='f';
@@ -217,10 +238,12 @@ window.bbGrowNow=()=>{const b=B();if(!b||b.big)return;
  if(!CONF){if((ST.dia|0)<BB_DIA_GROW)return toast('💎 Chưa đủ kim cương — cần '+BB_DIA_GROW+', bạn có '+(ST.dia|0));CONF=1;clearTimeout(CONFT);CONFT=setTimeout(()=>{CONF=0;if(isOpen()&&VIEW=='main')viewMain()},4000);return viewMain()}
  clearTimeout(CONFT);CONF=0;if((ST.dia|0)<BB_DIA_GROW)return toast('💎 Chưa đủ kim cương — cần '+BB_DIA_GROW+', bạn có '+(ST.dia|0));
  ST.dia-=BB_DIA_GROW;xuUp();settle(b);b.big=1;b.exp=BB_EXP;save();toast('🎉 '+b.n+' đã lớn rồi! (−'+BB_DIA_GROW+' 💎)');refresh()};
+window.bbRenCancel=()=>{RENN='';clearTimeout(RENT);viewMain()};
 window.bbRename=()=>{const b=B(),i=$('bbrn');if(!b||!i)return;const n=cleanName(i.value);
- if(!n)return toast('✏️ Tên không được để trống');if(n==b.n)return toast('✏️ Đó đang là tên của bé rồi');
+ if(!n)return toast('✏️ Tên không được để trống');if(n==b.n){RENN='';return toast('✏️ Đó đang là tên của bé rồi')}
  if((ST.dia|0)<BB_DIA_NAME)return toast('💎 Chưa đủ kim cương — cần '+BB_DIA_NAME+', bạn có '+(ST.dia|0));
- ST.dia-=BB_DIA_NAME;xuUp();const old=b.n;b.n=n;save();toast('✏️ Đã đổi tên bé: '+old+' → '+n+' (−'+BB_DIA_NAME+' 💎)');refresh()};
+ if(RENN!=n){RENN=n;clearTimeout(RENT);RENT=setTimeout(()=>{RENN='';if(isOpen()&&VIEW=='main'&&!(document.activeElement&&document.activeElement.tagName=='INPUT'))viewMain()},8000);return viewMain()}
+ RENN='';clearTimeout(RENT);ST.dia-=BB_DIA_NAME;xuUp();const old=b.n;b.n=n;save();toast('✏️ Đã đổi tên bé: '+old+' → '+n+' (−'+BB_DIA_NAME+' 💎)');refresh()};
 
 window.bbClaim=()=>{const b=B();if(!b)return;if(tNow()<b.gt)return toast('📦 Chưa tới giờ nhận quà');
  let u=Math.random()*BB_GIFTS.reduce((a,x)=>a+x[1],0),k=BB_GIFTS[0][0];for(const [n,w] of BB_GIFTS){u-=w;if(u<0){k=n;break}}
@@ -242,18 +265,42 @@ function viewFashion(){const b=B();if(!b)return viewAdopt();
  +(b.big?'<div class="bbav" onclick="bbTurn()"><canvas id="bbav" width="150" height="120"></canvas></div><div class="mut" style="text-align:center;margin:4px 0 0">👆 Chạm vào bé để xoay</div>'
         :'<div class="bbcard" style="text-align:center;font-weight:800;color:#7b9a8a;margin-top:0">🔒 Bé lớn rồi mới thay đồ được nha<div class="mut" style="margin:4px 0 0">Bạn vẫn có thể xem trước các Miniset bên dưới.</div></div>')
  +'<div class="mut" style="text-align:center">Bé chỉ mặc được cả set (gồm cả tóc). Bạn có 🪙 '+fmtXu(ST.xu)+' • 💎 '+(ST.dia|0)+'</div><div class="bbfl">';
- MINISETS.forEach((m,i)=>{const own=b.own.includes(m.id),on=b.set==m.id,pr=m.dia?'💎 '+m.dia:m.xu?'🪙 '+m.xu:'Miễn phí';
-  h+='<button class="bbft'+(on?' sel':'')+'" onclick="bbSetPick('+i+')"><canvas class="bbfc" data-i="'+i+'" width="40" height="40"></canvas><b>'+esc(m.n)+'</b><small>'+(on?'✅ Đang mặc':own?'Đã có':pr)+'</small></button>'});
+ MINISETS.forEach((m,i)=>{if(m.g&&m.g!=b.g)return;const own=b.own.includes(m.id),on=b.set==m.id,pr=m.dia?'💎 '+m.dia:m.xu?'🪙 '+m.xu:'Miễn phí';
+  h+='<button class="bbft'+(on?' sel':'')+'" onclick="bbSetPick('+i+')"><canvas class="bbfc" data-i="'+i+'" width="56" height="72"></canvas><b>'+esc(m.n)+'</b><small>'+(on?'✅ Đang mặc':own?'Đã có':pr)+'</small></button>'});
  h+='</div><div class="mut" style="text-align:center;margin-top:8px">✨ Sẽ có thêm Miniset mới, ghé lại sau nhé!</div>';
  show(h,'fash');paintFashion();if(b.big)paintHero()}
 window.bbFashion=()=>viewFashion();
 window.bbSetPick=i=>{const b=B(),m=MINISETS[i];if(!b||!m)return;
+ if(m.g&&m.g!=b.g)return toast('🔒 Set này dành cho '+(m.g=='f'?'bé gái':'bé trai'));
  if(!b.own.includes(m.id)){const dia=m.dia|0,xu=m.xu|0;
   if(dia&&(ST.dia|0)<dia)return toast('💎 Chưa đủ kim cương — cần '+dia+', bạn có '+(ST.dia|0));
   if(xu&&ST.xu<xu)return toast('🪙 Chưa đủ xu — cần '+xu+' xu');
   ST.dia=(ST.dia|0)-dia;ST.xu-=xu;xuUp();b.own.push(m.id);toast('🛍️ Đã mua '+m.n+'!')}
  if(!b.big){save();return viewFashion()}
  b.set=m.id;save();toast('👗 '+b.n+' đã mặc '+m.n);viewFashion()};
+
+
+/* ---------- 🧸 SHOP MINISET (Phố xá, chỗ Hiệu thuốc cũ — pho-map.js gọi bbShop()) ---------- */
+let SHSEL=-1;
+function shopList(){return MINISETS.map((m,i)=>[m,i]).filter(x=>x[0].shop)}
+function paintShop(){const b=B();if(!b)return;document.querySelectorAll('canvas.bbsc2').forEach(c=>{const m=MINISETS[+c.dataset.i];if(m)charPaint(c,Object.assign({},b,{set:m.id,g:m.g||b.g}),0,0,2)})}
+window.bbShop=()=>{const b=B();
+ if(!b)return show(head('🧸 Shop Miniset')+'<div class="bbcard" style="text-align:center;font-weight:800;color:#7b9a8a">Bạn chưa nhận nuôi Bé bỏng nè<div class="mut" style="margin:6px 0 0">Bấm nút 🍼 Bé bỏng để nhận nuôi, rồi quay lại mua Miniset cho bé nhé!</div></div>','shop');
+ const L=shopList(),sel=L.find(x=>x[1]==SHSEL);let h=head('🧸 Shop Miniset')+'<div class="mut" style="text-align:center">Set mua xong nằm trong <b>👗 Thời trang</b> của Bé bỏng. Bạn có 🪙 '+fmtXu(ST.xu)+'</div><div class="bbfl">';
+ L.forEach(([m,i])=>{const own=b.own.includes(m.id),lock=m.g&&m.g!=b.g;
+  h+='<button class="bbft'+(SHSEL==i?' sel':'')+'" style="'+(lock?'opacity:.6':'')+'" onclick="bbShopSel('+i+')"><canvas class="bbsc2" data-i="'+i+'" width="56" height="72"></canvas><b>'+esc(m.n)+'</b><small>'+(m.g=='f'?'👧 Bé gái':m.g=='m'?'👦 Bé trai':'')+'</small><small>'+(own?'✅ Đã có':lock?'🔒 Không hợp bé':'🪙 '+m.xu)+'</small></button>'});
+ h+='</div>';
+ if(sel){const m=sel[0],own=b.own.includes(m.id),lock=m.g&&m.g!=b.g;
+  h+=own?'<button class="bbbt" disabled>✅ Bé đã có set này</button>':lock?'<button class="bbbt" disabled>🔒 Set này dành cho '+(m.g=='f'?'bé gái':'bé trai')+', bé của bạn là '+(b.g=='f'?'bé gái':'bé trai')+'</button>'
+   :'<button class="bbbt on" onclick="bbShopBuy('+sel[1]+')">🛍️ Mua — '+m.xu+' Xu</button>'}
+ else h+='<div class="mut" style="text-align:center;margin-top:8px">👆 Chọn 1 set để mua</div>';
+ show(h,'shop');paintShop()};
+window.bbShopSel=i=>{SHSEL=i;bbShop()};
+window.bbShopBuy=i=>{const b=B(),m=MINISETS[i];if(!b||!m||!m.shop)return;
+ if(m.g&&m.g!=b.g)return toast('🔒 Set này dành cho '+(m.g=='f'?'bé gái':'bé trai'));
+ if(b.own.includes(m.id))return toast('✅ Bé đã có set này rồi');
+ if(ST.xu<m.xu)return toast('🪙 Chưa đủ xu — cần '+m.xu+' xu');
+ ST.xu-=m.xu;xuUp();b.own.push(m.id);save();toast('🛍️ Đã mua '+m.n+'!\nSet nằm trong 👗 Thời trang của '+b.n);bbShop()};
 
 /* ---------------- NHỊP CẬP NHẬT (gọi mỗi khung hình từ update() của game) ---------------- */
 let acc=0;
