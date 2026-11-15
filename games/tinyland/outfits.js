@@ -157,6 +157,29 @@ SETFX.hoodie=(u,o,S,K)=>{
  }
 };
 
+// ---- Set giữ nhiệt: áo len form rộng + khăn len dày che cổ (đổi bằng Huy hiệu tuyết) ----
+SETFX.warm=(u,o,S,K)=>{
+ const{side,Rt,back,lg,sx,SK}=K,C=S.sh,CL=S.shl,CD=S.shd,SC=S.scarf,SC2=S.trim,SCD='#8a1f1c',aL=lg,aR=-lg,mx=(x,w)=>Rt?x:20-x-w,RIB='rgba(130,90,50,.20)';
+ if(!side){
+  u(C,5,16,10,1);u(C,3,17,14,8);u(CD,3,25,14,1);u(CD,3,24,14,1);
+  for(let x=4;x<=15;x+=2)u(RIB,x,18,1,6);u(CL,4,17,1,6);u(CD,16,17,1,7);
+  if(!back){u(S.hs,7,21,6,1);u(S.hs,6,22,8,1);for(let x=7;x<13;x+=2)u(CL,x,21,1,1)}   // họa tiết sọc ngang
+  u(C,0,17+aL,4,6);u(CL,0,17+aL,1,6);u(CD,3,17+aL,1,6);u(CD,0,22+aL,4,1);u(SK,1,23+aL,2,1);
+  u(C,16,17+aR,4,6);u(CL,16,17+aR,1,6);u(CD,19,17+aR,1,6);u(CD,16,22+aR,4,1);u(SK,17,23+aR,2,1);
+  // khăn len dày 4 lớp + đuôi khăn rủ xuống
+  u(SC,6,15,8,1);u(SC2,5,16,10,1);u(SC,5,17,10,1);u(SC2,5,18,10,1);u(SCD,5,18,10,1-1);
+  u(SCD,5,19,10,1);u(CL,6,15,1,1);u(CL,6,17,1,1);
+  if(!back){u(SC,11,19,3,2);u(SC2,11,21,3,1);u(SC,11,22,3,2);u(SC2,11,24,3,1);u(SCD,13,19,1,5);u(SC,11,25,1,1);u(SC,13,25,1,1)}
+  else{u(SC,6,19,8,1)}
+ }else{
+  u(C,7,16,7,1);u(C,5,17,10,8);u(CD,5,25,10,1);u(CD,5,24,10,1);u(CD,mx(13,2),17,2,8);u(CL,mx(5,1),18,1,5);
+  for(let x=7;x<=13;x+=2)u(RIB,mx(x,1),18,1,6);
+  if(!o.noarm){const ax=8-sx;u(C,ax-1,17,5,6);u(CL,ax-1,17,1,6);u(CD,ax+3,17,1,6);u(CD,ax-1,22,5,1);u(SK,ax,23,3,1)}
+  u(SC,7,15,6,1);u(SC2,6,16,8,1);u(SC,6,17,8,1);u(SC2,6,18,8,1);u(SCD,6,19,8,1);
+  u(SC,mx(7,3),19,3,2);u(SC2,mx(7,3),21,3,1);u(SC,mx(7,3),22,3,2);u(SC,mx(7,1),24,1,1);u(SC,mx(9,1),24,1,1);
+ }
+};
+
 // ---- Áo dài (nữ trắng / nam gấm / cách tân hồng): cổ đứng, vạt dài xẻ tà ----
 SETFX.adai=(u,o,S,K)=>{
  const{side,Rt,back,sit,rd,lg,sx,SK}=K,C=S.sh,CL=S.shl,CD=S.shd,T=S.trim,CO=S.col||T,P=S.pants,FL=rd?3:(S.fl||5),aL=lg,aR=-lg,

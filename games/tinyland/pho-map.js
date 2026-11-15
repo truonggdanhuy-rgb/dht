@@ -346,7 +346,7 @@ function build(){
    put(STL[0],v.x0,v.y+1);put(STL[1],v.x1,v.y+1);walker(Object.assign({k:'vend'},v))}
 
  // ----- TRÙM KIM CƯƠNG: đứng ở vỉa hè cạnh hòm kho báu + đống kim cương -----
- {const bx=572,by=480;
+ {const bx=372,by=490;   // dời sang giữa vỉa hè dưới: xa đường đi của 2 cô gánh hàng
   put(mkChest(),bx-46,by+2,[bx-62,by-8,bx-30,by+2]);put(mkDiaPile(),bx+48,by+2,[bx+28,by-8,bx+68,by+2]);
   dyn(by+3,()=>{const tm=tmNow();for(let i=0;i<5;i++)sparkle(bx-58+i*7,by-22+(i%3)*4,tm,i);for(let i=0;i<5;i++)sparkle(bx+32+i*8,by-24+(i%2)*6,tm,i+7)});
   mkNpc({id:'boss',boss:1,x:bx,y:by,d:0,set:0,hair:0,prop:'',lines:['Kim cương đây! Ai lấy kim cương nào?','Ánh sáng này là của các con nè!','Muốn phát kim cương hông? Ghé ta nhé!','Lấp lánh cả phố luôn!']});
@@ -582,7 +582,7 @@ window.psItem=i=>{if(typeof ownE=='function')ownE();SH_I=i;const S=SHOP[SH_TAB],
 function shLoop(){const c=$('shp');if(!c||!UI||PS.view!='item'){shRaf=0;return}const A=ST.av,g=c.getContext('2d'),t=performance.now()/1000;
  shDraw(g,SH_TAB,SH_I,{d:0,a:t,mv:1,sit:0,hair:A.h,set:A.s,e:A.e},t,1);shRaf=requestAnimationFrame(shLoop)}
 window.psBuy=i=>{if(typeof ownE=='function')ownE();const k=SH_TAB,pr=price(k,i),own=ST.own[k];if(own.includes(i))return psItem(i);
- if(SHOP[k].all()[i].ach)return toast('🏆 Pet này chỉ nhận được từ mốc quà trong Thẻ');
+ if(SHOP[k].all()[i].ach)return toast(SHOP[k].all()[i].bd?'❄️ Món này đổi bằng Huy hiệu tuyết ở Ông già Noel (Làng tuyết)':'🏆 Pet này chỉ nhận được từ mốc quà trong Thẻ');
  if(ST.xu<pr)return toast('🪙 Chưa đủ Xu — còn thiếu '+(pr-ST.xu).toLocaleString('vi-VN')+' Xu');
  ST.xu-=pr;own.push(i);xuUp();save();toast('🛍️ Đã mua '+SHOP[k].all()[i].n+'!');psItem(i)};
 window.psUse=i=>{const k=SH_TAB;if(!ST.own[k].includes(i))return;ST.av[k]=i;if(k=='m'&&Pl.sit){Pl.sit=0;Pl.mv=0}if(k=='p')petReset();save();toast('✨ Đã dùng '+SHOP[k].all()[i].n);psItem(i)};

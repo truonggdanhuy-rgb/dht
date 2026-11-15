@@ -28,7 +28,7 @@ window.drawNames=tm=>{const now=performance.now(),dt=Math.min(.05,(now-lastT)/10
  if(CVON&&CV.fx)CV.fx(tm,dt);
  if(!(HMA&&HMA.hide)){let x,y;if(CVON){const p=cvHeadPos();x=p.x;y=p.y}else{x=Math.round(Pl.x);y=Math.round(Pl.y)-(Pl.sit?34:tagOff(ST.av.m,Pl.d))}
   tag(ST.name,x,y,'#fff6c0',((ST.id&&typeof ST.id.bt=='number')?ST.id.bt:-1));const b=bub[ME.id];if(b&&b.until>now)bubble(b.t,x,y-8)}
- if(CVON)for(const o of CV.others.values()){if(o.hx==null)continue;tag(o.n||'?',o.hx,o.hy,'#d8f4ff',o.bf);const b=bub[o.id];if(b&&b.until>now)bubble(b.t,o.hx,o.hy-8)}};
+ if(CVON)for(const o of CV.others.values()){if(o.hx==null)continue;tag(o.n||'?',o.hx,o.hy,'#d8f4ff',o.bf);const b=bub[o.id];if(b&&b.until>now)bubble(b.t,o.hx,o.hy-8)};if(CVON&&HRT.length)hrtDraw(now)};
 
 // ---------- tạo nhân vật lần đầu ----------
 window.welcomeName=()=>{openUI('<div class="uh"><span>🌾 Chào mừng đến Tinyland!</span></div><div class="mut">Hãy đặt tên nhân vật. Tên hiện trên đầu bạn và bạn bè trong Công viên sẽ thấy tên này (không phải tên đăng nhập DHT). Sau này vẫn đổi được khi bấm avatar.</div><div style="display:flex;gap:4px;margin:8px 0"><input id="pnm0" maxlength="16" value="'+escH(ST.name)+'" style="flex:1;min-width:0;font:inherit;padding:6px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" onclick="welcomeOk()">Bắt đầu</button></div>');
@@ -44,10 +44,20 @@ window.claimGifts=async()=>{if(!dhtOk()||giftBusy)return;giftBusy=1;
 setTimeout(claimGifts,2500);setInterval(claimGifts,20000);
 let tapO=null;
 function tapMenu(o){tapO=o;openUI('<div class="uh"><span>🧑 '+escH(o.n||'?')+'</span><button class="b x" onclick="closeUI()">X</button></div>'+
- '<div class="g1"><button class="b r" onclick="pkCard()"><span>🪪 Card</span><i>xem thông tin</i></button><button class="b r" disabled style="opacity:.55"><span>🎭 Hành động</span><i>sắp có</i></button><button class="b r" disabled style="opacity:.55"><span>🎮 Chơi chung</span><i>sắp có</i></button>'+
+ '<div class="g1"><button class="b r" onclick="pkCard()"><span>🪪 Card</span><i>xem thông tin</i></button><button class="b r" onclick="pkActs()"><span>🎭 Hành động</span><i>bắn tim...</i></button><button class="b r" disabled style="opacity:.55"><span>🎮 Chơi chung</span><i>sắp có</i></button>'+
  '<button class="b r" onclick="liXiUI()"><span>🧧 Lì xì</span><i>tặng Xu</i></button>'+bfBtn(o)+'</div>')}
 window.pkCard=()=>{if(tapO&&CV.others.has(tapO.id)&&window.idView)idView(tapO);else{closeUI();toast('Người này đã rời đi')}};
 window.pkBack=o=>{const x=o&&CV.others.has(o.id)?o:tapO;if(x&&CV.others.has(x.id))tapMenu(x);else closeUI()};
+// ---------- Hành động đôi: Bắn tim (tim bay từ người bắn sang người nhận rồi tan biến) ----------
+const HRT=[];let hrtCd=0;
+const hrtPos=id=>{if(id==ME.id){const p=cvHeadPos();return{x:p.x,y:p.y+34}}const o=CV.others.get(id);return o&&o.hx!=null?{x:o.hx,y:o.hy+34}:null};
+function hrtAdd(f,t){if(HRT.length>16)HRT.shift();HRT.push({f,t,t0:performance.now()})}
+function hrtDraw(now){for(let i=HRT.length-1;i>=0;i--){const h=HRT[i],a=(now-h.t0)/1000,A=hrtPos(h.f),B=hrtPos(h.t);if(a>2.8||!A||!B){HRT.splice(i,1);continue}heartFly(A.x,A.y,B.x,B.y,a)}}
+window.pkActs=()=>{const o=tapO;if(!o||!CV.others.has(o.id))return closeUI();const L=ACTS.filter(a=>a.k=='duo');
+ openUI('<div class=\"uh\"><span>🎭 Hành động với '+escH(o.n||'?')+'</span><button class=\"b x\" onclick=\"closeUI()\">X</button></div><div class=\"mut\">Chọn hành động dành cho <b>'+escH(o.n||'?')+'</b></div><div class=\"sg\" style=\"grid-template-columns:repeat(2,1fr)\">'
+ +L.map(a=>'<button class=\"sq aq\" onclick=\"pkDuo(\''+a.id+'\')\">'+actCv(a.id,96,88,'',1)+'<b>'+a.n+'</b><small>Bấm để dùng</small></button>').join('')+'</div><div class=\"pf\"><button class=\"b\" onclick=\"pkBack()\">⬅ Quay lại</button></div>');actAnimGo()};
+window.pkDuo=id=>{const o=tapO;if(!o||!CV.others.has(o.id))return closeUI();
+ if(id=='heart'){const n=performance.now();if(n<hrtCd)return toast('💖 Chờ chút rồi bắn tim tiếp nhé!');hrtCd=n+2500;closeUI();hrtAdd(ME.id,o.id);bcast('heart',{f:ME.id,t:o.id});toast('💖 Bạn đã bắn tim cho '+(o.n||'bạn ấy')+'!')}};
 window.liXiUI=()=>{const o=tapO;if(!o||!CV.others.has(o.id))return closeUI();if(!o.u)return toast('Người này chưa thể nhận lì xì');
  openUI('<div class="uh"><span>🧧 Lì xì cho '+escH(o.n||'?')+'</span><button class="b x" onclick="closeUI()">X</button></div><div class="mut">Bạn đang có 🪙 <b>'+fmtXu(ST.xu)+'</b> Xu. Xu tặng sẽ bị trừ của bạn và cộng cho '+escH(o.n||'?')+'.</div>'+
  '<div style="display:flex;gap:4px;margin:8px 0"><input id="lxn" type="number" inputmode="numeric" min="1" max="1000000" placeholder="Số Xu muốn tặng" style="flex:1;min-width:0;font:inherit;padding:6px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" id="lxb" onclick="liXiGo()">🧧 Tặng</button></div>'+
@@ -172,7 +182,8 @@ function connect(room,keep){return new Promise((ok,no)=>{
  mine.on('broadcast',{event:'mv'},({payload:p})=>{const o=CV.others.get(p.i);if(!o){askRetrack(p.i);return}o.seen=performance.now();o.tx=p.x;o.ty=p.y;o.d=p.d;if(Math.hypot(o.tx-o.x,o.ty-o.y)>160){o.x=o.tx;o.y=o.ty}});
  mine.on('broadcast',{event:'chat'},({payload:p})=>{if(!PK.in||!CV.others.has(p.i))return;const t=String(p.t||'').slice(0,60);addLine(String(p.n||'?').slice(0,16),t);bub[p.i]={t,until:performance.now()+5000}});
  mine.on('broadcast',{event:'g'},({payload:p})=>{const o=p&&CV.others.get(p.f);if(o)o.seen=performance.now();gRecv(p)});
- mine.on('broadcast',{event:'rt'},({payload:p})=>{if(p&&p.to==ME.id)track()});
+ mine.on('broadcast',{event:'heart'},({payload:p})=>{if(!p||!PK.in||!CV.others.has(p.f))return;const o=CV.others.get(p.f),n=performance.now();if(o.hrt&&n-o.hrt<1500)return;o.hrt=n;if(p.t!=ME.id&&!CV.others.has(p.t))return;hrtAdd(p.f,p.t);if(p.t==ME.id)toast('💖 '+(o.n||'Ai đó')+' bắn tim cho bạn!')});
+  mine.on('broadcast',{event:'rt'},({payload:p})=>{if(p&&p.to==ME.id)track()});
  mine.on('broadcast',{event:'bfinv'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(bfPoll,600)});
  mine.on('broadcast',{event:'bfok'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(bfPoll,600)});
  mine.on('broadcast',{event:'gift'},({payload:p})=>{if(p&&p.to&&p.to==myUid())setTimeout(claimGifts,600)});
