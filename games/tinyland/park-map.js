@@ -307,7 +307,7 @@ const drawSwan=(s,tm)=>{const u=tm*s.w+s.ph,x=Math.round(s.cx+s.a*Math.cos(u)),y
 const R0=r; // hàm vẽ chữ nhật của canvas chính
 
 // quảng cáo LED
-const BOARD={x:968,y:132,w:244,h:76};
+const BOARD={x:968,y:132,w:244,h:76},BOARD2={x:1068,y:586,w:244,h:76};
 const ADS=[
  {bg:'#0d4a2a',t1:'CÔNG VIÊN',t2:'XIN CHÀO!',ic:'sun'},
  {bg:'#0a2f5a',t1:'TRÀ ĐÁ MÁT LẠNH',t2:'CHỈ 3K / LY',ic:'cup'},
@@ -315,7 +315,7 @@ const ADS=[
  {bg:'#3a2a08',t1:'NGỰA NHÚN',t2:'LEO LÊN LÀ MÊ!',ic:'horse'},
  {bg:'#073a4a',t1:'HỒ THIÊN NGA',t2:'CHÈO THUYỀN THIÊN NGA',ic:'swan'}];
 const TICK='★ GIỮ GÌN CÔNG VIÊN XANH – SẠCH – ĐẸP ★ ĐỪNG QUÊN CHƠI LẬT HÌNH VỚI BẠN BÈ ★ TRÀ ĐÁ VỈA HÈ MỜI BẠN GHÉ ★ ';
-function drawAd(a,ox,tm){const{x,y,w,h}=BOARD,ix=x+8,iy=y+8,iw=w-16,ih=h-26;
+function drawAd(a,ox,tm,B){const{x,y,w,h}=B||BOARD,ix=x+8,iy=y+8,iw=w-16,ih=h-26;
  cx.fillStyle=a.bg;cx.fillRect(ix+ox,iy,iw,ih);
  cx.fillStyle='rgba(255,255,255,.06)';for(let k=0;k<ih;k+=4)cx.fillRect(ix+ox,iy+k,iw,1);
  const mx=ix+ox+32,my=iy+ih/2,b=Math.sin(tm*5);
@@ -326,7 +326,7 @@ function drawAd(a,ox,tm){const{x,y,w,h}=BOARD,ix=x+8,iy=y+8,iw=w-16,ih=h-26;
  else{const sx=Math.sin(tm*2)*5;cx.fillStyle='#fff';cx.fillRect(mx-9+sx,my,18,8);cx.fillRect(mx+5+sx,my-10,4,12);cx.fillRect(mx+5+sx,my-12,7,4);cx.fillStyle='#f4a030';cx.fillRect(mx+12+sx,my-10,3,2);cx.fillStyle='rgba(255,255,255,.4)';cx.fillRect(mx-14+sx,my+10,28,1)}
  cx.textAlign='left';cx.font='800 15px Nunito,sans-serif';cx.fillStyle='#fff7c0';cx.fillText(a.t1,ix+ox+62,iy+22);
  cx.font='800 9px Nunito,sans-serif';cx.fillStyle='#9affc8';cx.fillText(a.t2,ix+ox+62,iy+40)}
-function drawBoard(tm){const{x,y,w,h}=BOARD;
+function drawBoard(tm,B){B=B||BOARD;const{x,y,w,h}=B;
  // chân cột
  cx.fillStyle='#454b54';cx.fillRect(x+30,y+h-2,6,18);cx.fillRect(x+w-36,y+h-2,6,18);
  cx.fillStyle='#2c3036';cx.fillRect(x-2,y-2,w+4,h+4);cx.fillStyle='#454b54';cx.fillRect(x,y,w,h);
@@ -334,7 +334,7 @@ function drawBoard(tm){const{x,y,w,h}=BOARD;
  cx.fillStyle='#0b0b0b';cx.fillRect(x+6,y+6,w-12,h-22);
  cx.save();cx.beginPath();cx.rect(x+7,y+7,w-14,h-24);cx.clip();
  const T=4.2,k=Math.floor(tm/T)%ADS.length,p=(tm%T)/T,sl=p>.88?(p-.88)/.12:0,e=sl*sl*(3-2*sl);
- drawAd(ADS[k],-Math.round(e*(w-16)),tm);if(sl>0)drawAd(ADS[(k+1)%ADS.length],Math.round((1-e)*(w-16)),tm);
+ drawAd(ADS[k],-Math.round(e*(w-16)),tm,B);if(sl>0)drawAd(ADS[(k+1)%ADS.length],Math.round((1-e)*(w-16)),tm,B);
  cx.restore();
  // chữ chạy
  cx.fillStyle='#16161a';cx.fillRect(x+6,y+h-16,w-12,11);cx.save();cx.beginPath();cx.rect(x+6,y+h-16,w-12,11);cx.clip();
@@ -423,7 +423,7 @@ function build(){
  const BEN=mkBench();
  const bench=(x,by)=>{put(BEN,x,by);blk(x-24,by-10,x+24,by);for(const dx of[-11,11]){const i=seats.length;
    seats.push({x:x+dx,y:by-7,by,sy:by+16,kind:'bench'});hits.push([x+dx-10,by-22,20,22,'🪑 Ghế đá — bấm E để ngồi','cv:seat:'+i,[x+dx,by+18]])}};
- for(const[x,y]of[[190,272],[340,272],[490,272],[800,360],[800,500],[230,612],[550,612],[1010,652],[1300,652]])bench(x,y);
+ for(const[x,y]of[[190,272],[340,272],[490,272],[800,360],[800,500],[230,612],[550,612],[1010,652]])bench(x,y);
  // ----- bàn picnic có đồ ăn -----
  const PIC=mkPicnic();
  const picnic=(x,by)=>{put(PIC,x,by);blk(x-30,by-12,x+30,by);for(const dx of[-44,44]){const i=seats.length;
@@ -554,7 +554,7 @@ function build(){
    const cl=[[68,36,38,22],[36,50,28,18],[100,50,28,18],[18,62,18,12],[118,62,18,12],[68,16,26,14],[50,28,22,14],[88,28,22,14],[68,58,30,10]];
    for(const[x,y,a,b]of cl)E(r,'#e8789a',x,y+3,a,b);for(const[x,y,a,b]of cl)E(r,'#ff9fb8',x,y,a,b);for(const[x,y,a,b]of cl)E(r,'#ffb7c8',x-3,y-3,a-6,b-5);
    for(let i=0;i<620;i++){const x=Math.round(hs2(i)*136),y=Math.round(hs2(i+700)*80);if(cl.some(([a,b,p,q])=>((x-a)/p)**2+((y-b)/q)**2<.9)){const c=hs2(i+33);r(c<.3?'#fff0f5':c<.6?'#ffd1dc':c<.85?'#ff8fb0':'#ffffff',x,y,2,2)}}});
-  for(const[x,y]of[[860,330],[846,556],[950,612],[1300,612],[1384,604]]){put(CHERRY,x,y,[x-8,y-12,x+8,y]);hits.push([x-40,y-100,80,100,'🌸 Cây hoa anh đào']);
+  for(const[x,y]of[[860,330],[846,556],[950,612],[1384,604]]){put(CHERRY,x,y,[x-8,y-12,x+8,y]);hits.push([x-40,y-100,80,100,'🌸 Cây hoa anh đào']);
    const ph=[...Array(7)].map((_,i)=>({x:x-50+hs2(i+x)*100,p:hs2(i+y)*6.28,sp:5+hs2(i+3)*5,o:hs2(i+9)}));
    dyn(y+30,()=>{const t=performance.now()/1000;if(x<camX-90||x>camX+vw+90||y<camY||y-110>camY+vh)return;for(const f of ph){const q=(t*f.sp*.06+f.o)%1;cx.fillStyle=['#ffc2d4','#ff9fb8','#ffe0ea'][(f.o*3)|0];cx.fillRect(Math.round(f.x+Math.sin(t+f.p)*6),Math.round(y-70+q*72),2,2)}})}}
  // ----- BẢNG CHỈ ĐƯỜNG: Tiên Nữ / Vui chơi / Tí Nị / Trò chơi / Đạp vịt (mỗi bảng 1 tầng, không chồng nhau) -----
@@ -571,7 +571,7 @@ function build(){
    Rr(27,'#f0a030','#a8681a','VUI CHƠI');L(45,'#e8587a','#a22a4a','TÍ NỊ');Rr(63,'#2fb0a4','#1a6e66','TRÒ CHƠI');L(81,'#4a92e0','#2a5a9a','ĐẠP VỊT')});
   put(SIGNP,878,906,[870,896,886,906]);hits.push([814,800,128,104,'🪧 Bảng chỉ đường: ↑ Tiên Nữ • → Vui chơi • ← Tí Nị • → Trò chơi • ← Đạp vịt']);}
  // ----- đèn đường, thùng rác, biển hồ -----
- for(const[x,y]of[[676,900],[764,900],[676,810],[764,810],[684,300],[756,300],[684,520],[756,520],[1130,700],[1376,700],[560,700],[300,700],[100,700],[960,240],[430,240],[1280,240]])put(LAMP,x,y);
+ for(const[x,y]of[[676,900],[764,900],[676,810],[764,810],[684,300],[756,300],[684,520],[756,520],[1376,700],[560,700],[300,700],[100,700],[960,240],[430,240],[1280,240]])put(LAMP,x,y);
  for(const[x,y]of[[640,700],[800,650],[1000,708],[432,266]])put(BIN,x,y);
  put(mkSign('HỒ THIÊN NGA',104,'🦢 chèo thuyền thiên nga',null),415,282);
  put(mkSign('THUYỀN THIÊN NGA',116,'bấm vào thuyền để chèo',null),466,614);
@@ -587,6 +587,10 @@ function build(){
  // biển quảng cáo
  dyn(214,()=>{if(BOARD.x<camX+vw+10&&BOARD.x+BOARD.w>camX-10)drawBoard(performance.now()/1000)});
  hits.push([BOARD.x,BOARD.y,BOARD.w,BOARD.h+18,'📺 Biển quảng cáo điện tử']);
+ // biển LED thứ 2 (khu cỏ phía nam sân chơi): chỉ 2 chân cột chắn, gầm biển đi qua được
+ dyn(BOARD2.y+BOARD2.h+16,()=>{if(BOARD2.x<camX+vw+10&&BOARD2.x+BOARD2.w>camX-10)drawBoard(performance.now()/1000+2.1,BOARD2)});
+ blk(BOARD2.x+28,BOARD2.y+BOARD2.h-2,BOARD2.x+38,BOARD2.y+BOARD2.h+16);blk(BOARD2.x+BOARD2.w-38,BOARD2.y+BOARD2.h-2,BOARD2.x+BOARD2.w-28,BOARD2.y+BOARD2.h+16);
+ hits.push([BOARD2.x,BOARD2.y,BOARD2.w,BOARD2.h+18,'📺 Biển quảng cáo điện tử']);
  // ----- chim sẻ + chim hót -----
  CV.sparrows=[];for(const[x,y]of[[720,300],[560,640],[1000,690],[250,640],[720,760],[1160,270]])CV.sparrows.push({x,y,dir:1,st:'hop',t:rn()*2,ph:rn()*6,ft:0,dur:1,tx:x,ty:y,ax:x,ay:y,fx:x,fy:y});
  CV.songs=[[802,206,'#4aa8e8','#ffd93b'],[862,356,'#e8574a','#ffd93b'],[72,262,'#ffd93b','#8a5a30'],[1388,246,'#4aa8e8','#fff'],[598,640,'#e8574a','#ffd93b'],[440,640,'#6bd46b','#ffd93b'],[1118,570,'#ffd93b','#e8574a']]
@@ -770,7 +774,7 @@ function boatTick(){ // gọi mỗi khung hình khi đang ở trên thuyền
  if(!goal){if(Pl.mv){CV.dock=null}else landBoat()}}                                   // tự lái tay → hủy vào bờ; kẹt → lên bờ luôn
 
 window.cvAct=(a,h)=>{const[t,v]=a.split(':');
- if(t=='tn')return tnNpcUI();if(t=='ti')return toast(['🧸 Tí Nị: "Tiệm Mô Hình sắp khai trương, ghé lại sau nha!"','🧸 Tí Nị: "Sự kiện Tí Nị đang chuẩn bị, sắp ra mắt đó~"','🧸 Tí Nị: "Mô hình xịn lắm, chờ mình thêm chút nữa nhé!"'][Math.floor(Math.random()*3)]);if(t=='boat')return boardBoat();if(t=='seat')return trySeat(+v);if(t=='horse')return tryHorse(+v);
+ if(t=='tn')return tnNpcUI();if(t=='ti')return tiNpcUI();if(t=='boat')return boardBoat();if(t=='seat')return trySeat(+v);if(t=='horse')return tryHorse(+v);
  if(t=='npc')return toast(['🧋 Cô Ba: "Trà đá 3 nghìn nè con!"','🧋 Cô Ba: "Nước mía mới ép, mát lắm nghen!"','🧋 Cô Ba: "Ngồi ghế nhựa đi con, nghỉ chân chút!"'][Math.floor(Math.random()*3)])};
 
 // ---------- người chơi khác ----------

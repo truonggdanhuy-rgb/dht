@@ -2321,7 +2321,7 @@ function gAct(t,i){const g=GD[t],p=ST[g.arr][i];
   return openUI(h+gFoot(t))}
  const c=g.list[p.c],left=p.t+c[2]*MIN-now();
  if(left>0)return openUI(head(g.ic+' '+g.name+' '+(i+1))+'<div class="mut">'+ic(c[1],c[0])+' <b>'+c[0]+'</b> — còn '+fmt(left)+' nữa chín.<br>Chín xong bấm vào để thu 2.</div>'+gFoot(t));
- add('ns',g.key+p.c,2);ST[g.arr][i]=null;qAdd('harv',1);save();toast('🧺 +2 '+c[1]+' '+c[0]+' → Kho nông sản')}
+ add('ns',g.key+p.c,2);ST[g.arr][i]=null;if(g.arr=='pots')tiProg(p.c);qAdd('harv',1);save();toast('🧺 +2 '+c[1]+' '+c[0]+' → Kho nông sản')}
 function gPlant(t,i,k){const g=GD[t],c=g.list[k];if(ST.xu<c[3])return toast('Không đủ Xu mua hạt giống!');ST.xu-=c[3];ST[g.arr][i]={c:k,t:now()};g.last=k;xuUp();save();closeUI();toast('🌱 Đã trồng '+c[1]+' '+c[0]+' — chín sau '+c[2]+' phút')}
 function gSow(t,k){const g=GD[t],c=g.list[k],A=ST[g.arr];let n=0;for(let i=0;i<A.length;i++)if(!A[i]&&fmHasT(t,i)&&ST.xu>=c[3]){ST.xu-=c[3];A[i]={c:k,t:now()};n++}
  if(!n)return toast('Không còn chỗ trống hoặc không đủ Xu!');g.last=k;xuUp();save();closeUI();toast('🌱 Đã trồng '+n+' '+g.name.toLowerCase()+' '+c[1]+' '+c[0]+' (−'+n*c[3]+' Xu)')}
@@ -2329,7 +2329,7 @@ function sowUI(t){t=t||'plot';const g=GD[t],e=ST[g.arr].filter((p,i)=>!p&&fmHasT
  openUI(head(g.ic+' Gieo hết — '+e+' '+g.name.toLowerCase()+' trống')+seedGrid(g.list,k=>"gSow('"+t+"',"+k+")")+gFoot(t))}
 function harvestAll(){if(UI)closeUI();const tl={},T=(k,n)=>{tl[k]=(tl[k]||0)+n},t=now();
  ST.plots.forEach((p,i)=>{if(!p)return;const c=CROPS[p.c];if(t>=p.t+c[2]*MIN){add('ns','c'+p.c,2);ST.plots[i]=null;qAdd('harv',1);T(c[1]+' '+c[0],2)}});
- ST.pots.forEach((p,i)=>{if(!p)return;const c=POTS[p.c];if(t>=p.t+c[2]*MIN){add('ns','p'+p.c,2);ST.pots[i]=null;qAdd('harv',1);T(c[1]+' '+c[0],2)}});
+ ST.pots.forEach((p,i)=>{if(!p)return;const c=POTS[p.c];if(t>=p.t+c[2]*MIN){add('ns','p'+p.c,2);ST.pots[i]=null;tiProg(p.c);qAdd('harv',1);T(c[1]+' '+c[0],2)}});
  Object.keys(FRUITS).forEach(k=>{const q=treeTake(k);if(q)qAdd('harv',1);if(q)T(FRUITS[k][1]+' '+FRUITS[k][0],q)});
  PENS.forEach((P,i)=>{const s=ST.pen[i];if(s&&t>=s.t){add('vp',P.id,1);ST.pen[i]=null;T(P.e+' '+P.p,1)}});
  for(let i=0;i<BEEN;i++){const q=beeTake(i);if(q)T('🍯 Mật ong',q)}
@@ -3143,9 +3143,31 @@ function evTnUI(){tnEnsure();
  openUI(head('🧚 Sự kiện Tiên Nữ')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧚</span><b>Sự kiện Tiên Nữ</b>Tiên Nữ đứng ở Công viên, bạn ra đó đổi quà nha.</div>'
   +'<button class="b w" style="font-size:14px;padding:10px" onclick="tnQuestUI()">📜 Nhiệm vụ Tiên Nữ</button>'
   +'<div class="pf"><button class="b" onclick="evUI()">⬅ Quay lại</button></div>')}
-function evTiUI(){
- openUI(head('🧸 Sự kiện Tí Nị')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧸</span><b>Sự kiện Tí Nị</b>Tiệm Mô Hình ở Công viên đang chuẩn bị khai trương.<br><small>⏳ Coming soon — sắp ra mắt!</small></div>'
-  +'<div class="pf"><button class="b" onclick="evUI()">⬅ Quay lại</button></div>')}
+/* ===================== SỰ KIỆN TÍ NỊ (NPC ở Công viên, Tiệm Mô Hình) =====================
+   • Mỗi ngày (từ 0h, giờ máy) có 5 nhiệm vụ: thu hoạch n cây TRỒNG TỪ CHẬU (8 loại trong POTS). Cây lâu (>=40 phút) 2-3 cây, cây ngắn 3-6 cây.
+   • Xong 1 nhiệm vụ → 1 🎟️ Vé Tí Nị (vé giữ lại khi reset). Dùng vé đổi quà ở NPC Tí Nị: COMING SOON.
+   • DỮ LIỆU: ST.ti = {d:mốc 0h hôm nay, q:[{k:số thứ tự trong POTS,need,p,done}], tk:số vé}
+   • Chỉ tính khi thu hoạch từ CHẬU (gọi tiProg trong 2 chỗ thu hoạch chậu), không tính ô đất. =================== */
+const TI_R1=[3,6],TI_R2=[2,3],TI_LONG=40;
+function tiDay(){const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()}
+function tiGen(day){const di=Math.round(day/864e5),R=tnRng(di*7919+31),pool=POTS.map((c,k)=>k);
+ for(let i=pool.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+ return pool.slice(0,5).map(k=>{const r=POTS[k][2]>=TI_LONG?TI_R2:TI_R1;return{k,need:r[0]+Math.floor(R()*(r[1]-r[0]+1)),p:0,done:0}})}
+function tiEnsure(){const d=tiDay();if(!ST.ti||typeof ST.ti!='object')ST.ti={};const T=ST.ti;T.tk=T.tk|0;if(T.d!==d||!Array.isArray(T.q)){T.d=d;T.q=tiGen(d)}return T}
+function tiProg(k){const T=tiEnsure();let g=0;
+ for(const q of T.q){if(q.done||q.k!=k)continue;q.p=Math.min(q.need,q.p+1);if(q.p>=q.need){q.done=1;T.tk++;g++}}
+ if(g)setTimeout(()=>toast('🧸 Hoàn thành nhiệm vụ Tí Nị!\n+'+g+' 🎟️ Vé Tí Nị ('+T.tk+')'),1500)}
+function tiLeft(){const ms=tiDay()+864e5-Date.now(),h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);return h+' giờ '+m+' phút'}
+function evTiUI(){const T=tiEnsure(),nd=T.q.filter(q=>q.done).length,names=POTS.map(c=>c[1]+' '+c[0]).join(', ');
+ let h=head('🧸 Sự kiện Tí Nị')+'<div class="mut" style="text-align:center">⏳ Làm mới sau <b>'+tiLeft()+'</b> • Xong 1 nhiệm vụ nhận 1 🎟️<br>🔄 Reset nhiệm vụ mỗi 12h đêm (chỉ tồn tại 24 giờ)<br>🎟️ Vé Tí Nị: <b>'+T.tk+'</b> • Hoàn thành hôm nay: <b>'+nd+'/'+T.q.length+'</b></div>'
+  +'<div class="tnq"><b>Lưu ý:</b> các cây trồng '+names+' phải thu hoạch <b style="display:inline">từ chậu ở nông trại</b>, không phải từ ô đất.</div>';
+ T.q.forEach(q=>{const c=POTS[q.k],pc=Math.round(q.p/q.need*100);
+  h+='<div class="tnq'+(q.done?' ok':'')+'"><b>🌱 Thu hoạch <b style="display:inline">'+q.need+'</b> '+c[1]+' <b style="display:inline">'+c[0]+'</b> (từ chậu)'+(q.done?' ✅':'')+'</b><div class="tnb"><i style="width:'+pc+'%"></i></div><small>'+q.p+'/'+q.need+(q.done?' • Đã nhận 🎟️ +1':' • Thưởng: 🎟️ +1')+'</small></div>'});
+ openUI(h+'<div class="mut" style="text-align:center">🎁 Vé Tí Nị dùng để đổi quà ở NPC Tí Nị (coming soon)</div><div class="pf"><button class="b" onclick="evUI()">⬅ Quay lại</button></div>')}
+function tiNpcUI(){const T=tiEnsure();
+ openUI(head('🧸 Tí Nị')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧸</span><b>"Chào bạn~ mình là Tí Nị, chủ Tiệm Mô Hình!"</b>Làm nhiệm vụ trồng chậu mỗi ngày để lấy Vé Tí Nị nha.<br><small>🎟️ '+T.tk+' Vé Tí Nị</small></div>'
+  +'<button class="b w" style="font-size:14px;padding:9px" onclick="evTiUI()">🌱 Nhiệm vụ Tí Nị</button>'
+  +'<button class="b w" style="font-size:14px;padding:9px;margin-top:6px" onclick="toast(\'🎁 Đổi quà bằng Vé Tí Nị: coming soon!\')">🎁 Đổi quà — Coming soon</button>')}
 function tnQuestUI(){const T=tnEnsure(),nd=T.q.filter(q=>q.done).length;
  let h=head('📜 Nhiệm vụ Tiên Nữ')+'<div class="mut" style="text-align:center">⏳ Làm mới sau <b>'+tnLeft()+'</b> • Xong 1 nhiệm vụ nhận 1 🧩<br>🔄 Reset nhiệm vụ mỗi 12h đêm Chủ Nhật<br>🧩 Mảnh ghép: <b>'+T.pc+'</b> • Hoàn thành tuần này: <b>'+nd+'/'+T.q.length+'</b></div>';
  T.q.forEach(q=>{const o=q.k=='cook'?PRODS.find(x=>x.n==q.n):null,tx=q.k=='cook'?'🍳 Nấu '+(o?ic(o.e,o.n)+' ':'')+'<b style="display:inline">'+q.n+'</b> '+q.need+' lần':'🎣 Nhiệm vụ câu <b style="display:inline">'+q.need+' quái vật</b> ở bãi biển',pc=Math.round(q.p/q.need*100);
