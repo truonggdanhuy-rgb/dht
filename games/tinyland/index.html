@@ -931,7 +931,7 @@ function drawAv(g,ox,oy,o){
  const SK='#f1c08a',SKS='#d99e6a',EY='#2b1d12',SH=S.sh,SHL=S.shl||shade(SH,.18),SHD=S.shd||shade(SH,-.28),PT=S.pt,PTL=shade(PT,.25),SD=S.shoe,RD='#c0392b',KN=S.knot||shade(S.scarf,-.3);
  const bob=o.mv&&!o.nobob&&(f==1||f==3)?-1:0,u=(c,a,b,w,h)=>r(c,a,b+bob,w,h);
  if(S.mascot)return drawMascot(r,u,o,S,{f,lg,side,Rt,back,sit,rd});
- if(!sit&&!rd)E(r,'rgba(0,0,0,.2)',10,30,8,2);
+ if(!sit&&!rd&&!o.nosh)E(r,'rgba(0,0,0,.2)',10,30,8,2);
  if(S.cape&&!rd&&!back){const cd=shade(S.cape,-.3);if(!side){u(S.cape,3,16,14,12);u(cd,3,16,2,12);u(cd,15,16,2,12);u(cd,3,27,14,1)}else{const fl=o.mv?Math.round(Math.sin(performance.now()/110)*1):0,cx0=Rt?2-fl:12+fl;u(S.cape,cx0,16,6,12);u(cd,cx0,16,1,12);u(cd,cx0,27,6,1);u(shade(S.cape,.2),cx0+2,17,1,9)}}
  const leg=(x,lift)=>{r(PT,x,24,3,3);r(PTL,x,24,1,3);r(S.boot?SD:SK,x,27,3,2-lift);r(SD,x,29-lift,3,1)};
  let sx=0;
@@ -4204,7 +4204,13 @@ const ACTS=[
  {id:'diamond',n:'Phát kim cương',e:'💎',pr:10,k:'solo',ds:'Kim cương xoay quanh người rồi bay tỏa ra khắp nơi'},
  {id:'chieng',n:'Gõ chiêng',e:'🔔',pr:5,k:'solo',ds:'Gõ hai chiêng vàng vào nhau, tiếng vang nhẹ ngân xa'},
  {id:'hoanho',n:'Hoan hô',e:'🎉',pr:5,k:'solo',ds:'Nhảy cẫng lên reo mừng, có biển Hoan hô lấp lánh'},
- {id:'heart',n:'Bắn tim',e:'💖',pr:0,k:'duo',free:1,ds:'Tim bay từ bạn sang người bạn chọn rồi tan biến'}];
+ {id:'heart',n:'Bắn tim',e:'💖',pr:0,k:'duo',free:1,ds:'Tim bay từ bạn sang người bạn chọn rồi tan biến'},
+ /* --- mới (luôn thêm vào CUỐI danh sách, vì số thứ tự được đồng bộ online) --- */
+ {id:'balloon',n:'Bóng bay',e:'🎈',pr:10,k:'solo',ds:'Cầm cả chùm bóng bay to, bóng kéo bạn bay lên, dưới chân phun khói như phản lực'},
+ {id:'khangau',n:'Khá ngầu',e:'😎',pr:5,k:'solo',ds:'Nhún nhảy đeo kính, hộp thoại pastel “Khá ngầu” lấp lánh'},
+ {id:'aihoi',n:'Ai hỏi?',e:'❓',pr:5,k:'solo',ds:'Nhún vai chất vấn “Ai hỏi?”, dấu ? bay vòng quanh người'},
+ {id:'che',n:'Chê',e:'👎',pr:5,k:'solo',ds:'Giơ tấm biển “Chê” lên rồi hạ xuống'},
+ {id:'live',n:'Livestream',e:'📱',pr:10,k:'solo',ds:'Giá kẹp điện thoại + đèn ring, vừa nhún nhảy hát vừa phát live, tim và like bay lên'}];
 var ACTTAB='solo';
 ST.acts=ST.acts||{};
 const actIdx=id=>ACTS.findIndex(a=>a.id==id);
@@ -4218,6 +4224,7 @@ const chK=u=>kf(u,[[0,0],[.25,0],[.6,1],[.78,.25],[.95,1],[1.5,.88],[2.2,0]]);
 const chAge=u=>{let a=9;for(const h of CH_HIT){let d=u-h;if(d<0)d+=CH_T;a=Math.min(a,d)}return a};
 const HH_T=1.3;                           // hoan hô: chu kỳ nhảy
 const actPose=(id,t)=>{ /* trả về {d,lift,aup,e} cho từng hành động. aup=[trái,phải] = độ cao giơ tay (nếu có) */
+ if(APOSE[id])return APOSE[id](t);
  if(id=='diamond'){const T=4.2,u=t%T;
   if(u<1.5){return{d:0,lift:Math.abs(Math.sin(u*Math.PI*2.4))*3.2}}
   if(u<2.7){const v=(u-1.5)/1.2;return{d:[0,3,1,2][Math.floor(v*18)%4],lift:Math.sin(Math.PI*Math.min(1,v*1.15))*8}}
@@ -4277,6 +4284,125 @@ const ACTFX={diamond:{
   const CC=['#ffd23f','#ff7aa8','#6fd3ff','#9be070','#ffb36b'];
   for(let i=0;i<6;i++){const v=((t*.5+i/6)%1),x=X+Math.sin(i*2.1+t*.7)*19,y=Y-54+v*50;if(v<.92){r(CC[i%5],Math.round(x),Math.round(y),(Math.floor(t*7+i)%2)?2:1,(Math.floor(t*7+i)%2)?1:2)}}
   banner(X,Y-57+Math.round(Math.sin(t*5)*1),t)}}};
+/* ===================== HÀNH ĐỘNG MỚI: Bóng bay · Khá ngầu · Ai hỏi? · Chê · Livestream =====================
+   Mỗi hành động = APOSE.<id> (tư thế) + ACTFX.<id> = {back,front} (hiệu ứng vẽ sau/trước nhân vật), giống các hành động cũ. */
+var APOSE={};
+const SKN='#f1c08a',SKND='#d99e6a',FNT='800 9px Nunito,"Segoe UI",Arial,sans-serif';
+/* ---- hộp thoại pastel + hiệu ứng bling nhẹ (quét sáng + sao lấp lánh) ---- */
+const PB1={ol:'#b79bff',f1:'#f3ecff',f2:'#ffffff',f3:'#ddd0ff',tx:'#7650d0',sp:'rgba(255,214,240,.95)'};
+const PB2={ol:'#72c8e6',f1:'#e6f8ff',f2:'#ffffff',f3:'#c3ecf8',tx:'#2a86ad',sp:'rgba(205,255,240,.95)'};
+const pbub=(X,by,t,text,P)=>{const g=AG();X=Math.round(X);by=Math.round(by);
+ g.save();g.font=FNT;const tw=Math.ceil(g.measureText(text).width);g.restore();
+ const w=Math.max(30,tw+14),h=13,bx=X-(w>>1);
+ r(P.ol,bx+1,by,w-2,1);r(P.ol,bx+1,by+h-1,w-2,1);r(P.ol,bx,by+1,1,h-2);r(P.ol,bx+w-1,by+1,1,h-2);   // viền bo góc
+ r(P.f1,bx+1,by+1,w-2,h-2);r(P.f2,bx+1,by+1,w-2,1);r(P.f3,bx+1,by+h-2,w-2,1);
+ r(P.f1,X-2,by+h-1,5,1);r(P.ol,X-2,by+h,1,1);r(P.f1,X-1,by+h,3,1);r(P.ol,X+2,by+h,1,1);              // đuôi hộp thoại
+ r(P.ol,X-1,by+h+1,1,1);r(P.f1,X,by+h+1,1,1);r(P.ol,X+1,by+h+1,1,1);r(P.ol,X,by+h+2,1,1);
+ const sw=((t*.7)%1.9)/1.9*(w+h+8)-h;                                                                 // vệt sáng quét chéo
+ for(let j=1;j<h-1;j++){const x=Math.round(sw-j);for(let k=0;k<2;k++){const xx=x+k;if(xx>=1&&xx<=w-2)r('rgba(255,255,255,.8)',bx+xx,by+j,1,1)}}
+ g.save();g.font=FNT;g.textAlign='center';g.textBaseline='middle';g.lineJoin='round';
+ g.lineWidth=2.4;g.strokeStyle='#ffffff';g.strokeText(text,X+.5,by+7.5);g.fillStyle=P.tx;g.fillText(text,X+.5,by+7.5);g.restore();
+ const SP=[[-(w>>1)-3,0],[(w>>1)+3,-3],[-(w>>1)+7,-5],[(w>>1)-7,h+2],[(w>>1)+1,h-1]];
+ SP.forEach((q,i)=>{const a=Math.sin(t*3.2+i*1.9);if(a>.3)star4(X+q[0],by+q[1],a>.8?2:1,P.sp)})};
+
+/* ================= 🎈 BÓNG BAY ================= */
+const BL_T=7;
+APOSE.balloon=t=>{const u=((t%BL_T)+BL_T)%BL_T,L=kf(u,[[0,0],[.9,0],[2.1,16],[5.6,16],[6.6,0],[7,0]]),
+ hold=kf(u,[[0,0],[2.1,0],[2.6,1],[5.1,1],[5.6,0],[7,0]]);                       // 0-.9 thổi bóng | .9-2.1 bay lên | giữ tư thế | 5.6-6.6 hạ xuống
+ return{d:0,lift:L+Math.sin(u*2.6)*1.4*hold,aup:[1,10],e:5,nosh:1,noacc:1}};
+ACTFX.balloon={
+ back:(X,Y,t,o,p)=>{const L=Math.round(p.lift),fy=Y-L,k=Math.min(1,Math.max(0,(L-2)/5));
+  E(r,'rgba(0,0,0,.2)',X,Y,Math.max(4,10-Math.round(L/3)),2);                      // bóng đổ dưới đất nhỏ dần khi bay cao
+  if(k>0){
+   E(r,'rgba(255,255,255,'+(.2*k).toFixed(2)+')',X,Y,7+Math.round(Math.sin(t*9)),2); // luồng hơi chạm đất
+   for(let i=0;i<16;i++){const v=((t*1.3+i/16)%1),y=fy+3+v*(L+3),x=X+Math.sin(i*2.3+t*4)*(1+v*3.5),rad=1+v*3.2,a=(1-v)*.95*k;
+    if(a>.06)E(r,(i%2?'rgba(205,210,230,':'rgba(240,242,252,')+a.toFixed(2)+')',x,y,rad,rad*.75)}
+   const fl=3+(Math.floor(t*24)%3);                                                // lửa phản lực dưới 2 bàn chân
+   for(const jx of[X-4,X+1])for(let i=0;i<fl;i++){const w=i<2?3:1,c=i<1?'#fff6b0':i<3?'#ffc43a':'#ff7a2a';r(c,jx+(3-w>>1),fy+i,w,1)}}},
+ front:(X,Y,t,o,p)=>{const u=((t%BL_T)+BL_T)%BL_T,L=Math.round(p.lift),Yt=Y+Math.round(p.lift*.5),hx=X+7,hy=Yt-L-22,
+  s=kf(u,[[0,.12],[.9,1],[6.6,1],[7,.12]]),KX=hx+Math.round(Math.sin(t*1.5)*(L>3?2:.5)),KY=hy-Math.round(9*s);
+  const ln=(x1,y1,x2,y2)=>{const n=Math.max(1,Math.abs(x2-x1),Math.abs(y2-y1));for(let i=0;i<=n;i++)r('rgba(255,255,255,.95)',Math.round(x1+(x2-x1)*i/n),Math.round(y1+(y2-y1)*i/n),1,1)};
+  // chùm 5 quả: [dx,dy,rx,ry, màu chính, tối, sáng] — vẽ 3 quả phía sau trước, 2 quả phía trước sau
+  const BB=[[-12,-17,8,10,'#7ec8ff','#4fa3e6','#b9e3ff'],[12,-17,8,10,'#ffd75e','#e8b030','#fff0a8'],[0,-25,9,11,'#ff6b86','#d94768','#ff9bad'],
+   [-6,-12,8,10,'#8fe3b0','#5cc58a','#c6f5da'],[7,-11,8,10,'#c3a6ff','#9a78e6','#e2d4ff']];
+  const P=BB.map((q,i)=>{const cx=KX+Math.round((q[0]+Math.sin(t*1.6+i*1.3)*1.6)*s),cy=KY+Math.round((q[1]+Math.sin(t*2.1+i*2)*1)*s);return[cx,cy,Math.max(1,Math.round(q[2]*s)),Math.max(1,Math.round(q[3]*s)),q]});
+  ln(KX,KY,hx,hy);                                                                  // dây chung xuống tay
+  P.forEach(([cx,cy,rx,ry])=>ln(cx,cy+ry+2,KX,KY));                                 // dây từng quả gom về nút
+  P.forEach(([cx,cy,rx,ry,q])=>{
+   E(r,q[5],cx,cy,rx,ry);E(r,q[4],cx-1,cy-1,Math.max(1,rx-1),Math.max(1,ry-1));E(r,q[6],cx-2,cy-3,Math.max(1,rx-5),Math.max(1,ry-7));
+   r('#ffffff',cx-Math.round(rx*.55),cy-Math.round(ry*.6),2,2);r('#ffffff',cx-Math.round(rx*.55),cy-Math.round(ry*.6)+3,1,1);
+   r(q[5],cx-1,cy+ry,3,1);r(q[5],cx,cy+ry+1,1,1)});                                // núm buộc
+  r('#ff6b86',KX-1,KY-1,3,3);r('#ffffff',KX,KY-1,1,1);                              // nơ nhỏ ở chỗ gom dây
+  if(s>.95)P.forEach(([cx,cy,rx,ry],i)=>{if(Math.sin(t*3.5+i*2.1)>.8)star4(cx+rx-1,cy-ry+3,1,'rgba(255,255,255,.95)')})}};
+
+/* ================= 😎 KHÁ NGẦU ================= */
+APOSE.khangau=t=>{const T=.62,u=((t%T)+T)%T/T,q=Math.floor(t*4.5)%2;
+ return{d:0,lift:Math.abs(Math.sin(Math.PI*u))*4.5,aup:[2+q*3,2+(1-q)*3],e:1}};     // nhún nhảy, hai tay lên xuống, đeo kính ngầu
+ACTFX.khangau={
+ back:(X,Y,t)=>{const pu=.5+.5*Math.sin(t*5);E(r,'rgba(200,170,255,'+(.14+.08*pu).toFixed(2)+')',X,Y,14,4);E(r,'rgba(255,255,255,.14)',X,Y,8,2)},
+ front:(X,Y,t)=>{pbub(X,Y-61+Math.round(Math.sin(t*5)),t,'Khá ngầu',PB1);
+  for(let i=0;i<4;i++){const v=((t*.6+i/4)%1),a=1-v;if(a>.15)star4(X+Math.sin(i*2.4+t)*17,Y-8-v*26,1,'rgba(255,214,240,'+a.toFixed(2)+')')}}};
+
+/* ================= ❓ AI HỎI? ================= */
+const QG=['01110','10001','00001','00110','00100','00000','00100'],QC=['#ff9ecb','#8fd0ff','#b7f0c2','#ffe08a','#c9a8ff','#ffb3a0'];
+const qmark=(x,y,c,sc)=>{x=Math.round(x);y=Math.round(y);
+ for(let j=0;j<7;j++)for(let i=0;i<5;i++)if(QG[j][i]=='1')r('rgba(90,70,130,.32)',x+i*sc+1,y+j*sc+1,sc,sc);
+ for(let j=0;j<7;j++)for(let i=0;i<5;i++)if(QG[j][i]=='1')r(c,x+i*sc,y+j*sc,sc,sc)};
+APOSE.aihoi=t=>{const w=Math.round(Math.sin(t*2.4));return{d:0,lift:0,aup:[4+w,4-w]}};   // hai tay giang ra nhún vai
+const qOrbit=(X,Y,t,front)=>{for(let i=0;i<6;i++){const a=t*1.5+i*Math.PI/3,s=Math.sin(a);if((s>=0)!=front)continue;
+  const sc=i==0?2:1,x=X+Math.cos(a)*21-2.5*sc,y=Y-26+s*8+Math.sin(t*3+i*1.7)*3-3.5*sc;qmark(x,y,QC[i%QC.length],sc)}};
+ACTFX.aihoi={
+ back:(X,Y,t)=>{E(r,'rgba(150,215,240,.16)',X,Y,14,4);qOrbit(X,Y,t,false)},
+ front:(X,Y,t)=>{qOrbit(X,Y,t,true);pbub(X,Y-61,t,'Ai hỏi?',PB2)}};
+
+/* ================= 👎 CHÊ (cầm biển) ================= */
+const CHE_T=3.4;
+APOSE.che=t=>{const u=((t%CHE_T)+CHE_T)%CHE_T,h=kf(u,[[0,0],[.5,0],[1.1,1],[2.5,1],[3.1,0],[3.4,0]]),a=Math.round(-6+19*h);
+ return{d:0,lift:0,aup:[a,a],noacc:1,che:h}};                                         // hạ thấp ngang bụng -> giơ cao qua đầu -> hạ xuống
+const CG={C:['111','100','100','100','111'],H:['101','101','111','101','101'],E:['111','100','111','100','111']};   // chữ pixel 3x5 (phóng 2x) cho "CHÊ" thật rõ
+ACTFX.che={
+ back:(X,Y)=>{E(r,'rgba(255,170,170,.14)',X,Y,13,4)},
+ front:(X,Y,t,o,p)=>{const h=p.che,a=Math.round(-6+19*h),hy=Y-13-a,by=hy-10,sh=h>.9?Math.round(Math.sin(t*14)):0,bx=X-16+sh;
+  r('#6b4426',bx,by,32,17);r('#fff6e2',bx+1,by+1,30,15);r('#fffdf4',bx+1,by+1,30,1);r('#ecdcb8',bx+1,by+15,30,1);
+  for(const[px,py]of[[1,1],[30,1],[1,15],[30,15]])r('#8a5a34',bx+px,by+py,1,1);
+  const x0=bx+5,y0=by+4,L='CHE'.split('');
+  const glyph=(ch,gx,c,dx)=>{const G=CG[ch];for(let j=0;j<5;j++)for(let i=0;i<3;i++)if(G[j][i]=='1')r(c,gx+dx+i*2,y0+dx+j*2,2,2)};
+  const acc=(gx,c,dx)=>{r(c,gx+dx+2,y0-2+dx,2,1);r(c,gx+dx,y0-1+dx,2,1);r(c,gx+dx+4,y0-1+dx,2,1)};   // dấu mũ của Ê
+  L.forEach((ch,i)=>glyph(ch,x0+i*8,'rgba(120,30,30,.3)',1));acc(x0+16,'rgba(120,30,30,.3)',1);
+  L.forEach((ch,i)=>glyph(ch,x0+i*8,'#d9302a',0));acc(x0+16,'#d9302a',0);
+  for(const hx of[bx+1,bx+28]){r(SKN,hx,by+11,3,3);r(SKND,hx,by+13,3,1)}}};          // hai bàn tay nắm mép biển
+
+/* ================= 📱 LIVESTREAM ================= */
+APOSE.live=t=>{const T=.7,u=(t%T)/T,w=Math.round(2*Math.sin(t*6));
+ return{d:0,lift:Math.abs(Math.sin(Math.PI*u))*3,aup:[3+w,3-w],e:5,noacc:1}};           // nhún nhảy, hát, tay vẫy
+const heartS=(x,y,c)=>{r(c,x,y,1,1);r(c,x+2,y,1,1);r(c,x,y+1,3,1);r(c,x+1,y+2,1,1)};
+const likeIc=(x,y)=>{x=Math.round(x);y=Math.round(y);E(r,'#4c8dff',x,y,3,3);r('#ffffff',x-2,y,1,3);r('#ffffff',x-1,y,2,3);r('#ffffff',x,y-2,1,2)};
+ACTFX.live={
+ back:(X,Y,t)=>{const SX=X+20,RY=Y-50,R=13,pu=.5+.5*Math.sin(t*2.2),LV=Math.floor(t*2)%2==0;
+  for(let y=RY+2;y<Y-4;y++){const k=(y-RY-2)/(Y-6-RY-2),cx=SX-6+(X+2-(SX-6))*k,hw=4+k*11;r('rgba(255,246,214,'+(.07+.05*pu).toFixed(2)+')',cx-hw,y,hw*2,1)} // đèn hất sáng xuống nhân vật
+  E(r,'rgba(255,238,200,'+(.14+.06*pu).toFixed(2)+')',X,Y,15,4);
+  const lg='#4d4d63',lh='#8a8aa6';                                                  // giá 3 chân
+  r(lg,SX-1,RY+R,2,Y-12-RY-R);r(lh,SX-1,RY+R,1,Y-12-RY-R);
+  for(let i=0;i<12;i++){const d=Math.round(i*.55);r(lg,SX-1-d,Y-12+i,2,1);r(lg,SX-1+d,Y-12+i,2,1)}
+  r('#3b3b4e',SX-1,Y-12,2,11);r('#2a2a3a',SX-8,Y,3,1);r('#2a2a3a',SX+6,Y,3,1);r('#2a2a3a',SX-1,Y-1,2,1);
+  r('#6a6a86',SX-2,Y-14,4,2);                                                      // khớp nối
+  E(r,'rgba(255,190,225,'+(.16+.1*pu).toFixed(2)+')',SX,RY,R+4,R+4);E(r,'rgba(255,232,245,.55)',SX,RY,R-3,R-3);
+  for(let dy=-R;dy<=R;dy++)for(let dx=-R;dx<=R;dx++){const d=Math.sqrt(dx*dx+dy*dy);if(d<=R&&d>R-2.4)r(dx+dy<-6?'#ffffff':'#ffd9ec',SX+dx,RY+dy,1,1)}   // vòng đèn ring
+  for(let i=0;i<8;i++){const a=t*1.2+i*Math.PI/4;r('#ffffff',SX+Math.cos(a)*(R-1.2),RY+Math.sin(a)*(R-1.2),1,1)}
+  const px=SX-5,py=RY-8;                                                            // điện thoại trong vòng đèn
+  r('#25253a',px,py,11,17);r('#3d3d58',px,py,11,1);r('#ffd6ec',px+1,py+1,9,8);r('#d3e6ff',px+1,py+9,9,7);
+  r(SKN,px+4,py+7,3,3);r('#9ad0ff',px+3,py+10,5,5);r('#2b1d12',px+4,py+7,3,1);
+  if(LV)r('#ff3b5c',px+2,py+2,2,2);
+  for(let i=0;i<3;i++){const v=((t*.8+i/3)%1),x=px+5+Math.round(Math.sin(t*3+i*2)*2),y=Math.round(py+14-v*12);if(y>=py+1)heartS(x,y,'#ff4d7a')}},   // tim bay ngay trên màn hình
+ front:(X,Y,t,o,p)=>{const g=AG(),gY=Y+Math.round(p.lift*.5),SX=X+20,RY=gY-50,R=13;
+  for(let i=0;i<9;i++){const v=((t*.5+i/9)%1),x=SX+Math.sin(i*2.1+t*2)*(4+v*7)+(i%2?1:-1)*v*4,y=RY-4-v*20,al=1-v*v;
+   if(i%3==2){g.save();g.globalAlpha=Math.max(0,al);likeIc(x,y);g.restore()}else heartPx(x,y,i%2?3:5,i%2?'#ff7aa8':'#ff4d7a',al)}   // tim + like bay lên
+  const bx=SX-9,by=RY-R-9,LV=Math.floor(t*2)%2==0;                                  // nhãn LIVE
+  r(LV?'#ff3b5c':'#e0284a',bx+1,by,16,7);r(LV?'#ff3b5c':'#e0284a',bx,by+1,18,5);
+  g.save();g.font='800 6px Nunito,"Segoe UI",Arial,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillStyle='#fff';g.fillText('LIVE',bx+9.5,by+3.8);g.restore();
+  for(let k=0;k<3;k++){const v=((t*.45+k/3)%1);g.save();g.globalAlpha=Math.max(0,1-v);note(X-17+Math.sin(t*2+k*2)*4,gY-28-v*22,k%2,['#ff9ecb','#9ad0ff','#ffe27a'][k]);g.restore()} // nốt nhạc: đang hát
+  for(let i=0;i<4;i++){const a=Math.sin(t*3.2+i*1.7);if(a>.3){const an=i*1.7+t*.4;star4(SX+Math.cos(an)*(R+4),RY+Math.sin(an)*(R+4),a>.8?2:1,'rgba(255,240,250,.95)')}}}};
+
 /* ---- âm thanh chiêng: kim loại ngân + vang (echo), nhỏ nhẹ ---- */
 function actAC(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;if(!window.__cvAC)window.__cvAC=new A();if(window.__cvAC.state=='suspended')window.__cvAC.resume();return window.__cvAC}catch(e){return null}}
 function sndChieng(){try{if(window.CV&&CV.snd===false)return;const ac=actAC();if(!ac)return;const t0=ac.currentTime,out=ac.createGain();out.gain.value=.55;out.connect(ac.destination);
@@ -4291,7 +4417,7 @@ function actSfx(id,t){if(id!='chieng'){ACTSFX.t=null;return}
  const p=ACTSFX.t==null?t-.001:ACTSFX.t;ACTSFX.t=t;
  for(const h of CH_HIT)if(Math.floor((t-h)/CH_T)>Math.floor((p-h)/CH_T)&&t-p<.5)sndChieng()}
 /* ---- vẽ 1 nhân vật đang làm hành động (dùng chung: người chơi, người khác, xem trước) ---- */
-function actDraw(g,X,Y,t,o,id){const p=actPose(id,t),F=ACTFX[id];o.d=p.d;o.mv=0;if(p.e!=null)o.e=p.e;o.aup=p.aup||null;
+function actDraw(g,X,Y,t,o,id){const p=actPose(id,t),F=ACTFX[id];o.d=p.d;o.mv=0;if(p.e!=null)o.e=p.e;o.aup=p.aup||null;o.nosh=p.nosh||0;if(p.noacc)o.acc=-1;
  if(F&&F.back)F.back(X,Y,t,o,p);drawAv(g,X-10,Y-30-Math.round(p.lift),o);if(F&&F.front)F.front(X,Y-Math.round(p.lift*.5),t,o,p)}
 /* ---- trái tim bay (Bắn tim) ---- */
 const HRTC=['#ff4d7a','#ff7aa8','#ff4d7a','#ff6fa0','#ff4d7a'],HRTS=[5,3,5,3,5];
@@ -4330,22 +4456,22 @@ function actStart(id){if(Pl.sit)return toast('Hãy đứng dậy trước khi l�
 function actStop(){if(!ACT)return;ACT=0;ACTSFX.t=null;try{if(window.PKO&&PKO.act)PKO.act()}catch(e){}}
 function actUI(){const own=ACTS.filter(a=>actHas(a)&&a.k==ACTTAB);
  let h=head('⚡ Hành động')+'<div class="tabs"><button class="b'+(ACTTAB=='solo'?' on':'')+'" onclick="ACTTAB=\'solo\';actUI()">🧍 Cá nhân</button><button class="b'+(ACTTAB=='duo'?' on':'')+'" onclick="ACTTAB=\'duo\';actUI()">🤝 Tương tác</button></div>';
- if(ACTTAB=='duo')h+='<div class="mut">🤝 Hành động tương tác dùng khi <b>chạm vào người chơi khác</b> → bấm <b>🎭 Hành động</b> → chọn hành động. (Dùng được ở 🌳 Công viên và 🏘️ Phố xá)</div><div class="sg" style="grid-template-columns:repeat(2,1fr)">'+own.map(a=>'<div class="sq aq" style="cursor:default">'+actCv(a.id,96,88,'',1)+'<b>'+a.n+'</b><small>'+a.ds+'</small></div>').join('')+'</div>';
+ if(ACTTAB=='duo')h+='<div class="mut">🤝 Hành động tương tác dùng khi <b>chạm vào người chơi khác</b> → bấm <b>🎭 Hành động</b> → chọn hành động. (Dùng được ở 🌳 Công viên và 🏘️ Phố xá)</div><div class="sg" style="grid-template-columns:repeat(2,1fr)">'+own.map(a=>'<div class="sq aq" style="cursor:default">'+actCv(a.id,96,100,'',1)+'<b>'+a.n+'</b><small>'+a.ds+'</small></div>').join('')+'</div>';
  else if(!own.length)h+='<div class="mut">Bạn chưa có hành động cá nhân nào.<br>Ghé <b>Trùm kim cương</b> ở 🏘️ Phố xá để mua nhé!</div>';
- else h+='<div class="mut">Chọn một hành động để thực hiện. Hành động lặp lại đến khi bạn di chuyển.</div><div class="sg" style="grid-template-columns:repeat(2,1fr)">'+own.map(a=>'<button class="sq aq" onclick="actAsk(\''+a.id+'\')">'+actCv(a.id,72,88)+'<b>'+a.n+'</b><small>Bấm để dùng</small></button>').join('')+'</div>';
+ else h+='<div class="mut">Chọn một hành động để thực hiện. Hành động lặp lại đến khi bạn di chuyển.</div><div class="sg" style="grid-template-columns:repeat(2,1fr)">'+own.map(a=>'<button class="sq aq" onclick="actAsk(\''+a.id+'\')">'+actCv(a.id,72,100)+'<b>'+a.n+'</b><small>Bấm để dùng</small></button>').join('')+'</div>';
  openUI(h);actAnimGo()}
 function actAsk(id){const a=ACTS[actIdx(id)];if(!a||!actHas(a))return;
- openUI(head('⚡ Hành động')+'<div class="aq2">'+actCv(id,72,88,'big')+'<b>'+a.n+'</b><div class="mut" style="margin:2px 0">'+a.ds+'<br>Di chuyển bất cứ lúc nào để dừng lại.</div></div><div class="pf"><button class="b" onclick="actStart(\''+id+'\')">✅ Thực hiện</button><button class="b" onclick="actUI()">⬅ Quay lại</button></div>');actAnimGo()}
+ openUI(head('⚡ Hành động')+'<div class="aq2">'+actCv(id,72,100,'big')+'<b>'+a.n+'</b><div class="mut" style="margin:2px 0">'+a.ds+'<br>Di chuyển bất cứ lúc nào để dừng lại.</div></div><div class="pf"><button class="b" onclick="actStart(\''+id+'\')">✅ Thực hiện</button><button class="b" onclick="actUI()">⬅ Quay lại</button></div>');actAnimGo()}
 function diaShop(){const L=ACTS.filter(a=>a.k=='solo');
  openUI(head('💎 Shop kim cương')+'<div class="dsay"><span>🕶️</span><i>“Muốn phát kim cương cho cả phố hả? Mua đi, nhìn là mê liền!”</i></div><div class="mut" style="text-align:center">Bạn có <b>💎 '+(ST.dia|0)+'</b> kim cương</div>'
  +L.map(a=>{const have=!!ST.acts[a.id],ok=(ST.dia|0)>=a.pr;
-  return '<div class="arow">'+actCv(a.id,72,88,'sm')+'<div class="ainf"><b>'+a.n+'</b><small>'+a.ds+'</small>'+(have?'<button class="b" onclick="actUI()">✓ Đã có — mở Hành động</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuy(\''+a.id+'\')">💎 '+a.pr+' — Mua</button>')+'</div></div>'}).join('')
+  return '<div class="arow">'+actCv(a.id,72,100,'sm')+'<div class="ainf"><b>'+a.n+'</b><small>'+a.ds+'</small>'+(have?'<button class="b" onclick="actUI()">✓ Đã có — mở Hành động</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuy(\''+a.id+'\')">💎 '+a.pr+' — Mua</button>')+'</div></div>'}).join('')
  +'<div class="mut" style="text-align:center">Hành động đã mua nằm trong nút ⚡ Hành động, dùng được mãi mãi.</div>');actAnimGo()}
 function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||ST.acts[id])return;
  if((ST.dia|0)<a.pr)return toast('💎 Chưa đủ kim cương — cần '+a.pr+', bạn có '+(ST.dia|0));
  ST.dia-=a.pr;ST.acts[id]=1;xuUp();save();toast('🎉 Đã mua hành động '+a.n+'!\nMở ⚡ Hành động để dùng');diaShop()}
 (function(){const css=document.createElement('style');css.textContent='.aq{background:linear-gradient(#e6f6ff,#d2ecfb)!important;border-color:#8fc4e6!important;color:#1f4a6a}.aq small{color:#4f7f9f!important}.aq2{text-align:center;padding:10px;background:linear-gradient(#e6f6ff,#d2ecfb);border:2px solid #8fc4e6;margin-bottom:8px;color:#1f4a6a}.aq2 .e{font-size:44px}.dsay{display:flex;gap:8px;align-items:center;background:#e6f6ff;border:2px solid #8fc4e6;padding:6px 8px;margin-bottom:6px;color:#1f4a6a;font-size:13px}.dsay span{font-size:26px}'
- +'canvas.actc{display:block;margin:0 auto 2px;width:126px;height:154px;image-rendering:pixelated;border:2px solid #9ccbe6;background:linear-gradient(#bfe4ff,#e6f5ff 64%,#cfe6b8 64%)}canvas.actc.big{width:200px;height:244px;margin-bottom:6px}canvas.actc.sm{width:104px;height:127px;margin:0;flex:none}'
+ +'canvas.actc{display:block;margin:0 auto 2px;width:126px;height:175px;image-rendering:pixelated;border:2px solid #9ccbe6;background:linear-gradient(#bfe4ff,#e6f5ff 64%,#cfe6b8 64%)}canvas.actc.big{width:200px;height:278px;margin-bottom:6px}canvas.actc.sm{width:104px;height:144px;margin:0;flex:none}'
  +'.arow{display:flex;gap:10px;align-items:center;background:linear-gradient(#e6f6ff,#d2ecfb);border:2px solid #8fc4e6;padding:6px;margin:6px 0;color:#1f4a6a}.arow .ainf{display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:0}.arow small{color:#4f7f9f;font-size:11.5px;line-height:1.25}';
  document.head.appendChild(css)})();
 
