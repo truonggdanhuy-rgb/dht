@@ -1,6 +1,7 @@
 /* ============================================================
    CÂU QUÁI VẬT (Biển)
-   - Bấm ra mặt nước/cầu tàu ở Biển -> mở khung câu
+   - Phải LÊN THUYỀN ngoài biển rồi bấm mặt nước -> mở khung câu (cầu tàu / bãi cát không câu được)
+   - Câu ở VÙNG NƯỚC TỐI: câu trúng quái có tỉ lệ ZB (15%) nhận thêm 1 vé quay hoặc 1 món ăn từ máy chế biến
    - Bấm CÂU -> ~2 giây sau có BÓNG (nhỏ = thường, vừa = hiếm, to = cao cấp)
    - Bóng rỉa mồi vài lần -> cắn câu -> thanh trượt dọc, canh vạch trắng vào vùng sáng
    - Câu được: vào Túi > Biển (ST.qvm = số quái đã câu). Bấm quái vật trong Túi để cầm trên tay (đi là mất)
@@ -25,6 +26,15 @@ const MON=[
  {id:'tuoc', n:'Bạch tuộc hoàng kim',r:1,p:50},
  {id:'kq',   n:'Kim Quy',           r:2,p:1500}];
 const SHN=['bóng nhỏ','bóng vừa','bóng to'];
+// ---------- QUÀ VÙNG NƯỚC TỐI ----------
+const ZB=.15;   // tỉ lệ nhận thêm quà khi câu trúng quái ở vùng nước tối (muốn 10–20% thì sửa số này)
+// chỉ lấy MÓN ĂN từ máy chế biến: xôi, cơm, mì, mứt, đồ hộp, kem, sinh tố, bánh kem, bánh quê, miền Tây, máy ong
+const FOODM=[2,3,4,6,7,8,9,10,13,14,17];
+function foodPick(){try{const L=[];for(const mi of FOODM){const M=MACHS[mi];if(M&&M.rec)for(const o of M.rec)if(!/^Vắt /.test(o.n))L.push(o)}return L.length?L[Math.floor(Math.random()*L.length)]:null}catch(e){return null}}
+function giveBonus(){
+ const f=Math.random()<.5?foodPick():null;
+ if(f){ST.vp=ST.vp||{};ST.vp[f.id]=(ST.vp[f.id]|0)+1;toast('🎁 Vùng nước tối tặng bạn 1 '+f.e+' '+f.n+'!');return '🎁 Quà vùng nước tối: <b>'+f.e+' '+f.n+'</b> (đã vào Kho)'}
+ ST.tk=(ST.tk|0)+1;toast('🎁 Vùng nước tối tặng bạn 1 🎟️ vé quay!');return '🎁 Quà vùng nước tối: <b>+1 🎟️ vé quay</b>'}
 
 // ---------- vẽ quái vật (đơn giản) ----------
 const mkS=(w,h,fn)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');
@@ -126,8 +136,10 @@ let F=null,raf=0,last=0;
 const HX=66,SY=16,KEY=e=>(e.key==' '||e.key=='e'||e.key=='E');
 const rr=(a,b)=>a+Math.random()*(b-a);
 const ease=u=>1-Math.pow(1-Math.min(1,Math.max(0,u)),3);
-MQ.open=()=>{
- if(!window.CV||!window.CV.cur||window.CV.cur!='bn'){/* vẫn cho câu nếu đang ở Biển */}
+MQ.open=(ctx)=>{
+ const onBoat=window.CV&&CV.boat&&CV.cur=='bn'&&typeof MAP!=='undefined'&&MAP=='bn';
+ if(!onBoat)return toast('🚣 Phải lên thuyền ra biển mới câu được! Ra cuối cầu tàu, bấm RA BIỂN nhé');
+ const bk=(ctx&&ctx.boat)||CV.bk||2;
  openUI(head('🎣 Câu quái vật')+
   '<div class="mut" id="mqs" style="text-align:center;min-height:32px"></div>'+
   '<div style="display:flex;gap:8px;justify-content:center;align-items:stretch">'+
@@ -137,12 +149,12 @@ MQ.open=()=>{
   '<div class="mut" id="mqn"></div>'+
   '<div class="mut">Bấm CÂU → chờ bóng quái vật hiện → bóng rỉa mồi → khi nó cắn, bấm KÉO (hoặc Space/E) lúc vạch trắng nằm trong vùng xanh sáng. Quái càng hiếm: vùng sáng càng bé, vạch chạy càng nhanh. Bóng nhỏ = quái thường, bóng vừa = hiếm, bóng to = cao cấp.</div>'+
   '<button class="b w" onclick="MQ.bag()">🎒 Xem quái đã câu (Túi › Biển)</button>');
- F={ph:'idle',t:0,rip:[],parts:[],cast:0};MQ.stat();cnt();if(!raf){last=performance.now();raf=requestAnimationFrame(loop)}};
+ F={ph:'idle',t:0,rip:[],parts:[],cast:0,bk:bk};MQ.stat();cnt();if(!raf){last=performance.now();raf=requestAnimationFrame(loop)}};
 MQ.bag=()=>{F=null;bagUI('b')};
-const cnt=()=>{const e=$('mqn');if(e)e.innerHTML='🎒 Trong Túi › Biển: <b>'+total()+'</b> quái vật • <img src="'+QVI+'" style="width:14px;height:14px;vertical-align:-2px;image-rendering:pixelated"> <b>'+fmtXu(ST.qv|0)+'</b> Xu quái vật'};
+const cnt=()=>{const e=$('mqn');if(e)e.innerHTML='🎒 Trong Túi › Biển: <b>'+total()+'</b> quái vật • <img src="'+QVI+'" style="width:14px;height:14px;vertical-align:-2px;image-rendering:pixelated"> <b>'+fmtXu(ST.qv|0)+'</b> Xu quái vật'+(window.seaZoneHere&&seaZoneHere()?'<br>🌑 <b>Đang ở vùng nước tối</b> — câu trúng quái có '+Math.round(ZB*100)+'% nhận quà!':'')};
 const say=(s,col)=>{const e=$('mqs');if(e){e.innerHTML=s;e.style.color=col||''}};
 MQ.stat=()=>{if(!F)return;const b=$('mqg');if(!b)return;const p=F.ph;
- if(p=='idle'){b.textContent='🎣 CÂU';b.classList.remove('z');say('Bấm <b>CÂU</b> để thả mồi xuống biển')}
+ if(p=='idle'){b.textContent='🎣 CÂU';b.classList.remove('z');say('Bấm <b>CÂU</b> để thả mồi từ thuyền xuống biển')}
  else if(p=='cast'){b.textContent='Đang thả mồi...';b.classList.add('z');say('🌊 Đang thả mồi... chờ bóng quái vật')}
  else if(p=='shadow'){b.textContent='Chờ bóng...';b.classList.add('z');say('👀 Có <b>'+SHN[F.rar]+'</b> đang bơi lại gần!')}
  else if(p=='nibble'){b.textContent='Nó đang rỉa mồi...';b.classList.add('z');say('🫧 Bóng đang rỉa mồi... <b>đừng kéo vội!</b>')}
@@ -163,10 +175,10 @@ function startBite(){F.ph='bite';F.t=0;const R=RAR[F.rar];F.zone=R.zone;F.zx=rr(
 const markPos=()=>Math.abs(((F.t*F.spd+F.p0)%2)-1);
 function hideBar(){const z=$('mqz'),k=$('mqk'),b=$('mqb');if(z)z.style.display='none';if(k)k.style.display='none';if(b)b.classList.remove('on')}
 function pull(){const p=markPos(),ok=p>=F.zx-.015&&p<=F.zx+F.zone+.015;
- if(ok){const m=F.mon,b=bag();b[m.id]=(b[m.id]|0)+1;try{save()}catch(e){}
+ if(ok){const m=F.mon,b=bag();b[m.id]=(b[m.id]|0)+1;let bonus='';try{const zn=window.seaZoneHere&&seaZoneHere();if(zn&&Math.random()<ZB)bonus=giveBonus()}catch(e){}try{save()}catch(e){}
   F.ph='win';F.t=0;F.parts=[];for(let i=0;i<(m.r==2?46:m.r==1?18:9);i++)F.parts.push({a:rr(0,6.283),v:rr(20,m.r==2?70:46),l:rr(.5,1.3),t:0,c:m.r==2?['#fff','#ffe27a','#ffcf3a','#ffb0e8'][i%4]:m.r==1?'#ffe27a':'#bfe8ff'});
   F.rip.push({x:HX,t:0});hideBar();
-  say('🎉 Câu được <b style="color:'+RAR[m.r].col+';text-shadow:0 0 1px #000">'+m.n+'</b> ('+RAR[m.r].n.toLowerCase()+')!<br><small>Đã vào Túi › Biển • bán ở Tiệm câu: '+m.p+' xu quái vật</small>','#2a7a2a');
+  say('🎉 Câu được <b style="color:'+RAR[m.r].col+';text-shadow:0 0 1px #000">'+m.n+'</b> ('+RAR[m.r].n.toLowerCase()+')!<br><small>Đã vào Túi › Biển • bán ở Tiệm câu: '+m.p+' xu quái vật</small>'+(bonus?'<br>'+bonus:''),'#2a7a2a');
   const bt=$('mqg');if(bt)bt.textContent='🎣 CÂU TIẾP';cnt();
   if(m.r==2)toast('✨🐢 WOW! Bạn câu được KIM QUY huyền thoại!')}
  else{F.ph='lose';F.t=0;say('💨 Hụt rồi! Quái vật tuột câu và bơi mất. Thử lại nhé!','#c4382e');F.sh.mode=9;MQ.stat();hideBar()}}
@@ -198,16 +210,24 @@ function shadow(g,x,y,rar,dir,a,t){g.save();g.globalAlpha=.55*a;g.translate(Math
  else{g.fillStyle=C;g.beginPath();g.ellipse(0,0,17,10,0,0,6.283);g.fill();g.beginPath();g.ellipse(18,-1,5,3.6,0,0,6.283);g.fill();g.beginPath();g.ellipse(-5,-10+w*.4,7,3,-.5,0,6.283);g.fill();g.beginPath();g.ellipse(9,10-w*.4,7,3,.5,0,6.283);g.fill();g.beginPath();g.ellipse(-5,10-w*.4,6,3,.5,0,6.283);g.fill();g.beginPath();g.moveTo(-16,0);g.lineTo(-22,1+w*.4);g.lineTo(-16,3);g.fill();
   g.globalAlpha=.3*a+.1*Math.sin(t*4);g.strokeStyle='#ffd23f';g.lineWidth=1;g.beginPath();g.ellipse(0,0,19,12,0,0,6.283);g.stroke()}
  g.restore()}
+function boatScene(g,k,t,y){
+ g.fillStyle='rgba(20,60,100,.35)';g.fillRect(0,SY+3,36,5);
+ if(k==3){g.fillStyle='#cfe0ea';g.fillRect(0,y+3,34,8);g.fillStyle='#fff';g.fillRect(0,y,34,6);g.fillStyle='#ff8fb5';g.fillRect(0,y+7,32,1);g.fillStyle='#ffc2d8';g.fillRect(4,y-1,24,2);
+  g.fillStyle='#fff';g.fillRect(0,y-9,5,11);g.fillRect(2,y-13,6,6);g.fillStyle='#ffa733';g.fillRect(8,y-11,4,2);g.fillStyle='#222';g.fillRect(5,y-11,1,2)}
+ else{g.fillStyle='#7a4e28';g.fillRect(0,y+4,34,6);g.fillStyle='#b8764a';g.fillRect(0,y+1,34,6);g.fillStyle='#c98a5a';g.fillRect(0,y,34,3);g.fillStyle='#f6dc9c';g.fillRect(0,y,34,1);g.fillStyle='#e0584a';g.fillRect(0,y+3,34,1);g.fillStyle='#8a5a30';g.fillRect(3,y+8,28,1)}
+ g.fillStyle='#f2c9a0';g.fillRect(12,y-9,6,6);g.fillStyle='#5a3a22';g.fillRect(11,y-11,8,3);g.fillStyle='#3a6fb0';g.fillRect(11,y-3,8,4)}
 function draw(c){const g=c.getContext('2d');g.imageSmoothingEnabled=false;const t=performance.now()/1000,W=120,H=90;
  // trời + nước
  g.fillStyle='#cfeeff';g.fillRect(0,0,W,SY);g.fillStyle='#fff';g.fillRect(84,3,14,3);g.fillRect(88,1,8,2);g.fillRect(12,5,10,2);
  for(let i=0;i<BANDS.length;i++){g.fillStyle=BANDS[i];g.fillRect(0,SY+Math.floor(i*(H-SY)/BANDS.length),W,Math.ceil((H-SY)/BANDS.length)+1)}
  g.fillStyle='rgba(255,255,255,.07)';for(let i=0;i<4;i++){const x=40+i*22+Math.sin(t*.6+i)*4;g.beginPath();g.moveTo(x,SY);g.lineTo(x+10,SY);g.lineTo(x+30,H);g.lineTo(x+14,H);g.fill()}
  g.fillStyle='rgba(255,255,255,.55)';for(let x=0;x<W;x+=7)g.fillRect(x+Math.round(Math.sin(t*2+x)*1.5),SY,4,1);
- // cầu tàu + cần câu
- g.fillStyle='#5e3f20';g.fillRect(5,18,3,26);g.fillRect(20,18,3,22);g.fillStyle='rgba(20,60,100,.35)';g.fillRect(0,SY+2,28,6);
- g.fillStyle='#b8864e';g.fillRect(0,10,28,7);g.fillStyle='#d6a66a';g.fillRect(0,10,28,2);g.fillStyle='#8a5f33';g.fillRect(0,16,28,1);
- const tipX=46,tipY=1;g.fillStyle='#6b4220';for(let i=0;i<=26;i++)g.fillRect(18+i,9-Math.round(i*8/26),2,2);g.fillStyle='#d9a441';g.fillRect(tipX,tipY,2,2);
+ // thuyền (mini / thiên nga) + cần câu cắm bên mạn thuyền
+ const by0=F.bk?10+Math.round(Math.sin(t*2.2)):9;
+ if(F.bk)boatScene(g,F.bk,t,by0);
+ else{g.fillStyle='#5e3f20';g.fillRect(5,18,3,26);g.fillRect(20,18,3,22);g.fillStyle='rgba(20,60,100,.35)';g.fillRect(0,SY+2,28,6);
+  g.fillStyle='#b8864e';g.fillRect(0,10,28,7);g.fillStyle='#d6a66a';g.fillRect(0,10,28,2);g.fillStyle='#8a5f33';g.fillRect(0,16,28,1)}
+ const tipX=46,tipY=1,rx0=F.bk?24:18,RL=44-rx0;g.fillStyle='#6b4220';for(let i=0;i<=RL;i++)g.fillRect(rx0+i,by0-Math.round(i*(by0-1)/RL),2,2);g.fillStyle='#d9a441';g.fillRect(tipX,tipY,2,2);
  // phao + dây
  let fy=SY-2+(F.dip||0);
  if(F.ph=='cast'&&F.t<.45){fy=-6+(SY-2+6)*ease(F.t/.45)*1;if(F.t>=.4&&!F.spl){F.spl=1;F.rip.push({x:HX,t:0})}}else F.spl=F.ph=='cast'?F.spl:0;
@@ -237,7 +257,7 @@ MQ.sellUI=()=>{F=null;const b=bag(),L=MON.map((m,i)=>({m,i,c:b[m.id]|0})).filter
  let sum=0;for(const x of L)sum+=x.c*x.m.p;
  let h=head('💰 Thu mua quái vật')+'<div class="mut" style="text-align:center">🐙 <i>"Quái vật tươi roi rói! Bán đây tôi thu mua hết nè~"</i></div>'+
   '<div class="mut" style="text-align:center">Bạn có <img src="'+QVI+'" style="width:15px;height:15px;vertical-align:-3px;image-rendering:pixelated"> <b>'+fmtXu(ST.qv|0)+'</b> Xu quái vật</div>';
- if(!L.length)h+='<div class="mut" style="text-align:center">Bạn chưa câu được quái vật nào. Ra cầu tàu / mặt nước để câu nhé! 🎣</div>';
+ if(!L.length)h+='<div class="mut" style="text-align:center">Bạn chưa câu được quái vật nào. Lên thuyền ra biển để câu nhé! 🎣</div>';
  else{h+='<div class="g1">'+L.map(x=>{const sure=SC==x.m.id&&performance.now()<SCT;
    return '<div class="it mqr"><canvas class="mqs" data-id="'+x.m.id+'" width="54" height="44"></canvas><div class="t"><b>'+x.m.n+'</b> <small>('+RAR[x.m.r].n+')</small><br><small>'+x.m.p+' xu/con • đang có <b>x'+x.c+'</b></small></div>'+
    '<div class="bt"><button class="b" onclick="MQ.sell(\''+x.m.id+'\',0)">'+(sure?'⚠️ Chắc chưa?':'Bán 1 (+'+x.m.p+')')+'</button>'+(x.c>1?'<button class="b" onclick="MQ.sell(\''+x.m.id+'\',1)">Bán hết (+'+x.c*x.m.p+')</button>':'')+'</div></div>'}).join('')+'</div>';
