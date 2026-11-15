@@ -446,3 +446,56 @@ HAIRFX.luffy=(u,o,K)=>{
  // vành rộng
  u(S1,2,7,16,1);weave(2,7,16,1);u(S2,1,8,18,1);u(S3,17,8,2,1);u(S3,1,8,1,1);
 };
+
+// ---- Set Phao bơi vịt (nam / nữ): nam cởi trần, nữ áo tắm hồng; phao vịt vàng quanh hông che luôn tay & thân dưới ----
+SETFX.duckfloat=(u,o,S,K)=>{
+ const{side,Rt,back,lg,sx,SK,SKS}=K,fm=S.dk=='f',mx=(x,w)=>Rt?x:20-x-w,PK=S.sh,
+ YH='#fff6b0',Y1='#ffe04a',Y2='#ffcf2e',Y3='#f0b11c',Y4='#d4930f',OR='#ff9a2a',ORD='#e8680f',EYc='#2b1d12',WH='#ffffff',SKL='#f8d3a8';
+ // 1) tay để trần (che hẳn lớp tay áo mặc định)
+ const arm=(x,ay)=>{u(SK,x,17+ay,3,7);u(SKL,x,17+ay,1,5);u(SKS,x+2,17+ay,1,5)};
+ if(!side){
+  if(o.aup){[[2,o.aup[0]],[15,o.aup[1]]].forEach(([x,h])=>{const ty=17-h;u(SK,x,ty+3,3,4);u(SKL,x,ty+3,1,4);u(SKS,x+2,ty+3,1,4)})}
+  else{arm(2,lg);arm(15,-lg)}
+ }else if(!o.noarm){const ax=9-sx;u(SK,ax,17,3,6);u(SKL,ax,17,1,4);u(SKS,ax+2,17,1,4)}
+ // 2) thân trên: nam cởi trần / nữ áo tắm hồng
+ if(!side){
+  if(!fm){ // nam
+   if(!back){u(SK,9,17,2,4);u(SKS,6,19,2,1);u(SKS,12,19,2,1);u(SKS,9,19,2,1)}
+  }else{ // nữ
+   if(!back){
+    u(PK,9,17,2,4);
+    u(SK,6,16,8,1);u(PK,7,16,1,1);u(PK,12,16,1,1);u(SK,8,17,4,1);
+    u(WH,9,18,2,1);
+    [[6,18],[13,18],[6,20],[13,20]].forEach(q=>u(WH,q[0],q[1],1,1));
+   }else{
+    u(PK,10,17,1,5);
+    u(SK,6,16,8,1);u(PK,7,16,1,1);u(PK,12,16,1,1);u(SK,8,17,4,1);
+    u(WH,9,18,2,1);
+   }
+  }
+ }else if(fm){u(SK,mx(8,6),16,6,1);u(WH,mx(7,1),19,1,1)}
+ else u(SK,Rt?7:12,17,2,4);
+ // 3) phao vịt vàng quanh hông
+ const RG=side?[[21,5,14,YH],[22,4,15,Y1],[23,3,16,Y1],[24,3,16,Y2],[25,4,15,Y3],[26,5,14,Y4]]
+              :[[21,4,15,YH],[22,3,16,Y1],[23,2,17,Y1],[24,2,17,Y2],[25,3,16,Y3],[26,4,15,Y4]];
+ RG.forEach(q=>u(q[3],q[1],q[0],q[2]-q[1]+1,1));
+ u(YH,side?5:4,22,3,1);u(YH,side?4:3,23,1,1);          // ánh sáng bóng loáng
+ u(Y3,side?15:16,23,1,2);u(Y4,side?15:17,24,1,1);       // phần tối bên kia
+ u(Y3,5,22,1,4);u(Y3,14,22,1,4);                         // đường nối phao
+ // 4) đầu vịt phía trước / đuôi vịt phía sau
+ if(!side){
+  if(!back){
+   u(YH,8,19,2,1);u(Y1,10,19,2,1);
+   u(Y1,7,20,6,1);u(EYc,8,20,1,1);u(EYc,11,20,1,1);
+   u(Y2,7,21,6,1);u('#ff9db4',7,21,1,1);u('#ff9db4',12,21,1,1);
+   u(Y3,7,22,1,1);u(Y3,12,22,1,1);u(OR,8,22,4,1);u(ORD,9,23,2,1);
+  }else{
+   u(YH,11,18,1,1);u(Y1,10,19,2,1);u(Y1,9,20,3,1);u(Y2,8,21,4,1);
+  }
+ }else{
+  u(YH,mx(13,3),18,3,1);u(Y1,mx(12,5),19,5,1);u(Y1,mx(12,5),20,5,1);u(Y2,mx(12,5),21,5,1);
+  u(EYc,mx(15,1),19,1,1);u('#ff9db4',mx(13,1),20,1,1);
+  u(OR,mx(17,3),20,3,1);u(ORD,mx(17,2),21,2,1);
+  u(YH,mx(2,1),18,1,1);u(Y1,mx(2,2),19,2,1);u(Y1,mx(2,3),20,3,1);u(Y2,mx(3,3),21,3,1);
+ }
+};
