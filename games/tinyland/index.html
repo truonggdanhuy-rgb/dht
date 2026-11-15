@@ -3831,6 +3831,35 @@ const giaClo=(r,dy)=>{for(const[x,c]of GP){r('#8a6a22',x+2,6,1,1);r('#d9302a',x+
 S_.giaphoiB=mk(66,44,(g,r)=>giaBase(r));
 S_.giaphoi=mk(66,44,(g,r)=>{giaBase(r);for(const[x,c]of GP)g.drawImage(c,x,7);giaClo(r)});
 
+/* ---- decor mới: giếng có mái, giàn phơi khô, giàn hồ lô ---- */
+S_.giengmai=mk(22,32,(g,r)=>{
+ E(r,'rgba(0,0,0,.2)',11,30,9,2);
+ r('#9a9a9a',3,21,16,8);r('#c4c4c4',3,21,16,2);r('#7e7e7e',3,26,16,1);r('#7e7e7e',9,23,1,6);r('#7e7e7e',14,23,1,6);E(r,'#1f4f7a',11,21,6,1);
+ r('#8a5a2e',4,9,2,15);r('#b98350',4,9,1,15);r('#8a5a2e',16,9,2,15);r('#b98350',16,9,1,15);
+ for(let i=0;i<9;i++){const w=10+i*2;r(i%3?'#c0502f':'#d96a48',11-(w>>1),i,w,1)}r('#7a2f1f',0,9,22,1);r('#ffd9a8',9,0,4,1);
+ r('#d9a566',10,10,1,9);r('#7a4a26',8,17,5,4);r('#a8794a',8,17,5,1)});
+S_.giankho=mk(66,44,(g,r)=>{giaBase(r);
+ const fish=(x,y,c)=>{r('#7a7a80',x+1,y,1,2);E(r,c,x+1,y+6,2,4);r('#eef2f6',x+1,y+3,1,4);r('#1b1b1b',x+1,y+3,1,1);r('#8a8a92',x,y+10,3,2)};
+ const chili=(x,y)=>{r('#7a4a26',x,y,1,2);for(let i=0;i<4;i++){r('#d9302a',x-1+(i&1),y+2+i*3,2,3);r('#ff6a50',x-1+(i&1),y+2+i*3,1,1)}};
+ const garlic=(x,y)=>{r('#7a4a26',x+1,y,1,2);E(r,'#f4efe0',x+1,y+5,3,3);r('#d8cfb0',x+1,y+3,1,5)};
+ const sq=(x,y)=>{r('#7a4a26',x+3,y,1,2);r('#e6c48a',x,y+2,7,9);r('#d4a868',x+1,y+9,5,3);r('#f4dcaa',x,y+2,2,8);r('#b8884a',x+3,y+4,1,6)};
+ fish(7,8,'#aab4c0');fish(14,8,'#c8b08a');chili(24,8);chili(28,8);sq(32,8);garlic(43,8);garlic(48,8);fish(54,8,'#aab4c0')});
+const gourd=(r,x,y,c,d)=>{r('#4a7a22',x+4,y-4,1,5);r('#6dbb3f',x+5,y-3,2,1);
+ E(r,d,x+4,y+3,4,3);E(r,c,x+3,y+3,3,2);r(d,x+3,y+6,3,4);r(c,x+3,y+6,2,4);E(r,d,x+4,y+15,7,6);E(r,c,x+3,y+14,5,5);
+ r('rgba(255,255,255,.5)',x,y+12,2,5);r('rgba(255,255,255,.4)',x+1,y+2,1,2);r('rgba(0,0,0,.16)',x+8,y+14,2,6)};
+S_.gianholo=mk(84,58,(g,r)=>{
+ E(r,'rgba(0,0,0,.2)',42,55,38,2);
+ [[6],[74]].forEach(([x])=>{r('#8a5a2e',x,6,4,50);r('#b98350',x,6,1,50);r('#5a3418',x+3,6,1,50);r('#6a4222',x-2,54,8,2)});
+ r('#8a5a2e',3,4,78,4);r('#b98350',3,4,78,1);r('#5a3418',3,7,78,1);
+ for(const x of[22,41,60]){r('#a8794a',x,8,2,46)}   /* thanh đứng giữa */
+ r('#a8794a',6,22,72,1);
+ /* dây leo + lá */
+ for(let x=5;x<80;x+=3){const y=5+Math.round(Math.sin(x/5)*1.5);r('#4a8a2a',x,y,2,2);r((x/3|0)%2?'#6dbb3f':'#58a830',x+1,y+1,3,2);r('#8fd862',x+1,y+1,1,1);if(x%9==2){r('#58a830',x-1,y+3,3,2);r('#6dbb3f',x+1,y+5,2,2)}}
+ for(let x=10;x<76;x+=11){r('#58a830',x,22,3,2);r('#6dbb3f',x+2,23,2,2)}
+ /* hồ lô treo */
+ gourd(r,8,10,'#c8d85a','#7a9a24');gourd(r,23,13,'#f0c64a','#b08a22');gourd(r,37,9,'#b4d84a','#6f9a22');gourd(r,50,13,'#c8d85a','#7a9a24');gourd(r,64,10,'#f0c64a','#b08a22');
+ gourd(r,16,28,'#b4d84a','#6f9a22');gourd(r,43,29,'#f0c64a','#b08a22');gourd(r,58,28,'#c8d85a','#7a9a24')});
+
 /* ---- tổ chim (trụ cao + chim đậu) ---- */
 const nestBase=r=>{
  E(r,'rgba(0,0,0,.2)',11,61,8,2);E(r,'#8f8f96',11,60,6,3);E(r,'#b9b9c2',10,59,4,2);E(r,'#5fb455',6,58,2,2);E(r,'#5fb455',16,59,2,2);
@@ -3951,7 +3980,8 @@ Object.assign(FMD,{
  cumhoa:['Cụm hoa',()=>S_.cumhoa,1,1,0,'b',300],cumhoavang:['Cụm hoa vàng',()=>S_.cumhoavang,1,1,0,'b',300],
  xerom:['Xe đẩy rơm',()=>S_.xerom,2,1,1,'v',1500],xehang:['Xe đẩy hàng',()=>S_.xehang,2,1,1,'v',2000],
  sapnuoc:['Sạp quán nước',()=>S_.sapnuoc,2,1,1,'v',5000],saprau:['Sạp rau',()=>S_.saprau,2,1,1,'v',5000],
- giaphoi:['Giá phơi đồ',()=>S_.giaphoi,4,1,1,'v',5000],tochim:['Tổ chim',()=>S_.tochim,1,1,1,'v',2000]});
+ giaphoi:['Giá phơi đồ',()=>S_.giaphoi,4,1,1,'v',5000],tochim:['Tổ chim',()=>S_.tochim,1,1,1,'v',2000],
+ giengmai:['Giếng có mái',()=>S_.giengmai,1,1,1,'v',200],giankho:['Giàn phơi khô',()=>S_.giankho,4,1,1,'v',500],gianholo:['Giàn hồ lô',()=>S_.gianholo,5,1,1,'v',1000]});
 const FMCAT=[['p','🛤️ Lối đi & hàng rào'],['k','🏡 Công trình'],['c','🌳 Cây cối'],['b','🌸 Bụi & hoa'],['v','🧺 Vật dụng']];
 const FMRAW={},FMOUT={},FMTH={};
 const fmRaw=k=>FMRAW[k]||(FMRAW[k]=FMD[k][1]());
