@@ -127,7 +127,7 @@ const mkG=()=>[...Array(H)].map(()=>Array(W).fill(0)),solid=mkG(),occ=mkG();
 const blk=(x0,y0,x1,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)solid[y][x]=occ[y][x]=1};
 const mark=(x0,y0,x1,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)occ[y][x]=1};
 var CVON=0,CW=1440,CH=1008,CVLOCK=0;/* cong vien: co + kich thuoc map */
-const isSolid=(x,y)=>{if(CVON)return cvSolid(x,y);const tx=Math.floor(x/T),ty=Math.floor(y/T);if(tx<0||ty<0||tx>=W||ty>=H||solid[ty][tx])return true;for(const b of RB)if(x>=b[0]&&x<b[0]+b[2]&&y>=b[1]&&y<b[1]+b[3])return true;return false};
+const isSolid=(x,y)=>{if(CVON)return CV.boat?cvBoatSolid(x,y):cvSolid(x,y);const tx=Math.floor(x/T),ty=Math.floor(y/T);if(tx<0||ty<0||tx>=W||ty>=H||solid[ty][tx])return true;for(const b of RB)if(x>=b[0]&&x<b[0]+b[2]&&y>=b[1]&&y<b[1]+b[3])return true;return false};
 const hits=[],LB=[],RB=[];
 // ---------- layout / collisions (goc) ----------
 blk(0,0,W-1,7);blk(0,8,0,H-1);blk(W-1,8,W-1,H-1);blk(0,42,W-1,H-1);
@@ -1902,14 +1902,14 @@ const PETS=[{n:'Mèo con',k:'cat',fn:drawPetCat},{n:'Mây Mây',k:'cloud',fn:dra
 const drawPet=(g,x,y,d,mv,a,t,pi)=>(PETS[pi]||PETS[0]).fn(g,x,y,d,mv,a,t);
 const PET={x:560,y:292,d:0,a:0,mv:0,k:0};
 function petReset(){PET.x=Pl.x-19;PET.y=Pl.y+3;PET.mv=0;PET.k=0}
-function petUpdate(dt){if(ST.av.p<0)return;const dx=Pl.x-PET.x,dy=Pl.y-PET.y,L=Math.hypot(dx,dy),stop=ST.av.m>=0?33:27;
+function petUpdate(dt){if(ST.av.p<0)return;if(CVON&&CV.boat)return;const dx=Pl.x-PET.x,dy=Pl.y-PET.y,L=Math.hypot(dx,dy),stop=ST.av.m>=0?33:27;
  if(L>170){petReset();return}
  if(L>stop){const sp=Math.min(150,50+L*1.6)*dt,mx=dx/L*sp,my=dy/L*sp;let ok=0;
   if(PETS[ST.av.p].fly){PET.x+=mx;PET.y+=my;ok=1}else{if(can(PET.x+mx,PET.y)){PET.x+=mx;ok=1}if(can(PET.x,PET.y+my)){PET.y+=my;ok=1}}
   PET.mv=ok;PET.a+=dt;PET.d=Math.abs(dx)>Math.abs(dy)?(dx<0?2:3):(dy<0?1:0);
   if(ok)PET.k=0;else{PET.k+=dt;if(PET.k>1.5)petReset()}}
  else{PET.mv=0;PET.k=0}}
-function drawPlayer(){if(HMA&&HMA.hide)return;const A=ST.av,o={d:Pl.d,a:Pl.a,mv:Pl.mv,sit:Pl.sit,hair:A.h,set:A.s,e:A.e,acc:A.m>=0?-1:A.a},X=Math.round(Pl.x)+(CVON?cvRockMe():0),Y=Math.round(Pl.y)-(CVON?cvLiftMe():0);
+function drawPlayer(){if(HMA&&HMA.hide)return;if(CVON&&CV.boat)return cvBoatMe();const A=ST.av,o={d:Pl.d,a:Pl.a,mv:Pl.mv,sit:Pl.sit,hair:A.h,set:A.s,e:A.e,acc:A.m>=0?-1:A.a},X=Math.round(Pl.x)+(CVON?cvRockMe():0),Y=Math.round(Pl.y)-(CVON?cvLiftMe():0);
  if(ACT&&!Pl.sit&&A.m<0){const t=(performance.now()-ACT_T)/1000;actSfx(ACT,t);actDraw(cx,X,Y,t,o,ACT);return}
  if(A.m>=0&&!Pl.sit)drawRide(cx,X,Y,o,A.m,performance.now()/1000);else drawAv(cx,X-10,Y-30,o)}
 const note=(x,y,k,c)=>{x=Math.round(x);y=Math.round(y);const d=(c2,ox,oy)=>{r(c2,x+ox,y+5+oy,3,2);r(c2,x+2+ox,y+oy,1,6);r(c2,x+3+ox,y+oy,2,1);r(c2,x+4+ox,y+1+oy,1,1);
@@ -2018,7 +2018,7 @@ cv.addEventListener('pointermove',e=>{if(!ptr)return;const lx=ptr.x,ly=ptr.y;ptr
  if(!ptr.pan&&!ptr.walk&&!UI&&!WTM&&!WTON&&!HMA&&Math.hypot(ptr.x-ptr.x0,ptr.y-ptr.y0)>10)ptr.pan=1;
  if(ptr.pan){camFree=1;camX=cc(camX-(ptr.x-lx)/S,CVON?CW:mapW(),vw);camY=cc(camY-(ptr.y-ly)/S,CVON?CH:PY,vh)}});
 cv.addEventListener('pointerup',e=>{if(ptr&&!ptr.pan&&performance.now()-ptr.t<220){const wx=e.clientX/S+camX,wy=e.clientY/S+camY,h=hitAt(wx,wy);
- if(UI){}else if(CVON&&window.PKO&&PKO.tap&&PKO.tap(wx,wy)){}else if(MAP=='nt'&&FMODE)fmTap(wx,wy);else if(MAP=='hm'&&DECO)decoTap(wx,wy);else if(MAP=='hm'&&hmSeat(wx,wy)){}else if(h)tapHit(h,camFree);else{pa=null;goal={x:wx,y:wy,t:0};Pl.pend=0}}ptr=null});
+ if(UI){}else if(CVON&&window.PKO&&PKO.tap&&PKO.tap(wx,wy)){}else if(CVON&&CV.boat){cvBoatTap(wx,wy)}else if(MAP=='nt'&&FMODE)fmTap(wx,wy);else if(MAP=='hm'&&DECO)decoTap(wx,wy);else if(MAP=='hm'&&hmSeat(wx,wy)){}else if(h)tapHit(h,camFree);else{pa=null;goal={x:wx,y:wy,t:0};Pl.pend=0}}ptr=null});
 cv.addEventListener('pointercancel',()=>ptr=null);
 var ACT=0,ACT_T=0;var WTM=0,WEXP=null,ZL=0,ZLW=0;try{ZL=Math.max(-4,Math.min(2,parseInt(localStorage.tl_zoom||'0')||0))}catch(e){}try{ZLW=Math.max(-4,Math.min(3,parseInt(localStorage.tl_zoomw||'0')||0))}catch(e){}
 /* ZOOM: ZL=0 là cỡ mặc định như cũ; ZL<0 thu nhỏ (nhìn rộng hơn), ZL>0 phóng to. Mỗi bậc ×1.25, làm tròn theo điểm ảnh thiết bị cho nét. */
@@ -4419,7 +4419,7 @@ let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||ke
 if(HMA){HMA.t+=dt;if(HMA.t>HMA.d||(HMA.t>.7&&(ptr||dx||dy)))hmEnd();dx=dy=0;goal=null;ptr=null}if(UI){dx=dy=0;goal=null;ptr=null}if(dx||dy)goal=null;
 if(!dx&&!dy&&ptr&&!ptr.pan&&!FMODE&&performance.now()-ptr.t>150){ptr.walk=1;goal=null;const gx=ptr.x/S+camX-Pl.x,gy=ptr.y/S+camY-Pl.y,L=Math.hypot(gx,gy);if(L>4){dx=gx/L;dy=gy/L}}
 else if(!dx&&!dy&&goal){const gx=goal.x-Pl.x,gy=goal.y-Pl.y,L=Math.hypot(gx,gy);goal.t+=dt;if(L<3||goal.t>4)goal=null;else{dx=gx/L;dy=gy/L}}
-if((dx||dy)&&!Pl.sit){const L=Math.hypot(dx,dy);dx/=L;dy/=L;const sp=78*(HUNGRY?.3:(ST.av.m>=0?MOUNTS[ST.av.m].spd:1))*dt,ox=Pl.x,oy=Pl.y;
+if((dx||dy)&&!Pl.sit){const L=Math.hypot(dx,dy);dx/=L;dy/=L;const sp=78*(CVON&&CV.boat?.72:1)*(HUNGRY?.3:(ST.av.m>=0?MOUNTS[ST.av.m].spd:1))*dt,ox=Pl.x,oy=Pl.y;
  if(can(Pl.x+dx*sp,Pl.y))Pl.x+=dx*sp;if(can(Pl.x,Pl.y+dy*sp))Pl.y+=dy*sp;
  Pl.mv=Math.abs(Pl.x-ox)+Math.abs(Pl.y-oy)>.01;if(!Pl.mv)goal=null;Pl.a+=dt*(ST.av.m>=0?1.5:1);
  Pl.d=Math.abs(dx)>Math.abs(dy)?(dx<0?2:3):(dy<0?1:0)}else Pl.mv=0;
