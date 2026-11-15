@@ -6,7 +6,7 @@
    - RA KHƠI bằng THUYỀN: Thuyền mini (1.000 xu vàng) / Thuyền thiên nga (xu quái vật) — bán ở Tiệm câu
    - CHỈ câu được khi đang đứng trên thuyền ngoài biển (không câu trên cầu tàu / bãi cát)
    - Thỉnh thoảng có VÙNG NƯỚC TỐI: câu ở đó dính quái có 15% nhận thêm 1 vé quay hoặc 1 món ăn từ máy chế biến
-   - Hòm kho báu (coming soon)
+   - Rương kho báu: mỗi 1 giờ nhận 10–40 xu quái vật (không cộng dồn)
    - Decor: vỏ sò, sao biển, cua, cọc phao, dừa, dù che nắng, hải âu, thuyền buồm xa xa
    ============================================================ */
 (()=>{
@@ -239,18 +239,18 @@ function build(){
  // --- DÙ CHE NẮNG + khăn trải ---
  put(mkUmb('#e0584a','#fff6e0'),52,668,[34,662,70,668]);hit(24,628,56,42,'⛱️ Dù che nắng — khăn trải cát ấm áp, ngồi hóng gió biển thích lắm');
  put(mkUmb('#1fa6b4','#fff6e0'),50,930,[32,924,68,930]);hit(22,890,56,42,'⛱️ Dù che nắng — ai bỏ quên khăn tắm nè');
- // --- HÒM KHO BÁU (coming soon) ---
- {const cx0=Math.round(shoreX(790))-92,cy0=800;
+ // --- RƯƠNG KHO BÁU: mỗi 1 giờ bấm nhận 10–40 xu quái vật (không cộng dồn, không chữ) ---
+ {const cy0=690,cx0=Math.round(shoreX(cy0))-62;
   put(mkChestCl(),cx0,cy0,[cx0-18,cy0-12,cx0+18,cy0]);
-  dyn(cy0+1,()=>{const t=tmNow(),b=Math.round(Math.sin(t*2.2)*2);
-   // thẻ "SẮP MỞ" lơ lửng
-   cx.font='900 8px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';const w=44;
-   cx.fillStyle='rgba(30,20,10,.55)';cx.fillRect(cx0-w/2+1,cy0-46+b+1,w,13);cx.fillStyle='#fff3cf';cx.fillRect(cx0-w/2,cy0-46+b,w,13);cx.fillStyle='#c9302a';cx.fillText('SẮP MỞ',cx0,cy0-36+b);cx.fillStyle='#fff3cf';cx.fillRect(cx0-2,cy0-33+b,4,3);
-   for(let k=0;k<4;k++){const a=Math.sin(t*3+k*1.9);if(a>.4){const px=cx0-14+((k*9+Math.round(t*4))%30),py=cy0-30+(k*7%16);r('#ffffff',px,py,1,1);r('rgba(255,236,150,.9)',px-1,py,3,1);r('rgba(255,236,150,.9)',px,py-1,1,3)}}});
-  hit(cx0-22,cy0-34,44,40,'🧰 Hòm kho báu — khoá chặt rồi! Sắp mở, chờ chút nhé 🔒')}
+  dyn(cy0+1,()=>{const t=tmNow(),rdy=chestReady();if(!rdy&&!CH.fx)return;const b=rdy?Math.round(Math.sin(t*2.6)*2):0;
+   if(rdy){ // đồng xu quái vật nhảy lơ lửng báo đã sẵn sàng
+    if(QVIM.complete)cx.drawImage(QVIM,cx0-8,cy0-52+b,16,16);
+    for(let k=0;k<4;k++){const a=Math.sin(t*3+k*1.9);if(a>.4){const px=cx0-14+((k*9+Math.round(t*4))%30),py=cy0-30+(k*7%16);r('#ffffff',px,py,1,1);r('rgba(255,236,150,.9)',px-1,py,3,1);r('rgba(255,236,150,.9)',px,py-1,1,3)}}}
+   if(CH.fx&&performance.now()<CH.fx){const u=1-(CH.fx-performance.now())/900;for(let k=0;k<10;k++){const an=k*.63,d=u*26;r(k%2?'#ffe27a':'#ffffff',Math.round(cx0+Math.cos(an)*d),Math.round(cy0-18+Math.sin(an)*d*.8-u*8),2,2)}}});
+  hit(cx0-22,cy0-34,44,40,'','cv:bn:chest',[cx0,cy0+14])}
  // --- VỎ SÒ, SAO BIỂN, ĐÁ, GỖ TRÔI rải trên bãi ---
  const SH_MSG=['🐚 Vỏ sò hồng xinh xắn — còn ấm nắng','🐚 Ốc xoắn kem — áp tai nghe tiếng biển thử xem','⭐ Sao biển cam nằm phơi nắng','🐚 Con nghêu tím nhạt','🪙 Đồng tiền cát — lấp lánh nè'];
- const spots=[[100,196],[40,226],[120,252],[30,330],[24,452],[84,486],[40,520],[70,590],[22,640],[96,700],[44,742],[110,830],[64,870],[100,960],[30,988],[72,520],[104,640],[56,790],[20,560],[88,420]];
+ const spots=[[100,196],[40,226],[120,252],[30,330],[24,452],[84,486],[40,520],[70,590],[22,640],[44,742],[110,830],[64,870],[100,960],[30,988],[72,520],[104,640],[56,790],[20,560],[88,420]];
  spots.forEach(([x,y],i)=>{if(bnSolid(x,y)||x>shoreX(y)-20||(x<150&&y>288&&y<440&&x>4))return;const k=(i*3+i%5)%5,o=SHELL[k];SEA.sp.push({by:y,d:()=>cx.drawImage(o,x-8,y-12)});hit(x-8,y-12,16,14,SH_MSG[k])});
  for(const[x,y,w,h]of[[20,220,28,20],[40,610,34,22],[30,860,30,20],[56,960,36,22]]){if(x+w>shoreX(y)-14)continue;put(mkRock(w,h,['#9aa3ab','#6f7880','#c3cad0']),x+w/2,y+h,[x+3,y+h-9,x+w-3,y+h]);hit(x,y,w,h,'🪨 Hòn đá nhẵn thín bị sóng mài')}
  for(const[x,y]of[[70,260],[60,520],[40,780],[70,930]]){if(x+16>shoreX(y)-12)continue;const o=outl(mkWood());SEA.sp.push({by:y,d:()=>cx.drawImage(o,x-17,y-10)});hit(x-17,y-12,34,12,'🪵 Khúc gỗ trôi dạt vào bờ')}
@@ -452,6 +452,7 @@ function zoneArrow(){ // mũi tên chỉ hướng vùng nước tối khi nó n�
 // ============================================================
 
 function bnAct(a){const t=a.split(':')[0];
+ if(t=='chest')return chestClaim();
  if(t=='shop')return bnShop();
  if(t=='sail')return sail()}
 window.bnShop=()=>bnShop();
@@ -463,16 +464,23 @@ window.bnBuy=k=>{const o=sbs();
  o.use=k;try{xuUp()}catch(e){}try{save()}catch(e){}
  toast('🎉 Đã mua '+(k=='swan'?'Thuyền thiên nga':'Thuyền mini')+' và trang bị luôn! Ra cầu tàu bấm RA BIỂN nhé');bnShop()};
 window.bnEquip=k=>{const o=sbs();if(!o[k])return;o.use=k;try{save()}catch(e){}toast('✅ Đã trang bị '+(k=='swan'?'Thuyền thiên nga':'Thuyền mini'));bnShop()};
+// ---------- RƯƠNG: 1 giờ / lần, 10–40 xu quái vật, không cộng dồn (ST.rcT = lúc nhận gần nhất) ----------
+const CH_CD=3600000,CH_MIN=10,CH_MAX=40,CH={fx:0};   // chỉnh thời gian chờ / số xu ở đây
+const QVIM=new Image();QVIM.src=QVI;
+function chestReady(){return Date.now()-(+ST.rcT||0)>=CH_CD}
+function chestClaim(){if(!chestReady())return;const n=CH_MIN+Math.floor(Math.random()*(CH_MAX-CH_MIN+1));
+ ST.rcT=Date.now();ST.qv=(ST.qv|0)+n;CH.fx=performance.now()+900;try{xuUp()}catch(e){}try{save()}catch(e){}toast('+'+n+' xu quái vật')}
 // ---------- ĐỒ BIỂN bán bằng Xu quái vật ----------
 // t: 'k' kem chống nắng • 'h' tóc/nón • 's' set • 'a' phụ kiện cầm tay • k = khóa trong HAIRS/SETS/ACCS • p = GIÁ (xu quái vật)
-// Cân bằng: câu ~10 phút ≈ 1.000 xu quái vật → mỗi món 500–900 là khoảng 5–10 phút. Muốn đổi giá chỉ cần sửa số p.
+// Cân bằng: câu ~10 phút ≈ 1.000 xu quái vật. Muốn đổi giá chỉ cần sửa số p.
 const QSHOP=[
  {t:'k',n:'Kem chống nắng',p:10},
  {t:'h',k:'hawaii',p:500},
  {t:'s',k:'hwm',p:900},
  {t:'s',k:'hwf',p:900},
- {t:'a',k:'starfish',p:500},
- {t:'a',k:'octobub',p:500}];
+ {t:'h',k:'luffy',p:1200},
+ {t:'a',k:'starfish',p:3000},
+ {t:'a',k:'octobub',p:3000}];
 const qArr=t=>t=='h'?HAIRS:t=='s'?SETS:ACCS;
 const qItem=q=>{if(q.t=='k')return{n:q.n,i:-1};const A=qArr(q.t),i=A.findIndex(x=>x.k==q.k);return i<0?null:{n:A[i].n,i,it:A[i]}};
 const qOwn=(q,m)=>q.t!='k'&&(ST.own&&ST.own[q.t]||[]).includes(m.i);

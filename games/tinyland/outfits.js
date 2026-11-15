@@ -433,3 +433,16 @@ SETFX.hawaii=(u,o,S,K)=>{
   else for(let i=0;i<6;i++)u(LEI[i%6],7+i,16,1,1)}
  else{for(let i=0;i<6;i++)u(LEI[i],mx(7,6)+i,15,1,1);for(let i=0;i<4;i++)u(LEI[i+2],mx(8,4)+i,16,1,1)}
 };
+
+// ---- Mũ rơm (kiểu thuyền trưởng hải tặc): to hơn nón rộng vành một chút, dải đỏ ----
+HAIRFX.luffy=(u,o,K)=>{
+ const{side,Rt,back,HC}=K,mx=(x,w)=>Rt?x:20-x-w,
+ S1='#f4d36e',S2='#dcae45',S3='#b98a2c',SL='#fff0b0',RB='#d8232a',RBd='#9c1219';
+ const weave=(x,y,w,h)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)if(((x+i+y+j)&1)==0)u(SL,x+i,y+j,1,1)};
+ if(!side){if(!back){u(HC,6,8,1,3);u(HC,13,8,1,3)}}else u(HC,mx(5,2),8,2,3);
+ // chỏm cao + dải đỏ
+ u(S1,6,0,8,1);u(S1,5,1,10,4);weave(5,1,10,4);u(S2,5,4,10,1);u(S3,14,1,1,4);u(S3,6,0,1,1);
+ u(RB,5,5,10,2);u(RBd,5,6,10,1);u(RBd,14,5,1,2);
+ // vành rộng
+ u(S1,2,7,16,1);weave(2,7,16,1);u(S2,1,8,18,1);u(S3,17,8,2,1);u(S3,1,8,1,1);
+};

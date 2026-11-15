@@ -6,7 +6,7 @@
    - Bóng rỉa mồi vài lần -> cắn câu -> thanh trượt dọc, canh vạch trắng vào vùng sáng
    - Câu được: vào Túi > Biển (ST.qvm = số quái đã câu). Bấm quái vật trong Túi để cầm trên tay (đi là mất)
    - Tiệm câu: nút "Thu mua quái vật" -> bán lấy Xu quái vật (ST.qv)
-   - Kem chống nắng (ST.kcn, mua ở Tiệm câu 10 xu quái vật): ngoài biển có tỉ lệ bị RÁT DA (vùng sáng nhỏ lại); thoa kem trong Túi > Biển để tránh. Chỉnh ở khối SUN_* bên dưới
+   - Kem chống nắng (ST.kcn, mua ở Tiệm câu 10 xu quái vật): ngoài biển có tỉ lệ (thấp) bị RÁT DA khi câu nhiều/ở biển lâu: tạm không câu được; thoa kem trong Túi > Biển để hết rát + được bảo vệ. Chỉnh ở khối SUN_* bên dưới
    Muốn chỉnh độ khó / tỉ lệ / giá: sửa bảng RAR và MON ngay bên dưới.
    ============================================================ */
 (()=>{
@@ -130,12 +130,17 @@ MQ.drawHold=(X,Y,d)=>{if(HOLD==null)return;const m=MON[HOLD],t=performance.now()
 setInterval(()=>{if(HOLD==null)return;try{if(Pl.mv||(ST.av&&ST.av.m>=0)||Pl.sit||(typeof ACT!=='undefined'&&ACT))MQ.clear()}catch(e){}},80);
 
 // ---------- KEM CHỐNG NẮNG + RÁT DA ----------
-// Ngoài biển thỉnh thoảng bị nắng làm rát da (vùng sáng khi kéo cá nhỏ lại). Kem chống nắng (Túi › Biển) thoa xong được bảo vệ SUN_PROT ms và hết rát ngay.
-const SUN_ID=100,SUN_PROT=3*60000,SUN_BURN=45000,SUN_CHK=20000,SUN_P=.3;   // chỉnh ở đây: thời gian bảo vệ / thời gian rát / chu kỳ kiểm tra / tỉ lệ bị rát
-let burnUntil=0,nextChk=0,sunEl=null;
+// Rát da là NGẪU NHIÊN, tỉ lệ thấp: tăng dần theo số quái đã câu và theo thời gian ở biển (trên 15 phút). Rát da chỉ khiến bạn tạm thời không câu được.
+// Kem chống nắng (Túi › Biển): thoa xong hết rát ngay + được bảo vệ SUN_PROT ms. Chỉnh ở các số SUN_* bên dưới.
+const SUN_ID=100,SUN_PROT=5*60000,SUN_BURN=60000;
+const SUN_CATCH=.015,SUN_CATCH_ADD=.002,SUN_CATCH_CAP=25;   // mỗi lần câu được: 1.5% + 0.2%/con đã câu (tối đa ~6.5%)
+const SUN_LONG=15*60,SUN_LONG_P=.06;                          // ở biển liên tục >15 phút: mỗi phút 6%
+let burnUntil=0,sunEl=null,seaSec=0,seaCatch=0;
 const protLeft=()=>Math.max(0,(+ST.kcnU||0)-Date.now());
 const burning=()=>burnUntil>Date.now();
 const atSea=()=>{try{return !!(window.CV&&CV.boat&&typeof MAP!=='undefined'&&MAP=='bn')}catch(e){return false}};
+function sunBurn(){burnUntil=Date.now()+SUN_BURN;seaSec=0;seaCatch=0;sunHud();toast('☀️ Nắng làm rát da, tạm thời chưa câu được'+((ST.kcn|0)>0?'\n🧴 Dùng kem trong Túi › Biển':''))}
+function sunCatch(){if(burning()||protLeft()>0)return;seaCatch++;if(Math.random()<SUN_CATCH+SUN_CATCH_ADD*Math.min(seaCatch,SUN_CATCH_CAP))sunBurn()}
 let _sun=null;const sunSpr=()=>_sun||(_sun=mkS(20,26,(r,E)=>{
  r('#fff',7,1,6,3);r('#c9d3de',7,3,6,1);r('#e8eef4',6,4,8,1);
  r('#ff9f2e',5,5,10,19);r('#ffc266',5,5,2,19);r('#d9741a',13,5,2,19);r('#c4620f',5,23,10,1);
@@ -145,19 +150,16 @@ function useSun(){
  if(!(ST.kcn>0))return;
  if(!atSea())return toast('☀️ Ra biển rồi hãy thoa kem nhé');
  if(protLeft()>30000)return toast('🧴 Bạn vẫn đang được bảo vệ khỏi nắng');
- ST.kcn=(ST.kcn|0)-1;ST.kcnU=Date.now()+SUN_PROT;burnUntil=0;sunHud();try{save()}catch(e){}closeUI();toast('🧴 Đã thoa kem chống nắng!')}
+ ST.kcn=(ST.kcn|0)-1;ST.kcnU=Date.now()+SUN_PROT;burnUntil=0;seaSec=0;seaCatch=0;sunHud();try{save()}catch(e){}closeUI();toast('🧴 Đã thoa kem chống nắng!')}
 function sunHud(){
  if(!sunEl){sunEl=document.createElement('div');
-  sunEl.style.cssText='position:fixed;inset:0;z-index:24;pointer-events:none;display:none;background:radial-gradient(ellipse at center,rgba(255,80,40,0) 55%,rgba(255,70,30,.32) 100%)';
-  sunEl.innerHTML='<div style="position:absolute;left:50%;top:54px;transform:translateX(-50%);padding:5px 12px;font:800 13px Nunito,\'Segoe UI\',Arial,sans-serif;background:#ffe3d6;border:2px solid #c4382e;border-radius:8px;color:#8a2218;box-shadow:0 2px 0 #c4382e">🔥 Rát da</div>';
-  document.body.appendChild(sunEl)}
+  sunEl.style.cssText='position:fixed;left:50%;top:54px;transform:translateX(-50%);z-index:24;pointer-events:none;display:none;padding:5px 12px;font:800 13px Nunito,\'Segoe UI\',Arial,sans-serif;background:#ffe3d6;border:2px solid #c4382e;border-radius:8px;color:#8a2218;box-shadow:0 2px 0 #c4382e';
+  sunEl.textContent='🔥 Rát da';document.body.appendChild(sunEl)}
  sunEl.style.display=burning()?'block':'none'}
 setInterval(()=>{const n=Date.now();
  if(burnUntil&&n>=burnUntil){burnUntil=0;toast('😌 Da đã hết rát')}
- if(!atSea()){nextChk=0;sunHud();return}
- if(!nextChk)nextChk=n+SUN_CHK;
- if(n>=nextChk){nextChk=n+SUN_CHK;
-  if(!burnUntil&&protLeft()<=0&&Math.random()<SUN_P){burnUntil=n+SUN_BURN;toast('☀️ Nắng làm rát da!'+((ST.kcn|0)>0?'\n🧴 Dùng kem trong Túi › Biển':''))}}
+ if(!atSea()){seaSec=0;seaCatch=0;sunHud();return}
+ if(!burning()&&protLeft()<=0){seaSec++;if(seaSec>SUN_LONG&&(seaSec-SUN_LONG)%60==0&&Math.random()<SUN_LONG_P)sunBurn()}
  sunHud()},1000);
 
 // ---------- CSS ----------
@@ -173,6 +175,7 @@ const ease=u=>1-Math.pow(1-Math.min(1,Math.max(0,u)),3);
 MQ.open=(ctx)=>{
  const onBoat=window.CV&&CV.boat&&CV.cur=='bn'&&typeof MAP!=='undefined'&&MAP=='bn';
  if(!onBoat)return toast('🚣 Phải lên thuyền ra biển mới câu được! Ra cuối cầu tàu, bấm RA BIỂN nhé');
+ if(burning())return toast('☀️ Da đang rát, chưa câu được');
  const bk=(ctx&&ctx.boat)||CV.bk||2;
  openUI(head('🎣 Câu quái vật')+
   '<div class="mut" id="mqs" style="text-align:center;min-height:32px"></div>'+
@@ -199,17 +202,17 @@ MQ.btn=()=>{if(!F)return;const p=F.ph;
  if(p=='bite')return pull()};
 addEventListener('keydown',e=>{if(!F||e.repeat||!KEY(e))return;MQ.btn()});
 
-function startCast(){F.ph='cast';F.t=0;F.wait=rr(1.8,2.3);F.rip=[];F.parts=[];F.dip=0;F.sh=null;F.mon=null;const z=$('mqz'),k=$('mqk'),b=$('mqb');if(z)z.style.display='none';if(k)k.style.display='none';if(b)b.classList.remove('on');MQ.stat()}
+function startCast(){if(burning()){say('☀️ Da đang rát, chưa câu được','#c4382e');return}F.ph='cast';F.t=0;F.wait=rr(1.8,2.3);F.rip=[];F.parts=[];F.dip=0;F.sh=null;F.mon=null;const z=$('mqz'),k=$('mqk'),b=$('mqb');if(z)z.style.display='none';if(k)k.style.display='none';if(b)b.classList.remove('on');MQ.stat()}
 function rollMon(){if(MQ.force!=null&&MON[MQ.force])return MON[MQ.force];let u=Math.random(),rar=0;for(let i=0;i<RAR.length;i++){if(u<RAR[i].w){rar=i;break}u-=RAR[i].w;rar=i}
  const L=MON.filter(m=>m.r==rar);return L[Math.floor(Math.random()*L.length)]}
 function spawnShadow(){const m=rollMon();F.mon=m;F.rar=m.r;const from=Math.random()<.5?-14:134,y=rr(52,72);F.sh={x:from,y,dir:from<0?1:-1,a:0,fx:from,fy:y,mode:0};F.ph='shadow';F.t=0;MQ.stat()}
-function startBite(){F.ph='bite';F.t=0;const R=RAR[F.rar];F.zone=R.zone*(burning()?.82:1);F.zx=rr(.06,.94-F.zone);F.spd=R.spd;F.p0=Math.random()*2;
+function startBite(){F.ph='bite';F.t=0;const R=RAR[F.rar];F.zone=R.zone;F.zx=rr(.06,.94-F.zone);F.spd=R.spd;F.p0=Math.random()*2;
  const z=$('mqz'),k=$('mqk'),b=$('mqb');if(z){z.style.display='block';z.style.top=F.zx*100+'%';z.style.height=F.zone*100+'%'}if(k)k.style.display='block';if(b)b.classList.add('on');MQ.stat()}
 const markPos=()=>Math.abs(((F.t*F.spd+F.p0)%2)-1);
 function hideBar(){const z=$('mqz'),k=$('mqk'),b=$('mqb');if(z)z.style.display='none';if(k)k.style.display='none';if(b)b.classList.remove('on')}
 function pull(){const p=markPos(),ok=p>=F.zx-.015&&p<=F.zx+F.zone+.015;
  if(ok){const m=F.mon,b=bag();b[m.id]=(b[m.id]|0)+1;let bonus='';try{const zn=window.seaZoneHere&&seaZoneHere();if(zn&&Math.random()<ZB)bonus=giveBonus()}catch(e){}try{save()}catch(e){}
-  F.ph='win';F.t=0;F.parts=[];for(let i=0;i<(m.r==2?46:m.r==1?18:9);i++)F.parts.push({a:rr(0,6.283),v:rr(20,m.r==2?70:46),l:rr(.5,1.3),t:0,c:m.r==2?['#fff','#ffe27a','#ffcf3a','#ffb0e8'][i%4]:m.r==1?'#ffe27a':'#bfe8ff'});
+  try{sunCatch()}catch(e){}F.ph='win';F.t=0;F.parts=[];for(let i=0;i<(m.r==2?46:m.r==1?18:9);i++)F.parts.push({a:rr(0,6.283),v:rr(20,m.r==2?70:46),l:rr(.5,1.3),t:0,c:m.r==2?['#fff','#ffe27a','#ffcf3a','#ffb0e8'][i%4]:m.r==1?'#ffe27a':'#bfe8ff'});
   F.rip.push({x:HX,t:0});hideBar();
   say('🎉 Câu được <b style="color:'+RAR[m.r].col+';text-shadow:0 0 1px #000">'+m.n+'</b> ('+RAR[m.r].n.toLowerCase()+')!<br><small>Đã vào Túi › Biển • bán ở Tiệm câu: '+m.p+' xu quái vật</small>'+(bonus?'<br>'+bonus:''),'#2a7a2a');
   const bt=$('mqg');if(bt)bt.textContent='🎣 CÂU TIẾP';cnt();
