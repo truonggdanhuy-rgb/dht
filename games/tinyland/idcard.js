@@ -52,8 +52,8 @@ const css=document.createElement('style');css.textContent=`
 .idph canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
 .idav.nf .idph{border-radius:16px;border:3px solid #8cc4e2;box-sizing:border-box;-webkit-mask:none;mask:none;background-color:#cfe9f7}
 .idfr{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block}
-.idtt{padding:8px 6px 6px}.idtl{display:flex;flex-direction:column;align-items:center;gap:5px}.idtl img{width:min(100%,290px);height:auto;display:block;cursor:pointer;filter:drop-shadow(0 2px 2px rgba(40,70,100,.25))}.idtl img:active{transform:scale(.98)}
-.idnobf{width:min(100%,290px);box-sizing:border-box;display:flex;align-items:center;gap:10px;padding:9px 12px;border:2px dashed #f0a9c4;border-radius:16px;background:linear-gradient(135deg,#fff5f9,#ffe3ee);color:#a44b72;cursor:pointer}
+.idtt{padding:8px 6px 6px}.idtl{display:flex;flex-direction:column;align-items:center;gap:5px}.idtl img{width:min(80%,232px);height:auto;display:block;cursor:pointer;filter:drop-shadow(0 2px 2px rgba(40,70,100,.25))}.idtl img:active{transform:scale(.98)}
+.idnobf{width:min(80%,232px);box-sizing:border-box;display:flex;align-items:center;gap:10px;padding:9px 12px;border:2px dashed #f0a9c4;border-radius:16px;background:linear-gradient(135deg,#fff5f9,#ffe3ee);color:#a44b72;cursor:pointer}
 .idnobf .l{font-size:24px;filter:grayscale(.2)}.idnobf b{display:block;font-size:13px}.idnobf small{font-size:10.5px;color:#c27a98}
 .idsoon div.ok{background:linear-gradient(135deg,#fff5f9,#e3f4fd);border:2px solid #f0a9c4;border-style:solid;color:#a44b72;cursor:pointer;font-weight:800}
 .idsoon div.ok small{color:#c27a98}
@@ -114,6 +114,10 @@ const css=document.createElement('style');css.textContent=`
 .idft.sel{border-color:#4aa3d4;background:#e3f4fd;box-shadow:0 0 0 2px #9fd5ee}
 .idft.eq{border-color:#5cc08f}
 .idft b{font-size:10.5px;line-height:1.15}.idft small{font-size:9.5px;color:#5b7f95;line-height:1.1}
+.ttr{display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:8px;padding:8px 6px;background:#fff;border:2px solid #cfe8f5;border-radius:14px}
+.ttr img{width:min(80%,232px);height:auto;display:block;filter:drop-shadow(0 2px 2px rgba(40,70,100,.25))}
+.ttr small{font-size:11px;color:#5b7f95;text-align:center;line-height:1.3}.ttr small b{color:#1f4a66}
+.ttr.cur{border-color:#5cc08f;background:#f1fff7}.ttr.lock img{filter:grayscale(1) brightness(.9);opacity:.5}
 .idpv{display:flex;flex-direction:column;align-items:center;gap:4px;background:linear-gradient(160deg,#f6fcff,#d9eefb);border:2px solid #b5dbef;border-radius:14px;padding:10px}
 
 .idnrow{display:flex;align-items:center;gap:6px}.idnrow .idnm{flex:1;min-width:0;font-size:18px}
@@ -175,7 +179,7 @@ function paintFaces(){
 function paintChars(){document.querySelectorAll('canvas.idchr').forEach(c=>{try{const g=c.getContext('2d');g.clearRect(0,0,40,48);drawAv(g,10,2,{d:0,a:0,mv:0,sit:0,hair:+c.dataset.h||0,set:+c.dataset.s||0,e:+c.dataset.e||0})}catch(e){}})}
 let IDV='main',FSEL=0;
 window.idUI=function(){IDV='main';idRender();idBorn();idSyncBf()};
-function idRender(){IDV=='frames'?framesView():IDV=='bf'?bfView():IDV=='dl'?dlView():IDV=='shelf'?shelfView():mainView();paintFaces();paintChars();paintPets();petLoop();mhPaint();mhLoop()}
+function idRender(){IDV=='tt'?ttView():IDV=='frames'?framesView():IDV=='bf'?bfView():IDV=='dl'?dlView():IDV=='shelf'?shelfView():mainView();paintFaces();paintChars();paintPets();petLoop();mhPaint();mhLoop()}
 // mở thẻ → hỏi máy chủ bạn thân mới nhất, có đổi thì vẽ lại
 async function idSyncBf(){try{if(!window.bfPoll)return;const b=JSON.stringify(bfGet());await bfPoll();
  if(JSON.stringify(bfGet())!=b&&$('ui').classList.contains('idc')&&(IDV=='main'||IDV=='bf')&&!(document.activeElement&&document.activeElement.tagName=='TEXTAREA'))idRender()}catch(e){}}
@@ -191,16 +195,26 @@ function mainView(){
  '<div class="idline"><span>🎂 Ngày ra đời</span><b id="idborn">'+fmtD(ID.born)+'</b></div>'+
  '<div class="idlv"><div class="t"><span>⭐ Level</span><b>'+ST.lv+(mx?' MAX':'')+'</b></div><div class="idbar"><i style="width:'+pc+'%"></i></div></div>'+
  '<div class="mut" style="margin:0;font-size:10.5px">👆 Bấm vào avatar để đổi ảnh / khung</div></div></div>'+
- '<div class="idbox idtt"><div class="idtl"><img alt="Danh hiệu Level" src="'+TITLE_ASSETS.lv[lvTier(ST.lv)]+'" onclick="idTT(0)">'+(B?'<img alt="Danh hiệu Bạn thân" src="'+TITLE_ASSETS.bf[bfTierOf(B.exp)]+'" onclick="idTT(1)">':'<div class="idnobf" onclick="idTT(1)"><span class="l">🔒</span><div><b>Cần bạn thân để mở danh hiệu</b><small>Mời bạn thân ở khu online nhé</small></div></div>')+'</div></div>'+
  '<div class="idmenu" id="idmenu"><button class="b" onclick="idPick()">📷 Đổi ảnh</button><button class="b" onclick="idFrames()">🖼️ Đổi khung</button></div>'+
+ '<div class="idbox idtt"><div class="idtl"><img alt="Danh hiệu Level" src="'+TITLE_ASSETS.lv[lvTier(ST.lv)]+'" onclick="idTT(0)">'+(B?'<img alt="Danh hiệu Bạn thân" src="'+TITLE_ASSETS.bf[bfTierOf(B.exp)]+'" onclick="idTT(1)">':'<div class="idnobf" onclick="idTT(1)"><span class="l">🔒</span><div><b>Cần bạn thân để mở danh hiệu</b><small>Mời bạn thân ở khu online nhé</small></div></div>')+'</div></div>'+
   '<input id="idfile" type="file" accept="image/*" style="display:none" onchange="idFile(this)">'+
  '<div class="idbox"><h4>📝 Thông tin</h4><textarea id="idbio" maxlength="200" placeholder="Viết vài dòng giới thiệu bản thân nhé (tối đa 200 chữ)..." oninput="idBio(this)" onchange="save()" onblur="save()">'+escH(ID.bio)+'</textarea><div class="idcnt"><span id="idcn">'+ID.bio.length+'</span>/200</div></div>'+
  '<div class="idg3"><div class="idsq"><span class="e">🪙</span><b>'+fmtXu(ID.earn)+'</b><small>Tổng xu đã kiếm</small></div>'+
  '<div class="idsq"><span class="e">'+(n>10?'🔥':'📅')+'</span><b>'+n+' ngày</b><small>Chuỗi đăng nhập'+(n>10?' 🔥':'')+'</small></div>'+'</div>'+
  '<div class="iddlg">'+['bl','tl'].map(k=>{const c=dlCan(k);return '<div class="iddlt" onclick="idDL(\''+k+'\')">'+(c?'<span class="dot">🎁</span>':'')+'<span class="e">'+DLM[k].e+'</span>'+DLM[k].t+'<b>'+ID.dl[k]+'</b><small>'+(c?'Có quà để nhận!':'Bấm để xem mốc quà')+'</small></div>'}).join('')+'</div>';
  openIdc(h)}
-window.idTT=k=>{if(k==0){const t=lvTier(ST.lv),nx=LV_FROM[t+1];toast('⭐ Danh hiệu Level: '+LV_N[t]+(nx?' • Đạt Lv '+nx+' để lên «'+LV_N[t+1]+'»':' • Bạn đã đạt bậc cao nhất!'))}
- else{const B=bfGet();if(!B)return idBF();const t=bfTierOf(B.exp);toast('💞 Danh hiệu Bạn thân: '+BT_N[t]+(t<4?' • Cần '+bfExpAt[t+1]+' EXP tình bạn để lên «'+BT_N[t+1]+'»':' • Bậc cao nhất!'))}};
+let TTK=0,TTFROM='main';
+window.idTT=k=>{TTK=k;TTFROM=IDV=='bf'?'bf':'main';IDV='tt';idRender();$('ui').scrollTop=0};
+window.idTTBack=()=>{IDV=TTFROM;idRender()};
+// xem toàn bộ khung danh hiệu của Level hoặc Bạn thân (đã đạt / đang dùng / sắp đạt)
+function ttView(){
+ const B=bfGet(),isL=TTK==0,cur=isL?lvTier(ST.lv):(B?bfTierOf(B.exp):-1),names=isL?LV_N:BT_N,imgs=isL?TITLE_ASSETS.lv:TITLE_ASSETS.bf;
+ let h='<div class="uh"><span><button class="b x" onclick="idTTBack()">‹ Thẻ</button> '+(isL?'⭐ Danh hiệu Level':'💞 Danh hiệu Bạn thân')+'</span><button class="b x" onclick="closeUI()">X</button></div>';
+ imgs.forEach((src,i)=>{
+  const need=isL?'Lv '+LV_FROM[i]+(i<4?' – '+(LV_FROM[i+1]-1):'+'):(i?bfExpAt[i]+' EXP tình bạn':'Kết bạn thân');
+  const st=i==cur?'✅ Đang dùng':i<cur?'Đã đạt':'🔒 Chưa đạt';
+  h+='<div class="ttr'+(i==cur?' cur':i>cur?' lock':'')+'"><img alt="'+names[i]+'" src="'+src+'"><small><b>'+st+'</b> • '+need+'</small></div>'});
+ openIdc(h)}
 window.idMenu=()=>{const m=$('idmenu');if(m)m.classList.toggle('on')};
 window.idPick=()=>{const f=$('idfile');if(f)f.click()};
 window.idBio=el=>{if(el.value.length>200)el.value=el.value.slice(0,200);ID.bio=el.value;clearTimeout(window.__cbt);window.__cbt=setTimeout(()=>cardSync(),2500);const c=$('idcn');if(c)c.textContent=el.value.length};
@@ -881,15 +895,24 @@ function shelfView(){const S=mhS();let rows='';
  '<div class="idbox" style="margin-top:0"><h4>🎒 Túi mô hình</h4>'+bag+act+'</div>'+
  '<div class="shnote">Mô hình nhận từ 🎱 Thả bi Tí Nị (khay Mô hình). Bấm mô hình trên kệ để cất vào túi.</div></div>')}
 // ---- Bạn thân ----
-window.idBF=()=>{IDV='bf';idRender();idSyncBf()};
-window.idQuest=()=>toast('📋 Nhiệm vụ hằng ngày cùng bạn thân sắp ra mắt, chờ chút nha!');
+window.idBF=()=>{IDV='bf';window.bfCiT=0;idRender();idSyncBf()};
+let ciBusy=0;
+window.idCheckin=async()=>{const B=bfGet();if(!B||ciBusy)return;ciBusy=1;
+ try{const r=await dhtRpc('bf_checkin',{p_partner:B.pu});
+  if(r&&typeof r=='object'){const was=bfTierOf(B.exp);window.bfCiSet(B.pu,r);const B2=bfGet();idRender();
+   toast(r.got?'📅 Điểm danh xong! +5 EXP bạn thân':'Hôm nay bạn đã điểm danh rồi');
+   if(B2&&r.got&&bfTierOf(B2.exp)>was)setTimeout(()=>toast('🎉 Lên bậc «'+BT_N[bfTierOf(B2.exp)]+'»!'),1800);
+   cardSync()}
+  else toast('❌ Chưa điểm danh được, thử lại nhé')}
+ catch(e){toast('❌ Chưa điểm danh được (máy chủ chưa cập nhật điểm danh)')}
+ ciBusy=0};
 function bfView(){
  const B=bfGet(),A=ST.av||{};
  let h='<div class="uh"><span><button class="b x" onclick="idBack()">‹ Thẻ</button> 💞 Bạn thân</span><button class="b x" onclick="closeUI()">X</button></div>';
  if(!B)h+='<div class="idemp"><div class="big">💞</div><b>Bạn chưa có bạn thân</b><br>Vào khu online (Công viên, Phố xá), bấm vào một người chơi khác rồi chọn <b>💞 Mời bạn thân</b>.<br><small>Mỗi người chỉ có 1 bạn thân và cả hai cùng chung tiến trình.</small></div>';
  else{
   const t=bfTierOf(B.exp),mx=t>=4,cur=bfExpAt[t],nx=mx?cur:bfExpAt[t+1],pc=mx?100:Math.max(0,Math.min(100,(B.exp-cur)/(nx-cur)*100)),pa=B.pav||{};
-  const days=Math.max(1,Math.floor((Date.now()-B.since)/864e5)+1);
+  const days=Math.max(1,Math.floor((Date.now()-B.since)/864e5)+1),ci=(ST.id.bfci&&ST.id.bfci.pu==B.pu)?ST.id.bfci:{n:0,me:0};
   h+='<div class="idpair"><div class="idpc"><canvas class="idchr" width="40" height="48" data-h="'+(A.h|0)+'" data-s="'+(A.s|0)+'" data-e="'+(A.e|0)+'"></canvas><b>'+escH(ST.name||'Bạn')+'</b></div>'+
    '<div class="idmid"><span class="h">💖</span>Bạn thân</div>'+
    '<div class="idpc"><canvas class="idchr" width="40" height="48" data-h="'+(pa.h|0)+'" data-s="'+(pa.s|0)+'" data-e="'+(pa.e|0)+'"></canvas><b>'+escH(B.pn||'Bạn thân')+'</b></div></div>'+
@@ -897,7 +920,8 @@ function bfView(){
    '<div class="idbox"><h4>💞 Tiến trình tình bạn</h4><div class="idlv" style="border:0;padding:0"><div class="t"><span>'+BT_N[t]+'</span><b>'+(mx?'MAX':fmtXu(B.exp)+' / '+fmtXu(nx)+' EXP')+'</b></div><div class="idbar" style="height:10px"><i style="width:'+pc+'%;background:linear-gradient(90deg,#ff9ec2,#8fd0ee)"></i></div></div>'+
    '<div class="mut" style="margin:6px 0 0;font-size:11px">'+(mx?'Hai bạn đã đạt bậc cao nhất! 🎉':'Bậc kế tiếp: «'+BT_N[t+1]+'»')+' • Tiến trình dùng chung cho cả hai người</div></div>'+
    '<div class="idline" style="margin-top:8px"><span>📅 Ngày tình bạn</span><b>'+fmtD(B.since)+' • '+days+' ngày</b></div>'+
-   '<button class="b w go" style="margin-top:8px" onclick="idQuest()">📋 Nhiệm vụ hằng ngày</button>'}
+   (ci.me?'<button class="b w" disabled style="margin-top:8px;opacity:.7">✅ Hôm nay bạn đã điểm danh</button>':'<button class="b w go" style="margin-top:8px" onclick="idCheckin()">📅 Điểm danh bạn thân</button>')+
+   '<div class="mut" style="margin:6px 0 0;font-size:11px;text-align:center">Điểm danh hằng ngày nhận 5 EXP</div>'}
  openIdc(h)}
 
 // ---- đổi khung ----

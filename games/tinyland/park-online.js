@@ -78,17 +78,26 @@ window.liXiGo=async()=>{if(giftBusy)return;const o=tapO,a=Math.floor(+($('lxn').
 
 
 // ---------- Bạn thân (mời / đồng ý / đồng bộ qua Supabase, chạy file ban_than.sql 1 lần) ----------
-const BFX=[0,100,300,700,1500]; // mốc EXP tình bạn của 5 bậc danh hiệu
+const BFX=[0,20,60,140,300]; // mốc EXP tình bạn của 5 bậc danh hiệu (bậc 1→2 cần 20 EXP). Muốn đổi mốc chỉ sửa dòng này
+const BF_CI=5;               // EXP mỗi lần 1 người điểm danh
 window.bfTierOf=e=>{let t=0;BFX.forEach((v,i)=>{if((e|0)>=v)t=i});return t};
 window.bfExpAt=BFX;
 window.bfGet=()=>(ST.id&&ST.id.bfc)||null;
 let bfBusy=0,bfShown={};
-function bfApply(b){if(!ST.id)ST.id={};const was=ST.id.bfc||null;ST.id.bfc=b||null;ST.id.bt=b?bfTierOf(b.exp):-1;
+// EXP bạn thân = EXP máy chủ (sx) + số lần điểm danh của cả 2 người × BF_CI
+const bfBonus=pu=>{const c=ST.id&&ST.id.bfci;return(c&&pu&&c.pu==pu)?(c.n|0)*BF_CI:0};
+window.bfCiSet=(pu,r)=>{if(!r||typeof r!='object')return;if(!ST.id)ST.id={};
+ ST.id.bfci={pu,n:r.n|0,me:r.me?1:0,they:r.they?1:0};
+ const B=bfGet();if(B&&B.pu==pu){B.exp=(B.sx|0)+bfBonus(pu);ST.id.bt=bfTierOf(B.exp)}save();track()};
+window.bfCiT=0;
+async function bfCiLoad(pu){if(!pu||Date.now()-window.bfCiT<30000)return;window.bfCiT=Date.now();
+ try{window.bfCiSet(pu,await dhtRpc('bf_checkin_info',{p_partner:pu}))}catch(e){}}
+function bfApply(b){if(!ST.id)ST.id={};const was=ST.id.bfc||null;if(b){b.sx=b.exp|0;b.exp=b.sx+bfBonus(b.pu)}ST.id.bfc=b||null;ST.id.bt=b?bfTierOf(b.exp):-1;
  if(b&&(!was||was.pu!=b.pu))toast('💞 Bạn và '+(b.pn||'bạn ấy')+' đã là bạn thân!');
  save();track()}
 window.bfPoll=async()=>{if(!dhtOk()||bfBusy)return;bfBusy=1;
  try{const A=ST.av||{},r=await dhtRpc('bf_poll',{p_name:ST.name,p_av:{h:A.h|0,s:A.s|0,e:A.e|0}});
-  if(r&&typeof r=='object'){bfApply(r.bf);
+  if(r&&typeof r=='object'){bfApply(r.bf);if(r.bf&&r.bf.pu)await bfCiLoad(r.bf.pu);
    (r.res||[]).forEach(x=>toast('🙏 '+(x.n||'Bạn ấy')+' chưa muốn kết bạn thân lúc này'));
    if(!r.bf&&!UI&&Array.isArray(r.inv))for(const v of r.inv){if(!bfShown[v.id]){bfShown[v.id]=1;bfAsk(v);break}}}}catch(e){}
  bfBusy=0};
