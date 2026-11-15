@@ -3621,7 +3621,7 @@ const WK=HR.concat([[156,70,8,38],[40,142,24,24],[168,142,24,24],[204,224,24,44]
 (()=>{const C=2,gw=HW/C,gh=HH/C,rb=[];let open={};for(let j=0;j<gh;j++){const y=j*C,runs=[];let st=-1;for(let i=0;i<=gw;i++){const x=i*C,bl=i<gw&&!WK.some(q=>x>=q[0]&&x<q[0]+q[2]&&y>=q[1]&&y<q[1]+q[3]);if(bl&&st<0)st=x;else if(!bl&&st>=0){runs.push([st,x]);st=-1}}
  const nx={};for(const[u,v]of runs){const k=u+'-'+v;if(open[k]){nx[k]=open[k];open[k][3]+=C}else{nx[k]=[u,y,v-u,C];rb.push(nx[k])}}open=nx}
  HM.rb=rb.concat([[20,30,44,48],[170,30,18,12],[192,30,56,12],[258,166,14,14],[232,166,22,14],[270,186,22,80]])})();
-const CAT={sofa:['Sofa',5,2,'f'],arm:['Ghế bành',2,2,'f'],tbl:['Bàn trà',3,2,'f'],din:['Bàn ăn',6,3,'f'],chr:['Ghế gỗ',2,2,'f'],shf:['Kệ sách',4,3,'f'],wrd:['Tủ quần áo',3,4,'f'],drw:['Tủ ngăn kéo',3,2,'f'],plt:['Chậu cây',2,3,'f'],lmp:['Đèn cây',1,4,'f'],tv:['Tivi',4,3,'f'],cat:['Ổ mèo',3,2,'f'],rug:['Thảm',6,4,'r'],clk:['Đồng hồ',2,2,'w'],pic:['Tranh',4,2,'w'],bsk:['Giỏ hoa treo',2,2,'w'],cal:['Lịch tường',2,2,'w'],mir:['Gương',2,2,'w']};
+const CAT={sofa:['Sofa',5,2,'f'],arm:['Ghế bành',2,2,'f'],tbl:['Bàn trà',3,2,'f'],din:['Bàn ăn',6,3,'f'],chr:['Ghế gỗ',2,2,'f'],shf:['Kệ sách',4,3,'f'],wrd:['Tủ quần áo',3,4,'f'],drw:['Tủ ngăn kéo',3,2,'f'],plt:['Chậu cây',2,3,'f'],lmp:['Đèn cây',1,4,'f'],tv:['Tivi',4,3,'f'],cat:['Ổ mèo',3,2,'f'],rug:['Thảm',6,4,'r'],clk:['Đồng hồ',2,2,'w'],pic:['Tranh',4,2,'w'],bsk:['Giỏ hoa treo',2,2,'w'],cal:['Lịch tường',2,2,'w'],mir:['Gương',2,2,'w'],ctbl:['Bàn tai mèo',3,2,'f',1],cchr:['Ghế tai mèo',2,2,'f',1],clmp:['Đèn tai mèo',2,3,'f',1],wcl:['Lịch treo tường',2,2,'w'],wph:['Điện thoại treo tường',2,2,'w'],wpc:['Tranh treo tường',3,2,'w'],ftv:['Tivi màn phẳng',5,3,'f']};
 const bxd=(r,x,y,w,h,c,d)=>{r(d,x,y,w,h);r(c,x,y,w,h-1);r('rgba(255,255,255,.22)',x+1,y,w-2,1)};
 const DR={
 sofa:r=>{bxd(r,1,0,38,9,'#5f9188','#456b64');r('#78aea2',3,1,34,2);bxd(r,0,4,6,11,'#4f8077','#3a6660');bxd(r,34,4,6,11,'#4f8077','#3a6660');bxd(r,6,8,14,7,'#7db3a7','#5f9188');bxd(r,20,8,14,7,'#7db3a7','#5f9188');r('#5f9188',20,8,1,7);r('#e8a84a',8,2,6,6);r('#f0c070',9,3,4,1);r('#c0504a',27,2,6,6);r('#5d3a1c',2,15,2,1);r('#5d3a1c',36,15,2,1)},
@@ -3641,7 +3641,17 @@ clk:r=>{E(r,'#7a4a26',8,8,7,7);E(r,'#fff7e0',8,8,6,6);r('#222',8,4,1,5);r('#222'
 pic:r=>{bxd(r,0,1,32,14,'#8a5a34','#5d3a1c');r('#9fd4ee',2,3,28,10);r('#6cc060',2,9,28,4);E(r,'#ffd23f',24,6,3,3);r('#fff',8,5,6,2)},
 bsk:r=>{r('#7a4a26',7,0,2,5);bxd(r,3,5,10,6,'#c98a52','#8a5a34');r('#e8727e',2,3,3,3);r('#ffd23f',6,2,3,3);r('#f6a9b1',10,3,3,3);r('#6fbf73',4,12,3,3);r('#4f9e44',11,12,3,3)},
 cal:r=>{bxd(r,2,0,12,15,'#fff','#d0c8b0');r('#c0392b',2,0,12,4);for(let i=0;i<3;i++)for(let j=0;j<3;j++)r('#7a7a7a',4+i*3,6+j*3,2,1)},
-mir:r=>{bxd(r,3,0,10,15,'#8a5a34','#5d3a1c');r('#cfeaf8',5,2,6,11);r('#fff',6,3,1,4)}};
+mir:r=>{bxd(r,3,0,10,15,'#8a5a34','#5d3a1c');r('#cfeaf8',5,2,6,11);r('#fff',6,3,1,4)},
+// ---- set tai mèo (pastel) ----
+ctbl:r=>{ear(r,'#d9cdf5','#f9cfe0',6,0,5);ear(r,'#d9cdf5','#f9cfe0',18,0,5);E(r,'#e79ab8',12,8,11,3);E(r,'#f9cfe0',12,7,10,2);r('#fff4e0',6,6,5,1);r('#b5a2e0',5,11,2,5);r('#b5a2e0',17,11,2,5);r('#d9cdf5',5,11,1,4);r('#d9cdf5',17,11,1,4)},
+cchr:r=>{ear(r,'#d9cdf5','#f9cfe0',4,0,4);ear(r,'#d9cdf5','#f9cfe0',11,0,4);bxd(r,2,3,12,7,'#d9cdf5','#b5a2e0');r('#fff4e0',4,5,8,2);bxd(r,1,9,14,4,'#f9cfe0','#e79ab8');r('#b5a2e0',2,13,2,3);r('#b5a2e0',12,13,2,3)},
+clmp:r=>{ear(r,'#f9cfe0','#fff4e0',4,0,4);ear(r,'#f9cfe0','#fff4e0',11,0,4);bxd(r,2,4,12,8,'#fff4e0','#f0dcb8');r('#f9cfe0',2,10,12,2);r('#8a6a8a',5,7,1,2);r('#8a6a8a',10,7,1,2);r('#e79ab8',7,9,2,1);r('#b5a2e0',7,12,2,9);E(r,'#d9cdf5',8,22,5,1);r('#b5a2e0',3,23,10,1)},
+// ---- đồ treo tường & tivi mới ----
+wcl:r=>{bxd(r,2,1,12,14,'#fffaf0','#d9d0bc');r('#f9a8c4',2,1,12,4);r('#8a6a8a',5,0,1,3);r('#8a6a8a',10,0,1,3);for(let i=0;i<4;i++)for(let j=0;j<3;j++)r('#a9a9bc',4+i*3,7+j*3,2,2);r('#e8505a',7,10,2,2)},
+wph:r=>{bxd(r,3,1,10,14,'#e8e0f6','#b5a2e0');r('#3a3a4a',1,2,3,8);r('#3a3a4a',1,2,6,2);r('#3a3a4a',1,8,6,2);r('#fff',7,5,5,5);for(let i=0;i<3;i++)for(let j=0;j<3;j++)r('#6a5a8a',7+i*2,5+j*2,1,1);r('#7a7a8a',13,3,1,10);for(let i=0;i<4;i++)r('#7a7a8a',12+(i%2),4+i*2,2,1)},
+wpc:r=>{r('#cfe6f8',2,2,20,12);r('#ffe49a',16,4,4,4);r('#fff',4,4,5,2);r('#fff',5,3,3,1);E(r,'#bfe8c8',7,14,8,4);E(r,'#a6dbb8',17,15,8,4);r('#f9a8c4',8,10,2,2);r('#c9a566',0,0,24,2);r('#c9a566',0,14,24,2);r('#c9a566',0,0,2,16);r('#c9a566',22,0,2,16);r('#f0d9a8',1,1,22,1);r('#f0d9a8',1,1,1,14)},
+ftv:r=>{bxd(r,0,0,40,19,'#33363d','#15171a');r('#8ecbf2',2,2,36,14);r('#ffe14a',30,4,4,4);r('#fff',5,4,6,2);r('#6fbf73',2,11,36,5);r('#4f9e44',2,13,36,3);r('#fff',3,3,12,1);r('#6fe07a',37,17,1,1);r('#555',17,19,6,2);r('#444',12,21,16,2)}};
+const ear=(r,c,c2,x,y,h)=>{for(let j=0;j<h;j++)r(c,x-j,y+j,2*j+1,1);for(let j=2;j<h;j++)r(c2,x-(j-2),y+j,2*(j-2)+1,1)};
 const SPC={};function dspr(id,f){const k=id+f;if(!SPC[k]){const c=CAT[id],w=c[1]*8;SPC[k]=outl(mk(w,c[2]*8,(g,r)=>{if(f){g.translate(w,0);g.scale(-1,1)}DR[id](r)}))}return SPC[k]}
 let SEL=null,DECO=0;
 const hov=(a,b)=>a[0]<b[0]+b[2]&&b[0]<a[0]+a[2]&&a[1]<b[1]+b[3]&&b[1]<a[1]+a[3],box=o=>[o[1]*8,o[2]*8,CAT[o[0]][1]*8,CAT[o[0]][2]*8];
@@ -3667,10 +3677,10 @@ function decoTap(wx,wy){const P=ST.hm.p;
  else{for(let i=P.length-1;i>=0;i--){const b=box(P[i]);if(wx>=b[0]&&wx<b[0]+b[2]&&wy>=b[1]&&wy<b[1]+b[3]){const o=P.splice(i,1)[0];SEL={id:o[0],gx:o[1],gy:o[2],f:o[3],o:o};break}}}
  hmSync();barUp()}
 function barUp(){const d=$('dbar');if(!DECO){d.style.display='none';return}d.style.display='flex';
- d.innerHTML=SEL?'<button class="b" onclick="decoDo(0)">✔ Đặt</button><button class="b" onclick="decoDo(1)">↔ Xoay</button><button class="b" onclick="decoDo(2)">🎒 Cất</button><button class="b" onclick="decoDo(3)">✖ Hủy</button>':'<button class="b" onclick="decoUI()">🎒 Túi nội thất</button><button class="b" onclick="decoToggle()">✅ Xong</button><span style="font-size:11px;align-self:center">Chạm đồ để chọn</span>'}
+ d.innerHTML=SEL?'<button class="b" onclick="decoDo(0)">✔ Đặt</button>'+(CAT[SEL.id][4]?'':'<button class="b" onclick="decoDo(1)">↔ Xoay</button>')+'<button class="b" onclick="decoDo(2)">🎒 Cất</button><button class="b" onclick="decoDo(3)">✖ Hủy</button>':'<button class="b" onclick="decoUI()">🎒 Túi nội thất</button><button class="b" onclick="decoToggle()">✅ Xong</button><span style="font-size:11px;align-self:center">Chạm đồ để chọn</span>'}
 function decoDo(k){if(!SEL)return;const I=ST.hm.i,id=SEL.id;
  if(k==0){const it=[id,SEL.gx,SEL.gy,SEL.f];if(!hmOk(it))return toast('❌ Chỗ này không đặt được');ST.hm.p.push(it);if(!SEL.o)I[id]--;SEL=null}
- else if(k==1)SEL.f^=1;
+ else if(k==1){if(CAT[id][4])return toast('↔ Món này chỉ có 1 hướng, không xoay được');SEL.f^=1}
  else if(k==2){I[id]=(I[id]||0)+(SEL.o?1:0);SEL=null;toast('🎒 Đã cất vào túi nhà')}
  else{if(SEL.o)ST.hm.p.push(SEL.o);SEL=null}hmSync();barUp()}
 function decoToggle(){DECO=!DECO;SEL=null;$('dbtn').textContent=DECO?'✅ Xong':'🛠️ Trang trí';hmSync();barUp();if(DECO)decoUI()}
@@ -3678,11 +3688,11 @@ var DT=0;
 function decoUI(){const I=ST.hm.i,P=ST.hm.p,n=Object.keys(I).reduce((a,k)=>a+(I[k]||0),0);UI=1;$('dbar').style.display='none';$('ui').style.display='block';
  let h='<div class="uh"><span>🛋️ Nội thất nhà</span><button class="b x" onclick="closeUI()">✕</button></div><div class="tabs"><button class="b'+(DT?'':' on')+'" onclick="DT=0;decoUI()">🎒 Túi nội thất ('+n+')</button><button class="b'+(DT?' on':'')+'" onclick="DT=1;decoUI()">🏠 Đang bày ('+P.length+')</button></div><div class="mut">Xu: '+ST.xu+' 🪙</div><div class="g1">';
  if(DT)h+=P.map((o,i)=>{const c=CAT[o[0]];return'<div class="it"><span>'+c[0]+'</span><span class="sb"><button class="b" onclick="decoMove('+i+')">Di chuyển</button><button class="b" onclick="decoStore('+i+')">🎒 Cất</button></span></div>'}).join('')||'<div class="mut">Chưa bày món nào.</div>';
- else h+=(Object.keys(CAT).filter(k=>(I[k]||0)>0).map(k=>{const c=CAT[k],m=I[k]||0;return'<div class="it"><span>'+c[0]+' <small>'+c[1]+'×'+c[2]+(c[3]=='w'?' • treo tường':c[3]=='r'?' • thảm':'')+' • có '+m+'</small></span><span class="sb"><button class="b" onclick="decoPut(\''+k+'\')">Đặt</button></span></div>'}).join('')||'<div class="mut">Túi nội thất đang trống.</div>')+'<div class="mut">🛋️ Muốn thêm đồ? Ra Phố xá, ghé <b>Tiệm nội thất</b> để mua (100–300 Xu/món). Đồ mua về sẽ nằm ở đây.</div>';
+ else h+=(Object.keys(CAT).filter(k=>(I[k]||0)>0).map(k=>{const c=CAT[k],m=I[k]||0;return'<div class="it"><span>'+c[0]+' <small>'+c[1]+'×'+c[2]+(c[3]=='w'?' • treo tường':c[3]=='r'?' • thảm':'')+' • có '+m+'</small></span><span class="sb"><button class="b" onclick="decoPut(\''+k+'\')">Đặt</button></span></div>'}).join('')||'<div class="mut">Túi nội thất đang trống.</div>')+'<div class="mut">🛋️ Muốn thêm đồ? Ra Phố xá, ghé <b>Tiệm nội thất</b> để mua (100–500 Xu/món). Đồ mua về sẽ nằm ở đây.</div>';
  $('ui').innerHTML=h+'</div>'}
 function decoStore(i){const o=ST.hm.p.splice(i,1)[0];ST.hm.i[o[0]]=(ST.hm.i[o[0]]||0)+1;hmSync();decoUI();toast('🎒 Đã cất '+CAT[o[0]][0]+' vào túi')}
 function decoMove(i){const o=ST.hm.p.splice(i,1)[0];closeUI();SEL={id:o[0],gx:o[1],gy:o[2],f:o[3],o:o};hmSync();barUp()}
-function hmSeat(wx,wy){if(Pl.sit)return 0;for(const o of ST.hm.p){if(!'sofa arm chr'.includes(o[0]))continue;const b=box(o);if(wx>=b[0]&&wx<b[0]+b[2]&&wy>=b[1]&&wy<b[1]+b[3]){ST.av.m=-1;Pl.x=Math.min(b[0]+b[2]-6,Math.max(b[0]+6,wx));Pl.y=b[1]+b[3]-2;Pl.by=b[1]+b[3]+8;Pl.d=0;Pl.sit=2;Pl.st=0;Pl.nt=0;Pl.bn=1;goal=null;toast('🛋️ Ngồi nghỉ... (di chuyển để đứng dậy)');return 1}}return 0}
+function hmSeat(wx,wy){if(Pl.sit)return 0;for(const o of ST.hm.p){if(!['sofa','arm','chr','cchr'].includes(o[0]))continue;const b=box(o);if(wx>=b[0]&&wx<b[0]+b[2]&&wy>=b[1]&&wy<b[1]+b[3]){ST.av.m=-1;Pl.x=Math.min(b[0]+b[2]-6,Math.max(b[0]+6,wx));Pl.y=b[1]+b[3]-2;Pl.by=b[1]+b[3]+8;Pl.d=0;Pl.sit=2;Pl.st=0;Pl.nt=0;Pl.bn=1;goal=null;toast('🛋️ Ngồi nghỉ... (di chuyển để đứng dậy)');return 1}}return 0}
 function decoPut(k){closeUI();const c=CAT[k];SEL={id:k,gx:Math.round(Pl.x/8-c[1]/2),gy:c[3]=='w'?(Pl.y<80?14:150)/8:Math.round(Pl.y/8-c[2]/2),f:0,o:null};hmSync();barUp();toast('Chạm vào nơi muốn đặt, rồi bấm ✔ Đặt')}
 
 let MAP='nt';const MPOS={nt:{x:560,y:292}};

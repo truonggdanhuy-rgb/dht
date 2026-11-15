@@ -1,7 +1,7 @@
 /* ============================================================
    PHỐ XÁ — map online thứ 2 (dùng chung hệ thống mạng của Công viên)
    - Shop: bán thú cưỡi / pet / set / tóc-mũ (đồ trong Túi chỉ có khi đã mua)
-   - Tiệm nội thất (nhà phố số 1): bán đồ trang trí nhà 100–300 Xu, đồ mua về nằm trong Túi nội thất (chỉ mở khi ở trong nhà)
+   - Tiệm nội thất (nhà phố số 1): bán đồ trang trí nhà 100–500 Xu, đồ mua về nằm trong Túi nội thất (chỉ mở khi ở trong nhà)
    - Sạp vé số (xổ sau 2 phút, lồng quay), Miếu cầu phúc (xin xăm 5 lần/ngày)
    - Khách phố tự thoại thưa thớt, vỉa hè, ghế nhựa, bánh mì, trà đá, báo
    ============================================================ */
@@ -287,7 +287,7 @@ function build(){
  hit(440,96,90,60,'🐃 Tiệm thú cưỡi — trâu, voi, kỳ lân, xe đạp...','cv:ps:shop:m',[486,178]);
  hit(616,96,90,60,'🐾 Tiệm thú cưng — mèo, thỏ, gà, Mây Mây...','cv:ps:shop:p',[662,178]);
  hit(358,100,76,56,'🍜 Phở bò — thơm nức mũi, chưa mở bán đâu nhé!');
- hit(190,100,72,56,'🛋️ Tiệm nội thất — mua đồ trang trí cho nhà (100–300 Xu)','cv:ps:furn',[226,178]);
+ hit(190,100,72,56,'🛋️ Tiệm nội thất — mua đồ trang trí cho nhà (100–500 Xu)','cv:ps:furn',[226,178]);
  hit(536,100,74,56,'💊 Hiệu thuốc — kệ thuốc ngăn nắp');
  hit(712,100,76,56,'✂️ Tiệm cắt tóc — chú thợ đi ăn sáng rồi');
  hit(792,100,80,56,'☕ Cà phê sáng — mùi cà phê phin ngào ngạt');
@@ -399,17 +399,17 @@ function psFx(tm,dt){
 //  VÉ SỐ
 // ============================================================
 const LOT_PRICE=100,LOT_REFUND=88,LOT_MAXP=10,LOT_WAIT=120000;
-// o = "1 trên o vé" (KHÔNG hiển thị cho người chơi). Kỳ vọng ≈ 101 Xu / vé 100 Xu (≈ 1 vé trúng trên 23 vé) → không lạm phát đáng kể.
-const LOT=[{k:'ĐẶC BIỆT',p:99999,o:100000,j:6},{k:'GIẢI NHẤT',p:8888,o:15000,j:5},{k:'GIẢI NHÌ',p:2888,o:2500,j:4},{k:'GIẢI BA',p:888,o:300,j:3},{k:'GIẢI TƯ',p:288,o:25,j:2}];
+// o = "1 trên o vé" (KHÔNG hiển thị cho người chơi). Giải 4 ≈ 1/18; giải 5 (trùng 1 số cuối, hoàn 100) ≈ 1/5; không trùng số nào hoàn 88. Kỳ vọng ≈ 107 Xu / vé 100 Xu.
+const LOT=[{k:'ĐẶC BIỆT',p:99999,o:100000,j:6},{k:'GIẢI NHẤT',p:8888,o:15000,j:5},{k:'GIẢI NHÌ',p:2888,o:2500,j:4},{k:'GIẢI BA',p:888,o:300,j:3},{k:'GIẢI TƯ',p:288,o:18,j:2},{k:'GIẢI NĂM',p:100,o:5,j:1}];
 window.PS_LOT=LOT;
 const lotS=()=>{if(!ST.lot||!Array.isArray(ST.lot.t))ST.lot={t:[]};return ST.lot};
 const dig=()=>String(Math.floor(Math.random()*10));
 function lotMake(){let u=Math.random(),gi=-1,acc=0;for(let i=0;i<LOT.length;i++){acc+=1/LOT[i].o;if(u<acc){gi=i;break}}
- const n=Array.from({length:6},dig).join(''),j=gi>=0?LOT[gi].j:Math.floor(Math.random()*2);
+ const n=Array.from({length:6},dig).join(''),j=gi>=0?LOT[gi].j:0;
  const w=Array.from({length:6},dig);for(let i=0;i<j;i++)w[5-i]=n[5-i];if(j<6){let d;do d=dig();while(d==n[5-j]);w[5-j]=d}
  return{n,w:w.join(''),j,g:gi,p:gi>=0?LOT[gi].p:LOT_REFUND,at:Date.now()+LOT_WAIT,paid:0}}
 window.psLot=()=>{PS.view='lot';const L=lotS();L.t=L.t.filter((t,i,a)=>!t.paid||i>=a.length-6);
- let h=head('🎟️ Sạp vé số Kiến thiết')+'<div class="mut">Vé <b>'+LOT_PRICE+' Xu</b> • xổ số sau <b>2 phút</b> • không trúng được hoàn <b>'+LOT_REFUND+' Xu</b>. Tối đa '+LOT_MAXP+' vé chờ xổ.</div>'+
+ let h=head('🎟️ Sạp vé số Kiến thiết')+'<div class="mut">Vé <b>'+LOT_PRICE+' Xu</b> • xổ số sau <b>2 phút</b> • không trùng số nào được hoàn <b>'+LOT_REFUND+' Xu</b>. Tối đa '+LOT_MAXP+' vé chờ xổ.</div>'+
  '<div class="g1">'+LOT.map(g=>'<div class="it"><span><b>'+g.k+'</b><br><small>khớp '+g.j+' số cuối</small></span><b>'+g.p.toLocaleString('vi-VN')+' Xu</b></div>').join('')+'</div>'+
  '<div class="pf"><button class="b" onclick="psLotBuy(1)">🎟️ Mua 1 vé</button><button class="b" onclick="psLotBuy(5)">🎟️ Mua 5 vé</button></div><div class="mut"><b>Vé của bạn</b> (🪙 '+fmtXu(ST.xu)+' Xu)</div><div class="g1" id="lotl"></div>';
  openUI(h);lotList()};
@@ -432,7 +432,7 @@ window.psLotRev=()=>{PS.view='rev';const L=lotS(),now=Date.now(),t=L.t.find(t=>!
   drawCage(g,56,50,34,e<1.3?e*10:e*6*(n<6?1:.2),6-Math.min(5,n));
   for(let i=0;i<n;i++){const age=Math.min(1,(e-1.3-i*.75)/.5),bx=Math.round(92+(66+i*15-92)*age),by=Math.round(52+(86-52)*age-Math.sin(age*3.14)*8);g.fillStyle='#e8dcc4';g.fillRect(64+i*15,84,15,2);g.fillStyle=['#f0a7a0','#f4d38a','#a8d8b0','#a8c8f0','#d0b0e8','#f6c0a0'][i];g.fillRect(bx,by,13,13);g.fillStyle='#fff';g.fillRect(bx+2,by+2,4,2);g.fillStyle='#5a3a2a';g.font='800 10px Nunito,sans-serif';g.textAlign='center';g.fillText(t.w[i],bx+7,by+11)}
   if(n!=shown){shown=n;const el=$('lotn');if(el){let s='';for(let i=0;i<6;i++){const m=n>=6&&i>=6-t.j;s+=i<n?'<span style="color:'+(m?'#2e7d32':'#3a2412')+'">'+t.w[i]+'</span>':'·'}el.innerHTML=s}
-   if(n>=6){const rs=$('lotr'),b=$('lotb');if(rs)rs.innerHTML=t.g>=0?'<div style="font-size:18px;color:#2e7d32;font-weight:800">🎉 TRÚNG '+LOT[t.g].k+'!<br>+'+t.p.toLocaleString('vi-VN')+' Xu</div>':'<div class="mut">Chưa trúng — hoàn '+LOT_REFUND+' Xu. Thử lại nhé! 🍀</div>';if(b)b.disabled=false;if(t.g>=0)toast('🎉 Trúng '+LOT[t.g].k+' +'+t.p+' Xu!')}}
+   if(n>=6){const rs=$('lotr'),b=$('lotb');if(rs)rs.innerHTML=t.g>=0?'<div style="font-size:18px;color:#2e7d32;font-weight:800">🎉 TRÚNG '+LOT[t.g].k+'!<br>+'+t.p.toLocaleString('vi-VN')+' Xu</div>':'<div class="mut">Không trùng số nào — hoàn '+LOT_REFUND+' Xu. Thử lại nhé! 🍀</div>';if(b)b.disabled=false;if(t.g>=0)toast('🎉 Trúng '+LOT[t.g].k+' +'+t.p+' Xu!')}}
   requestAnimationFrame(loop)};loop()};
 setInterval(()=>{if(MAP!='ps')return;const L=lotS(),now=Date.now(),due=L.t.filter(t=>!t.paid&&t.at<=now).length;
  if(due>PS.dueN)toast('🎰 Đã đến giờ xổ số! Ra sạp vé số xem kết quả nhé');PS.dueN=due;
@@ -457,11 +457,11 @@ const mkWheelStall=()=>mk(60,66,(g,r)=>{
 // ============================================================
 //  VÒNG QUAY MAY MẮN: vé nhận khi giao khí cầu, 20 Xu/lượt nếu không có vé, ô Kim cương rất hiếm
 // ============================================================
-const WH_COST=20,WH_PITY=100,WHP=[.45,.09,.25,.02,.15,.04]; // tỉ lệ từng ô (WHS); 💎 ≈ 1/50, chắc chắn có ở lượt thứ 100
-const whS=()=>{if(!ST.wh||typeof ST.wh!='object')ST.wh={n:0,p:0};if(!(ST.wh.p>=0))ST.wh.p=0;if(!(ST.wh.n>=0))ST.wh.n=0;return ST.wh};
+const WH_COST=20,WH_PITY=100,WH_PMIN=90,WHP=[.435,.09,.24,.035,.15,.05]; // tỉ lệ từng ô (WHS); 💎 = 3.5% (≈ 1/29), bảo hiểm chắc chắn có trong 90–100 lượt
+const whS=()=>{if(!ST.wh||typeof ST.wh!='object')ST.wh={n:0,p:0};if(!(ST.wh.p>=0))ST.wh.p=0;if(!(ST.wh.th>=WH_PMIN&&ST.wh.th<=WH_PITY))ST.wh.th=WH_PMIN+Math.floor(Math.random()*(WH_PITY-WH_PMIN+1));if(!(ST.wh.n>=0))ST.wh.n=0;return ST.wh};
 function whRoll(){const W=whS();W.n++;W.p++;let i=0;
- if(W.p>=WH_PITY)i=3;else{const u=Math.random();let a=0;for(let k=0;k<6;k++){a+=WHP[k];if(u<a){i=k;break}}}
- if(i==3)W.p=0;return i}
+ if(W.p>=W.th)i=3;else{const u=Math.random();let a=0;for(let k=0;k<6;k++){a+=WHP[k];if(u<a){i=k;break}}}
+ if(i==3){W.p=0;W.th=WH_PMIN+Math.floor(Math.random()*(WH_PITY-WH_PMIN+1))}return i}
 const whName=i=>WHS[i].dia?'💎 1 Kim cương':'🪙 '+WHS[i].xu+' Xu';
 let WTH=0,WA=null,WTOK=0;
 function whDraw(c,th){const g=c.getContext('2d'),W=c.width,cxp=W/2,cyp=W/2+14,R=W/2-18;g.clearRect(0,0,W,c.height);
@@ -477,7 +477,7 @@ function whLoop(){const c=$('whc');if(!c||!UI||PS.view!='wheel')return;
  whDraw(c,WTH);requestAnimationFrame(whLoop)}
 function whInfo(){const el=$('whi');if(!el)return;const tk=ST.tk|0,W=whS(),busy=!!WA;
  el.innerHTML='<div class="sg" style="grid-template-columns:repeat(3,1fr)"><div class="sq" style="cursor:default"><span class="e">🎟️</span><b>'+tk+'</b><small>Vé quay</small></div><div class="sq" style="cursor:default"><span class="e">🪙</span><b>'+fmtXu(ST.xu)+'</b><small>Xu</small></div><div class="sq" style="cursor:default"><span class="e">💎</span><b>'+(ST.dia|0)+'</b><small>Kim cương</small></div></div>'+
- '<div class="mut" style="text-align:center;margin:4px 0">Mỗi đơn khí cầu giao xong = 1 vé • Hết vé quay tốn '+WH_COST+' Xu/lượt<br><small>Chắc chắn có 1 💎 trong tối đa '+WH_PITY+' lượt (đang '+W.p+'/'+WH_PITY+')</small></div>';
+ '<div class="mut" style="text-align:center;margin:4px 0">Mỗi đơn khí cầu giao xong = 1 vé • Hết vé quay tốn '+WH_COST+' Xu/lượt<br><small>Bảo hiểm: chắc chắn có 1 💎 trong '+WH_PMIN+'–'+WH_PITY+' lượt (đã quay '+W.p+' lượt)</small></div>';
  const b=$('whb');if(!b)return;const useT=Math.min(tk,10),cost10=(10-useT)*WH_COST,ok1=!busy&&(tk>0||ST.xu>=WH_COST),ok10=!busy&&ST.xu>=cost10;
  b.innerHTML='<button class="b w'+(ok1?'':' z')+'" onclick="whGo(1)">🎡 Quay 1 lần ('+(tk>0?'dùng 1 vé':WH_COST+' Xu')+')</button><button class="b w'+(ok10?'':' z')+'" onclick="whGo(10)">⚡ Quay nhanh x10 ('+(useT?useT+' vé':'')+(useT&&cost10?' + ':'')+(cost10?cost10+' Xu':'')+')</button>'}
 window.wheelUI=()=>{PS.view='wheel';WA=null;whS();
@@ -588,9 +588,9 @@ window.psBuy=i=>{if(typeof ownE=='function')ownE();const k=SH_TAB,pr=price(k,i),
 window.psUse=i=>{const k=SH_TAB;if(!ST.own[k].includes(i))return;ST.av[k]=i;if(k=='m'&&Pl.sit){Pl.sit=0;Pl.mv=0}if(k=='p')petReset();save();toast('✨ Đã dùng '+SHOP[k].all()[i].n);psItem(i)};
 
 // ============================================================
-//  TIỆM NỘI THẤT (giá theo độ đẹp: 100–300 Xu). Mua → vào Túi nội thất (ST.hm.i), mở khi ở trong nhà.
+//  TIỆM NỘI THẤT (giá theo độ đẹp: 100–500 Xu). Mua → vào Túi nội thất (ST.hm.i), mở khi ở trong nhà.
 // ============================================================
-const FURN_PR={clk:100,cal:100,chr:100,mir:120,lmp:120,drw:130,bsk:140,tbl:140,plt:150,cat:160,rug:170,pic:180,shf:190,wrd:200,tv:220,arm:230,din:260,sofa:300};
+const FURN_PR={clk:100,cal:100,chr:100,mir:120,lmp:120,drw:130,bsk:140,tbl:140,plt:150,cat:160,rug:170,pic:180,shf:190,wrd:200,tv:220,arm:230,din:260,sofa:300,ctbl:500,cchr:500,clmp:500,wcl:500,wph:500,wpc:500,ftv:500};
 window.FURN_PR=FURN_PR;
 window.psFurn=()=>{PS.view='furn';if(typeof hmInit=='function')hmInit();const I=ST.hm.i,P=ST.hm.p,ks=Object.keys(CAT).sort((a,b)=>(FURN_PR[a]||200)-(FURN_PR[b]||200));
  let h=head('🛋️ Tiệm nội thất')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu • đồ mua về nằm trong <b>🎒 Túi nội thất</b> (vào nhà → 🛠️ Trang trí để bày)</div><div class="g3">';
