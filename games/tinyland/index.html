@@ -3145,7 +3145,7 @@ function evTnUI(){tnEnsure();
   +'<div class="pf"><button class="b" onclick="evUI()">⬅ Quay lại</button></div>')}
 /* ===================== SỰ KIỆN TÍ NỊ (NPC ở Công viên, Tiệm Mô Hình) =====================
    • Mỗi ngày (từ 0h, giờ máy) có 5 nhiệm vụ: thu hoạch n cây TRỒNG TỪ CHẬU (8 loại trong POTS). Cây lâu (>=40 phút) 2-3 cây, cây ngắn 3-6 cây.
-   • Xong 1 nhiệm vụ → 1 🎟️ Vé Tí Nị (vé giữ lại khi reset). Dùng vé đổi quà ở NPC Tí Nị: COMING SOON.
+   • Xong 1 nhiệm vụ → 1 🎟️ Vé Tí Nị (vé giữ lại khi reset). Dùng vé để 🎱 Thả bi ở NPC Tí Nị (xem khối THẢ BI TÍ NỊ bên dưới).
    • DỮ LIỆU: ST.ti = {d:mốc 0h hôm nay, q:[{k:số thứ tự trong POTS,need,p,done}], tk:số vé}
    • Chỉ tính khi thu hoạch từ CHẬU (gọi tiProg trong 2 chỗ thu hoạch chậu), không tính ô đất. =================== */
 const TI_R1=[3,6],TI_R2=[2,3],TI_LONG=40;
@@ -3163,11 +3163,98 @@ function evTiUI(){const T=tiEnsure(),nd=T.q.filter(q=>q.done).length,names=POTS.
   +'<div class="tnq"><b>Lưu ý:</b> các cây trồng '+names+' phải thu hoạch <b style="display:inline">từ chậu ở nông trại</b>, không phải từ ô đất.</div>';
  T.q.forEach(q=>{const c=POTS[q.k],pc=Math.round(q.p/q.need*100);
   h+='<div class="tnq'+(q.done?' ok':'')+'"><b>🌱 Thu hoạch <b style="display:inline">'+q.need+'</b> '+c[1]+' <b style="display:inline">'+c[0]+'</b> (từ chậu)'+(q.done?' ✅':'')+'</b><div class="tnb"><i style="width:'+pc+'%"></i></div><small>'+q.p+'/'+q.need+(q.done?' • Đã nhận 🎟️ +1':' • Thưởng: 🎟️ +1')+'</small></div>'});
- openUI(h+'<div class="mut" style="text-align:center">🎁 Vé Tí Nị dùng để đổi quà ở NPC Tí Nị (coming soon)</div><div class="pf"><button class="b" onclick="evUI()">⬅ Quay lại</button></div>')}
+ openUI(h+'<div class="mut" style="text-align:center">🎱 Vé Tí Nị dùng để Thả bi ở NPC Tí Nị — trúng vé quay số hoặc mô hình!</div><div class="pf"><button class="b" onclick="evUI()">⬅ Quay lại</button></div>')}
 function tiNpcUI(){const T=tiEnsure();
  openUI(head('🧸 Tí Nị')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧸</span><b>"Chào bạn~ mình là Tí Nị, chủ Tiệm Mô Hình!"</b>Làm nhiệm vụ trồng chậu mỗi ngày để lấy Vé Tí Nị nha.<br><small>🎟️ '+T.tk+' Vé Tí Nị</small></div>'
   +'<button class="b w" style="font-size:14px;padding:9px" onclick="evTiUI()">🌱 Nhiệm vụ Tí Nị</button>'
-  +'<button class="b w" style="font-size:14px;padding:9px;margin-top:6px" onclick="toast(\'🎁 Đổi quà bằng Vé Tí Nị: coming soon!\')">🎁 Đổi quà — Coming soon</button>')}
+  +'<button class="b w" style="font-size:14px;padding:9px;margin-top:6px" onclick="tbUI()">🎱 Thả bi Tí Nị</button>')}
+/* ===================== THẢ BI TÍ NỊ (NPC Tí Nị → 🎱 Thả bi Tí Nị) =====================
+   • Mỗi lần thả trừ 1 🎟️ Vé Tí Nị (ST.ti.tk). Bi rơi ngẫu nhiên vào 1 trong 6 khay xếp xen kẽ: Vé / Mô hình / Vé / Mô hình / Vé / Mô hình.
+   • Khay Vé  → +TB_TK 🎟️ vé quay số (ST.tk, dùng ở Vòng quay may mắn).
+   • Khay Mô hình → chưa có tính năng mô hình: cộng vào ST.ti.md (số mô hình để dành), bản sau sẽ đổi thành mô hình thật.
+   • TỈ LỆ: sửa TB_W — khay Vé 1.1 / khay Mô hình 1 → khay Vé nhỉnh hơn 1 chút (≈ 17.5% mỗi khay Vé, ≈ 15.9% mỗi khay Mô hình).
+   • Kết quả được bốc thăm trước, rồi bi lăn theo đường ngẫu nhiên tới đúng khay đó.
+   • DỮ LIỆU THÊM: ST.ti.md (mô hình để dành), ST.ti.bi (tổng lượt đã thả). =================== */
+const TB_TRAY=['t','m','t','m','t','m'],TB_W={t:1.1,m:1},TB_TK=2;
+const TB_S=44,TB_CX=140,TB_PY=[62,100,138,176,214],TB_TOP=248,TB_H=78,TB_REST=262,TB_COL=['#ff7eb6','#4da6ff','#ffc61a','#5fd36f','#b784ff','#ff8a3d'];
+let TB=null;
+function tbRoll(){const w=TB_TRAY.map(k=>TB_W[k]),s=w.reduce((a,b)=>a+b,0);let u=Math.random()*s;for(let i=0;i<6;i++){u-=w[i];if(u<0)return i}return 5}
+function tbPath(bin){const d=[];for(let i=0;i<5;i++)d.push(i<bin?1:0);
+ for(let i=4;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=d[i];d[i]=d[j];d[j]=t}return d}
+function tbBuild(B,bin){const d=tbPath(bin),S=TB_S/2,segs=[],ev=[],yc=r=>TB_PY[r]-10;
+ const jit=[0,0,0,0,0].map(()=>(Math.random()-.5)*5);let t=0,x=TB_CX,k=0;
+ segs.push({a:0,d:.3,x0:TB_CX,y0:8,x1:x+jit[0],y1:yc(0),fall:1});t=.3;ev.push({at:t,key:'0_0'});
+ for(let r=0;r<5;r++){const nx=x+(d[r]?S:-S);
+  if(r<4){const dur=.28+Math.random()*.07;segs.push({a:t,d:dur,x0:x+jit[r],y0:yc(r),x1:nx+jit[r+1],y1:yc(r+1),h:7+Math.random()*8});t+=dur;k+=d[r];ev.push({at:t,key:(r+1)+'_'+k})}
+  else{segs.push({a:t,d:.38,x0:x+jit[4],y0:yc(4),x1:nx,y1:TB_REST,h:9});t+=.38}
+  x=nx}
+ segs.push({a:t,d:.55,x0:x,y0:TB_REST,x1:x,y1:TB_REST,bn:1});t+=.55;
+ B.segs=segs;B.ev=ev;B.total=t;B.fx=x}
+function tbPos(s,t){const u=Math.min(1,Math.max(0,(t-s.a)/s.d));
+ if(s.bn)return{x:s.x1,y:s.y1-Math.abs(Math.sin(u*Math.PI*2.4))*11*Math.pow(1-u,1.3)};
+ if(s.fall)return{x:s.x0+(s.x1-s.x0)*u,y:s.y0+(s.y1-s.y0)*u*u};
+ return{x:s.x0+(s.x1-s.x0)*u,y:s.y0+(s.y1-s.y0)*u*u-s.h*4*u*(1-u)}}
+function tbMsg(bin){return TB_TRAY[bin]=='t'?'🎉 Trúng khay Vé quay số: +'+TB_TK+' 🎟️ vé quay! Mang ra Vòng quay may mắn nhé.':'🎁 Bi rơi vào khay Mô hình! Mô hình ngẫu nhiên đã được cất để dành (kệ trưng bày sẽ mở ở bản sau).'}
+function tbInfo(){const B=TB,T=tiEnsure(),el=$('tbi');if(!el||!B)return;const run=B.ph=='drop',sn=run&&B.snap?B.snap:{q:ST.tk|0,md:T.md|0};
+ el.innerHTML='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+[['🎟️',T.tk,'Vé Tí Nị'],['🎡',sn.q,'Vé quay số'],['🎁',sn.md,'Mô hình để dành']].map(a=>'<div class="sq" style="cursor:default;min-height:58px"><span class="e">'+a[0]+'</span><b>'+a[1]+'</b><small>'+a[2]+'</small></div>').join('')+'</div>';
+ const b=$('tbb');if(b){b.classList.toggle('z',run||T.tk<1);b.textContent=run?'🎱 Bi đang lăn...':'🎱 Thả bi (−1 🎟️)'}}
+function tbBall(g,x,y,col){g.fillStyle='rgba(60,30,80,.2)';g.beginPath();g.ellipse(x+1.5,y+2.5,6,5,0,0,7);g.fill();
+ g.fillStyle=col;g.beginPath();g.arc(x,y,6,0,7);g.fill();g.strokeStyle='#3a2412';g.lineWidth=1.2;g.stroke();
+ g.fillStyle='rgba(0,0,0,.16)';g.beginPath();g.arc(x,y,5.2,.1,Math.PI*.85);g.arc(x+1.5,y-1,4,Math.PI*.85,.1,true);g.fill();
+ g.fillStyle='rgba(255,255,255,.9)';g.beginPath();g.ellipse(x-2,y-2.2,2,1.6,-.6,0,7);g.fill()}
+function tbDraw(B){const c=B.c,g=c.getContext('2d'),W=280,H=330,n=performance.now(),dt=Math.min(.05,(n-B.last)/1000);B.last=n;
+ g.setTransform(c.width/W,0,0,c.width/W,0,0);g.clearRect(0,0,W,H);
+ const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#fff6fb');bg.addColorStop(1,'#e9d6ff');g.fillStyle=bg;g.fillRect(0,0,W,H);
+ g.fillStyle='rgba(190,150,230,.2)';for(let ri=0,y=14;y<H;y+=22,ri++)for(let x=(ri%2?4:15);x<W;x+=22){g.beginPath();g.arc(x,y,2,0,7);g.fill()}
+ // phễu thả bi
+ g.fillStyle='#c48a52';g.beginPath();g.moveTo(108,0);g.lineTo(172,0);g.lineTo(152,18);g.lineTo(128,18);g.closePath();g.fill();g.strokeStyle='#7a4a26';g.lineWidth=2;g.stroke();
+ g.fillStyle='rgba(255,255,255,.35)';g.fillRect(112,2,56,2);
+ if(B.ph=='idle')tbBall(g,140,8,B.col);
+ // khay
+ g.textAlign='center';g.textBaseline='middle';
+ for(let j=0;j<6;j++){const x0=8+j*TB_S,t=TB_TRAY[j]=='t',xc=x0+TB_S/2,gr=g.createLinearGradient(0,TB_TOP,0,TB_TOP+TB_H);
+  if(t){gr.addColorStop(0,'#fff0a6');gr.addColorStop(1,'#ffc83a')}else{gr.addColorStop(0,'#f3e8ff');gr.addColorStop(1,'#c9a0ff')}
+  g.fillStyle=gr;g.fillRect(x0,TB_TOP,TB_S,TB_H);
+  if(B.ph=='done'&&B.bin==j&&n-B.endAt<2400){g.fillStyle='rgba(255,255,255,'+(.3+.3*Math.sin(n/80)).toFixed(2)+')';g.fillRect(x0,TB_TOP,TB_S,TB_H)}
+  g.fillStyle='#4a2a5a';
+  if(t){g.font='18px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';g.fillText('🎟️',xc,287);g.font='800 13px Nunito,Arial,sans-serif';g.fillText('+'+TB_TK,xc,304);g.font='800 8px Nunito,Arial,sans-serif';g.fillText('vé quay',xc,316)}
+  else{g.font='18px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';g.fillText('🎁',xc,287);g.font='800 9.5px Nunito,Arial,sans-serif';g.fillText('Mô hình',xc,303);g.font='800 7px Nunito,Arial,sans-serif';g.fillText('ngẫu nhiên',xc,315)}}
+ g.fillStyle='#8a5a2e';g.fillRect(0,TB_TOP+TB_H,W,H-TB_TOP-TB_H);g.fillRect(0,TB_TOP-6,6,TB_H+6);g.fillRect(W-6,TB_TOP-6,6,TB_H+6);
+ for(let j=0;j<=6;j++){const x=8+j*TB_S;g.fillStyle='#8a5a2e';g.fillRect(x-2,TB_TOP-8,4,TB_H+8);g.beginPath();g.arc(x,TB_TOP-8,3,0,7);g.fill();g.fillStyle='#c08a52';g.fillRect(x-2,TB_TOP-8,1,TB_H+8)}
+ // đinh
+ for(let r=0;r<5;r++)for(let i=0;i<=r;i++){const x=TB_CX+(i-r/2)*TB_S,y=TB_PY[r],h=B.hits[r+'_'+i],a=h?Math.max(0,1-(n-h)/260):0;
+  if(a>0){g.fillStyle='rgba(255,210,63,'+(a*.6).toFixed(2)+')';g.beginPath();g.arc(x,y,4+a*6,0,7);g.fill()}
+  g.fillStyle=a>0?'#ffd23f':'#8a5a2e';g.beginPath();g.arc(x,y,4,0,7);g.fill();g.strokeStyle='#4e2f16';g.lineWidth=1.2;g.stroke();
+  g.fillStyle='rgba(255,255,255,.55)';g.beginPath();g.arc(x-1.2,y-1.4,1.2,0,7);g.fill()}
+ if(B.ph!='idle')tbBall(g,B.bx,B.by,B.col);
+ for(let i=B.parts.length-1;i>=0;i--){const p=B.parts[i];p.l-=dt;if(p.l<=0){B.parts.splice(i,1);continue}p.vy+=300*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
+  g.globalAlpha=Math.min(1,p.l*2);g.fillStyle=p.c;g.fillRect(Math.round(p.x),Math.round(p.y),3,3)}g.globalAlpha=1}
+function tbStep(B){if(B.ph!='drop')return;const n=performance.now(),t=(n-B.t0)/1000;
+ for(const e of B.ev)if(!e.d&&t>=e.at){e.d=1;B.hits[e.key]=n}
+ const sg=B.segs.find(s=>t>=s.a&&t<s.a+s.d);
+ if(sg){const p=tbPos(sg,t);B.bx=p.x;B.by=p.y}
+ else if(t>=B.total){B.ph='done';B.bx=B.fx;B.by=TB_REST;B.endAt=n;
+  const cl=['#ff7eb6','#ffd23f','#4da6ff','#5fd36f','#b784ff','#fff'];for(let i=0;i<26;i++)B.parts.push({x:B.fx,y:TB_REST,vx:(Math.random()-.5)*190,vy:-60-Math.random()*150,c:cl[i%6],l:.9+Math.random()*.6});
+  const r=$('tbr');if(r)r.innerHTML=B.msg;B.snap=null;tbInfo()}}
+function tbLoop(B){if(TB!==B||!B.c.isConnected||!UI)return;tbStep(B);tbDraw(B);requestAnimationFrame(()=>tbLoop(B))}
+function tbUI(){const T=tiEnsure();
+ openUI(head('🎱 Thả bi Tí Nị')+'<div id="tbi"></div>'
+  +'<div style="max-width:280px;margin:8px auto 0;border:3px solid #7a4a26;border-radius:12px;overflow:hidden;background:#fff6fb"><canvas id="tbc" width="560" height="660" style="width:100%;display:block"></canvas></div>'
+  +'<div id="tbr" style="text-align:center;min-height:36px;font-weight:800;color:#4a2a5a;font-size:13px;margin:6px 0 2px">Bấm <b>Thả bi</b> nhé! Khay 🎟️ Vé quay số dễ trúng hơn một chút.</div>'
+  +'<div class="pf"><button class="b" onclick="tiNpcUI()">⬅ Quay lại</button><button class="b" id="tbb" style="background:#ffd23f" onclick="tbDrop()">🎱 Thả bi (−1 🎟️)</button></div>');
+ const B=TB={c:$('tbc'),ph:'idle',hits:{},parts:[],col:TB_COL[Math.floor(Math.random()*TB_COL.length)],last:performance.now(),bx:TB_CX,by:8};
+ tbInfo();tbLoop(B)}
+window.tbUI=tbUI;
+window.tbDrop=()=>{const B=TB,T=tiEnsure();if(!B||!B.c.isConnected||B.ph=='drop')return;
+ if(T.tk<1)return toast('🎟️ Bạn hết Vé Tí Nị! Làm nhiệm vụ trồng chậu để lấy thêm vé nha.');
+ const bin=tbRoll();
+ B.snap={q:ST.tk|0,md:T.md|0};
+ T.tk--;T.bi=(T.bi|0)+1;
+ if(TB_TRAY[bin]=='t')ST.tk=(ST.tk|0)+TB_TK;else T.md=(T.md|0)+1;
+ save();
+ tbBuild(B,bin);B.bin=bin;B.msg=tbMsg(bin);B.hits={};B.col=TB_COL[Math.floor(Math.random()*TB_COL.length)];B.bx=TB_CX;B.by=8;B.t0=performance.now();B.ph='drop';
+ const r=$('tbr');if(r)r.textContent='🎱 Bi đang lăn...';tbInfo();
+ setTimeout(()=>{if(TB!==B||!B.c.isConnected||!UI)toast(B.msg)},B.total*1000+300)};
 function tnQuestUI(){const T=tnEnsure(),nd=T.q.filter(q=>q.done).length;
  let h=head('📜 Nhiệm vụ Tiên Nữ')+'<div class="mut" style="text-align:center">⏳ Làm mới sau <b>'+tnLeft()+'</b> • Xong 1 nhiệm vụ nhận 1 🧩<br>🔄 Reset nhiệm vụ mỗi 12h đêm Chủ Nhật<br>🧩 Mảnh ghép: <b>'+T.pc+'</b> • Hoàn thành tuần này: <b>'+nd+'/'+T.q.length+'</b></div>';
  T.q.forEach(q=>{const o=q.k=='cook'?PRODS.find(x=>x.n==q.n):null,tx=q.k=='cook'?'🍳 Nấu '+(o?ic(o.e,o.n)+' ':'')+'<b style="display:inline">'+q.n+'</b> '+q.need+' lần':'🎣 Nhiệm vụ câu <b style="display:inline">'+q.need+' quái vật</b> ở bãi biển',pc=Math.round(q.p/q.need*100);

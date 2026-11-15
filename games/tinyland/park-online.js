@@ -7,13 +7,13 @@
 (()=>{
 const SB_URL_='https://opucbxnvlchwqmmjolye.supabase.co',SB_KEY_='sb_publishable_Ilx40wsl8EXciRRqPy0WPQ_ejkWl6Ur',MAXP=20;
 const CV=window.CV,PK=window.PK={rank:-1,in:0,all:[],busy:0};
-const clean=s=>String(s||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,16);
+const clean=s=>String(s||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,12);
 if(!ST.name)ST.name='Khách'+(100+Math.floor(Math.random()*900));
 const ME={id:Math.random().toString(36).slice(2,9),ts:0,q:-1,qt:0,z:-1,zt:0};
 let sb=null,ch=null,lastT=performance.now();
 
 // ---------- tên nhân vật (bấm avatar góc phải) ----------
-window.nameBox=()=>'<div style="display:flex;gap:4px;margin-bottom:8px"><input id="pnm" maxlength="16" value="'+escH(ST.name)+'" placeholder="Tên nhân vật" style="flex:1;min-width:0;font:inherit;padding:5px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" onclick="setNm()">Lưu tên</button></div>';
+window.nameBox=()=>'<div style="display:flex;gap:4px;margin-bottom:8px"><input id="pnm" maxlength="12" value="'+escH(ST.name)+'" placeholder="Tên (tối đa 12 ký tự)" style="flex:1;min-width:0;font:inherit;padding:5px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" onclick="setNm()">Lưu tên</button></div>';
 window.setNm=()=>{const n=clean($('pnm').value);if(!n)return toast('Tên không được để trống');ST.name=n;save();toast('✅ Tên nhân vật: '+n);track();if(window.cardSync)cardSync()};
 
 // ---------- vẽ tên + bong bóng chat trên đầu ----------
@@ -31,7 +31,7 @@ window.drawNames=tm=>{const now=performance.now(),dt=Math.min(.05,(now-lastT)/10
  if(CVON)for(const o of CV.others.values()){if(o.hx==null)continue;tag(o.n||'?',o.hx,o.hy,'#d8f4ff',o.bf);const b=bub[o.id];if(b&&b.until>now)bubble(b.t,o.hx,o.hy-8)};if(CVON&&HRT.length)hrtDraw(now)};
 
 // ---------- tạo nhân vật lần đầu ----------
-window.welcomeName=()=>{openUI('<div class="uh"><span>🌾 Chào mừng đến Tinyland!</span></div><div class="mut">Hãy đặt tên nhân vật. Tên hiện trên đầu bạn và bạn bè trong Công viên sẽ thấy tên này (không phải tên đăng nhập DHT). Sau này vẫn đổi được khi bấm avatar.</div><div style="display:flex;gap:4px;margin:8px 0"><input id="pnm0" maxlength="16" value="'+escH(ST.name)+'" style="flex:1;min-width:0;font:inherit;padding:6px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" onclick="welcomeOk()">Bắt đầu</button></div>');
+window.welcomeName=()=>{openUI('<div class="uh"><span>🌾 Chào mừng đến Tinyland!</span></div><div class="mut">Hãy đặt tên nhân vật (tối đa 12 ký tự). Tên hiện trên đầu bạn và bạn bè trong Công viên sẽ thấy tên này (không phải tên đăng nhập DHT). Sau này vẫn đổi được khi bấm avatar.</div><div style="display:flex;gap:4px;margin:8px 0"><input id="pnm0" maxlength="12" value="'+escH(ST.name)+'" style="flex:1;min-width:0;font:inherit;padding:6px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" onclick="welcomeOk()">Bắt đầu</button></div>');
  const i=$('pnm0');if(i){i.select();i.addEventListener('keydown',e=>{e.stopPropagation();if(e.key=='Enter')welcomeOk()})}};
 window.welcomeOk=()=>{const n=clean($('pnm0').value);if(!n)return toast('Tên không được để trống');ST.name=n;ST.nm=1;closeUI();toast('🌾 Xin chào '+n+'!')};
 if(!ST.nm)setTimeout(welcomeName,500);

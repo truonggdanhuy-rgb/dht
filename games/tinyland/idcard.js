@@ -115,12 +115,29 @@ const css=document.createElement('style');css.textContent=`
 .idft.eq{border-color:#5cc08f}
 .idft b{font-size:10.5px;line-height:1.15}.idft small{font-size:9.5px;color:#5b7f95;line-height:1.1}
 .idpv{display:flex;flex-direction:column;align-items:center;gap:4px;background:linear-gradient(160deg,#f6fcff,#d9eefb);border:2px solid #b5dbef;border-radius:14px;padding:10px}
+
+.idnrow{display:flex;align-items:center;gap:6px}.idnrow .idnm{flex:1;min-width:0;font-size:18px}
+.idshb{flex:none;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;width:62px;padding:4px 2px 5px;border-radius:13px;border:2px solid #f08fb8;background:linear-gradient(160deg,#fff0f7,#ffc4df 70%,#ffb3d4);box-shadow:0 3px 0 #c9648f,inset 0 1px 0 rgba(255,255,255,.8);color:#8a2f5a;cursor:pointer;font:inherit;line-height:1.1}
+.idshb .e{font-size:19px;line-height:1.1}.idshb .t{font-size:9.5px;font-weight:800;white-space:nowrap}
+.idshb::after{content:'✨';position:absolute;right:-5px;top:-8px;font-size:12px;animation:idsp 1.6s ease-in-out infinite}
+.idshb:active{transform:translateY(2px);box-shadow:0 1px 0 #c9648f}
+@keyframes idsp{0%,100%{transform:scale(.7) rotate(0);opacity:.6}50%{transform:scale(1.15) rotate(20deg);opacity:1}}
+#ui.idc.shelf{width:min(96vw,560px)}
+.shwrap{display:flex;flex-direction:column;gap:10px}
+.shtitle{text-align:center;font-size:19px;font-weight:800;letter-spacing:1px;color:#ffe9a8;text-shadow:0 2px 0 #5a3418;background:linear-gradient(180deg,#b9824a,#8a5a2e);border:3px solid #5a3418;border-radius:12px;padding:10px 8px;box-shadow:0 3px 0 #3e2410,inset 0 2px 0 rgba(255,255,255,.25)}
+.shcase{position:relative;background:linear-gradient(180deg,#f8e6c4,#efd4a2);border:4px solid #8a5a2e;border-radius:16px;padding:14px 12px 8px;box-shadow:inset 0 4px 10px rgba(90,52,24,.25)}
+.shrow{margin-bottom:6px}.shrow .shg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.shslot{aspect-ratio:1/1;border-radius:12px;border:2px dashed #c9a06a;background:rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#c9a06a}
+.shplank{height:12px;margin:4px -6px 0;border-radius:6px;background:linear-gradient(180deg,#c48a52,#8a5a2e);box-shadow:0 3px 0 #5a3418}
+.shsoon{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-7deg);text-align:center;background:rgba(255,255,255,.94);border:3px dashed #d6568a;border-radius:14px;padding:10px 22px;color:#d6568a;box-shadow:0 4px 12px rgba(120,40,80,.25);white-space:nowrap}
+.shsoon b{display:block;font-size:24px;letter-spacing:2px}.shsoon small{font-size:12px;font-weight:800;color:#a44b72}
+.shnote{text-align:center;font-size:12px;color:#5b7f95;line-height:1.5}
 @media(max-width:380px){.idfl{grid-template-columns:repeat(3,1fr)}}
 `;document.head.appendChild(css);
 
 const _open=openUI;
-openUI=function(h){$('ui').classList.remove('idc');return _open(h)};
-const openIdc=h=>{_open(h);$('ui').classList.add('idc');$('ui').scrollTop=0};
+openUI=function(h){$('ui').classList.remove('idc','shelf');return _open(h)};
+const openIdc=h=>{_open(h);const u=$('ui');u.classList.add('idc');u.classList.toggle('shelf',IDV=='shelf');u.scrollTop=0};
 const fmtD=t=>{const d=new Date(t);return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()};
 const accName=()=>{try{return localStorage.user||ST.name||'Khách'}catch(e){return ST.name||'Khách'}};
 
@@ -142,7 +159,7 @@ function paintFaces(){
 function paintChars(){document.querySelectorAll('canvas.idchr').forEach(c=>{try{const g=c.getContext('2d');g.clearRect(0,0,40,48);drawAv(g,10,2,{d:0,a:0,mv:0,sit:0,hair:+c.dataset.h||0,set:+c.dataset.s||0,e:+c.dataset.e||0})}catch(e){}})}
 let IDV='main',FSEL=0;
 window.idUI=function(){IDV='main';idRender();idBorn();idSyncBf()};
-function idRender(){IDV=='frames'?framesView():IDV=='bf'?bfView():IDV=='dl'?dlView():mainView();paintFaces();paintChars();paintPets();petLoop()}
+function idRender(){IDV=='frames'?framesView():IDV=='bf'?bfView():IDV=='dl'?dlView():IDV=='shelf'?shelfView():mainView();paintFaces();paintChars();paintPets();petLoop()}
 // mở thẻ → hỏi máy chủ bạn thân mới nhất, có đổi thì vẽ lại
 async function idSyncBf(){try{if(!window.bfPoll)return;const b=JSON.stringify(bfGet());await bfPoll();
  if(JSON.stringify(bfGet())!=b&&$('ui').classList.contains('idc')&&(IDV=='main'||IDV=='bf')&&!(document.activeElement&&document.activeElement.tagName=='TEXTAREA'))idRender()}catch(e){}}
@@ -154,7 +171,7 @@ function mainView(){
  const h='<div class="uh"><span>🪪 Căn cước Tinyland</span><button class="b x" onclick="closeUI()">X</button></div>'+
  '<div class="idtop"><div class="idl"><div class="idavw" onclick="idMenu()" title="Bấm để chỉnh avatar">'+avHtml(ID.fr,132)+'</div>'+
  '<div class="idbfb" onclick="idBF()">👫 Bạn thân<small>'+(B?escH(B.pn||'Bạn thân'):'Chưa có • bấm xem')+'</small></div></div>'+
- '<div class="idr"><div class="idnm">'+escH(ST.name||'Nhân vật')+'</div>'+vtHtml()+
+ '<div class="idr"><div class="idnrow"><div class="idnm">'+escH(ST.name||'Nhân vật')+'</div><button class="idshb" onclick="idShelf()" title="Kệ trưng bày mô hình"><span class="e">🧸</span><span class="t">Kệ mô hình</span></button></div>'+vtHtml()+
  '<div class="idline"><span>🎂 Ngày ra đời</span><b id="idborn">'+fmtD(ID.born)+'</b></div>'+
  '<div class="idlv"><div class="t"><span>⭐ Level</span><b>'+ST.lv+(mx?' MAX':'')+'</b></div><div class="idbar"><i style="width:'+pc+'%"></i></div></div>'+
  '<div class="mut" style="margin:0;font-size:10.5px">👆 Bấm vào avatar để đổi ảnh / khung</div></div></div>'+
@@ -203,6 +220,15 @@ window.idDLGet=(k,i)=>{const m=DLM[k].m[i];if(!m)return;const id=k+m[0];if(ID.dl
 function paintPets(){document.querySelectorAll('canvas.idpet').forEach(c=>{try{const g=c.getContext('2d'),t=performance.now()/1000;g.clearRect(0,0,44,52);g.save();g.scale(2,2);drawPet(g,11,24,0,0,0,t,+c.dataset.p);g.restore()}catch(e){}})}
 let petTm=0;function petLoop(){clearTimeout(petTm);if(IDV!='dl'||!$('ui').classList.contains('idc')||!document.querySelector('canvas.idpet'))return;paintPets();petTm=setTimeout(petLoop,110)}
 
+// ---- Kệ trưng bày mô hình (COMING SOON — bản sau sẽ vẽ mô hình) ----
+window.idShelf=()=>{IDV='shelf';idRender()};
+function shelfView(){
+ const md=(ST.ti&&ST.ti.md)|0;let rows='';
+ for(let r=0;r<3;r++)rows+='<div class="shrow"><div class="shg">'+[0,1,2,3].map(()=>'<div class="shslot">?</div>').join('')+'</div><div class="shplank"></div></div>';
+ openIdc('<div class="uh"><span><button class="b x" onclick="idBack()">‹ Thẻ</button> 🧸 Kệ mô hình</span><button class="b x" onclick="closeUI()">X</button></div>'+
+ '<div class="shwrap"><div class="shtitle">KỆ TRƯNG BÀY MÔ HÌNH</div>'+
+ '<div class="shcase">'+rows+'<div class="shsoon"><b>COMING SOON</b><small>Sắp ra mắt!</small></div></div>'+
+ '<div class="shnote">Mô hình nhận được từ 🎱 Thả bi Tí Nị sẽ được trưng bày ở đây.<br>Bản cập nhật sau sẽ mở kệ nhé!<br>🎁 Mô hình đã để dành: <b>'+md+'</b></div></div>')}
 // ---- Bạn thân ----
 window.idBF=()=>{IDV='bf';idRender();idSyncBf()};
 window.idQuest=()=>toast('📋 Nhiệm vụ hằng ngày cùng bạn thân sắp ra mắt, chờ chút nha!');
