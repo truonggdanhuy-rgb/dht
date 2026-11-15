@@ -401,8 +401,8 @@ function psFx(tm,dt){
 //  VÉ SỐ
 // ============================================================
 const LOT_PRICE=100,LOT_REFUND=88,LOT_MAXP=10,LOT_WAIT=120000;
-// o = "1 trên o vé" (KHÔNG hiển thị cho người chơi). Giải 4 ≈ 1/18; giải 5 (trùng 1 số cuối, hoàn 100) ≈ 1/5; không trùng số nào hoàn 88. Kỳ vọng ≈ 107 Xu / vé 100 Xu.
-const LOT=[{k:'ĐẶC BIỆT',p:99999,o:100000,j:6},{k:'GIẢI NHẤT',p:8888,o:15000,j:5},{k:'GIẢI NHÌ',p:2888,o:2500,j:4},{k:'GIẢI BA',p:888,o:300,j:3},{k:'GIẢI TƯ',p:288,o:18,j:2},{k:'GIẢI NĂM',p:100,o:5,j:1}];
+// o = "1 trên o vé" (KHÔNG hiển thị cho người chơi). Giải 4 ≈ 1/15; giải 5 (trùng 1 số cuối, hoàn 100) ≈ 1/3.5; không trùng số nào hoàn 88. Kỳ vọng ≈ 110 Xu / vé 100 Xu.
+const LOT=[{k:'ĐẶC BIỆT',p:99999,o:100000,j:6},{k:'GIẢI NHẤT',p:8888,o:15000,j:5},{k:'GIẢI NHÌ',p:2888,o:2500,j:4},{k:'GIẢI BA',p:888,o:300,j:3},{k:'GIẢI TƯ',p:288,o:15,j:2},{k:'GIẢI NĂM',p:100,o:3.5,j:1}];
 window.PS_LOT=LOT;
 const lotS=()=>{if(!ST.lot||!Array.isArray(ST.lot.t))ST.lot={t:[]};return ST.lot};
 const dig=()=>String(Math.floor(Math.random()*10));

@@ -108,7 +108,7 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
   <button class="hb" onclick="bagUI()">🎒<small>Túi</small></button>
   <button class="hb" onclick="khoHub()">📦<small>Kho</small></button>
   <button class="hb" onclick="idUI()" title="Căn cước Tinyland">🪪<small>Thẻ</small></button>
-  <button class="hb" id="hact" onclick="actUI()" style="grid-column:span 2;width:80px;flex-direction:row;gap:5px;font-size:15px">⚡<small style="font-size:10px">Hành động</small></button>
+  <button class="hb" id="hact" onclick="actUI()" style="grid-column:span 2;width:80px;flex-direction:row;gap:5px;font-size:15px"><small style="font-size:10px">Hành động</small></button>
  </div>
 </div>
 <button class="b" id="dbtn" style="position:fixed;left:10px;top:calc(100px + env(safe-area-inset-top,0px));display:none;z-index:4;padding:6px 10px" onclick="decoToggle()">🛠️ Trang trí</button>
@@ -768,8 +768,8 @@ const SETS=[
   // ---- đổi bằng Huy hiệu tuyết (Ông già Noel) ----
   {n:'Set giữ nhiệt (đã đổi thành Mũ giữ nhiệt)',k:'warm',fx:'warm',gone:1,ach:1,bd:3,sh:'#efd9b8',shl:'#fbeed6',shd:'#c9a878',scarf:'#c0392b',trim:'#f6ecd8',hs:'#c0392b',belt:'#c9a878',pt:'#5a4538',rpt:'#5a4538',shoe:'#3a2a22'},
   // ---- Set mascot KHÔNG che mặt — mua bằng 💎 ở Shop kim cương ----
-  {n:'Tiệc mùa đông (Nam)',k:'deerm',deer:'m',ach:1,dia:10,ds:'Bộ Noel cả người, tóc ngắn, sừng & tai tuần lộc đổi màu lấp lánh. Không che mặt.',sh:'#d42a35',scarf:'#ffffff',belt:'#2a2230',pt:'#2d2535',rpt:'#2d2535',shoe:'#2a2028'},
-  {n:'Tiệc mùa đông (Nữ)',k:'deerf',deer:'f',ach:1,dia:10,ds:'Bộ Noel cả người, tóc dài xoăn hai bên, sừng & tai tuần lộc đổi màu lấp lánh. Không che mặt.',sh:'#d42a35',scarf:'#ffffff',belt:'#2a2230',pt:'#2d2535',rpt:'#2d2535',shoe:'#2a2028'},
+  {n:'Tiệc mùa đông (Nam)',k:'deerm',deer:'m',ach:1,dia:15,ds:'Bộ Noel cả người, tóc ngắn, sừng & tai tuần lộc đổi màu lấp lánh. Không che mặt.',sh:'#d42a35',scarf:'#ffffff',belt:'#2a2230',pt:'#2d2535',rpt:'#2d2535',shoe:'#2a2028'},
+  {n:'Tiệc mùa đông (Nữ)',k:'deerf',deer:'f',ach:1,dia:15,ds:'Bộ Noel cả người, tóc dài xoăn hai bên, sừng & tai tuần lộc đổi màu lấp lánh. Không che mặt.',sh:'#d42a35',scarf:'#ffffff',belt:'#2a2230',pt:'#2d2535',rpt:'#2d2535',shoe:'#2a2028'},
   {n:'Dạ nguyệt (Nam)',k:'dnm',dn:'m',ach:1,dia:20,ds:'Long bào vàng ánh trăng, tóc búi củ tỏi cài trâm, đội mão. Vầng sáng ẩn hiện trên trang phục. Không che mặt.',sh:'#eea02c',scarf:'#fff7dc',belt:'#2a2230',pt:'#eea02c',rpt:'#eea02c',shoe:'#8a1822'},
   {n:'Dạ nguyệt (Nữ)',k:'dnf',dn:'f',ach:1,dia:20,ds:'Váy cung đình vàng ánh trăng, kim quan phượng, trâm & bộ dao rủ châu. Vầng sáng ẩn hiện trên trang phục. Không che mặt.',sh:'#f7bb3a',scarf:'#fff7dc',belt:'#c92a35',pt:'#f7bb3a',rpt:'#f7bb3a',shoe:'#8a1822'},
   // ---- Đồ Hawaii: bán ở Tiệm câu Quái vật (Biển) bằng Xu quái vật — ach:1 = không hiện ở Shop Phố xá. Giá nằm ở QSHOP trong sea-map.js ----
@@ -3115,8 +3115,8 @@ function tickMach(dt){let ch=false;const n=now(),done={};let xp=0;
    =================================================================================== */
 const TN_NEED=10;
 const TN_DISH=['Cơm trắng','Cơm trứng','Xôi trắng','Xôi bắp','Cà chua đóng hộp','Dưa leo muối','Cơm cà chua trứng','Xôi đậu xanh','Bắp cải muối','Mướp đóng hộp','Xôi gà','Cơm xào','Mướp xào trứng','Khoai lang chiên','Dưa leo ngâm ớt'];   // 15 món dễ/rẻ = 3 tuần xoay vòng (mỗi tuần 5 món, hết 1 vòng mới xáo lại)
-const TN_MON=[50,60],TN_V=2;   // số quái vật phải câu: từ..đến • TN_V: tăng số này để ép sinh lại danh sách khi đổi cân bằng
-const TN_COOK=[25,40],TN_COOK2=[20,35];   // số lần nấu: món thường • món nhiều nguyên liệu (từ 3 loại trở lên hoặc từ 4 phần trở lên)
+const TN_MON=[40,49],TN_V=3;   // số quái vật phải câu: từ..đến • TN_V: tăng số này để ép sinh lại danh sách khi đổi cân bằng
+const TN_COOK=[15,20],TN_COOK2=[15,17];   // số lần nấu: món dễ/ít nguyên liệu (15-20) • món khó nhiều nguyên liệu (15-17) (từ 3 loại trở lên hoặc từ 4 phần trở lên)
 function tnWk(){const d=new Date(),k=(d.getDay()+6)%7;return new Date(d.getFullYear(),d.getMonth(),d.getDate()-k).getTime()}
 function tnRng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 function tnGen(wk){const wi=Math.round((wk/864e5-4)/7),per=Math.floor(TN_DISH.length/5),cyc=Math.floor(wi/per),ph=((wi%per)+per)%per,R0=tnRng(cyc*7919+13),pool=TN_DISH.slice();
@@ -3136,13 +3136,21 @@ function tnLeft(){const ms=tnWk()+7*864e5-Date.now(),d=Math.floor(ms/864e5),h=Ma
  +'.tnq{background:linear-gradient(#fff6fb,#f6e6ff);border:2px solid #c9a0e0;padding:6px 8px;margin:5px 0;color:#4a2a5a;font-size:13px}.tnq.ok{background:linear-gradient(#f2ffe8,#dcf6c8);border-color:#8cc66a;color:#2f5a1c}.tnq b{display:block}.tnq small{color:#7a5a8a}'
  +'@media (max-width:700px){#hev{transform:scale(.82);transform-origin:top right;margin-top:-14px}}';document.head.appendChild(css)})();
 function evUI(){tnEnsure();
- openUI(head('🎉 Sự kiện')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧚</span><b>Sự kiện Tiên Nữ</b>Tiên Nữ đứng ở Công viên, bạn ra đó đổi quà nha.</div>'
-  +'<button class="b w" style="font-size:14px;padding:10px" onclick="tnQuestUI()">📜 Nhiệm vụ Tiên Nữ</button>')}
+ openUI(head('🎉 Sự kiện')
+  +'<button class="b w" style="font-size:15px;padding:12px;margin-top:6px" onclick="evTnUI()">🧚 Sự kiện Tiên Nữ</button>'
+  +'<button class="b w" style="font-size:15px;padding:12px;margin-top:8px" onclick="evTiUI()">🧸 Sự kiện Tí Nị</button>')}
+function evTnUI(){tnEnsure();
+ openUI(head('🧚 Sự kiện Tiên Nữ')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧚</span><b>Sự kiện Tiên Nữ</b>Tiên Nữ đứng ở Công viên, bạn ra đó đổi quà nha.</div>'
+  +'<button class="b w" style="font-size:14px;padding:10px" onclick="tnQuestUI()">📜 Nhiệm vụ Tiên Nữ</button>'
+  +'<div class="pf"><button class="b" onclick="evUI()">⬅ Quay lại</button></div>')}
+function evTiUI(){
+ openUI(head('🧸 Sự kiện Tí Nị')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧸</span><b>Sự kiện Tí Nị</b>Tiệm Mô Hình ở Công viên đang chuẩn bị khai trương.<br><small>⏳ Coming soon — sắp ra mắt!</small></div>'
+  +'<div class="pf"><button class="b" onclick="evUI()">⬅ Quay lại</button></div>')}
 function tnQuestUI(){const T=tnEnsure(),nd=T.q.filter(q=>q.done).length;
- let h=head('📜 Nhiệm vụ Tiên Nữ')+'<div class="mut" style="text-align:center">⏳ Làm mới sau <b>'+tnLeft()+'</b> • Xong 1 nhiệm vụ nhận 1 🧩<br>🧩 Mảnh ghép: <b>'+T.pc+'</b> • Hoàn thành tuần này: <b>'+nd+'/'+T.q.length+'</b></div>';
- T.q.forEach(q=>{const o=q.k=='cook'?PRODS.find(x=>x.n==q.n):null,tx=q.k=='cook'?'🍳 Nấu '+(o?ic(o.e,o.n)+' ':'')+'<b style="display:inline">'+q.n+'</b> '+q.need+' lần':'🎣 Câu <b style="display:inline">'+q.need+' quái vật</b>',pc=Math.round(q.p/q.need*100);
+ let h=head('📜 Nhiệm vụ Tiên Nữ')+'<div class="mut" style="text-align:center">⏳ Làm mới sau <b>'+tnLeft()+'</b> • Xong 1 nhiệm vụ nhận 1 🧩<br>🔄 Reset nhiệm vụ mỗi 12h đêm Chủ Nhật<br>🧩 Mảnh ghép: <b>'+T.pc+'</b> • Hoàn thành tuần này: <b>'+nd+'/'+T.q.length+'</b></div>';
+ T.q.forEach(q=>{const o=q.k=='cook'?PRODS.find(x=>x.n==q.n):null,tx=q.k=='cook'?'🍳 Nấu '+(o?ic(o.e,o.n)+' ':'')+'<b style="display:inline">'+q.n+'</b> '+q.need+' lần':'🎣 Nhiệm vụ câu <b style="display:inline">'+q.need+' quái vật</b> ở bãi biển',pc=Math.round(q.p/q.need*100);
   h+='<div class="tnq'+(q.done?' ok':'')+'"><b>'+tx+(q.done?' ✅':'')+'</b><div class="tnb"><i style="width:'+pc+'%"></i></div><small>'+q.p+'/'+q.need+(q.done?' • Đã nhận 🧩 +1':' • Thưởng: 🧩 +1')+'</small></div>'});
- openUI(h+'<div class="pf"><button class="b" onclick="evUI()">⬅ Quay lại</button></div>')}
+ openUI(h+'<div class="pf"><button class="b" onclick="evTnUI()">⬅ Quay lại</button></div>')}
 function tnNpcUI(){const T=tnEnsure();
  openUI(head('🧚 Tiên Nữ')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧚</span><b>"Chào con~ ta là Tiên Nữ!"</b>Gom đủ '+TN_NEED+' mảnh ghép thì ta ghép thành Phiếu Tiên Giới cho nè.<br><small>🧩 '+T.pc+' mảnh • 🎫 '+T.tk+' Phiếu Tiên Giới</small></div>'
   +'<button class="b w" style="font-size:14px;padding:9px" onclick="tnMergeUI()">🧩 Ghép mảnh Tiên Nữ</button>'
@@ -5417,13 +5425,13 @@ function actStart(id){if(Pl.sit)return toast('Hãy đứng dậy trước khi l�
  toast('✨ '+ACTS[actIdx(id)].n+'... (di chuyển để dừng)')}
 function actStop(){if(!ACT)return;ACT=0;ACTSFX.t=null;try{if(window.PKO&&PKO.act)PKO.act()}catch(e){}}
 function actUI(){const own=ACTS.filter(a=>actHas(a)&&a.k==ACTTAB);
- let h=head('⚡ Hành động')+'<div class="tabs"><button class="b'+(ACTTAB=='solo'?' on':'')+'" onclick="ACTTAB=\'solo\';actUI()">🧍 Cá nhân</button><button class="b'+(ACTTAB=='duo'?' on':'')+'" onclick="ACTTAB=\'duo\';actUI()">🤝 Tương tác</button></div>';
+ let h=head('Hành động')+'<div class="tabs"><button class="b'+(ACTTAB=='solo'?' on':'')+'" onclick="ACTTAB=\'solo\';actUI()">🧍 Cá nhân</button><button class="b'+(ACTTAB=='duo'?' on':'')+'" onclick="ACTTAB=\'duo\';actUI()">🤝 Tương tác</button></div>';
  if(ACTTAB=='duo')h+='<div class="mut">🤝 Hành động tương tác dùng khi <b>chạm vào người chơi khác</b> → bấm <b>🎭 Hành động</b> → chọn hành động. (Dùng được ở 🌳 Công viên và 🏘️ Phố xá)</div><div class="sg" style="grid-template-columns:repeat(2,1fr)">'+own.map(a=>'<div class="sq aq" style="cursor:default">'+actCv(a.id,96,100,'mini',1)+'<b>'+a.n+'</b><small>'+a.ds+'</small></div>').join('')+'</div>';
  else if(!own.length)h+='<div class="mut">Bạn chưa có hành động cá nhân nào.<br>Ghé <b>Trùm kim cương</b> ở 🏘️ Phố xá để mua nhé!</div>';
  else h+='<div class="mut">Chọn một hành động để thực hiện. Hành động lặp lại đến khi bạn di chuyển.</div><div class="sg" style="grid-template-columns:repeat(3,1fr)">'+own.map(a=>'<button class="sq aq" onclick="actAsk(\''+a.id+'\')">'+actCv(a.id,72,100,'mini')+'<b>'+a.n+'</b><small>Bấm để dùng</small></button>').join('')+'</div>';
  openUI(h);actAnimGo()}
 function actAsk(id){const a=ACTS[actIdx(id)];if(!a||!actHas(a))return;
- openUI(head('⚡ Hành động')+'<div class="aq2">'+actCv(id,72,100,'big')+'<b>'+a.n+'</b><div class="mut" style="margin:2px 0">'+a.ds+'<br>Di chuyển bất cứ lúc nào để dừng lại.</div></div><div class="pf"><button class="b" onclick="actStart(\''+id+'\')">✅ Thực hiện</button><button class="b" onclick="actUI()">⬅ Quay lại</button></div>');actAnimGo()}
+ openUI(head('Hành động')+'<div class="aq2">'+actCv(id,72,100,'big')+'<b>'+a.n+'</b><div class="mut" style="margin:2px 0">'+a.ds+'<br>Di chuyển bất cứ lúc nào để dừng lại.</div></div><div class="pf"><button class="b" onclick="actStart(\''+id+'\')">✅ Thực hiện</button><button class="b" onclick="actUI()">⬅ Quay lại</button></div>');actAnimGo()}
 function diaShop(){const L=ACTS.filter(a=>a.k=='solo'&&!a.bd);
  openUI(head('💎 Shop kim cương')+'<div class="mut" style="text-align:center">Bạn có <b>💎 '+(ST.dia|0)+'</b> kim cương</div>'
  +'<div class="dsh">✨ Set mascot</div><div class="dg">'+diaSetRows()+'</div><div class="dsh">😄 Biểu cảm</div><div class="dg">'+diaExprRows()+'</div><div class="dsh">⚡ Hành động cá nhân</div><div class="dg">'
