@@ -3171,7 +3171,7 @@ function tiNpcUI(){const T=tiEnsure();
 /* ===================== THẢ BI TÍ NỊ (NPC Tí Nị → 🎱 Thả bi Tí Nị) =====================
    • Mỗi lần thả trừ 1 🎟️ Vé Tí Nị (ST.ti.tk). Bi rơi ngẫu nhiên vào 1 trong 6 khay xếp xen kẽ: Vé / Mô hình / Vé / Mô hình / Vé / Mô hình.
    • Khay Vé  → +TB_TK 🎟️ vé quay số (ST.tk, dùng ở Vòng quay may mắn).
-   • Khay Mô hình → chưa có tính năng mô hình: cộng vào ST.ti.md (số mô hình để dành), bản sau sẽ đổi thành mô hình thật.
+   • Khay Mô hình → nhận ngẫu nhiên 1 mô hình (mhRoll/mhGive trong idcard.js), lưu ở ST.mh (túi + kệ).
    • TỈ LỆ: sửa TB_W — khay Vé 1.1 / khay Mô hình 1 → khay Vé nhỉnh hơn 1 chút (≈ 17.5% mỗi khay Vé, ≈ 15.9% mỗi khay Mô hình).
    • Kết quả được bốc thăm trước, rồi bi lăn theo đường ngẫu nhiên tới đúng khay đó.
    • DỮ LIỆU THÊM: ST.ti.md (mô hình để dành), ST.ti.bi (tổng lượt đã thả). =================== */
@@ -3194,9 +3194,13 @@ function tbPos(s,t){const u=Math.min(1,Math.max(0,(t-s.a)/s.d));
  if(s.bn)return{x:s.x1,y:s.y1-Math.abs(Math.sin(u*Math.PI*2.4))*11*Math.pow(1-u,1.3)};
  if(s.fall)return{x:s.x0+(s.x1-s.x0)*u,y:s.y0+(s.y1-s.y0)*u*u};
  return{x:s.x0+(s.x1-s.x0)*u,y:s.y0+(s.y1-s.y0)*u*u-s.h*4*u*(1-u)}}
-function tbMsg(bin){return TB_TRAY[bin]=='t'?'🎉 Trúng khay Vé quay số: +'+TB_TK+' 🎟️ vé quay! Mang ra Vòng quay may mắn nhé.':'🎁 Bi rơi vào khay Mô hình! Mô hình ngẫu nhiên đã được cất để dành (kệ trưng bày sẽ mở ở bản sau).'}
-function tbInfo(){const B=TB,T=tiEnsure(),el=$('tbi');if(!el||!B)return;const run=B.ph=='drop',sn=run&&B.snap?B.snap:{q:ST.tk|0,md:T.md|0};
- el.innerHTML='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+[['🎟️',T.tk,'Vé Tí Nị'],['🎡',sn.q,'Vé quay số'],['🎁',sn.md,'Mô hình để dành']].map(a=>'<div class="sq" style="cursor:default;min-height:58px"><span class="e">'+a[0]+'</span><b>'+a[1]+'</b><small>'+a[2]+'</small></div>').join('')+'</div>';
+const tbMd=()=>window.mhTotal?window.mhTotal():(tiEnsure().md|0);
+function tbMsg(bin,mid){if(TB_TRAY[bin]=='t')return['🎉 Trúng khay Vé quay số: +'+TB_TK+' 🎟️ vé quay! Mang ra Vòng quay may mắn nhé.','🎉 Trúng khay Vé quay số: +'+TB_TK+' 🎟️ vé quay!'];
+ const m=window.mhInfo&&mid>=0?window.mhInfo(mid):null;
+ if(!m)return['🎁 Bi rơi vào khay Mô hình! Mô hình đã được cất để dành.','🎁 Bi rơi vào khay Mô hình!'];
+ return['<canvas class="mhc" width="16" height="16" data-m="'+mid+'" style="width:56px;image-rendering:pixelated;display:block;margin:0 auto 2px"></canvas>🎁 Nhận mô hình <b>'+m.n+'</b>'+(m.r?' ✨ <b>(Hiếm!)</b>':'')+'<br><small>Xem ở 🪪 Thẻ → 🧸 Kệ mô hình</small>','🎁 Nhận mô hình '+m.n+(m.r?' (Hiếm!)':'')+'!']}
+function tbInfo(){const B=TB,T=tiEnsure(),el=$('tbi');if(!el||!B)return;const run=B.ph=='drop',sn=run&&B.snap?B.snap:{q:ST.tk|0,md:tbMd()};
+ el.innerHTML='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+[['🎟️',T.tk,'Vé Tí Nị'],['🎡',sn.q,'Vé quay số'],['🎁',sn.md,'Mô hình đang có']].map(a=>'<div class="sq" style="cursor:default;min-height:58px"><span class="e">'+a[0]+'</span><b>'+a[1]+'</b><small>'+a[2]+'</small></div>').join('')+'</div>';
  const b=$('tbb');if(b){b.classList.toggle('z',run||T.tk<1);b.textContent=run?'🎱 Bi đang lăn...':'🎱 Thả bi (−1 🎟️)'}}
 function tbBall(g,x,y,col){g.fillStyle='rgba(60,30,80,.2)';g.beginPath();g.ellipse(x+1.5,y+2.5,6,5,0,0,7);g.fill();
  g.fillStyle=col;g.beginPath();g.arc(x,y,6,0,7);g.fill();g.strokeStyle='#3a2412';g.lineWidth=1.2;g.stroke();
@@ -3236,7 +3240,7 @@ function tbStep(B){if(B.ph!='drop')return;const n=performance.now(),t=(n-B.t0)/1
  else if(t>=B.total){B.ph='done';B.bx=B.fx;B.by=TB_REST;B.endAt=n;
   const cl=['#ff7eb6','#ffd23f','#4da6ff','#5fd36f','#b784ff','#fff'];for(let i=0;i<26;i++)B.parts.push({x:B.fx,y:TB_REST,vx:(Math.random()-.5)*190,vy:-60-Math.random()*150,c:cl[i%6],l:.9+Math.random()*.6});
   const r=$('tbr');if(r)r.innerHTML=B.msg;B.snap=null;tbInfo()}}
-function tbLoop(B){if(TB!==B||!B.c.isConnected||!UI)return;tbStep(B);tbDraw(B);requestAnimationFrame(()=>tbLoop(B))}
+function tbLoop(B){if(TB!==B||!B.c.isConnected||!UI)return;tbStep(B);tbDraw(B);if(B.mid>=0&&window.mhPaint)mhPaint();requestAnimationFrame(()=>tbLoop(B))}
 function tbUI(){const T=tiEnsure();
  openUI(head('🎱 Thả bi Tí Nị')+'<div id="tbi"></div>'
   +'<div style="max-width:280px;margin:8px auto 0;border:3px solid #7a4a26;border-radius:12px;overflow:hidden;background:#fff6fb"><canvas id="tbc" width="560" height="660" style="width:100%;display:block"></canvas></div>'
@@ -3248,13 +3252,13 @@ window.tbUI=tbUI;
 window.tbDrop=()=>{const B=TB,T=tiEnsure();if(!B||!B.c.isConnected||B.ph=='drop')return;
  if(T.tk<1)return toast('🎟️ Bạn hết Vé Tí Nị! Làm nhiệm vụ trồng chậu để lấy thêm vé nha.');
  const bin=tbRoll();
- B.snap={q:ST.tk|0,md:T.md|0};
+ B.snap={q:ST.tk|0,md:tbMd()};
  T.tk--;T.bi=(T.bi|0)+1;
- if(TB_TRAY[bin]=='t')ST.tk=(ST.tk|0)+TB_TK;else T.md=(T.md|0)+1;
+ let mid=-1;if(TB_TRAY[bin]=='t')ST.tk=(ST.tk|0)+TB_TK;else if(window.mhRoll){mid=window.mhRoll();window.mhGive(mid)}else T.md=(T.md|0)+1;
  save();
- tbBuild(B,bin);B.bin=bin;B.msg=tbMsg(bin);B.hits={};B.col=TB_COL[Math.floor(Math.random()*TB_COL.length)];B.bx=TB_CX;B.by=8;B.t0=performance.now();B.ph='drop';
+ tbBuild(B,bin);B.bin=bin;const mm=tbMsg(bin,mid);B.msg=mm[0];B.txt=mm[1];B.mid=mid;B.hits={};B.col=TB_COL[Math.floor(Math.random()*TB_COL.length)];B.bx=TB_CX;B.by=8;B.t0=performance.now();B.ph='drop';
  const r=$('tbr');if(r)r.textContent='🎱 Bi đang lăn...';tbInfo();
- setTimeout(()=>{if(TB!==B||!B.c.isConnected||!UI)toast(B.msg)},B.total*1000+300)};
+ setTimeout(()=>{if(TB!==B||!B.c.isConnected||!UI)toast(B.txt)},B.total*1000+300)};
 function tnQuestUI(){const T=tnEnsure(),nd=T.q.filter(q=>q.done).length;
  let h=head('📜 Nhiệm vụ Tiên Nữ')+'<div class="mut" style="text-align:center">⏳ Làm mới sau <b>'+tnLeft()+'</b> • Xong 1 nhiệm vụ nhận 1 🧩<br>🔄 Reset nhiệm vụ mỗi 12h đêm Chủ Nhật<br>🧩 Mảnh ghép: <b>'+T.pc+'</b> • Hoàn thành tuần này: <b>'+nd+'/'+T.q.length+'</b></div>';
  T.q.forEach(q=>{const o=q.k=='cook'?PRODS.find(x=>x.n==q.n):null,tx=q.k=='cook'?'🍳 Nấu '+(o?ic(o.e,o.n)+' ':'')+'<b style="display:inline">'+q.n+'</b> '+q.need+' lần':'🎣 Nhiệm vụ câu <b style="display:inline">'+q.need+' quái vật</b> ở bãi biển',pc=Math.round(q.p/q.need*100);
