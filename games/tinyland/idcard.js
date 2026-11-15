@@ -192,7 +192,7 @@ function mainView(){
  '<div class="idtop"><div class="idl"><div class="idavw" onclick="idMenu()" title="Bấm để chỉnh avatar">'+avHtml(ID.fr,132)+'</div>'+
  '<div class="idbfb" onclick="idBF()">👫 Bạn thân<small>'+(B?escH(B.pn||'Bạn thân'):'Chưa có • bấm xem')+'</small></div></div>'+
  '<div class="idr"><div class="idnrow"><div class="idnm">'+escH(ST.name||'Nhân vật')+'</div><button class="idshb" onclick="idShelf()" title="Kệ trưng bày mô hình"><span class="e">🧸</span><span class="t">Kệ mô hình</span></button></div>'+vtHtml()+
- '<div class="idline"><span>🎂 Ngày ra đời</span><b id="idborn">'+fmtD(ID.born)+'</b></div>'+
+ '<div class="idline"><span>🎂 Ngày gia nhập</span><b id="idborn">'+fmtD(ID.born)+'</b></div>'+
  '<div class="idlv"><div class="t"><span>⭐ Level</span><b>'+ST.lv+(mx?' MAX':'')+'</b></div><div class="idbar"><i style="width:'+pc+'%"></i></div></div>'+
  '<div class="mut" style="margin:0;font-size:10.5px">👆 Bấm vào avatar để đổi ảnh / khung</div></div></div>'+
  '<div class="idmenu" id="idmenu"><button class="b" onclick="idPick()">📷 Đổi ảnh</button><button class="b" onclick="idFrames()">🖼️ Đổi khung</button></div>'+
@@ -944,7 +944,7 @@ function framesView(){
  FRAMES.forEach((x,i)=>{h+='<button class="idft'+(i==FSEL?' sel':'')+(i==ID.fr?' eq':'')+'" onclick="idSel('+i+')">'+avHtml(i,70)+'<b>'+x.n+'</b><small>'+(i==ID.fr?'✅ Đang dùng':own(i)?'Đã có':i<FR_FREE?'Miễn phí':'🪙 '+PRICE)+'</small></button>'});
  openIdc(h+'</div><div class="mut">Khung chỉ hiện trong Căn cước, không đổi avatar ngoài màn hình chính.</div>')}
 
-// ---- ngày ra đời = ngày tạo tài khoản DHT (lấy từ máy chủ, nếu có) ----
+// ---- ngày gia nhập = ngày tạo tài khoản DHT (lấy từ máy chủ, nếu có) ----
 async function idBorn(){
  if(ID.bs)return;
  try{const D=parent.DHT;if(!D||!D.SB_URL)return;const t=await D.tok();if(!t)return;
@@ -994,7 +994,7 @@ function ovRender(){if(!OV)return;const o=OV.o,d=OV.d,nm=escH((d&&d.n)||o.n||'?'
  const mx=d.lv>=100,B=d.bf,t=B?bfTierOf(B.exp):0,F=d.fr>=0?FRAMES[d.fr]:null;
  let h=hd()+'<div class="idtop"><div class="idl">'+avHtml(d.fr,132,d.img,d.av)+'</div>'+
   '<div class="idr"><div class="idnm">'+nm+'</div>'+
-  '<div class="idline"><span>🎂 Ngày ra đời</span><b>'+(d.born?fmtD(d.born):'—')+'</b></div>'+
+  '<div class="idline"><span>🎂 Ngày gia nhập</span><b>'+(d.born?fmtD(d.born):'—')+'</b></div>'+
   '<div class="idlv"><div class="t"><span>⭐ Level</span><b>'+d.lv+(mx?' MAX':'')+'</b></div><div class="idbar"><i style="width:'+d.pc+'%"></i></div></div></div></div>'+
   '<div class="idbox idtt"><div class="idtl"><img alt="Danh hiệu Level" src="'+TITLE_ASSETS.lv[lvTier(d.lv)]+'">'+(B?'<img alt="Danh hiệu Bạn thân" src="'+TITLE_ASSETS.bf[t]+'">':'<div class="idnobf"><span class="l">🔒</span><div><b>Chưa có bạn thân</b><small>Chưa mở danh hiệu Bạn thân</small></div></div>')+'</div></div>'+
   '<div class="idbox"><h4>📝 Thông tin</h4><div style="white-space:pre-wrap;word-break:break-word;font-size:13px;min-height:20px;color:#24475c">'+(d.bio?escH(d.bio):'<span class="mut">Chưa viết giới thiệu.</span>')+'</div></div>'+
