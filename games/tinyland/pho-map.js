@@ -424,6 +424,7 @@ window.psLotBuy=n=>{const L=lotS(),pend=L.t.filter(t=>!t.paid).length;
  if(ST.xu<LOT_PRICE*n)return toast('🪙 Không đủ Xu mua vé');
  ST.xu-=LOT_PRICE*n;for(let i=0;i<n;i++)L.t.push(lotMake());xuUp();save();toast('🎟️ Đã mua '+n+' vé — 2 phút nữa xổ số!');psLot()};
 window.psLotRev=()=>{PS.view='rev';const L=lotS(),now=Date.now(),t=L.t.find(t=>!t.paid&&t.at<=now);if(!t)return psLot();
+ if(t.g<0){let m=0;while(m<6&&t.n[5-m]==t.w[5-m])m++;if(m>=1){t.g=5;t.p=100;t.j=m}else t.p=LOT_REFUND} // vé cũ mua trước bản cập nhật: tính lại theo số thực sự khớp
  t.paid=1;ST.xu+=t.p;xuUp();save();
  openUI(head('🎰 Xổ số kiến thiết')+'<div style="text-align:center"><canvas id="lotc" width="160" height="104" style="width:100%;max-width:320px;image-rendering:pixelated;background:#efe6d4;border:2px solid #7a4a26"></canvas><div class="mut" style="margin:6px 0 0">Vé của bạn</div><div style="font-size:22px;letter-spacing:5px;font-weight:800">'+t.n+'</div><div class="mut" style="margin:6px 0 0">Số trúng thưởng</div><div id="lotn" style="font-size:28px;letter-spacing:5px;font-weight:800;min-height:36px">······</div><div id="lotr" style="min-height:48px;margin-top:4px"></div></div><div class="pf"><button class="b" id="lotb" disabled onclick="psLot()">Tiếp tục</button></div>');
  const c=$('lotc'),g=c.getContext('2d'),t0=performance.now();let shown=-1;
@@ -590,7 +591,7 @@ window.psUse=i=>{const k=SH_TAB;if(!ST.own[k].includes(i))return;ST.av[k]=i;if(k
 // ============================================================
 //  TIỆM NỘI THẤT (giá theo độ đẹp: 100–4000 Xu). Mua → vào Túi nội thất (ST.hm.i), mở khi ở trong nhà.
 // ============================================================
-const FURN_PR={clk:100,cal:100,chr:100,mir:120,lmp:120,drw:130,bsk:140,tbl:140,plt:150,cat:160,rug:170,pic:180,shf:190,wrd:200,tv:220,arm:230,din:260,sofa:300,ctbl:500,cchr:500,clmp:500,wcl:500,wph:500,wpc:500,ftv:500,pcd:4000,ofd:1000,bkS:500,bkL:700,mdl:1000,spk:2000};
+const FURN_PR={clk:100,cal:100,chr:100,mir:120,lmp:120,drw:130,bsk:140,tbl:140,plt:150,cat:160,rug:170,pic:180,shf:190,wrd:200,tv:220,arm:230,din:260,sofa:300,ctbl:500,cchr:500,clmp:500,wcl:500,wph:500,wpc:500,ftv:500,pcd:4000,ofd:1000,bkS:500,bkL:700,mdl:1000,spk:2000,mai:1200,quat:700,hphi:1500,cchuc:500,dlong:300,nguqua:800,thong:1500,neon:1200,vong:600,day:350,tat:200,qua:250};
 window.FURN_PR=FURN_PR;
 window.psFurn=()=>{PS.view='furn';if(typeof hmInit=='function')hmInit();const I=ST.hm.i,P=ST.hm.p,ks=Object.keys(CAT).sort((a,b)=>(FURN_PR[a]||200)-(FURN_PR[b]||200));
  let h=head('🛋️ Tiệm nội thất')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu • đồ mua về nằm trong <b>🎒 Túi nội thất</b> (vào nhà → 🛠️ Trang trí để bày)</div><div class="g3">';
