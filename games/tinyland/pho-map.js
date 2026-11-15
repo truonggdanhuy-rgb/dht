@@ -1,7 +1,7 @@
 /* ============================================================
    PHỐ XÁ — map online thứ 2 (dùng chung hệ thống mạng của Công viên)
    - Shop: bán thú cưỡi / pet / set / tóc-mũ (đồ trong Túi chỉ có khi đã mua)
-   - Tiệm nội thất (nhà phố số 1): bán đồ trang trí nhà 100–500 Xu, đồ mua về nằm trong Túi nội thất (chỉ mở khi ở trong nhà)
+   - Tiệm nội thất (nhà phố số 1): bán đồ trang trí nhà 100–4000 Xu, đồ mua về nằm trong Túi nội thất (chỉ mở khi ở trong nhà)
    - Sạp vé số (xổ sau 2 phút, lồng quay), Miếu cầu phúc (xin xăm 5 lần/ngày)
    - Khách phố tự thoại thưa thớt, vỉa hè, ghế nhựa, bánh mì, trà đá, báo
    ============================================================ */
@@ -287,7 +287,7 @@ function build(){
  hit(440,96,90,60,'🐃 Tiệm thú cưỡi — trâu, voi, kỳ lân, xe đạp...','cv:ps:shop:m',[486,178]);
  hit(616,96,90,60,'🐾 Tiệm thú cưng — mèo, thỏ, gà, Mây Mây...','cv:ps:shop:p',[662,178]);
  hit(358,100,76,56,'🍜 Phở bò — thơm nức mũi, chưa mở bán đâu nhé!');
- hit(190,100,72,56,'🛋️ Tiệm nội thất — mua đồ trang trí cho nhà (100–500 Xu)','cv:ps:furn',[226,178]);
+ hit(190,100,72,56,'🛋️ Tiệm nội thất — mua đồ trang trí cho nhà (100–4000 Xu)','cv:ps:furn',[226,178]);
  hit(536,100,74,56,'💊 Hiệu thuốc — kệ thuốc ngăn nắp');
  hit(712,100,76,56,'✂️ Tiệm cắt tóc — chú thợ đi ăn sáng rồi');
  hit(792,100,80,56,'☕ Cà phê sáng — mùi cà phê phin ngào ngạt');
@@ -588,9 +588,9 @@ window.psBuy=i=>{if(typeof ownE=='function')ownE();const k=SH_TAB,pr=price(k,i),
 window.psUse=i=>{const k=SH_TAB;if(!ST.own[k].includes(i))return;ST.av[k]=i;if(k=='m'&&Pl.sit){Pl.sit=0;Pl.mv=0}if(k=='p')petReset();save();toast('✨ Đã dùng '+SHOP[k].all()[i].n);psItem(i)};
 
 // ============================================================
-//  TIỆM NỘI THẤT (giá theo độ đẹp: 100–500 Xu). Mua → vào Túi nội thất (ST.hm.i), mở khi ở trong nhà.
+//  TIỆM NỘI THẤT (giá theo độ đẹp: 100–4000 Xu). Mua → vào Túi nội thất (ST.hm.i), mở khi ở trong nhà.
 // ============================================================
-const FURN_PR={clk:100,cal:100,chr:100,mir:120,lmp:120,drw:130,bsk:140,tbl:140,plt:150,cat:160,rug:170,pic:180,shf:190,wrd:200,tv:220,arm:230,din:260,sofa:300,ctbl:500,cchr:500,clmp:500,wcl:500,wph:500,wpc:500,ftv:500};
+const FURN_PR={clk:100,cal:100,chr:100,mir:120,lmp:120,drw:130,bsk:140,tbl:140,plt:150,cat:160,rug:170,pic:180,shf:190,wrd:200,tv:220,arm:230,din:260,sofa:300,ctbl:500,cchr:500,clmp:500,wcl:500,wph:500,wpc:500,ftv:500,pcd:4000,ofd:1000,bkS:500,bkL:700,mdl:1000,spk:2000};
 window.FURN_PR=FURN_PR;
 window.psFurn=()=>{PS.view='furn';if(typeof hmInit=='function')hmInit();const I=ST.hm.i,P=ST.hm.p,ks=Object.keys(CAT).sort((a,b)=>(FURN_PR[a]||200)-(FURN_PR[b]||200));
  let h=head('🛋️ Tiệm nội thất')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu • đồ mua về nằm trong <b>🎒 Túi nội thất</b> (vào nhà → 🛠️ Trang trí để bày)</div><div class="g3">';
