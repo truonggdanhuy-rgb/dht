@@ -416,17 +416,24 @@ const tnArr=t=>t=='m'?MOUNTS:SETS;
 const tnKey=(t,x)=>x.k;
 const tnIdx=q=>tnArr(q.t).findIndex(x=>tnKey(q.t,x)==q.k);
 let TNRAF=0;
+// giao diện Shop Tiên Nữ: panel xanh lá pastel, 4 món / hàng, chỉ tên + giá
+(function(){const c=document.createElement('style');c.textContent=
+ '#ui.tgn .pf{background:#e3f5da;border-color:#8fcf9a}#ui.tgn{background:#e3f5da;border-color:#6fae7a;box-shadow:0 3px 0 #4a8a58;color:#2d5a3a}#ui.tgn .uh{color:#2d6a40}'
+ +'#ui.tgn .b{background:#bfe8b0;border-color:#5f9f6a;box-shadow:0 2px 0 #3f7a4a;color:#2d5a3a}#ui.tgn .b.x{background:#d3f0c6}'
+ +'.tsg{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:6px 0}'
+ +'.tcd{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:3px;background:linear-gradient(#f6fff2,#d6f0cc);border:2px solid #8fcf9a;padding:4px 2px;text-align:center;min-width:0}'
+ +'.tcd b{font-size:10.5px;line-height:1.15;color:#2d5a3a;display:block}.tcd .b{padding:3px 2px;font-size:11px;width:100%;box-sizing:border-box}'
+ +'canvas.tsc{width:100%;height:auto;aspect-ratio:4/5;image-rendering:pixelated;background:linear-gradient(#e9fbe4,#cfeec3);display:block}'
+ +'.tcnt{text-align:center;font-weight:800;color:#2d6a40;margin:2px 0 4px}';document.head.appendChild(c)})();
 function tnShopUI(){
  const T=tnEnsure();
  const tile=(q,n)=>{const i=tnIdx(q);if(i<0)return '';const x=tnArr(q.t)[i],have=(ST.own[q.t]||[]).includes(i),on=ST.av[q.t]==i,ok=T.tk>=q.p;
-  return '<div class="dcd"><canvas class="tsc" data-n="'+n+'" width="'+(q.t=='m'?176:144)+'" height="176"></canvas><b>'+x.n+'</b>'
-   +(x.ds?'<small style="color:#7a4a26;font-size:10px;line-height:1.25;margin:0 2px 2px">'+x.ds+'</small>':q.t=='m'?'<small style="color:#7a4a26;font-size:10px;line-height:1.25;margin:0 2px 2px">Ngồi trên lưng cá, nước tóe như cá chồi lên. Nhanh như xe hơi mui trần.</small>':'')
-   +(have?'<button class="b" onclick="tnWear('+n+')">'+(on?'✓ Đang dùng':'✓ Đã có • Dùng')+'</button>'
-    :'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="tnBuy('+n+')">🎫 '+q.p+' Phiếu</button>')+'</div>'};
- openUI(head('🛍️ Shop Tiên Nữ')+'<div class="tnq" style="text-align:center"><b>🎫 Phiếu Tiên Giới: '+T.tk+'</b><small>Gom 🧩 Mảnh ghép từ Nhiệm vụ Tiên Nữ → ghép thành Phiếu rồi đổi quà nha~</small></div>'
-  +'<div class="dsh">⚔️ Set mascot Chiến binh Âu Lạc</div><div class="dg">'+TN_SHOP.map((q,n)=>q.t=='s'?tile(q,n):'').join('')+'</div>'
-  +'<div class="dsh">🐟 Thú cưỡi</div><div class="dg">'+TN_SHOP.map((q,n)=>q.t=='m'?tile(q,n):'').join('')+'</div>'
+  return '<div class="tcd"><canvas class="tsc" data-n="'+n+'" width="96" height="120"></canvas><b>'+x.n+'</b>'
+   +(have?'<button class="b" onclick="tnWear('+n+')">'+(on?'✓ Đang dùng':'✓ Dùng')+'</button>'
+    :'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="tnBuy('+n+')">🎫 '+q.p+'</button>')+'</div>'};
+ openUI(head('🛍️ Shop Tiên Nữ')+'<div class="tcnt">🎫 Phiếu Tiên Giới: '+T.tk+'</div><div class="tsg">'+TN_SHOP.map(tile).join('')+'</div>'
   +'<div class="pf"><button class="b" onclick="tnNpcUI()">⬅ Quay lại</button></div>');
+ $('ui').classList.add('tgn');
  if(!TNRAF)TNRAF=requestAnimationFrame(tnLoop)}
 function tnBuy(n){const q=TN_SHOP[n],T=tnEnsure(),i=q?tnIdx(q):-1;if(i<0)return;
  ST.own[q.t]=ST.own[q.t]||[];if(ST.own[q.t].includes(i))return tnShopUI();
@@ -438,7 +445,7 @@ function tnWear(n){const q=TN_SHOP[n],i=q?tnIdx(q):-1;if(i<0||!(ST.own[q.t]||[])
 function tnLoop(){const cs=document.querySelectorAll('canvas.tsc');if(!cs.length||!UI){TNRAF=0;return}
  const t=performance.now()/1000,d=[0,3,1,2][Math.floor(t/2.4)%4],A=ST.av||{};
  cs.forEach(c=>{const q=TN_SHOP[+c.dataset.n],i=q?tnIdx(q):-1;if(i<0)return;const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);g.imageSmoothingEnabled=false;g.save();
-  if(q.t=='m'){g.scale(3,3);const S=SETS[A.s|0];drawRide(g,Math.round(c.width/6),52,{d,a:t,mv:1,sit:0,hair:A.h|0,set:A.s|0,e:A.e|0},i,t)}
-  else{g.scale(5,5);drawAv(g,4,3,{d,a:t,mv:0,sit:0,hair:0,set:i,e:A.e|0})}
+  if(q.t=='m'){g.scale(1.7,1.7);drawRide(g,28,62,{d:3,a:t,mv:1,sit:0,hair:0,set:A.s|0,e:A.e|0},i,t)}
+  else{g.scale(3,3);drawAv(g,6,6,{d,a:t,mv:0,sit:0,hair:0,set:i,e:A.e|0})}
   g.restore()});
  TNRAF=requestAnimationFrame(tnLoop)}

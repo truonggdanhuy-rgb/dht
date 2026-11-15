@@ -676,7 +676,9 @@ function chbAct(){if(Pl.sit)return;Pl.by=0;if(ST.av.m>=0)ST.av.m=-1;Pl.x=722;Pl.
  r('#f3f3e0',21,11,10,8);r('#ffd23f',25,10,2,2);r('#8a7a6a',22,14,8,1);r('#8a7a6a',22,16,6,1);
  r('#fff3c4',10,22,12,6);r('#2f8a3a',15,21,2,2);r('#8a7a6a',11,25,9,1);r('#cfe8ff',24,21,8,7);r('#d9302a',27,20,2,2);r('#8a7a6a',25,24,6,1)});
 place(qb,496,324,'📋 Bảng nhiệm vụ — bấm để xem');const h=hits[hits.length-1];h[5]='qb';h[6]=[536,326];blk(31,20,32,20);
-SP.push({by:325,d:()=>{if(!ST.dq||!Array.isArray(ST.dq.q)||ST.dq.d!=new Date().toDateString()||!ST.dq.q.some(q=>q.done&&!q.cl))return;const b=Math.round(Math.sin(performance.now()/260)*2);
+SP.push({by:326,d:()=>{const t=performance.now()/1000,b=Math.round(Math.sin(t*2.2)*1.5);cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';
+ cx.fillStyle='rgba(30,30,16,.55)';cx.fillText('Nhiệm vụ ngày',517,281+b);cx.fillStyle='#fff8dc';cx.fillText('Nhiệm vụ ngày',516,280+b)}});   // dòng chữ nhỏ nhún nhẹ trên biển
+ SP.push({by:325,d:()=>{if(!ST.dq||!Array.isArray(ST.dq.q)||ST.dq.d!=new Date().toDateString()||!ST.dq.q.some(q=>q.done&&!q.cl))return;const b=Math.round(Math.sin(performance.now()/260)*2);
  r('#7a1a10',514,300+b,8,10);r('#ff4a3a',515,301+b,6,8);r('#fff',517,302+b,2,4);r('#fff',517,307+b,2,2)}})}
 function qGen(){const R=a=>a[Math.floor(Math.random()*a.length)],q=[];let k;
  k=R([[2,50],[3,80],[5,120]]);q.push({t:'cook',need:k[0],xu:k[1],tx:'🍳 Nấu '+k[0]+' món ở các máy chế biến'});
@@ -2301,7 +2303,7 @@ function lvUi(){const e=$('hlv');if(!e)return;const mx=ST.lv>=100;e.textContent=
 function addExp(n){if(ST.lv>=100){ST.exp=0;return ''}let up=0;ST.exp+=n;while(ST.lv<100&&ST.exp>=lvNeed(ST.lv)){ST.exp-=lvNeed(ST.lv);ST.lv++;up++}if(ST.lv>=100)ST.exp=0;lvUi();return up?'\n🎉 Lên cấp '+ST.lv+'!':''}
 const head=t=>'<div class="uh"><span>'+t+'</span><button class="b x" onclick="closeUI()">X</button></div>';
 var UIT=0;
-function openUI(h){$('ui').classList.remove('wui');if(!UI)UIT=performance.now();UI=1;MUI=-1;BUI=0;$('ui').style.top='';$('ui').innerHTML=h;$('ui').style.display='block';try{fmBarUp()}catch(e){}}
+function openUI(h){$('ui').classList.remove('wui','tgn');if(!UI)UIT=performance.now();UI=1;MUI=-1;BUI=0;$('ui').style.top='';$('ui').innerHTML=h;$('ui').style.display='block';try{fmBarUp()}catch(e){}}
 function closeUI(){if(fish&&fish.ph==0){ST.bait++}UI=0;MUI=-1;fish=null;$('ui').style.display='none';save();try{barUp()}catch(e){}try{fmBarUp()}catch(e){}}
 const rd=h=>Math.hypot(Math.max(h[0]-Pl.x,0,Pl.x-h[0]-h[2]),Math.max(h[1]-Pl.y,0,Pl.y-h[1]-h[3]));
 function act(h){const a=h[5];if(!a)return toast(h[4]);if(a.startsWith('cv:'))return cvAct(a.slice(3),h);if(a.startsWith('bench:')){const q=a.split(':');return benchSit(+q[1],+q[2])}if(a.startsWith('sitf:')){const q=a.split(':');SEAT.x=+q[1];SEAT.y=+q[2];return sitGo()}if(a=='sit')return sitGo();if(a=='gate')return switchMap('nt');if(a=='chb')return chbAct();if(a=='qb')return qUI();if(a=='home')return switchMap('hm');if(a.startsWith('hm:'))return hmAct(a.slice(3));if(a=='tug')return tugGame();if(a=='hd')return hdAct();if(a=='bench')return benchAct();if(a=='nc')return ncAct();if(a=='ln')return lnAct();if(a=='wr')return wrAct();if(a=='rr')return rrGame();if(a=='santa')return santaAct();if(a.startsWith('wchair:'))return wChair(a);if(a=='gift')return giftAct();if(a=='tl')return tlAct();if(a=='bl')return blAct();const[t,v]=a.split(':');
