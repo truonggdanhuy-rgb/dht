@@ -376,7 +376,7 @@ function build(){
  // ----- cây cối -----
  const tree=(k,x,by)=>{const im=TREE[k];put(im,x,by);blk(x-8,by-12,x+8,by)};
  for(const[k,x,y]of[['g1',70,330],['yl',62,520],['g2',68,640],['ph',800,296],['g1',1380,650],
-   ['g2',430,756],['ph',590,744],['g1',620,956],['yl',420,950],['ph',870,744],['g1',915,740],['yl',1400,820],['g1',1396,940],
+   ['g2',430,756],['ph',590,744],['g1',620,956],['yl',420,950],['yl',1400,820],['g1',1396,940],
    ]){if(y>940&&x>500&&x<900)continue;tree(k,x,Math.min(y,952))}
  put(WILLOW,ISL.x,ISL.y+8);
  // ----- cổng -----
@@ -393,32 +393,26 @@ function build(){
   for(let k=0;k<3;k++){const q=(t*.7+k/3)%1;E(R0,'rgba(235,250,255,'+(.5*(1-q)).toFixed(2)+')',x,694,Math.round(10+q*28),Math.round(3+q*8))}});
  hits.push([694,664,52,40,'⛲ Đài phun nước giữa công viên']);
  // ----- NPC Tiên nữ: bay lơ lửng cạnh đài phun nước; to gấp 2,5 lần + biển thần tiên ghi "Tiên Nữ" (bấm để mở nhiệm vụ / ghép phiếu / shop) -----
- {const fx=790,fy=722,NS=2.5,OC=document.createElement('canvas');OC.width=300;OC.height=355;const og=OC.getContext('2d');   // bản vẽ 5x rồi thu 1/2 => phóng 2,5x
-  blk(fx-16,fy-8,fx+16,fy);blk(fx+50,fy-6,fx+78,fy);
+ {const fx=790,fy=722,NS=1.25,OC=document.createElement('canvas');OC.width=300;OC.height=355;const og=OC.getContext('2d');   // bản vẽ 5x rồi thu 1/2 => phóng 2,5x
+  blk(fx-10,fy-6,fx+10,fy);
   dyn(fy,()=>{if(fx<camX-120||fx>camX+vw+120||fy<camY||fy-190>camY+vh)return;
    const t=performance.now()/1000,ti=SETS.findIndex(x=>x.k=='tn');if(ti<0)return;
    const sn=Math.sin(t*1.8),L=8+Math.round(sn*2),d=[0,0,3,0,0,2][Math.floor(t/4)%6];
    E(R0,'rgba(0,0,0,'+(.15-.04*sn).toFixed(2)+')',fx,fy,Math.round(20-2*sn),4);   // bóng mờ trên mặt đất
    og.clearRect(0,0,300,355);og.save();og.scale(5,5);drawAv(og,20,20,{d,a:t,mv:0,sit:0,hair:0,set:ti,e:0,nosh:1});og.restore();
    const fyy=fy-L*NS;cx.save();cx.imageSmoothingEnabled=true;cx.drawImage(OC,fx-30*NS,fyy-31*NS-20*NS,60*NS,71*NS);cx.restore()});
-  // biển thần tiên: cột hoa leo + tấm biển hồng-tím viền vàng, cánh nhỏ hai bên, sao lấp lánh
-  dyn(fy+90,()=>{const sx=fx+64,t=performance.now()/1000,by=fy+2;if(sx<camX-80||sx>camX+vw+80||by<camY||by-100>camY+vh)return;
-   const bb=Math.round(Math.sin(t*1.6)*1);
-   E(R0,'rgba(0,0,0,.2)',sx,by,16,3);
-   R0('#8a5a34',sx-2,by-48,4,48);R0('#b07a44',sx-2,by-48,1,48);R0('#6b4220',sx+1,by-48,1,48);
-   for(let i=0;i<6;i++){R0('#5fbf6a',sx+(i&1?2:-4),by-8-i*7,3,2);R0('#ff9ccf',sx+(i&1?4:-6),by-9-i*7,2,2)}
-   const W=64,H=24,x0=sx-W/2,y0=by-78+bb;
-   const gl=.18+.1*Math.sin(t*2);E(R0,'rgba(255,214,250,'+gl.toFixed(2)+')',sx,y0+H/2,W/2+10,H/2+8);
-   for(const s of[-1,1])for(let i=0;i<4;i++){const w=7-i,fl=Math.round(Math.sin(t*3+i)*1);R0(i&1?'#ffe6f6':'#fff6fc',s>0?x0+W+1+i*2:x0-1-i*2-w+1,y0+3+i*3+fl,w,3);R0('#f4a7d8',s>0?x0+W+1+i*2:x0-1-i*2-w+1,y0+5+i*3+fl,w,1)}
-   R0('#8a5a14',x0-2,y0-2,W+4,H+4);R0('#f6c64a',x0-1,y0-1,W+2,H+2);R0('#fff0a8',x0-1,y0-1,W+2,1);R0('#c58a1c',x0-1,y0+H,W+2,1);
-   const gr=cx.createLinearGradient(0,y0,0,y0+H);gr.addColorStop(0,'#ffe3f4');gr.addColorStop(.55,'#f3d4ff');gr.addColorStop(1,'#cfe2ff');cx.fillStyle=gr;cx.fillRect(x0,y0,W,H);
-   R0('rgba(255,255,255,.55)',x0+2,y0+2,W-4,1);
-   cx.font='800 15px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';cx.fillStyle='rgba(122,59,138,.35)';cx.fillText('Tiên Nữ',sx+1,y0+H/2+6);cx.fillStyle='#7a2f9a';cx.fillText('Tiên Nữ',sx,y0+H/2+5);
-   cx.fillStyle='#fff';cx.fillText('Tiên Nữ',sx-.5,y0+H/2+4.5);cx.fillStyle='#8a3fb0';cx.fillText('Tiên Nữ',sx,y0+H/2+5);
-   for(let i=0;i<6;i++){const q=(t*.8+i/6)%1,a=Math.sin(Math.PI*q);if(a<.2)continue;const x=Math.round(x0-8+((i*37)%(W+16))),y=Math.round(y0-8+((i*19)%(H+14))-q*3);
-    R0('rgba(255,255,255,'+a.toFixed(2)+')',x,y,1,1);if(a>.7){R0('rgba(255,240,190,.8)',x-1,y,3,1);R0('rgba(255,240,190,.8)',x,y-1,1,3)}}});
-  hits.push([fx-60,fy-190,120,190,'🧚 Tiên Nữ — bấm để nói chuyện','cv:tn',[fx,fy+16]]);
-  hits.push([fx+34,fy-80,60,82,'🧚 Biển Tiên Nữ — bấm để nói chuyện','cv:tn',[fx,fy+16]])}
+  // biển thần tiên nhỏ (không cột): tấm biển hồng-tím viền vàng lơ lửng cạnh Tiên Nữ, cánh nhỏ hai bên, sao lấp lánh
+  dyn(fy+90,()=>{const sx=fx+38,t=performance.now()/1000;if(sx<camX-80||sx>camX+vw+80||fy<camY||fy-100>camY+vh)return;
+   const bb=Math.round(Math.sin(t*1.6)*1),W=40,H=15,x0=sx-W/2,y0=fy-52+bb;
+   const gl=.18+.1*Math.sin(t*2);E(R0,'rgba(255,214,250,'+gl.toFixed(2)+')',sx,y0+H/2,W/2+6,H/2+5);
+   for(const s2 of[-1,1])for(let i=0;i<3;i++){const w=5-i,fl=Math.round(Math.sin(t*3+i)*1);R0(i&1?'#ffe6f6':'#fff6fc',s2>0?x0+W+1+i*2:x0-1-i*2-w+1,y0+2+i*3+fl,w,2)}
+   R0('#8a5a14',x0-1,y0-1,W+2,H+2);R0('#f6c64a',x0,y0,W,H);R0('#fff0a8',x0,y0,W,1);
+   const gr=cx.createLinearGradient(0,y0+1,0,y0+H-1);gr.addColorStop(0,'#ffe3f4');gr.addColorStop(.55,'#f3d4ff');gr.addColorStop(1,'#cfe2ff');cx.fillStyle=gr;cx.fillRect(x0+1,y0+1,W-2,H-2);
+   cx.font='800 10px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';cx.fillStyle='#fff';cx.fillText('Tiên Nữ',sx-.5,y0+H/2+3.5);cx.fillStyle='#8a3fb0';cx.fillText('Tiên Nữ',sx,y0+H/2+4);
+   for(let i=0;i<4;i++){const q=(t*.8+i/4)%1,a2=Math.sin(Math.PI*q);if(a2<.2)continue;const x=Math.round(x0-6+((i*37)%(W+12))),y=Math.round(y0-6+((i*19)%(H+10))-q*3);
+    R0('rgba(255,255,255,'+a2.toFixed(2)+')',x,y,1,1);if(a2>.7){R0('rgba(255,240,190,.8)',x-1,y,3,1);R0('rgba(255,240,190,.8)',x,y-1,1,3)}}});
+  hits.push([fx-30,fy-100,60,100,'🧚 Tiên Nữ — bấm để nói chuyện','cv:tn',[fx,fy+16]]);
+  hits.push([fx+16,fy-56,44,24,'🧚 Biển Tiên Nữ — bấm để nói chuyện','cv:tn',[fx,fy+16]])}
  // ----- ghế đá (2 chỗ) -----
  const BEN=mkBench();
  const bench=(x,by)=>{put(BEN,x,by);blk(x-24,by-10,x+24,by);for(const dx of[-11,11]){const i=seats.length;
