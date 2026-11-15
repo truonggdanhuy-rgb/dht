@@ -511,6 +511,7 @@ function bnShop(){
  openUI(head('🎣 Tiệm câu Quái vật')+
   '<div class="mut" style="text-align:center">🪙 <b>'+fmtXu(ST.xu|0)+'</b> • '+qvImg()+' <b>'+fmtXu(ST.qv|0)+'</b></div>'+
   '<button class="b w" style="font-size:14px;padding:9px" onclick="MQ.sellUI()">💰 Thu mua quái vật</button>'+
+  (window.MQ&&MQ.rodBroken&&MQ.rodBroken()?'<button class="b w" style="font-size:14px;padding:9px" onclick="MQ.repair();bnShop()">🔧 Sửa cần câu • '+qvImg()+' '+MQ.rodFix+'</button>':'')+
   '<div class="fh2">⛵ Thuyền</div>'+
   '<div class="g1">'+B.map(b=>{const k=b[0],own=b[4],eq=o.use==k;
    return '<div class="it"><span>'+b[1]+' <b>'+b[2]+'</b>'+(own?'':'<br><small>'+b[3]+'</small>')+'</span>'+
