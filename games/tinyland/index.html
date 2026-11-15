@@ -774,7 +774,9 @@ const SETS=[
   {n:'Phao bơi vịt (Nữ)',k:'duckf',fx:'duckfloat',dk:'f',ach:1,sh:'#ff8fb8',shl:'#ffb3cf',shd:'#d9638f',scarf:'#ff8fb8',belt:'#ff8fb8',pt:'#f1c08a',rpt:'#f1c08a',shoe:'#ff9a2a'},
   // ---- Bán ở Shop Phố xá: Vua đầu bếp (nam/nữ đều mặc, không chữ) 900 Xu • Lính Việt 700 Xu. Giá: SHOP.s.pr trong pho-map.js, hình vẽ: SETFX.chef / SETFX.linh trong outfits.js ----
   {n:'Vua đầu bếp',k:'chef',fx:'chef',sh:'#f8f8fb',shl:'#ffffff',shd:'#cdd3dd',scarf:'#d8232a',belt:'#4b5060',pt:'#4b5060',rpt:'#4b5060',shoe:'#2a2a2e'},
-  {n:'Lính Việt',k:'linh',fx:'linh',sh:'#e0561f',shl:'#f58a4a',shd:'#b23c10',scarf:'#f6cf4a',belt:'#7a1a10',pt:'#6b2a16',rpt:'#6b2a16',shoe:'#3a2a22'}];
+  {n:'Lính Việt',k:'linh',fx:'linh',sh:'#e0561f',shl:'#f58a4a',shd:'#b23c10',scarf:'#f6cf4a',belt:'#7a1a10',pt:'#6b2a16',rpt:'#6b2a16',shoe:'#3a2a22'},
+  // ---- Set Tiên nữ (mascot, không che mặt) — bán ở Shop kim cương 💎 50. LUÔN để ở CUỐI mảng SETS để không lệch số thứ tự đồ đã mua ----
+  {n:'Tiên nữ',k:'tn',tn:1,ach:1,dia:50,ds:'Váy voan nhiều tầng lơ lửng, dải lụa trong suốt lấp lánh quấn thân, mão hoa & búi tóc to, tay cầm gậy phép chớp sáng. Bling quanh người. Không che mặt.',sh:'#fff1fa',scarf:'#ffc6e0',belt:'#ffd45a',pt:'#d9c8ff',rpt:'#d9c8ff',shoe:'#ffd45a'}];
 const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'},{n:'Tóc nâu buộc',k:'tail',c:'#6a3e1e'},{n:'Tóc vàng',k:'short',c:'#e0b84a'},{n:'Mũ len đỏ',k:'beanie',c:'#c0392b',hr:'#2b1d12'},{n:'Mũ len xanh',k:'beanie',c:'#2f6fe0',hr:'#6a3e1e'},
  {n:'Tóc Sailor Moon',k:'sailor',c:'#f6d96b'},{n:'Tóc 2 chùm',k:'bun2',c:'#2a2224'},{n:'Tóc nữ yêu kiều',k:'longf',c:'#201a24'},{n:'Tóc xinh yêu',k:'bobf',c:'#17151c'},
  {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'},
@@ -1281,6 +1283,139 @@ function drawDaNguyet(g,r,u,o,S,k){
   r(c2,x-1,yy,1,1);r(c2,x+1,yy,1,1);r(c2,x,yy-1,1,1);r(c2,x,yy+1,1,1);if(a>.85)r('rgba(255,255,255,.9)',x,yy,1,1)});
 }
 
+/* ===================================================================================
+   SET "TIÊN NỮ" — bán ở Shop kim cương (💎 50)
+   • Thuộc nhóm MASCOT (mặc cả bộ, không tách rời): có sẵn tóc búi to + mão hoa + váy + dải lụa.
+     KHÔNG che mặt: khuôn mặt & biểu cảm người chơi đang trang bị vẫn hiện.
+   • Váy voan nhiều tầng hồng → tím → xanh ngọc, viền ngọc trai, KHÔNG thấy chân (váy lơ lửng cách đất, bóng mờ nhỏ).
+   • Hai dải lụa to trong suốt đổi màu cầu vồng quấn chéo thân + hai dải lụa dài bay phía sau.
+   • Tay phải cầm gậy phép kiểu Harry Potter, đầu gậy chớp nháy tia sáng.
+   • Hiệu ứng bling: vòng sao xoay quanh người (sau/trước), bụi sao đổi màu rơi, tia lấp lánh nổ ngẫu nhiên, hào quang.
+   • Vẽ theo khung 20x31 (lụa/bụi sao được phép tràn ra hai bên như Dạ nguyệt). S.tn:1
+   =================================================================================== */
+const TN_P=[[-4,0,0],[24,2,.17],[-1,6,.31],[21,8,.46],[6,-1,.58],[15,0,.71],[-5,14,.83],[25,12,.92],[2,10,.12],[18,4,.66],[-3,20,.4],[23,22,.55]];
+const TN_B=[[-3,9],[23,8],[4,27],[17,28],[10,-2]];
+function drawTienNu(g,r,u0,o,S,k){
+ const {lg,side,Rt,back,sit,rd}=k,t=performance.now()/1000;
+ const fl=(o.nosh||o.mv||rd||sit)?0:Math.round(.5+.5*Math.sin(t*2.2));
+ const u=(c,x,y,w,h)=>u0(c,x,y-fl,w,h);
+ const hs=(h,a,l)=>'hsla('+(((Math.round(h)%360)+360)%360)+',100%,'+(l||82)+'%,'+Math.max(0,Math.min(1,a)).toFixed(2)+')';
+ const PW='#fff1fa',PWD='#ecc9ee',PK='#ff8fc2',PKL='#ffc6e0',PKD='#d9559a',LV='#d9c8ff',LVD='#a98ee6',AQ='#bff2ff',AQD='#79cfe8',
+  G='#ffd45a',GL='#fff0a8',GD='#d99a1c',TL='#4fe0d8',SK='#f1c08a',HC='#2a2036',HL='#5b4a82',HD='#150e1e';
+ const M=(c,x,y,w,h)=>u(c,Rt?x:20-x-w,y,w,h),UM=(c,x,y,w,h)=>{u(c,x,y,w,h);u(c,20-x-w,y,w,h)};
+ const mk=new Set(),pm=(c,x,y,w,h)=>{u(c,x,y,w,h);for(let j=0;j<h;j++)for(let i=0;i<w;i++)mk.add((y+j)*64+x+i+16)};
+ const XM=(x,w)=>side&&!Rt?20-x-w:x;
+ const star=(x,y,col,q)=>{u(col,x,y,1,1);if(q>.45){const c2=col.replace(/,[0-9.]+\)$/,',.55)');u(c2,x-1,y,3,1);u(c2,x,y-1,1,3)}if(q>.85)u('rgba(255,255,255,.95)',x,y,1,1)};
+ // dải lụa trong suốt: P(s) trả [x,y] theo tham số 0..1; w = bề rộng; h0/hd = màu bắt đầu / độ lệch màu; al = độ đậm
+ const rib=(P,n,w,h0,hd,al)=>{for(let i=0;i<=n;i++){const s=i/n,p=P(s),x=Math.round(p[0]),y=Math.round(p[1]),a=al*(1-.5*s);
+  u(hs(h0+hd*s+t*30,a),XM(x,w),y,w,2);u('rgba(255,255,255,'+(a*.8).toFixed(2)+')',XM(x,1),y,1,1);
+  if(((i*5+Math.floor(t*7))%17)==0)u('rgba(255,255,255,.95)',XM(x+1,1),y,1,1)}};
+ const silkBack=()=>{
+  if(!side){
+   rib(s=>[3-9*s+Math.sin(t*2+s*6)*2.5*s,18+11*s+Math.cos(t*1.7+s*5)*1.5*s],26,3,300,-100,.4);
+   rib(s=>[14+9*s+Math.sin(t*2+1.3+s*6)*2.5*s,18+11*s+Math.cos(t*1.7+1.1+s*5)*1.5*s],26,3,200,110,.4)}
+  else{
+   rib(s=>[5-12*s+Math.sin(t*2+s*6)*2.5*s,17+11*s+Math.cos(t*1.7+s*5)*1.6*s],28,3,300,-100,.4);
+   rib(s=>[6-9*s+Math.sin(t*2+2+s*6)*2*s,20+9*s+Math.cos(t*1.7+2+s*5)*1.2*s],22,3,200,100,.34)}};
+ const silkFront=()=>{
+  if(!side){
+   rib(s=>[5+17*s+Math.sin(t*2.1+s*7)*1.6*s,16+13*s+Math.cos(t*1.8+s*6)*.9*s],28,2,320,-110,.58);
+   rib(s=>[14-17*s+Math.sin(t*2.1+2+s*7)*1.6*s,16+13*s+Math.cos(t*1.8+2+s*6)*.9*s],28,2,200,100,.58)}
+  else rib(s=>[6+9*s+Math.sin(t*2.1+s*7)*1.4*s,16+9*s+Math.cos(t*1.8+s*6)*.8*s],20,2,320,-110,.58)};
+ // vòng sao xoay quanh người: fr=false vẽ nửa phía sau, fr=true nửa phía trước
+ const orbit=fr=>{for(let i=0;i<7;i++){const a=t*1.4+i*.8976,sn=Math.sin(a);if((sn>=0)!==fr)continue;
+  star(Math.round(10+(side?6:11)*Math.cos(a)),Math.round(20+3.4*sn),hs(i*52+t*70,1),.5+.5*Math.sin(t*5+i*2))}};
+ // gậy phép: (hx,hy) = vị trí bàn tay; chớp nháy đầu gậy
+ const wand=(hx,hy,sd)=>{
+  const P=sd?[[0,0],[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6]]:[[0,0],[0,-1],[1,-2],[1,-3],[2,-4],[2,-5],[3,-6],[3,-7]];
+  const W=sd?(c,x,y,w,h)=>M(c,x,y,w,h):(c,x,y,w,h)=>u(c,x,y,w,h);
+  P.forEach(([dx,dy],i)=>W(i==2?G:(i&1?'#a86f3f':'#6b4328'),hx+dx,hy+dy,1,1));
+  const e=P[P.length-1],tx=hx+e[0],ty=hy+e[1]-1,ph=Math.sin(t*9)+Math.sin(t*5.3+1),on=ph>.5;
+  if(on){W('rgba(255,240,170,.7)',tx-2,ty,5,1);W('rgba(255,240,170,.7)',tx,ty-2,1,5);W('#fff6a8',tx-1,ty,3,1);W('#fff6a8',tx,ty-1,1,3);W('#ffffff',tx,ty,1,1);
+   W('rgba(255,255,255,.8)',tx-1,ty-1,1,1);W('rgba(255,255,255,.8)',tx+1,ty+1,1,1);W('rgba(255,200,255,.8)',tx+1,ty-1,1,1);W('rgba(190,240,255,.8)',tx-1,ty+1,1,1)}
+  else{W('#ffe27a',tx,ty,1,1);W('rgba(255,226,122,.5)',tx-1,ty,3,1);W('rgba(255,226,122,.5)',tx,ty-1,1,3)}
+  for(let i=0;i<3;i++){const q=(t*1.3+i/3)%1;if(q>.8)continue;W(hs(i*120+t*90,1-q,86),tx+Math.round(Math.cos(i*2.1+t)*(2+q*4)),ty+Math.round(Math.sin(i*2.1+t)*(2+q*4))+1,1,1)}};
+ // ---- hào quang nhiều màu + bóng mờ nhỏ (người lơ lửng) ----
+ {const a=.06+.035*Math.sin(t*1.5);E(r,hs(300+60*Math.sin(t*.8),a*.8,80),10,19,12,14);E(r,hs(200+50*Math.sin(t*.8+2),a,86),10,19,9,11)}
+ if(!sit&&!rd&&!o.nosh)E(r,'rgba(0,0,0,.13)',10,30,7,2);
+ // ---- lớp sau: lụa bay + nửa sau vòng sao ----
+ silkBack();orbit(false);
+ // ---- váy voan nhiều tầng (lơ lửng, không thấy chân) ----
+ {const sh=side?0:lg,SKR=[[23,5],[24,4],[25,3],[26,2],[27,2],[28,3]],
+   rows=[['#ffd6ea',PK],['#ffc0de',PK],[LV,LVD],['#cdb8ff',LVD],[AQ,AQD],['#ccf6ff',AQD]];
+  SKR.forEach(([y,x0],i)=>{if(rd&&y>26)return;
+   const w=20-2*x0-(side?2:0),xs=x0+(side?1:0),sw=y>=26?sh:0;
+   if(y==28){for(let x=xs;x<xs+w;x++)if(((x+Math.floor(t*2))%3)!==0)pm(rows[i][0],x+sw,y,1,1)}
+   else{pm(rows[i][0],xs+sw,y,w,1);u(rows[i][1],xs+sw,y,1,1);u(rows[i][1],xs+sw+w-1,y,1,1)}
+   if(y>=25)u('rgba(255,255,255,.3)',xs-1+sw,y,w+2,1);
+   if(y==26)for(let x=xs+1;x<xs+w-1;x+=3)u(G,x+sw,y,1,1);
+   if(y==27)for(let x=xs+2;x<xs+w-1;x+=4){u('#ffffff',x+sw,y,1,1);u(GL,x+sw+1,y,1,1)}})}
+ // ---- thân áo + tay áo lụa rộng ----
+ const cuff=(x,ay)=>{pm(PW,x,17+ay,3,2);pm('rgba(255,222,240,.85)',x-1,19+ay,5,2);u(GL,x-1,19+ay,1,2);u(PK,x-1,21+ay,5,1);u(G,x+1,21+ay,1,1);u(SK,x,22+ay,3,2)};
+ let wx=17,wy=21,wsd=0;
+ if(!side){
+  pm(PW,6,16,8,1);pm(PW,5,17,10,5);u('#ffffff',5,17,2,5);u(PWD,13,17,2,5);
+  if(back){u(PK,7,17,6,1);u(PKL,7,17,3,1);u(G,9,18,2,3);u(GL,9,18,1,1);u(PKL,5,20,3,2);u(PKL,12,20,3,2)}
+  else{u(PK,7,16,1,1);u(PK,12,16,1,1);u(G,8,16,4,1);u(GD,9,18,2,2);u(PK,9,18,2,1);u(PKL,9,18,1,1);
+   u(PKL,5,20,3,2);u(PK,5,21,3,1);u(PKL,12,20,3,2);u(PK,12,21,3,1);u(PKL,8,20,4,1)}
+  pm(G,5,22,10,1);u(GL,5,22,3,1);u(PK,8,22,4,1);u(PKD,9,22,2,1);u(PK,8,23,1,3);u(PKL,11,23,1,3);
+  u(SK,9,15,2,1);
+  if(o.aup){const up=(x,h,ox)=>{const ty=17-h;u(SK,x+ox,ty,3,3);u(PK,x,ty+3,3,1);u(PW,x,ty+4,3,3);u(PKL,x,ty+4,1,3);u(PWD,x+2,ty+4,1,3)};up(2,o.aup[0],-1);up(15,o.aup[1],1);wx=17;wy=17-o.aup[1]-1}
+  else{cuff(2,lg);cuff(15,-lg);wx=17;wy=21-lg}
+ }else{
+  pm(PW,8,16,6,1);pm(PW,7,17,7,5);u('#ffffff',Rt?7:12,17,2,5);u(PWD,Rt?12:7,17,2,5);
+  pm(G,7,22,7,1);M(PK,12,22,2,1);M(PKL,12,23,2,3);u(SK,9,15,2,1);
+  const ax=9-(lg*(Rt?2:-2));
+  if(!o.noarm){pm(PW,ax,17,3,2);pm('rgba(255,222,240,.85)',ax-1,19,5,2);u(GL,ax-1,19,1,2);u(PK,ax-1,21,5,1);u(G,ax+1,21,1,1);u(SK,ax,22,3,2)}
+  wsd=1;wx=Rt?ax+2:18-ax;wy=21;
+ }
+ silkFront();orbit(true);
+ if(!o.noarm)wand(wx,wy,wsd);
+ // ---- dải sáng ẩn hiện trên trang phục ----
+ {const br=.5+.5*Math.sin(t*1.4);
+  mk.forEach(key=>{const x=(key&63)-16,y=key>>6,ph=((t*.42-(x*.055+y*.085))%1+1)%1,a=Math.pow(Math.max(0,Math.sin(ph*Math.PI*2)),6)*(.2+.32*br);
+   if(a>.05)u('rgba(255,248,230,'+a.toFixed(2)+')',x,y,1,1);
+   if(Math.sin(t*2.1+x*1.7+y*2.3)>.965)u('rgba(255,255,255,.8)',x,y,1,1)})}
+ // ---- đầu: búi tóc to + hoa sen + mão; khuôn mặt & biểu cảm vẫn hiện ----
+ const gem=(x,y,w)=>{if(Math.sin(t*4)>.2)u('rgba(255,255,255,.9)',x,y,w||1,1)};
+ const sway=Math.round(Math.sin(t*2.2)),bd=['#ffe27a',TL,PK,'#ffe27a',TL,PK,'#ffe27a',PKL];
+ const top=()=>{
+  E(u,HC,10,3,5,3);u(HL,7,2,3,1);u(HL,6,3,1,1);u(HD,13,5,2,1);            // búi to
+  u(PKL,9,1,3,1);u(PK,8,2,5,1);u(GL,10,2,1,1);u(PKD,8,3,5,1);u(PKL,8,3,1,1);u(PKL,7,2,1,1);u(PK,13,2,1,1);   // hoa sen
+  u(G,4,4,12,1);u(GL,4,4,4,1);u(GD,13,4,3,1);u(G,5,3,1,1);u(G,14,3,1,1);u(GL,7,3,1,1);u(GL,12,3,1,1);u(TL,6,4,1,1);u(TL,13,4,1,1);u(PK,9,4,2,1);gem(9,4);   // mão
+  UM(G,2,5,2,1);UM(PK,1,4,2,2);UM(PKL,1,4,1,1);                                // trâm cài hoa hai bên
+  bd.forEach((c,i)=>{const s=i>=3?sway:0;u(c,0+s,6+i,1,1);u(c,19+s,6+i,1,1)})};  // dây ngọc rủ hai bên
+ if(back){
+  E(u,HC,10,11,4,4);u(HC,4,6,12,15);u(HL,6,8,2,11);u(HL,12,8,1,9);u(HD,4,19,12,2);u(HD,9,8,2,11);UM(HD,4,9,1,11);
+  for(let i=0;i<6;i++)u(HD,5+i*2,18+(i&1),1,1);
+  top();
+ }else if(!side){
+  E(u,SK,10,11,4,4);u('rgba(70,35,15,.28)',7,8,6,1);
+  if(o.e>0)faceFx(u,o.e,0,0);else if(typeof faceDef=='function')faceDef(u,0,0);else{u('#2b1d12',8,11,1,2);u('#2b1d12',11,11,1,2);u('#b5604a',9,13,2,1)}
+  top();
+  u(HC,5,5,10,1);u(HC,4,6,12,2);u(HL,7,6,3,1);u(PK,9,5,2,1);u(PKL,9,5,1,1);
+  UM(HC,4,8,3,1);UM(HC,6,9,1,1);UM(HC,3,9,3,8);UM(HD,3,10,1,6);UM(HL,5,10,1,5);UM(HD,3,16,3,1);
+  u(PK,9,8,2,1);u(PKL,9,8,1,1);
+ }else{
+  E(u,HC,Rt?8:12,11,3,4);E(u,SK,Rt?11:9,11,3,4);u('rgba(70,35,15,.28)',Rt?8:6,8,6,1);
+  if(o.e>0)faceFx(u,o.e,1,Rt);else if(typeof faceDef=='function')faceDef(u,1,Rt);else{u('#2b1d12',Rt?12:7,11,1,2);u('#b5604a',Rt?13:6,13,1,1)}
+  // búi to phía sau đầu + hoa sen
+  [[1,6,10],[2,5,11],[3,4,11],[4,4,11],[5,5,10],[6,6,9]].forEach(([y,a,b])=>M(HC,a,y,b-a,1));
+  M(HL,6,2,3,1);M(HL,5,3,1,1);M(PKL,7,1,3,1);M(PK,6,2,5,1);M(GL,8,2,1,1);M(PKD,6,3,5,1);M(PKL,6,3,1,1);
+  M(G,7,3,6,1);M(G,6,4,8,1);M(GL,6,4,3,1);M(GD,12,4,2,1);M(TL,13,4,1,1);M(PK,10,4,2,1);gem(Rt?9:10,4);
+  M(G,3,5,3,1);M(PK,2,4,2,2);M(PKL,2,4,1,1);
+  bd.forEach((c,i)=>{const s=i>=3?(Rt?-sway:sway):0;M(c,4+s,6+i,1,1)});
+  M(HC,6,5,7,1);M(HC,4,6,10,2);M(HL,7,6,3,1);M(PK,13,5,1,1);M(HC,5,8,3,1);M(HC,3,8,5,13);M(HD,3,9,1,11);M(HL,6,9,1,10);M(HD,3,19,5,2);M(HC,8,9,2,6);M(HD,8,14,2,1);
+ }
+ // ---- bling: bụi sao đổi màu rơi + tia lấp lánh nổ + hào quang gậy ----
+ TN_P.forEach(([x,y0,off],i)=>{const ph=(t*.35+off)%1,a=Math.sin(Math.PI*ph);if(a<.15)return;
+  const yy=Math.round(y0+ph*30),xx=Math.round(x+Math.sin(t*2+i)*1.5),col=hs(i*36+t*50,Math.min(1,a*1.3),84);
+  r(col,xx,yy,1,1);if(a>.7){const c2=hs(i*36+t*50,.45,84);r(c2,xx-1,yy,1,1);r(c2,xx+1,yy,1,1);r(c2,xx,yy-1,1,1);r(c2,xx,yy+1,1,1)}});
+ TN_B.forEach(([x,y],i)=>{const ph=(t*.6+i*.27)%1;if(ph>.35)return;const q=Math.sin(ph/.35*Math.PI),L=1+Math.round(q*2),c=hs(i*70+t*80,.9,86);
+  r('#ffffff',x,y,1,1);for(let d=1;d<=L;d++){r(c,x-d,y,1,1);r(c,x+d,y,1,1);r(c,x,y-d,1,1);r(c,x,y+d,1,1)}
+  if(q>.7){r('rgba(255,255,255,.7)',x-1,y-1,1,1);r('rgba(255,255,255,.7)',x+1,y+1,1,1)}});
+}
+
 // ve nhan vat (dung chung: ngoai map, xem truoc trong Tui, ngoi tren thu cuoi)
 const gtBob=()=>Math.floor(performance.now()/210)%2?-1:0;   // nhịp nhún của người đeo đàn guitar
 function drawAv(g,ox,oy,o){
@@ -1291,6 +1426,7 @@ function drawAv(g,ox,oy,o){
  const gtr=o.acc>=0&&!rd&&!sit&&ACCS[o.acc]&&ACCS[o.acc].k=='guitar',bob=o.nobob?0:o.mv?((f==1||f==3)?-1:0):(gtr?gtBob():0),u=(c,a,b,w,h)=>r(c,a,b+bob,w,h);
  if(S.deer)return drawDeerSet(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});
  if(S.dn)return drawDaNguyet(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});
+ if(S.tn)return drawTienNu(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});
  if(S.mascot)return drawMascot(r,u,o,S,{f,lg,side,Rt,back,sit,rd});
  if(!sit&&!rd&&!o.nosh)E(r,'rgba(0,0,0,.2)',10,30,8,2);
  if(S.cape&&!rd&&!back){const cd=shade(S.cape,-.3);if(!side){u(S.cape,3,16,14,12);u(cd,3,16,2,12);u(cd,15,16,2,12);u(cd,3,27,14,1)}else{const fl=o.mv?Math.round(Math.sin(performance.now()/110)*1):0,cx0=Rt?2-fl:12+fl;u(S.cape,cx0,16,6,12);u(cd,cx0,16,1,12);u(cd,cx0,27,6,1);u(shade(S.cape,.2),cx0+2,17,1,9)}}
@@ -2898,6 +3034,7 @@ function bagUI(t){AVTAB=t||AVTAB;const old=$('ui').scrollTop,L=avItems(AVTAB),cu
  let h=head('🎒 Túi nhân vật')+'<div style="text-align:center"><canvas id="avp" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#bfe6ff,#d9f0b8 70%);border:2px solid #7a4a26;cursor:pointer" onclick="avTurn()"></canvas><div class="mut" style="margin:2px 0 6px">Chạm vào hình để xoay nhân vật</div></div>';
  if(SETS[ST.av.s]&&SETS[ST.av.s].mascot)h+='<div class="mut">🧸 Đang mặc Mascot — đã gồm cả tóc & khuôn mặt nên tóc/biểu cảm tạm ẩn.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].dn)h+='<div class="mut">🌕 Đang mặc Dạ nguyệt — bộ có sẵn tóc & mão/trâm (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
+ else if(SETS[ST.av.s]&&SETS[ST.av.s].tn)h+='<div class="mut">🧚 Đang mặc Tiên nữ — bộ có sẵn tóc búi & mão hoa (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].deer)h+='<div class="mut">🦌 Đang mặc Tiệc mùa đông — bộ này có sẵn tóc riêng (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt & biểu cảm vẫn hiện</b>.</div>';
  h+='<div class="tabs" style="flex-wrap:wrap">'+AVTABS.map(([k,n])=>'<button class="b'+(k==AVTAB?' on':'')+'" onclick="bagUI(\''+k+'\')">'+n+'</button>').join('')+'</div>';
  h+='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+L.map((x,i)=>'<button class="sq'+(i==cur?' sel':'')+'" onclick="avPick('+i+')"><canvas class="avt" data-i="'+i+'" width="'+(mt?72:44)+'" height="'+(mt?68:AVTAB=='p'?52:44)+'" style="width:'+(mt?88:57)+'px;height:'+(mt?83:AVTAB=='p'?68:57)+'px;image-rendering:pixelated"></canvas><b>'+x.n+'</b><small>'+(x.sm||(i==cur?'✓ Đang dùng':'&nbsp;'))+'</small></button>').join('')+'</div>';
@@ -5180,7 +5317,7 @@ function actSfx(id,t){if(id=='bell'){const p=ACTSFX.t==null?t-.001:ACTSFX.t;ACTS
  const p=ACTSFX.t==null?t-.001:ACTSFX.t;ACTSFX.t=t;
  for(const h of CH_HIT)if(Math.floor((t-h)/CH_T)>Math.floor((p-h)/CH_T)&&t-p<.5)sndChieng()}
 /* ---- vẽ 1 nhân vật đang làm hành động (dùng chung: người chơi, người khác, xem trước) ---- */
-function actDraw(g,X,Y,t,o,id){const p=actPose(id,t),F=ACTFX[id];o.d=p.d;o.mv=0;if(p.e!=null)o.e=p.e;o.aup=p.aup||null;if(o.aup&&o.aup[0]==null){const S0=SETS[o.set];if(S0&&(S0.dn||S0.mascot||S0.dk||S0.fx=='duckfloat'))o.aup=[1,o.aup[1]]}o.nosh=p.nosh||0;if(p.noacc)o.acc=-1;
+function actDraw(g,X,Y,t,o,id){const p=actPose(id,t),F=ACTFX[id];o.d=p.d;o.mv=0;if(p.e!=null)o.e=p.e;o.aup=p.aup||null;if(o.aup&&o.aup[0]==null){const S0=SETS[o.set];if(S0&&(S0.dn||S0.tn||S0.mascot||S0.dk||S0.fx=='duckfloat'))o.aup=[1,o.aup[1]]}o.nosh=p.nosh||0;if(p.noacc)o.acc=-1;
  if(F&&F.back)F.back(X,Y,t,o,p);drawAv(g,X-10,Y-30-Math.round(p.lift),o);if(F&&F.front)F.front(X,Y-Math.round(p.lift*.5),t,o,p)}
 /* ---- trái tim bay (Bắn tim) ---- */
 const HRTC=['#ff4d7a','#ff7aa8','#ff4d7a','#ff6fa0','#ff4d7a'],HRTS=[5,3,5,3,5];
@@ -5231,7 +5368,7 @@ function diaShop(){const L=ACTS.filter(a=>a.k=='solo'&&!a.bd);
  +L.map(a=>{const have=!!ST.acts[a.id],ok=(ST.dia|0)>=a.pr;
   return '<div class="dcd">'+actCv(a.id,72,100,'mini')+'<b>'+a.n+'</b>'+(have?'<button class="b" onclick="actUI()">✓ Đã có</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuy(\''+a.id+'\')">💎 '+a.pr+'</button>')+'</div>'}).join('')
  +'</div>');actAnimGo();if(!dsRaf)dsLoop()}
-const DSETS=['deerm','deerf','dnm','dnf'];let dsRaf=0;
+const DSETS=['deerm','deerf','dnm','dnf','tn'];let dsRaf=0;
 /* ---- Biểu cảm bán bằng kim cương (EXPRS có thuộc tính dia) ---- */
 function diaExprRows(){return EXPRS.map((x,i)=>{if(!x.dia)return '';const have=ownE().includes(i),ok=(ST.dia|0)>=x.dia;
  return '<div class="dcd"><canvas class="dec" data-i="'+i+'" width="144" height="176"></canvas><b>'+x.n+'</b>'+(have?'<button class="b" onclick="diaWearE('+i+')">'+(ST.av.e==i?'✓ Đang dùng':'✓ Đã có • Dùng')+'</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuyE('+i+')">💎 '+x.dia+'</button>')+'</div>'}).join('')}

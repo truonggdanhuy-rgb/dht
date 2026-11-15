@@ -392,6 +392,16 @@ function build(){
   const hh=24+Math.sin(t*3)*4;for(let i=0;i<10;i++){const q=(t*1.6+i/10)%1;R0('rgba(235,250,255,.95)',x-1+Math.round(Math.sin(i+t*4)),Math.round(y+10-q*hh),2,2)}
   for(let k=0;k<3;k++){const q=(t*.7+k/3)%1;E(R0,'rgba(235,250,255,'+(.5*(1-q)).toFixed(2)+')',x,694,Math.round(10+q*28),Math.round(3+q*8))}});
  hits.push([694,664,52,40,'⛲ Đài phun nước giữa công viên']);
+ // ----- NPC Tiên nữ: bay lơ lửng cạnh đài phun nước (tạm thời chưa có tính năng) -----
+ {const fx=790,fy=722;
+  blk(fx-6,fy-6,fx+6,fy);
+  dyn(fy,()=>{if(fx<camX-60||fx>camX+vw+60||fy<camY||fy-110>camY+vh)return;
+   const t=performance.now()/1000,ti=SETS.findIndex(x=>x.k=='tn');if(ti<0)return;
+   const sn=Math.sin(t*1.8),L=8+Math.round(sn*2),d=[0,0,3,0,0,2][Math.floor(t/4)%6];
+   E(R0,'rgba(0,0,0,'+(.15-.04*sn).toFixed(2)+')',fx,fy,Math.round(8-sn),2);   // bóng mờ trên mặt đất (bay cao nên nhỏ)
+   drawAv(cx,fx-10,fy-30-L,{d,a:t,mv:0,sit:0,hair:0,set:ti,e:0,nosh:1})});
+  hits.push([fx-14,fy-64,28,62,'🧚 Tiên nữ — cô ấy đang mải ngắm đài phun nước, chưa nói chuyện được đâu...']);
+  lb.push(['TIÊN NỮ',fx,fy-64])}
  // ----- ghế đá (2 chỗ) -----
  const BEN=mkBench();
  const bench=(x,by)=>{put(BEN,x,by);blk(x-24,by-10,x+24,by);for(const dx of[-11,11]){const i=seats.length;
