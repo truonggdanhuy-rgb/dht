@@ -4545,28 +4545,34 @@ const BELL_SPR=[          // chuông 11 cột: tay cầm đỏ (hàng 2 là ch�
  '....ooo....'];
 const BELL_COL={r:'#a8201a',R:'#d9302a',o:'#6a4010',G:'#fff3a8',g:'#f2c53d',d:'#c9921e',L:'#2f8f4a',l:'#5cc46c',B:'#e8283a'};
 const BELL_LT=[[1,8],[2,10],[4,11],[6,11],[8,11],[9,10],[10,8]],LTC=['#ff4d4d','#ffd23f','#5ad2ff','#7be07b','#ff8ad8'];
-const bellAng=t=>-(0.24+0.46*Math.sin(t*2*Math.PI/BELL_T));
+const BELL_SC=2;           // chuông phóng to gấp đôi (mỗi ô sprite = 2x2 điểm ảnh), đặt đứng bên phải nhân vật
 ACTFX.bell={
- back:(X,Y,t)=>{const pu=.5+.5*Math.sin(t*3);E(r,'rgba(255,90,90,'+(.10+.07*pu).toFixed(2)+')',X-5,Y,12,4);E(r,'rgba(110,220,130,'+(.10+.07*(1-pu)).toFixed(2)+')',X+5,Y,12,4);E(r,'rgba(255,248,210,.12)',X,Y,7,2)},
- front:(X,Y,t,o,p)=>{const th=bellAng(t),c=Math.cos(th),s=Math.sin(th),h=p?p.aup[1]:10,px=X+7,py=Y-12-h,g=AG();
-  // vầng sáng quanh chuông
-  const bx=px-Math.round(s*7),by=py+Math.round(c*7);E(r,'rgba(255,236,150,'+(.07+.03*Math.sin(t*9)).toFixed(2)+')',bx,by,7,6);
-  // vẽ chuông xoay quanh tay (lấy mẫu ngược để không bị lỗ pixel)
-  for(let dy=-8;dy<=22;dy++)for(let dx=-14;dx<=14;dx++){
-   const sx=dx*c+dy*s,sy=-dx*s+dy*c,col=Math.round(sx)+5,row=Math.round(sy)+2;
+ back:(X,Y,t)=>{const pu=.5+.5*Math.sin(t*3);E(r,'rgba(255,90,90,'+(.10+.07*pu).toFixed(2)+')',X-3,Y,13,4);E(r,'rgba(110,220,130,'+(.10+.07*(1-pu)).toFixed(2)+')',X+13,Y,13,4);E(r,'rgba(255,248,210,.12)',X+10,Y,8,2)},
+ front:(X,Y,t,o,p)=>{const g=AG(),u=(t%BELL_T)/BELL_T,h=p?p.aup[1]:10,hx=X+7,hy=Y-12-h,   // hx,hy = bàn tay phải
+  bcx=X+22,top=Y-33,age=u*BELL_T,sw=.11*Math.exp(-age*5)*Math.cos(age*30),c=Math.cos(sw),s=Math.sin(sw),pvx=bcx,pvy=top+2;   // chuông lắc nhẹ sau mỗi cú gõ
+  // đế gỗ nhỏ dưới chuông
+  r('#5a3a1a',bcx-9,Y-5,18,2);r('#8a5a2a',bcx-9,Y-5,18,1);r('#5a3a1a',bcx-7,Y-3,14,3);r('#8a5a2a',bcx-7,Y-3,14,1);
+  // chuông (lấy mẫu ngược để xoay không bị lỗ)
+  for(let dy=-4;dy<=38;dy++)for(let dx=-14;dx<=14;dx++){
+   const sx=dx*c+dy*s,sy=-dx*s+dy*c,col=Math.floor(sx/BELL_SC)+5+(sx<0&&sx%BELL_SC?0:0),row=Math.floor((sy+2)/BELL_SC);
    if(row<0||row>=BELL_SPR.length||col<0||col>10)continue;const ch=BELL_SPR[row][col];
-   if(ch&&ch!='.')r(BELL_COL[ch],px+dx,py+dy,1,1)}
+   if(ch&&ch!='.')r(BELL_COL[ch],pvx+dx,pvy+dy-2,1,1)}
   // dây đèn nhấp nháy quanh chuông
-  BELL_LT.forEach((q,i)=>{const lx=q[0]-5,ly=q[1]-2,fx=Math.round(lx*c-ly*s),fy=Math.round(lx*s+ly*c),on=Math.sin(t*7+i*1.9)>-.25;
-   r(on?LTC[(i+Math.floor(t*2))%LTC.length]:'#6a4010',px+fx,py+fy,1,1);
-   if(on&&Math.sin(t*7+i*1.9)>.7)star4(px+fx,py+fy,1,'rgba(255,255,255,.55)')});
-  // vệt rung hai bên + nốt nhạc bay lên
-  const ph=(t%BELL_T)/BELL_T;
-  if(Math.abs(Math.cos(ph*Math.PI*2))>.8){const dir=Math.sin(ph*Math.PI*2)>0?-1:1;   // vệt 'ting' ở hai đầu cú lắc
-   for(let j=0;j<3;j++)r('rgba(255,244,170,.85)',px-Math.round(s*12)+(dir>0?9:-10)+dir*j,py+10+j*3,1,2)}
-  for(let i=0;i<2;i++){const v=((t*.7+i/2)%1);if(v<.9){g.save();g.globalAlpha=Math.max(0,1-v/.9);note(px+11+Math.sin(v*6+i*2)*4,py-6-v*20,0,i%2?'#ffe27a':'#ff9aa8');g.restore()}}
+  BELL_LT.forEach((q,i)=>{const lx=(q[0]-5)*BELL_SC,ly=q[1]*BELL_SC,fx=Math.round(lx*c-ly*s),fy=Math.round(lx*s+ly*c)-2,on=Math.sin(t*7+i*1.9)>-.25;
+   r(on?LTC[(i+Math.floor(t*2))%LTC.length]:'#6a4010',pvx+fx,pvy+fy,2,2);
+   if(on&&Math.sin(t*7+i*1.9)>.7)star4(pvx+fx,pvy+fy,2,'rgba(255,255,255,.55)')});
+  // que gỗ: gõ xuống chuông rồi nhấc lên, liên tục
+  const a=-.8*(1-Math.cos(u*Math.PI*2))/2,L=11,ex=hx+1+Math.round(Math.cos(a)*L),ey=hy+1+Math.round(Math.sin(a)*L);
+  for(let k=0;k<=L;k++){const x=hx+1+Math.round(Math.cos(a)*k),y=hy+1+Math.round(Math.sin(a)*k);r('#5a3a1a',x,y,2,2);r('#a8743a',x,y,1,1)}
+  r('#d9a066',ex,ey,2,2);                                                           // đầu que
+  // tia sáng + sóng âm lúc gõ trúng
+  if(u<.22){const f=1-u/.22,cy=hy+3;star4(bcx-10,cy,3,'rgba(255,245,170,'+f.toFixed(2)+')');
+   for(let j=0;j<2;j++){const ag=u/.22+j*.35,rad=6+ag*16,al=(.7*(1-Math.min(1,ag))).toFixed(2),n=Math.round(rad*3);
+    for(let i=0;i<n;i++){const an=i/n*Math.PI*2;r('rgba(255,236,150,'+al+')',Math.round(bcx+Math.cos(an)*rad),Math.round(Y-20+Math.sin(an)*rad*.9),1,1)}}}
+  // nốt nhạc bay lên (hiệu ứng hát)
+  for(let i=0;i<2;i++){const v=((t*.7+i/2)%1);if(v<.9){g.save();g.globalAlpha=Math.max(0,1-v/.9);note(bcx+4+Math.sin(v*6+i*2)*5,top-4-v*18,0,i%2?'#ffe27a':'#ff9aa8');g.restore()}}
   // tuyết nhỏ lấp lánh quanh người
-  for(let i=0;i<5;i++){const v=((t*.45+i/5)%1);star4(X-16+i*8+Math.sin(t+i*2)*3,Y-52+v*46,0,'rgba(235,246,255,'+(1-Math.abs(v*2-1)).toFixed(2)+')')}}};
+  for(let i=0;i<5;i++){const v=((t*.45+i/5)%1);star4(X-16+i*10+Math.sin(t+i*2)*3,Y-52+v*46,0,'rgba(235,246,255,'+(1-Math.abs(v*2-1)).toFixed(2)+')')}}};
 function sndBell(){try{if(window.CV&&CV.snd===false)return;const ac=actAC();if(!ac)return;const t0=ac.currentTime,out=ac.createGain();out.gain.value=.4;out.connect(ac.destination);
  [[1568,.10,.55],[2093,.08,.48],[2637,.06,.40],[3136,.04,.32],[4186,.025,.22]].forEach(([f,v,d])=>{const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=f*(1+Math.random()*.01);
   g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(v,t0+.003);g.gain.exponentialRampToValueAtTime(.0006,t0+d);o.connect(g);g.connect(out);o.start(t0);o.stop(t0+d+.05)})}catch(e){}}
@@ -4579,7 +4585,7 @@ function sndChieng(){try{if(window.CV&&CV.snd===false)return;const ac=actAC();if
  const n=Math.floor(ac.sampleRate*.1),buf=ac.createBuffer(1,n,ac.sampleRate),dd=buf.getChannelData(0);for(let i=0;i<n;i++)dd[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.2);
  const s=ac.createBufferSource(),hp=ac.createBiquadFilter(),g2=ac.createGain();s.buffer=buf;hp.type='highpass';hp.frequency.value=3000;g2.gain.value=.12;s.connect(hp);hp.connect(g2);g2.connect(out);s.start(t0)}catch(e){}}
 var ACTSFX={t:null};
-function actSfx(id,t){if(id=='bell'){const p=ACTSFX.t==null?t-.001:ACTSFX.t;ACTSFX.t=t;if(Math.floor(t/(BELL_T/2))>Math.floor(p/(BELL_T/2))&&t-p<.5)sndBell();return}
+function actSfx(id,t){if(id=='bell'){const p=ACTSFX.t==null?t-.001:ACTSFX.t;ACTSFX.t=t;if(Math.floor(t/BELL_T)>Math.floor(p/BELL_T)&&t-p<.5)sndBell();return}
  if(id!='chieng'){ACTSFX.t=null;return}
  const p=ACTSFX.t==null?t-.001:ACTSFX.t;ACTSFX.t=t;
  for(const h of CH_HIT)if(Math.floor((t-h)/CH_T)>Math.floor((p-h)/CH_T)&&t-p<.5)sndChieng()}
