@@ -1,5 +1,6 @@
 /* ============================================================
    PHỐ XÁ — map online thứ 2 (dùng chung hệ thống mạng của Công viên)
+   - Tiệm Vàng Kim Long (đổi chỗ với tiệm cắt tóc): giá vàng đổi theo phiên, mua/bán trang sức & vàng miếng, lời/lỗ
    - Ngân hàng Vàng (thay quán Phở bò): gửi tiết kiệm, sổ tiết kiệm, lãi cộng dồn mỗi ngày
    - Shop: bán thú cưỡi / pet / set / tóc-mũ (đồ trong Túi chỉ có khi đã mua)
    - Tiệm nội thất (nhà phố số 1): bán đồ trang trí nhà 100–4000 Xu, đồ mua về nằm trong Túi nội thất (chỉ mở khi ở trong nhà)
@@ -43,7 +44,7 @@ window.cvAct=(a,h)=>a.startsWith('ps:')?psAct(a.slice(3),h):pAct(a,h);
 //  SPRITES
 // ============================================================
 const PAL={cream:'#f1e2c6',pink:'#ebc9c2',sage:'#cfe0cf',lemon:'#eee6b8',sky:'#c9dbe8',mauve:'#e3cfda',peach:'#efd3b3'};
-const mkHouse=(w,h,o)=>mk(w,h,(g,r)=>{
+const mkHouse=(w,h,o)=>o.gold?mkGoldShop(w,h):mk(w,h,(g,r)=>{
  const W=o.wall,WL=shade(W,.14),WD=shade(W,-.12),WK=shade(W,-.24),TR=o.trim||'#8e7d6a';
  const gh=46,roofY=o.tile?16:o.tank?18:6,top=roofY+8,nf=Math.max(1,Math.round((h-top-gh)/46)),fh=Math.floor((h-top-gh)/nf);
  // mái ngói trước / bồn nước trên sân thượng
@@ -103,6 +104,49 @@ const mkBank=()=>mk(80,128,(g,r)=>{
  r(CRD,2,62,76,2);
  // chậu cây
  for(const px of[0,74]){r('#b9805e',px,106,6,8);r('#d49a74',px,106,6,2);r('#6fae78',px,100,6,6);r('#8fcf98',px+1,100,2,2);r(GDL,px+3,101,2,2)}});
+// ---------- TIỆM VÀNG sang trọng: đá đỏ rượu + cột vàng + tủ kính trưng bày ----------
+const mkGoldShop=(w,h)=>mk(w,h,(g,r)=>{
+ const GD='#e2b93b',GDL='#ffe27a',GDD='#9a7414',WN='#4a1220',WNL='#6e1e30',WND='#2e0a14',MB='#f4ead2';
+ const top=14,y0=h-46,fy=y0+13,fhh=h-fy;
+ // mái chỉ vàng + lan can
+ r(GDD,0,6,w,4);r(GD,0,7,w,3);r(GDL,0,7,w,1);r(WND,0,10,w,3);
+ for(let x=2;x<w-2;x+=4){r(GD,x,2,2,5);r(GDL,x,2,2,1)}
+ r(GD,0,1,w,2);r(GDL,0,1,w,1);
+ // thân tường đá đỏ rượu
+ r(WN,0,top,w,h-top);r(WNL,0,top,3,h-top);r(WND,w-3,top,3,h-top);
+ for(let y=top+4;y<y0-24;y+=9){r('rgba(255,226,122,.10)',3,y,w-6,1)}
+ // huy hiệu kim cương giữa
+ r(GDD,w/2-9,top+2,18,16);r(GD,w/2-8,top+3,16,14);
+ for(let i=0;i<7;i++){r(i<4?'#e8fbff':'#9fe3f0',w/2-i-0,top+5+i,i*2+1,1)}
+ r('#e8fbff',w/2-3,top+5,7,1);r('#ffffff',w/2-1,top+6,2,1);
+ // cột vàng hai bên
+ for(const x of[1,w-8]){r(GDD,x,top,7,h-top-4);r(GD,x+1,top,5,h-top-4);r(GDL,x+1,top,1,h-top-4);r(GDD,x+5,top,1,h-top-4);r(GDL,x-1,top,9,2);r(GDD,x-1,top+2,9,1);r(GDL,x-1,h-10,9,2);r(GDD,x-1,h-8,9,1)}
+ // cửa sổ trưng bày tầng 2 (rèm đỏ + đèn)
+ for(const k of[0,1]){const wx=k?w-34:12;r(GDD,wx-1,top+22,22,22);r('#1b0a10',wx,top+23,20,20);r('#7a1c2c',wx,top+23,20,3);
+  for(let i=0;i<4;i++)r('#a8283c',wx+1+i*5,top+26,3,17);r('#ffe27a',wx+10,top+30,1,2);E(r,'#fff3b0',wx+10,top+40,4,1)}
+ // mái che sọc đen-vàng
+ for(let x=0;x<w;x+=8){const c=(x/8)%2?GD:'#2a1218';r(c,x,y0,8,9);r('rgba(255,255,255,.22)',x,y0,8,1)}
+ for(let x=0;x<w;x+=8){const c=(x/8)%2?GD:'#2a1218';r(c,x,y0+9,8,2);r(c,x+2,y0+11,4,1)}
+ r('rgba(0,0,0,.18)',0,y0+12,w,3);
+ // mặt tiền: nền đen + 2 tủ kính + cửa giữa
+ r(GDD,6,fy,w-12,fhh);r('#1b0a10',8,fy+2,w-16,fhh-2);
+ for(const k of[0,1]){const bx=k?w-29:9;r(GD,bx,fy+3,20,fhh-5);r('#241018',bx+1,fy+4,18,fhh-7);
+  r('#c8eaf2',bx+1,fy+4,2,fhh-7);r('rgba(255,255,255,.18)',bx+4,fy+4,1,fhh-7);
+  r(WNL,bx+1,fy+14,18,3);r(GDL,bx+1,fy+14,18,1);r(WNL,bx+1,fy+25,18,3);r(GDL,bx+1,fy+25,18,1);
+  // trang sức trong tủ
+  for(const[ix,iy]of[[bx+4,fy+10],[bx+10,fy+9],[bx+15,fy+10]]){E(r,GDL,ix,iy,2,2);r('#fff9c8',ix-1,iy-1,1,1)}
+  r(GDL,bx+4,fy+20,12,1);for(let i=0;i<5;i++)r(GD,bx+4+i*3,fy+21,2,2);r('#fff9c8',bx+4,fy+20,1,1);
+  r(GD,bx+3,fy+32,5,3);r(GDL,bx+3,fy+32,5,1);r(GD,bx+9,fy+31,6,4);r(GDL,bx+9,fy+31,6,1);E(r,'#e8fbff',bx+15,fy+33,1,1)}
+ const dx=Math.round(w/2)-8;
+ r(GDD,dx-1,fy+1,18,fhh-1);r('#3a0e1a',dx,fy+2,16,fhh-2);r(GD,dx+1,fy+3,6,fhh-4);r(GD,dx+9,fy+3,6,fhh-4);r('#5a1426',dx+2,fy+4,4,fhh-6);r('#5a1426',dx+10,fy+4,4,fhh-6);r(GDL,dx+7,fy+fhh*0.5,1,4);r(GDL,dx+8,fy+fhh*0.5,1,4);r(GDL,dx+2,fy+3,4,1);r(GDL,dx+10,fy+3,4,1);
+ // biển hiệu
+ r('#2c1c0e',3,y0-24,w-6,24);r('#f1c94a',4,y0-23,w-8,22);r('#fff0a0',4,y0-23,w-8,1);r(GDD,4,y0-2,w-8,1);
+ r('#140c26',5,y0-22,w-10,20);r('#241640',5,y0-22,w-10,1);r('#0a0618',6,y0-10,w-12,8);r('#3a2a5a',6,y0-10,w-12,1);
+ // thảm đỏ + bậc thềm + chậu cây vàng
+ r('#d9d0c0',0,h-4,w,4);r('#ece5d6',0,h-4,w,1);r('#a8283c',dx-1,h-5,18,5);r('#d04058',dx-1,h-5,18,1);
+ for(const px of[0,w-6]){r(GDD,px,h-9,6,8);r(GD,px,h-9,6,2);r('#6fae78',px,h-15,6,6);r('#8fcf98',px+1,h-15,2,2);r(GDL,px+3,h-14,2,2)}
+ r('rgba(0,0,0,.1)',0,h-2,w,2)});
+
 const mkMieu=()=>mk(184,150,(g,r)=>{
  const RD='#c4675a',RDD='#a24f45',GD='#e2c36b',CR='#f0e4cc',TL='#cf8f7b';
  r('#d9d0c0',4,140,176,10);r('#e8e0d2',4,140,176,2);r('#cfc6b6',12,132,160,8);r('#e8e0d2',12,132,160,1);
@@ -341,9 +385,9 @@ function build(){
   [436,98,116,{wall:PAL.sage,aw:['#a9c4dc','#f4f0e4'],balc:1,tile:1,shelf:['#8fb8e0','#e0a099','#9ccaa6'],sign:SN('TIỆM THÚ CƯỠI','#bcd6e6','#3f607a','#5fd8ff',''),shut:'#e8c6b0'}],
   [534,78,106,{wall:PAL.lemon,aw:['#b9d6bf','#f6f2e2'],laundry:1,sign:SN('SHOP MINISET','#ffd9e6','#b04a72','#ff9ad0','★ THỜI TRANG CHO BÉ BỎNG ★'),shelf:['#f4f0e4','#b9d6bf']}],
   [612,98,116,{wall:PAL.peach,aw:['#d9c4e6','#f8f0ea'],balc:1,tile:1,shelf:['#e8c06a','#e0a099','#c9b0dc'],sign:SN('TIỆM THÚ CƯNG','#e3d0ee','#6a4a86','#c79bff',''),shut:'#c9dbe8'}],
-  [710,80,118,{wall:PAL.mauve,aw:['#a9c9d6','#f4f0e4'],tank:1,door:'shutter',sign:SN('CẮT TÓC','#d6e8ee','#4a6f80','#6ee7ff','')}],
+  [710,80,118,{gold:1,sign:SN('TIỆM VÀNG','#f0dc96','#8a6a1c','#ffd84d','★ VÀNG 9999 ★')}],
   [790,84,106,{wall:PAL.sky,aw:['#e2b89a','#f8efe2'],balc:1,laundry:1,shelf:['#c99a6a','#f2e0b8'],sign:SN('CÀ PHÊ SÁNG','#e8cfb4','#7a5236','#ffb066','')}],
-  [874,86,118,{wall:PAL.cream,aw:['#e8d28a','#f8f2dc'],tank:1,shelf:['#e8c85a','#f6e08a'],sign:SN('TIỆM VÀNG','#f0dc96','#8a6a1c','#ffe14d',''),shut:'#d6c9a0'}]];
+  [874,86,118,{wall:PAL.mauve,aw:['#a9c9d6','#f4f0e4'],tank:1,door:'shutter',sign:SN('CẮT TÓC','#d6e8ee','#4a6f80','#6ee7ff','')}]];
  SIGNS.length=0;
  for(const[x,w,h,o]of H){put(mkHouse(w,h,o),x+w/2,156,[x,0,x+w,158]);const g=o.sign;SIGNS.push({x0:x+4,w:w-8,Y:87,t:g.t,m:g.m,col:g.n,ph:x*.37,lights:1})}
  // NGÂN HÀNG (thay quán Phở bò cũ)
@@ -360,9 +404,9 @@ function build(){
  hit(358,100,76,56,'🏦 Ngân hàng — gửi tiết kiệm, nhận lãi mỗi ngày','cv:ps:bank',[396,178]);
  hit(190,100,72,56,'🛋️ Tiệm nội thất — mua đồ trang trí cho nhà (100–4000 Xu)','cv:ps:furn',[226,178]);
  hit(536,100,74,56,'🧸 Shop Miniset — thời trang cho Bé bỏng','cv:ps:mini',[572,178]);
- hit(712,100,76,56,'✂️ Tiệm cắt tóc — chú thợ đi ăn sáng rồi');
+ hit(712,100,76,56,'🥇 Tiệm vàng — vàng 9999, canh giá mua rẻ bán đắt','cv:ps:gold',[750,178]);
  hit(792,100,80,56,'☕ Cà phê sáng — mùi cà phê phin ngào ngạt');
- hit(876,100,82,56,'🥇 Tiệm vàng — lấp lánh sau tủ kính');
+ hit(876,100,82,56,'✂️ Tiệm cắt tóc — chú thợ đi ăn sáng rồi');
  // ===== VỈA HÈ TRÊN (y156–268): hàng quán, bàn ghế, xe bánh mì, trà đá, người đi dạo / tập thể dục =====
  for(const x of[262,632,862])put(mkPole(),x,268,[x-3,258,x+3,268]);
  for(const x of[160,440,726])put(mkLamp(),x,266,[x-2,260,x+2,266]);
@@ -783,6 +827,126 @@ window.bkClose=()=>{const b=bkBook();if(!b)return;bkSettle(b);const pr=b.p+b.w,l
  if(window.bkCf!==1){window.bkCf=1;setTimeout(()=>{window.bkCf=0},4000);return toast('🔒 Bấm "Tất toán" lần nữa để rút hết '+bkN(pr+li)+' Xu và dừng sinh lãi')}
  window.bkCf=0;b.p=0;b.w=0;b.i=0;bkPay(pr,li);bkLog(b,'tt',pr+li);b.at=Date.now();xuUp();save();toast('🔒 Đã tất toán: nhận '+bkN(pr+li)+' Xu (gốc '+bkN(pr)+' + lãi '+bkN(li)+')');bkKeep(()=>bankUI(1))};
 
+// ============================================================
+//  TIỆM VÀNG — vàng 9999 dạng trang sức / vàng miếng / vàng đúc hình
+//  • Giá vàng 1 chỉ đổi mỗi 35–135 phút (giờ thật), TÍNH THEO GIỜ HỆ THỐNG nên mọi người chơi, mọi máy thấy cùng một giá
+//  • Có 2 giá như tiệm thật: BÁN RA (người chơi mua) cao hơn MUA VÀO (người chơi bán) GD_SPREAD = 5%
+//  • Giá 1 chỉ dao động trong GD_LO..GD_HI, tự kéo về mức giữa (GD_MID) nên không tăng mãi / giảm mãi
+//  • 8 món, giá từ ~50.000 đến ~1.000.000 Xu; kho tối đa GD_CAPW chỉ để không lạm phát
+//  ST.gold = {inv:{id:{q:số lượng, c:tổng Xu đã bỏ ra mua}}, re:tổng lời/lỗ đã chốt, h:[lịch sử]}
+// ============================================================
+const GD_T0=Date.UTC(2026,0,1),GD_LO=68000,GD_HI=95000,GD_MID=81500,GD_SPREAD=.05,GD_CAPW=60,GD_MAXN=10;
+const GD_ITEMS=[['nhan','Nhẫn trơn',.7,'💍'],['bt','Bông tai hoa',1,'🌸'],['mdc','Mặt dây trái tim',1.5,'❤️'],['lac','Lắc tay',2,'🔗'],['nc','Nhẫn cưới đôi',3,'💞'],['dc','Dây chuyền',5,'📿'],['vm','Vàng miếng',7,'🟨'],['dh','Vàng đúc hình Rồng',10,'🐉']];
+const GD_SEG=[];
+const gdHash=n=>{let h=Math.imul((n|0)+0x9e3779b9|0,2246822519);h^=h>>>15;h=Math.imul(h,3266489917);h^=h>>>13;h=Math.imul(h,668265263);h^=h>>>16;return(h>>>0)/4294967296};
+function gdBuild(upTo){
+ if(!GD_SEG.length)GD_SEG.push([GD_T0,GD_MID,0]);
+ while(true){const n=GD_SEG.length,L=GD_SEG[n-1];
+  L[2]=(35+Math.floor(gdHash(n*3+1)*101))*60000;      // mỗi phiên giá kéo dài 35–135 phút
+  if(L[0]+L[2]>upTo)return;
+  const nz=gdHash(n*3+2)+gdHash(n*3+3)-1;              // nhiễu -1..1
+  let p=L[1]+(GD_MID-L[1])*.08+L[1]*nz*.075;
+  if(p>GD_HI)p=GD_HI-(p-GD_HI)*.5;if(p<GD_LO)p=GD_LO+(GD_LO-p)*.5;
+  p=Math.max(GD_LO,Math.min(GD_HI,p));
+  GD_SEG.push([L[0]+L[2],Math.round(p/100)*100,0])}}
+function gdNow(){const t=Date.now();gdBuild(t+1);let i=GD_SEG.length-1;while(i>0&&GD_SEG[i][0]>t)i--;
+ const s=GD_SEG[i],pv=GD_SEG[Math.max(0,i-1)];
+ return{i,g:s[1],prev:pv[1],start:s[0],end:s[0]+s[2],ask:Math.round(s[1]*(1+GD_SPREAD)/100)*100}}
+const gdBuy=(it,ask)=>Math.round(it[2]*ask/100)*100,gdSell=(it,g)=>Math.round(it[2]*g/100)*100;
+const gdN=n=>Math.floor(+n||0).toLocaleString('vi-VN');
+const gdSg=n=>(n>0?'+':n<0?'−':'')+gdN(Math.abs(n));
+const gdCol=n=>n>0?'#5fe08a':n<0?'#ff7a6e':'#e8d9a8';
+function gdBag(){let G=ST.gold;if(!G||typeof G!='object')G=ST.gold={};if(!G.inv||typeof G.inv!='object')G.inv={};G.re=Math.floor(+G.re||0);if(!Array.isArray(G.h))G.h=[];
+ for(const it of GD_ITEMS){const o=G.inv[it[0]];if(o){o.q=Math.max(0,Math.floor(+o.q||0));o.c=Math.max(0,Math.floor(+o.c||0));if(!o.q)delete G.inv[it[0]]}}return G}
+const gdWeight=G=>GD_ITEMS.reduce((a,it)=>a+(G.inv[it[0]]?G.inv[it[0]].q*it[2]:0),0);
+function gdLog(G,k,a,name){G.h.push([Date.now(),k,a,name]);if(G.h.length>16)G.h.splice(0,G.h.length-16)}
+const gdClock=ms=>{ms=Math.max(0,Math.floor(ms/1000));const h=Math.floor(ms/3600),m=Math.floor(ms%3600/60),s=ms%60;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')};
+const gdTime=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+' '+d.getDate()+'/'+(d.getMonth()+1)};
+let gdTmr=0,gdIdx=-1;
+function gdStyle(){if(document.getElementById('gdcss'))return;const st=document.createElement('style');st.id='gdcss';st.textContent=
+ '#ui.gdui{background:radial-gradient(ellipse at 50% 0%,#4a1a24 0%,#2a0e16 45%,#150709 100%);border:3px solid #e2b93b;border-radius:14px;box-shadow:0 0 0 2px #7a5a10 inset,0 0 0 5px #1c0a0e inset,0 0 0 6px #e2b93b inset,0 4px 0 #6a4a05,0 0 26px rgba(255,200,40,.55);color:#f6e7b4}'+
+ '#ui.gdui .uh{color:#ffe27a;font-family:Georgia,"Times New Roman",serif;letter-spacing:1px;text-shadow:0 0 8px rgba(255,210,63,.7),0 1px 0 #4a2c00}'+
+ '#ui.gdui .b{background:linear-gradient(#ffe98a,#e2a91f);border:2px solid #8a6408;box-shadow:0 2px 0 #5a3d03;color:#3a2400;border-radius:8px}'+
+ '#ui.gdui .b:active{transform:translateY(2px);box-shadow:none}#ui.gdui .b.x{background:#fff3b0}#ui.gdui .b[disabled]{opacity:.4;filter:grayscale(.6);cursor:default}'+
+ '.gdmq{background:#0d0506;border:2px solid #e2b93b;border-radius:6px;box-shadow:0 0 8px #ffc928,inset 0 0 8px rgba(255,200,40,.35);overflow:hidden;white-space:nowrap;padding:3px 0;margin-bottom:8px}'+
+ '.gdmq span{display:inline-block;padding-left:100%;font-weight:900;font-size:12.5px;letter-spacing:.6px;color:#ffe94d;text-shadow:0 0 3px #ff9a2e,0 0 9px #ffc928;animation:gdmq 15s linear infinite}'+
+ '@keyframes gdmq{from{transform:translateX(0)}to{transform:translateX(-100%)}}'+
+ '.gdw{display:flex;justify-content:center;margin:0 0 8px}.gdw span{background:#0d0506;border:2px solid #e2b93b;border-radius:14px;padding:2px 14px;font-size:14px;color:#ffe9a0;box-shadow:0 0 8px rgba(255,200,40,.3)}.gdw b{color:#ffe27a}'+
+ '.gdbd{background:linear-gradient(#0a0405,#1a0a0e);border:3px solid #e2b93b;border-radius:10px;padding:8px 10px;box-shadow:inset 0 0 14px rgba(255,200,40,.25),0 2px 0 #6a4a05}'+
+ '.gdbd .gt{display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:1px;color:#d9b24a;font-weight:800}'+
+ '.gdbd .grw{display:flex;gap:8px;margin-top:6px}.gdbd .gcl{flex:1;background:rgba(255,200,40,.07);border:1px solid #7a5a10;border-radius:8px;padding:5px 6px;text-align:center}'+
+ '.gdbd .gcl small{display:block;font-size:10.5px;color:#c9a64a;letter-spacing:.5px}.gdbd .gcl b{display:block;font-size:20px;color:#ffe94d;text-shadow:0 0 8px rgba(255,200,40,.75);font-family:"Courier New",monospace;letter-spacing:.5px}.gdbd .gcl i{font-style:normal;font-size:10px;color:#c9a64a}'+
+ '.gdbd .gch{margin-top:6px;font-size:12px;display:flex;justify-content:space-between;align-items:center}.gdbd .gch b{font-size:14px}'+
+ '.gdsp{width:100%;height:54px;display:block;margin-top:4px}'+
+ '.gdcd{margin-top:5px;text-align:center;font-size:11.5px;color:#c9a64a}.gdcd b{color:#ffe94d;font-size:13px;font-family:"Courier New",monospace}'+
+ '.gdsec{margin-top:10px;font-family:Georgia,serif;color:#ffe27a;font-size:13px;letter-spacing:1px;font-weight:800;display:flex;align-items:center;gap:6px}.gdsec:before,.gdsec:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,#e2b93b,transparent)}'+
+ '.gdsum{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}.gdsum div{background:linear-gradient(135deg,#fff3b8,#e9b930 60%,#c99a1c);border:2px solid #8a6408;border-radius:9px;padding:5px 7px;color:#3a2400;text-align:center;box-shadow:0 2px 0 #5a3d03}.gdsum small{display:block;font-size:10.5px;color:#6a4a05}.gdsum b{font-size:15px}'+
+ '.gdg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}'+
+ '.gdc{background:linear-gradient(150deg,#fff6c8 0%,#f0c94a 52%,#c8921a 100%);border:2px solid #8a6408;border-radius:10px;padding:5px 5px 6px;color:#3a2400;box-shadow:0 2px 0 #5a3d03,inset 0 0 0 1px #fff3b0;text-align:center;position:relative;min-width:0}'+
+ '.gdc .gce{font-size:26px;line-height:1.1;filter:drop-shadow(0 1px 0 rgba(255,255,255,.6))}.gdc .gcn{font-weight:900;font-size:12.5px;line-height:1.2}.gdc .gcw{font-size:10.5px;color:#6a4a05}.gdc .gcp{font-weight:900;font-size:14px;color:#6b1020;margin:2px 0 3px}'+
+ '.gdc .gcb{display:flex;gap:4px}.gdc .gcb .b{flex:1;padding:4px 2px;font-size:11.5px}.gdc.hv{border-color:#fff3b0;box-shadow:0 0 0 1px #8a6408,0 0 10px rgba(255,226,122,.7)}'+
+ '.gdc .gco{position:absolute;top:3px;right:4px;font-size:10px;font-weight:900;background:#6b1020;color:#ffe27a;border-radius:8px;padding:0 5px}'+
+ '.gdv{background:linear-gradient(135deg,#2a0e16,#1a0a0e);border:2px solid #b8921f;border-radius:10px;padding:6px 8px;margin-top:6px}'+
+ '.gdv .gtp{display:flex;align-items:center;gap:6px}.gdv .gtp .gve{font-size:22px}.gdv .gtp .gvn{flex:1;font-weight:900;color:#ffe27a;font-size:13px;line-height:1.2}.gdv .gtp .gvn small{display:block;color:#c9a64a;font-weight:600;font-size:10.5px}'+
+ '.gdv .gtp .gvp{text-align:right;font-weight:900;font-size:13px;line-height:1.2}.gdv .gtp .gvp small{display:block;font-size:10.5px;font-weight:700}'+
+ '.gdv .gvr{display:flex;justify-content:space-between;font-size:11.5px;color:#e8d9a8;margin-top:3px;border-top:1px dashed rgba(226,185,59,.3);padding-top:3px}.gdv .gvr b{color:#fff3b0}'+
+ '.gdv .gvb{display:flex;gap:4px;margin-top:5px}.gdv .gvb .b{flex:1;padding:4px 2px;font-size:11.5px}'+
+ '.gdh{max-height:110px;overflow:auto;font-size:11.5px;background:rgba(0,0,0,.3);border:1px solid #7a5a10;border-radius:8px;padding:3px 6px;margin-top:6px}.gdh div{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px dotted rgba(226,185,59,.3)}.gdh div:last-child{border:0}'+
+ '.gdmut{font-size:11px;color:#b99a48;margin:6px 0 0;text-align:center}';
+ document.head.appendChild(st)}
+function gdSpark(){const lo=Math.max(0,GD_SEG.length-24),a=GD_SEG.slice(lo),n=a.length;if(n<2)return'';
+ const mn=GD_LO,mx=GD_HI,W=300,H=54,px=i=>i/(n-1)*(W-8)+4,py=v=>H-5-(v-mn)/(mx-mn)*(H-10);let d='';
+ a.forEach((s,i)=>{const x=px(i),y=py(s[1]);d+=(i?'L':'M')+x.toFixed(1)+','+y.toFixed(1);if(i<n-1)d+='L'+px(i+1).toFixed(1)+','+y.toFixed(1)});
+ const last=a[n-1],up=last[1]>=a[n-2][1],c=up?'#5fe08a':'#ff7a6e',lx=px(n-1),ly=py(last[1]);
+ return'<svg class="gdsp" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><line x1="0" x2="'+W+'" y1="'+py(GD_MID).toFixed(1)+'" y2="'+py(GD_MID).toFixed(1)+'" stroke="#7a5a10" stroke-dasharray="3 3" stroke-width="1"/><path d="'+d+'L'+W+','+ly.toFixed(1)+'" fill="none" stroke="'+c+'" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><circle cx="'+lx.toFixed(1)+'" cy="'+ly.toFixed(1)+'" r="2.6" fill="'+c+'"/></svg>'}
+function gdTick(){if(!UI||PS.view!='gold'||!$('gdcd')){clearInterval(gdTmr);gdTmr=0;return}
+ const m=gdNow();if(m.i!==gdIdx){toast('🥇 Giá vàng vừa đổi: '+gdN(m.ask)+' Xu/chỉ (bán ra)');goldUI(1);return}
+ $('gdcd').textContent=gdClock(m.end-Date.now())}
+window.goldUI=keep=>{PS.view='gold';gdStyle();const G=gdBag(),m=gdNow();gdIdx=m.i;
+ const dl=m.g-m.prev,pc=m.prev?dl/m.prev*100:0,up=dl>0?'▲':dl<0?'▼':'■';
+ const lo=Math.max(0,GD_SEG.length-24),hist=GD_SEG.slice(lo).map(s=>s[1]),hi24=Math.max(...hist),lo24=Math.min(...hist);
+ let tc=0,tv=0,cnt=0;for(const it of GD_ITEMS){const o=G.inv[it[0]];if(o){tc+=o.c;tv+=gdSell(it,m.g)*o.q;cnt+=o.q}}
+ const pl=tv-tc,plp=tc?pl/tc*100:0,wt=gdWeight(G),wtS=(Math.round(wt*10)/10).toString().replace('.',',');
+ let h=head('🥇 Tiệm Vàng Kim Long')+'<div class="gdmq"><span>★ TIỆM VÀNG KIM LONG — VÀNG 9999 CHÍNH HÃNG • GIÁ NIÊM YẾT THEO PHIÊN • MUA BÁN TRỰC TIẾP TẠI QUẦY ★</span></div>'+
+ '<div class="gdw"><span>🪙 Ví của bạn: <b>'+gdN(ST.xu)+'</b> Xu</span></div>'+
+ '<div class="gdbd"><div class="gt"><span>◆ BẢNG GIÁ VÀNG 9999 ◆</span><span>Cập nhật '+gdTime(m.start)+'</span></div>'+
+ '<div class="grw"><div class="gcl"><small>BÁN RA (bạn mua)</small><b>'+gdN(m.ask)+'</b><i>Xu / chỉ</i></div><div class="gcl"><small>MUA VÀO (bạn bán)</small><b>'+gdN(m.g)+'</b><i>Xu / chỉ</i></div></div>'+
+ '<div class="gch"><span style="color:'+gdCol(dl)+'"><b>'+up+' '+gdN(Math.abs(dl))+' Xu</b> ('+(pc>0?'+':pc<0?'−':'')+Math.abs(pc).toFixed(2).replace('.',',')+'%) so với phiên trước</span></div>'+
+ gdSpark()+
+ '<div class="gch" style="font-size:10.5px;color:#c9a64a"><span>Thấp nhất 24 phiên: <b style="font-size:11px;color:#ff9a8e">'+gdN(lo24)+'</b></span><span>Cao nhất: <b style="font-size:11px;color:#8ff0aa">'+gdN(hi24)+'</b></span></div>'+
+ '<div class="gdcd">Phiên giá kế tiếp sau <b id="gdcd">'+gdClock(m.end-Date.now())+'</b></div></div>'+
+ '<div class="gdsec">KÉT SẮT CỦA BẠN</div>'+
+ '<div class="gdsum"><div><small>Tổng vốn đã bỏ ra</small><b>'+gdN(tc)+'</b></div><div><small>Giá trị bán hiện tại</small><b>'+gdN(tv)+'</b></div>'+
+ '<div><small>Lời / lỗ đang giữ</small><b style="color:'+(pl>0?'#0d6b2a':pl<0?'#a01818':'#3a2400')+'">'+gdSg(pl)+(tc?' ('+(plp>0?'+':plp<0?'−':'')+Math.abs(plp).toFixed(1).replace('.',',')+'%)':'')+'</b></div>'+
+ '<div><small>Lời / lỗ đã chốt</small><b style="color:'+(G.re>0?'#0d6b2a':G.re<0?'#a01818':'#3a2400')+'">'+gdSg(G.re)+'</b></div></div>'+
+ '<div class="gdmut">Đang giữ <b style="color:#ffe27a">'+wtS+'</b> / '+GD_CAPW+' chỉ vàng</div>';
+ if(cnt){h+='<div class="gdsec">TÀI SẢN VÀNG</div>';
+  for(const it of GD_ITEMS){const o=G.inv[it[0]];if(!o)continue;const sv=gdSell(it,m.g)*o.q,p1=sv-o.c,pp=o.c?p1/o.c*100:0,avg=Math.round(o.c/o.q);
+   h+='<div class="gdv"><div class="gtp"><span class="gve">'+it[3]+'</span><div class="gvn">'+it[1]+' × '+o.q+'<small>'+String(it[2]).replace('.',',')+' chỉ / món • vốn TB '+gdN(avg)+' Xu</small></div>'+
+   '<div class="gvp" style="color:'+gdCol(p1)+'">'+gdSg(p1)+' Xu<small>'+(pp>0?'+':pp<0?'−':'')+Math.abs(pp).toFixed(1).replace('.',',')+'%</small></div></div>'+
+   '<div class="gvr"><span>Vốn: <b>'+gdN(o.c)+'</b></span><span>Bán được: <b>'+gdN(sv)+'</b></span></div>'+
+   '<div class="gvb"><button class="b" onclick="gdSellN(\''+it[0]+'\',1)">Bán 1 ('+gdN(gdSell(it,m.g))+')</button><button class="b" onclick="gdSellN(\''+it[0]+'\',0)">Bán hết ('+gdN(sv)+')</button></div></div>'}}
+ h+='<div class="gdsec">QUẦY TRANG SỨC & VÀNG</div><div class="gdg">';
+ for(const it of GD_ITEMS){const o=G.inv[it[0]],pr=gdBuy(it,m.ask);
+  h+='<div class="gdc'+(it[0]=='dh'?' hv':'')+'">'+(o?'<span class="gco">đang có '+o.q+'</span>':'')+'<div class="gce">'+it[3]+'</div><div class="gcn">'+it[1]+'</div><div class="gcw">'+String(it[2]).replace('.',',')+' chỉ • vàng 9999</div><div class="gcp">'+gdN(pr)+' Xu</div>'+
+  '<div class="gcb"><button class="b" onclick="gdBuyN(\''+it[0]+'\',1)">Mua 1</button><button class="b" onclick="gdBuyN(\''+it[0]+'\',5)">Mua 5</button></div></div>'}
+ h+='</div>';
+ if(G.h.length)h+='<div class="gdsec">GIAO DỊCH GẦN ĐÂY</div><div class="gdh">'+G.h.slice().reverse().map(x=>'<div><span>'+gdTime(x[0])+' • '+(x[1]=='b'?'Mua ':'Bán ')+escH(x[3]||'')+'</span><b style="color:'+(x[1]=='b'?'#ffb0a0':'#8ff0aa')+'">'+(x[1]=='b'?'−':'+')+gdN(x[2])+'</b></div>').join('')+'</div>';
+ openUI(h);$('ui').classList.add('gdui');if(!gdTmr)gdTmr=setInterval(gdTick,1000)};
+const gdKeep=fn=>{const box=$('ui'),top=box?box.scrollTop:0;fn();const b2=$('ui');if(b2)b2.scrollTop=top};
+const gdItem=id=>GD_ITEMS.find(x=>x[0]==id);
+window.gdBuyN=(id,n)=>{const it=gdItem(id);if(!it)return;const G=gdBag(),m=gdNow(),pr=gdBuy(it,m.ask);
+ if(gdWeight(G)+it[2]*n>GD_CAPW+1e-9){const room=Math.floor((GD_CAPW-gdWeight(G))/it[2]+1e-9);return toast(room>0?'🥇 Két sắt chỉ còn chứa thêm được '+room+' món này':'🥇 Két sắt đã đầy ('+GD_CAPW+' chỉ) — bán bớt vàng rồi mua tiếp')}
+ if(ST.xu<pr*n){const k=Math.floor(ST.xu/pr);return toast(k>0?'🪙 Không đủ Xu cho '+n+' món — mua được tối đa '+k:'🪙 Chưa đủ Xu — còn thiếu '+gdN(pr*n-ST.xu)+' Xu')}
+ const cost=pr*n;ST.xu-=cost;const o=G.inv[id]||(G.inv[id]={q:0,c:0});o.q+=n;o.c+=cost;gdLog(G,'b',cost,it[1]+(n>1?' ×'+n:''));xuUp();save();
+ toast('🥇 Đã mua '+n+' '+it[1]+' — '+gdN(cost)+' Xu');gdKeep(()=>goldUI(1))};
+window.gdSellN=(id,n)=>{const it=gdItem(id),G=gdBag(),o=G.inv[id];if(!it||!o)return;const m=gdNow(),k=n?Math.min(n,o.q):o.q;
+ const cp=Math.round(o.c*k/o.q),pro=gdSell(it,m.g)*k,pf=pro-cp;
+ o.q-=k;o.c-=cp;if(o.q<=0)delete G.inv[id];
+ bkPay(Math.min(pro,cp),pf>0?pf:0);   // phần hoàn vốn không tính "kiếm được"; phần lời mới tính
+ G.re+=pf;gdLog(G,'s',pro,it[1]+(k>1?' ×'+k:''));xuUp();save();
+ toast('🥇 Đã bán '+k+' '+it[1]+' — nhận '+gdN(pro)+' Xu ('+(pf>=0?'lời ':'lỗ ')+gdN(Math.abs(pf))+')');gdKeep(()=>goldUI(1))};
+
 function psAct(a,h){const[t,v]=a.split(':');
  if(t=='shop')return psShop(v);
  if(t=='mini')return window.bbShop?bbShop():toast('🧸 Shop Miniset đang chuẩn bị');
@@ -791,6 +955,7 @@ function psAct(a,h){const[t,v]=a.split(':');
  if(t=='wheel')return wheelUI();
  if(t=='furn')return psFurn();
  if(t=='bank')return bankUI();
+ if(t=='gold')return goldUI();
  if(t=='dia')return diaShop();
  if(t=='mieu')return mieuUI()}
 })();
