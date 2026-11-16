@@ -52,13 +52,37 @@ HAIRFX.bbxm=(u,o,K)=>{const{side,Rt,back,HS}=K,HC=HS.c,fe=HS.f,tw=Math.floor(per
   if(fe)u(HC,Rt?5:12,9,3,13);else u(HC,Rt?5:12,9,3,3);
   u(R,x0,5,9,3);u(R,Rt?6:7,4,7,1);u(R,Rt?6:8,3,5,1);u(R,Rt?6:8,2,3,1);u(Rd,Rt?5:13,5,2,3);u(Rl,Rt?8:8,5,2,2);star(Rt?5:8,-1);
   u(W,x0,8,9,2);u(Wd,x0,9,9,1)}};
+/* ⭐ Vương miện ngôi sao + tóc (bé trai: tóc ngắn; bé gái: tóc dài xõa). HS.c = màu tóc, HS.f = 1 nếu tóc dài, HS.sc = màu sao */
+HAIRFX.bbstar=(u,o,K)=>{const{side,Rt,back,HS}=K,HC=HS.c,fe=HS.f,hl=shade(HC,.3),hd=shade(HC,-.22),tw=Math.floor(performance.now()/320)%3,
+ G='#ffd23f',Gl='#fff0a0',Gd='#d99a14',sc=HS.sc||'#ffe27a',GEM=fe?'#ff7ab8':'#4db8ff';
+ const star=(x,y)=>{u(G,x+1,y,1,3);u(G,x,y+1,3,1);u(tw==0?'#ffffff':Gl,x+1,y+1,1,1);if(tw==1){u('#ffffff',x-1,y-1,1,1);u('#ffffff',x+3,y+3,1,1)}else if(tw==2){u('#ffffff',x+3,y-1,1,1);u('#ffffff',x-1,y+3,1,1)}};
+ if(!side&&!back){
+  u(HC,6,6,8,3);u(HC,7,5,6,1);u(hl,8,6,3,1);
+  if(fe){u(HC,5,8,2,14);u(HC,13,8,2,14);u(hd,5,10,1,11);u(hd,14,10,1,11);u(hl,6,10,1,9);u(HC,5,22,2,1);u(HC,13,22,2,1);u(HC,7,8,2,1);u(HC,11,8,2,1)}
+  else{u(HC,6,9,1,3);u(HC,13,9,1,3);u(HC,7,8,3,1);u(hd,6,11,1,1);u(hd,13,11,1,1)}
+  u(G,5,5,10,2);u(Gl,5,5,10,1);u(Gd,5,6,10,1);u(GEM,9,5,2,2);u('#ffffff',9,5,1,1);
+  star(5,2);star(9,0);star(13,2)}
+ else if(back){
+  if(fe){u(HC,5,6,10,17);u(hd,5,9,1,13);u(hd,14,9,1,13);u(hd,9,10,2,12);u(hl,7,9,1,11);u(HC,5,22,10,1)}
+  else{u(HC,6,6,8,6);u(hd,6,11,8,1);u(hl,8,7,3,1)}
+  u(G,5,5,10,2);u(Gl,5,5,10,1);u(Gd,5,6,10,1);
+  star(5,2);star(9,0);star(13,2)}
+ else{
+  const x0=Rt?5:6;
+  u(HC,x0,6,9,3);u(HC,Rt?6:7,5,7,1);u(hl,Rt?7:9,6,3,1);
+  if(fe){u(HC,Rt?5:12,8,3,14);u(hd,Rt?5:14,10,1,11);u(hl,Rt?7:12,10,1,9)}else{u(HC,Rt?5:12,8,3,4);u(hd,Rt?5:14,11,1,1)}
+  u(G,x0,5,9,2);u(Gl,x0,5,9,1);u(Gd,x0,6,9,1);u(GEM,Rt?11:7,5,2,2);
+  star(Rt?5:11,2);star(Rt?9:7,0)}};
 const MINISETS=[
  {id:'warm',n:'Miniset Ấm áp',
   set:{n:'Miniset Ấm áp',sh:'#fbfbfd',shl:'#ffffff',shd:'#d5d9e6',scarf:'#fbfbfd',knot:'#e3e6ee',belt:'#e3e6ee',pt:'#1c1c22',rpt:'#1c1c22',shoe:'#f4f4f6'},
   hm:{n:'Tóc ngắn',k:'short',c:'#2b1d12'},hf:{n:'Tóc dài',k:'longf',c:'#201a24'}},
  /* ---- Miniset Mùa đông: bán ở 🧸 Shop Miniset (Phố xá, chỗ Hiệu thuốc cũ). g = chỉ bé trai ('m') / bé gái ('f') mua & mặc được. shop:1 = có bán trong shop ---- */
  {id:'winm',n:'Miniset Mùa đông',g:'m',xu:250,shop:1,set:XMAS,hm:{n:'Mũ Noel',k:'bbxm',c:'#2b1d12',f:0,sc:'#ffd23f'}},
- {id:'winf',n:'Miniset Mùa đông',g:'f',xu:250,shop:1,set:XMAS,hf:{n:'Mũ Noel',k:'bbxm',c:'#201a24',f:1,sc:'#ff7ab8'}}
+ {id:'winf',n:'Miniset Mùa đông',g:'f',xu:250,shop:1,set:XMAS,hf:{n:'Mũ Noel',k:'bbxm',c:'#201a24',f:1,sc:'#ff7ab8'}},
+ /* ---- Miniset Ngôi sao (Mi nhon): vương miện ngôi sao, trang phục cute — 1500 Xu / set. Bé gái tóc hồng. ---- */
+ {id:'starm',n:'Miniset Ngôi sao',g:'m',xu:1500,shop:1,set:{n:'Miniset Ngôi sao',sh:'#ffe27a',shl:'#fff0a8',shd:'#e0b94a',scarf:'#ffffff',knot:'#7ec8f2',belt:'#7ec8f2',trim:'#ffffff',tail:1,pt:'#7ec8f2',rpt:'#7ec8f2',shoe:'#ffffff'},hm:{n:'Vương miện sao',k:'bbstar',c:'#6a4426',f:0}},
+ {id:'starf',n:'Miniset Ngôi sao',g:'f',xu:1500,shop:1,set:{n:'Miniset Ngôi sao',sh:'#ffb6d3',shl:'#ffd3e5',shd:'#e88fb4',scarf:'#ffffff',knot:'#ffe27a',bow:1,belt:'#ffffff',skirt:'#ff94bf',pt:'#f1c08a',rpt:'#ff94bf',shoe:'#ffffff'},hf:{n:'Vương miện sao',k:'bbstar',c:'#ff9cc8',f:1}}
 ];
 const msGet=id=>MINISETS.find(x=>x.id==id)||MINISETS[0];
 
