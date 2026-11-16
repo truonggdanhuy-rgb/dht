@@ -29,6 +29,7 @@ const DLM={
  tl:{t:'Đơn thương lái',e:'🛶',u:'đơn',m:[[3,{xu:300}],[10,{pet:9}],[20,{xu:1000}],[35,{pet:8}],[55,{xu:3000}],[80,{xu:10000}]]}};
 const dlCan=k=>DLM[k].m.filter(x=>ID.dl[k]>=x[0]&&!ID.dl.g.includes(k+x[0])).length;
 const PRICE=300,FR_FREE=2;
+const frP=i=>(FRAMES[i]&&FRAMES[i].p)||PRICE;   // giá từng khung: khung có thuộc tính p (500 Xu) thì dùng p, còn lại 300 Xu
 const BT_N=['Bạn mới','Bạn thân','Siêu cấp bạn thân','Tri kỷ keo sơn','Nhân gian khó tìm'];
 const LV_N=['Tập sự','Bá khí','Lão làng','Tài phiệt','Trùm kinh doanh'],LV_FROM=[1,4,10,20,35]; // Lv1-3, 4-9, 10-19, 20-34, 35+
 const lvTier=lv=>{let t=0;LV_FROM.forEach((f,i)=>{if(lv>=f)t=i});return t};
@@ -930,18 +931,18 @@ window.idBack=()=>{IDV='main';idRender()};
 window.idSel=i=>{FSEL=i;idRender()};
 window.idEquip=i=>{ID.fr=i;save();cardSync();idRender();toast('🖼️ Đã dùng khung '+FRAMES[i].n)};
 window.idNone=()=>{ID.fr=-1;save();cardSync();idRender();toast('Đã gỡ khung')};
-window.idBuy=i=>{if(ID.own.includes(i))return;if(ST.xu<PRICE)return toast('Không đủ Xu! Cần '+PRICE+' Xu');
- ST.xu-=PRICE;ID.own.push(i);ID.fr=i;xuUp();save();cardSync();idRender();toast('🎉 Đã mua khung '+FRAMES[i].n+' (−'+PRICE+' Xu)')};
+window.idBuy=i=>{if(ID.own.includes(i))return;const PR=frP(i);if(ST.xu<PR)return toast('Không đủ Xu! Cần '+PR+' Xu');
+ ST.xu-=PR;ID.own.push(i);ID.fr=i;xuUp();save();cardSync();idRender();toast('🎉 Đã mua khung '+FRAMES[i].n+' (−'+PR+' Xu)')};
 function framesView(){
  const own=i=>ID.own.includes(i),f=FRAMES[FSEL];
  let act;
  if(ID.fr==FSEL)act='<button class="b w" onclick="idNone()">✅ Đang dùng • Bấm để gỡ khung</button>';
  else if(own(FSEL))act='<button class="b w go" onclick="idEquip('+FSEL+')">✨ Dùng khung này</button>';
- else act='<button class="b w buy'+(ST.xu<PRICE?' z':'')+'" onclick="idBuy('+FSEL+')">🪙 Mua khung • '+PRICE+' Xu</button>';
+ else act='<button class="b w buy'+(ST.xu<frP(FSEL)?' z':'')+'" onclick="idBuy('+FSEL+')">🪙 Mua khung • '+frP(FSEL)+' Xu</button>';
  let h='<div class="uh"><span><button class="b x" onclick="idBack()">‹ Thẻ</button> 🖼️ Đổi khung</span><button class="b x" onclick="closeUI()">X</button></div>'+
- '<div class="idpv">'+avHtml(FSEL,150)+'<div style="font-weight:800;font-size:15px;color:#1f4a66">'+f.n+'</div><div class="mut" style="margin:0">'+(FSEL<FR_FREE?'Khung miễn phí':PRICE+' Xu/khung')+' • Bạn có 🪙 '+fmtXu(ST.xu)+'</div></div>'+act+
+ '<div class="idpv">'+avHtml(FSEL,150)+'<div style="font-weight:800;font-size:15px;color:#1f4a66">'+f.n+'</div><div class="mut" style="margin:0">'+(FSEL<FR_FREE?'Khung miễn phí':frP(FSEL)+' Xu/khung')+' • Bạn có 🪙 '+fmtXu(ST.xu)+'</div></div>'+act+
  '<div class="idfl">';
- FRAMES.forEach((x,i)=>{h+='<button class="idft'+(i==FSEL?' sel':'')+(i==ID.fr?' eq':'')+'" onclick="idSel('+i+')">'+avHtml(i,70)+'<b>'+x.n+'</b><small>'+(i==ID.fr?'✅ Đang dùng':own(i)?'Đã có':i<FR_FREE?'Miễn phí':'🪙 '+PRICE)+'</small></button>'});
+ FRAMES.forEach((x,i)=>{h+='<button class="idft'+(i==FSEL?' sel':'')+(i==ID.fr?' eq':'')+'" onclick="idSel('+i+')">'+avHtml(i,70)+'<b>'+x.n+'</b><small>'+(i==ID.fr?'✅ Đang dùng':own(i)?'Đã có':i<FR_FREE?'Miễn phí':'🪙 '+frP(i))+'</small></button>'});
  openIdc(h+'</div><div class="mut">Khung chỉ hiện trong Căn cước, không đổi avatar ngoài màn hình chính.</div>')}
 
 // ---- ngày gia nhập = ngày tạo tài khoản DHT (lấy từ máy chủ, nếu có) ----
