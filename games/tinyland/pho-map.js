@@ -252,8 +252,7 @@ function buildBG(){return mk(PW,PH,(g,r)=>{
  r('#6d6a64',44,498,56,62);r('#8a867d',46,498,52,4);r('#4f4c47',50,506,44,54);
  for(let i=0;i<6;i++)r('#5a5650',52+i*7,508,3,52);
  r('#e2c36b',44,488,56,12);r('#c4675a',46,490,52,8);
- g.textAlign='center';g.font='800 7px Nunito, sans-serif';g.fillStyle='#ffe9a0';g.fillText('NGÕ',72,497);
- // bóng nhà đổ lên vỉa hè
+  // bóng nhà đổ lên vỉa hè
  r('rgba(80,64,50,.10)',0,156,PW,10);r('rgba(80,64,50,.06)',0,166,PW,8);
  // lề đường: vài vết gạch vỡ, lá khô
  for(let i=0;i<60;i++)r(pk(['#cfc0a0','#bcae8e','#d9c9a4']),Math.floor(rn()*PW),160+Math.floor(rn()*100),2,1);
@@ -565,8 +564,7 @@ function build(){
  // người
  for(const n of PS.npcs){if(n.cat)continue;dyn(n.sit?n.y+1.5:n.y,()=>drawNpc(n,tmNow()))}
  // ----- nhãn -----
- for(const l of[['NGÕ → NÔNG TRẠI',72,520],['VÒNG QUAY MAY MẮN',168,512]])PS.lb.push(l);
- hit(40,478,64,30,'🚪 Ngõ ra — bấm để về Nông Trại','gate',[72,490]);
+  hit(40,478,64,30,'🚪 Ngõ ra — bấm để về Nông Trại','gate',[72,490]);
  // thùng nước, bồn trên mái phía sau
  for(const x of[120,360,640,860])put(mkTank(),x,606);
  }

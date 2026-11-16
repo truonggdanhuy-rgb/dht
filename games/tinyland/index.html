@@ -550,7 +550,6 @@ place(coopN,674,368);place(bowlN('#d9b866'),660,365);place(bowlN('#7fc4ee'),708,
 lg('hay');lg('hay');lg('well');
 for(let i=0;i<2;i++)bk(pick(['#ff6f91','#ffd23f','#ffffff','#c77dff']));
 for(let i=0;i<Math.round(11*W/68);i++){const x=ri(20,PX-30);if(x>510&&x<610)continue;place(S_.reed,x,RY+ri(3,8))}
-LB.push(['CẦU CÂU CÁ',560,646]);
 const ZR=[[262,690,128,64],[640,690,132,64],[820,690,144,64]];
 const mineM=mk(56,54,(g,r)=>{
  r('#555a60',0,42,56,12);r('#8e939a',0,42,56,2);r('#6b7078',0,44,56,8);for(let x=4;x<56;x+=9)r('#4a4f55',x,44,1,8);r('#3f4348',0,52,56,2);
@@ -590,7 +589,6 @@ SP.push({by:250.5,d:()=>{const t=performance.now()/1000,X=856,Y=196,on=ST.mine&&
  r('rgba(255,150,40,'+(.12+.08*Math.sin(t*9)).toFixed(2)+')',X+9,Y+29,14,14);
  const gx=X+31,gy=Y+34,a0=on?t*4:t*.5;for(let k=0;k<4;k++){const a=a0+k*1.5708;r('#c9a24a',gx+Math.round(Math.cos(a)*4),gy+Math.round(Math.sin(a)*4),2,2)}r('#6b4220',gx,gy,2,2);
  if(Math.sin(t*5)>.9)r('#ffffff',X+44+(t*7%8|0),Y+38,1,1)}});
-hits.push([528,768,64,32,'🎣 Cầu câu cá','fish',[560,772]]);
 ZR.forEach(([x,y,w,h],z)=>{hits.push([x,y,w,h,'🌊 Vùng nước '+(z+1),'net:'+z,[x+w/2,668]]);LB.push(['VÙNG NƯỚC '+(z+1),x+w/2,684])});
 // ---------- DECOR MIEN TAY + CHO HONG MAT ----------
 {const hs=a=>{a=Math.imul((a+1)*2654435761^a>>>15,2246822519);a=Math.imul(a^a>>>13,3266489917);return((a^a>>>16)>>>0)/4294967296};
@@ -708,9 +706,9 @@ function qGen(){const R=a=>a[Math.floor(Math.random()*a.length)],q=[];let k;
  k=R([[3,90],[4,120],[5,150]]);q.push({t:'bl',need:k[0],xu:k[1],tx:'🎈 Giao '+k[0]+' đơn khí cầu'});
  k=R([[1,70],[2,100],[4,150]]);q.push({t:'tl',need:k[0],xu:k[1],tx:'🛶 Giao thương lái '+k[0]+' lần'});
  k=R([[20,50],[40,80],[60,110]]);q.push({t:'sell',need:k[0],xu:k[1],tx:'🪙 Bán '+k[0]+' nông sản trong kho (bất kỳ)'});
- k=R([['nc','🎯 Ném còn 1 ván (Đêm Hội)',1,80],['tug','🪢 Kéo co 1 ván (Đêm Hội)',1,80],['rr','🦌 Đua Tuần lộc 1 ván (Làng Tuyết)',1,80],['fish','🎣 Câu cá 3 lần (đầu cầu)',3,60]]);q.push({t:'game',s:k[0],need:k[2],xu:k[3],tx:'🎮 Chơi '+k[1]});
+ k=R([['nc','🎯 Ném còn 1 ván (Đêm Hội)',1,80],['tug','🪢 Kéo co 1 ván (Đêm Hội)',1,80],['rr','🦌 Đua Tuần lộc 1 ván (Làng Tuyết)',1,80]]);q.push({t:'game',s:k[0],need:k[2],xu:k[3],tx:'🎮 Chơi '+k[1]});
  q.forEach(x=>{x.p=0;x.done=0;x.cl=0});return q}
-function qEnsure(){const d=new Date().toDateString();if(!ST.dq||ST.dq.d!=d||!Array.isArray(ST.dq.q))ST.dq={d,q:qGen()}}
+function qEnsure(){const d=new Date().toDateString();if(!ST.dq||ST.dq.d!=d||!Array.isArray(ST.dq.q))ST.dq={d,q:qGen()};else for(const q of ST.dq.q)if(q.t=='game'&&q.s=='fish'){q.s='nc';q.tx='🎮 Chơi 🎯 Ném còn 1 ván (Đêm Hội)'}}
 function qAdd(t,n,s){qEnsure();for(const q of ST.dq.q){if(q.t!=t||q.done||(q.s!=null&&q.s!==s))continue;q.p=Math.min(q.need,q.p+n);if(q.p>=q.need){q.done=1;setTimeout(()=>toast('📋 Hoàn thành nhiệm vụ!\n'+q.tx+'\nRa Bảng nhiệm vụ để nhận thưởng'),1800)}}save()}
 function qUI(){qEnsure();const Q=ST.dq.q,cl=Q.filter(q=>q.done&&!q.cl).length;
  let h=head('📋 Nhiệm vụ hằng ngày')+'<div class="mut">Làm xong nhiệm vụ nào nhận Xu nhiệm vụ đó, mỗi nhiệm vụ thêm <b>+2 EXP</b>. Làm mới mỗi ngày.</div><div class="g1">';
@@ -2339,7 +2337,7 @@ const hitAt=(x,y)=>{for(let i=hits.length-1;i>=0;i--){const h=hits[i];if(x>=h[0]
 function near(){let best,bd=26;for(const h of hits){if(h[2]>800)continue;
  const dx=Math.max(h[0]-Pl.x,0,Pl.x-h[0]-h[2]),dy=Math.max(h[1]-Pl.y,0,Pl.y-h[1]-h[3]),d=Math.hypot(dx,dy);
  if(d<bd){bd=d;best=h}}
- if(best&&best[5])return act(best);if(!best&&Pl.y>740&&MAP=='nt')return fishOpen();
+ if(best&&best[5])return act(best);
  toast(best?best[4]:'Đến gần một công trình rồi bấm E nhé!')}
 cv.addEventListener('pointerdown',e=>{ptr={x:e.clientX,y:e.clientY,t:performance.now(),x0:e.clientX,y0:e.clientY,pan:0,walk:0};cv.setPointerCapture(e.pointerId)});
 // vuốt nhanh trên màn hình = kéo camera xem map (khi chưa giữ để đi)
@@ -3923,7 +3921,8 @@ for(let i=0;i<18;i++){const a=i/18*6.283;addC(WCX+Math.cos(a)*112,WCY+Math.sin(a
 for(let x=420;x<700;x+=34)addC(x,334);for(let x=430;x<670;x+=40)addC(x,198);
 for(let x=80;x<350;x+=24){addC(x,338);addC(x+10,352)}
 for(let x=520;x<700;x+=30)addC(x,618);for(let x=580;x<640;x+=28)addC(x,628);
-CRW.forEach(n=>LH.sp.push({by:n.y+1,d:()=>NP(n.x,n.y,n.c,performance.now()/1000,n.ph,n.k,n.f)}));
+const CRWKEEP=[3,9,15,22,30,38,46,53,60,70,80,90];/* giảm 1 nửa NPC cổ vũ cho đỡ lag: chỉ vẽ ô chẵn + các dân làng bấm được */
+CRW.forEach((n,i)=>{if(i%2&&CRWKEEP.indexOf(i)<0)return;LH.sp.push({by:n.y+1,d:()=>NP(n.x,n.y,n.c,performance.now()/1000,n.ph,n.k,n.f)})});
 let NCL={b:0,x:0};
 LH.sp.push({by:612,d:()=>{const t=performance.now()/1000,n=performance.now(),y=606;
  const th=(x,c,k)=>{const on=(n-NCL.b)<600&&Math.abs(NCL.x-x)<20,sw=on?Math.sin((n-NCL.b)/600*Math.PI):0,id=Math.round(Math.sin(t*2.4+k));
@@ -3945,7 +3944,7 @@ LH.hits.push([505,538,216,84,'🪢 Kéo co — chơi miễn phí, thắng +25 Xu
 LH.hits.push([56,158,308,164,'🎼 Sân khấu đờn ca tài tử — nghe đi bạn!']);
 LH.hits.push([395,200,300,134,'🦁 Múa lân — bấm để xin lì xì','ln']);
 LH.hits.push([762,232,216,100,'🤼 Đô vật — bấm xem hai chàng so tài','wr']);
-LH.hits.push([398,506,120,120,'🎯 Ném còn — chơi miễn phí, trúng +10 Xu','nc']);
+LH.hits.push([398,506,120,120,'🎯 Ném còn — chơi miễn phí, mỗi quả trúng +25 Xu','nc']);
 LH.hits.push([50,526,52,48,'🎋 Bánh tét — bấm để mua (10 Xu)','food:bt']);
 LH.hits.push([112,526,52,48,'🍬 Kẹo tò he — bấm để mua (10 Xu)','food:th']);
 LH.hits.push([174,526,52,48,'🍵 Trà đá & chè dưỡng nhan — bấm để mua (10 Xu)','food:tr']);
@@ -3956,6 +3955,9 @@ function wrAct(){toast(['🤼 Hai chàng đô vật quần nhau — khán giả 
 // ===== mini-game ne con & keo co (mien phi) =====
 document.head.appendChild(Object.assign(document.createElement('style'),{textContent:'.mgb{position:relative;height:26px;background:#d9c28a;border:2px solid #7a4a26;margin:8px 0}.mgz{position:absolute;top:0;bottom:0;background:#4caf50}.mgk{position:absolute;top:-4px;bottom:-4px;width:5px;margin-left:-2px;background:#fff;border:1px solid #333}.mgbig{font-size:18px;padding:12px;width:100%;margin-top:4px}'}));
 const gdCap=()=>{const d=new Date().toDateString();if(!ST.gd||ST.gd.d!=d)ST.gd={d,x:0};return 150-ST.gd.x};
+const MGCAP=5000;
+const ntCap=k=>{const d=new Date().toDateString();if(!ST.nt||ST.nt.d!=d)ST.nt={d};if(!(ST.nt[k]>0))ST.nt[k]=0;return MGCAP-ST.nt[k]};
+const ntPay=(g,n)=>{const k=Math.min(n,ntCap(g));if(k>0){ST.nt[g]+=k;ST.xu+=k;xuUp();save()}return k};
 const gdPay=n=>{const k=Math.min(n,gdCap());if(k>0){ST.gd.x+=k;ST.xu+=k;xuUp();save()}return k};
 /* ===== CHỐNG BẤM NHẦM SAU KHI XONG VÁN =====
    Xong ván: nút "chơi lại" bị khóa ~1.6s (mờ đi) để cú bấm dồn không lọt sang ván mới.
@@ -3968,7 +3970,7 @@ document.addEventListener('pointerdown',()=>{MGT2=MGT1;MGT1=performance.now()},t
 let NCG=null;
 const ncPos=()=>(Math.sin((performance.now()-NCG.t0)/1000*2.6)+1)/2;
 function ncAct(){NCG={n:5,h:0,z:.3+Math.random()*.4,t0:performance.now(),lock:0};
- openUI(head('🎯 Ném còn')+'<div class="mut"><b>Cách chơi:</b> vạch trắng chạy qua lại trên thanh. Bấm <b>NÉM!</b> khi vạch nằm trong <b style="color:#2e7d32">vùng xanh</b> thì quả còn lọt vòng. 5 quả mỗi ván.<br><b>Miễn phí</b> — không mất Xu. Mỗi quả trúng <b>+10 Xu</b> (tối đa 150 Xu/ngày từ trò chơi, hôm nay còn '+gdCap()+').</div><div id="ncs" class="mut" style="text-align:center"></div><div class="mgb"><div class="mgz" id="ncz"></div><div class="mgk" id="nck"></div></div><button class="b mgbig" id="ncb" onpointerdown="ncBtn()">🪶 NÉM!</button><div id="ncm" class="mut" style="text-align:center"></div>');
+ openUI(head('🎯 Ném còn')+'<div class="mut"><b>Cách chơi:</b> vạch trắng chạy qua lại trên thanh. Bấm <b>NÉM!</b> khi vạch nằm trong <b style="color:#2e7d32">vùng xanh</b> thì quả còn lọt vòng. 5 quả mỗi ván.<br><b>Miễn phí</b> — không mất Xu. Mỗi quả trúng <b>+25 Xu</b> (tối đa 5000 Xu/ngày, hôm nay còn '+ntCap('nc')+').</div><div id="ncs" class="mut" style="text-align:center"></div><div class="mgb"><div class="mgz" id="ncz"></div><div class="mgk" id="nck"></div></div><button class="b mgbig" id="ncb" onpointerdown="ncBtn()">🪶 NÉM!</button><div id="ncm" class="mut" style="text-align:center"></div>');
  ncUp();ncTick()}
 function ncUp(){const g=NCG;$('ncs').textContent='Còn '+g.n+' quả • Đã trúng: '+g.h;$('ncz').style.left=(g.z-.15)*100+'%';$('ncz').style.width='30%'}
 function ncTick(){if(!NCG||!UI||!$('nck'))return;$('nck').style.left=ncPos()*100+'%';requestAnimationFrame(ncTick)}
@@ -3977,16 +3979,16 @@ function ncBtn(){const g=NCG,n=performance.now();if(!g||!$('ncb'))return;
  const hit=Math.abs(ncPos()-g.z)<.15;g.n--;if(hit)g.h++;ncThrow(Pl.x,Pl.y-18,hit);
  $('ncm').textContent=hit?'🎯 Trúng vòng rồi!':'💨 Trượt rồi, thử lại nhé!';
  g.z=.25+Math.random()*.5;ncUp();
- if(g.n<=0){qAdd('game',1,'nc');const k=gdPay(g.h*10);$('ncm').textContent='Hết lượt! Trúng '+g.h+'/5'+(g.h?(k?' → +'+k+' Xu 🎉':' (hôm nay đã đủ phần thưởng)'):' — chưa trúng quả nào, chơi lại nhé!');$('ncb').textContent='🔁 CHƠI LẠI';mgDone('ncb')}}
+ if(g.n<=0){qAdd('game',1,'nc');const k=ntPay('nc',g.h*25);$('ncm').textContent='Hết lượt! Trúng '+g.h+'/5'+(g.h?(k?' → +'+k+' Xu 🎉'+(ntCap('nc')<=0?' — hôm nay đã đủ 5000 Xu, mai chơi tiếp nhé!':''):' (hôm nay đã đủ 5000 Xu)'):' — chưa trúng quả nào, chơi lại nhé!');$('ncb').textContent='🔁 CHƠI LẠI';mgDone('ncb')}}
 let TG=null;
 function tugGame(){TUGON=0;TG={p:.5,t:0,on:0,over:0};
- openUI(head('🪢 Kéo co')+'<div class="mut"><b>Cách chơi:</b> bạn kéo cho <b style="color:#c0392b">đội ĐỎ</b>. Bấm <b>BẮT ĐẦU</b>, rồi bấm nút <b>KÉO!</b> thật nhanh trong 12 giây để kéo vạch về phía đỏ.<br><b>Miễn phí</b> — không mất Xu. Thắng <b>+25 Xu</b> (tối đa 150 Xu/ngày từ trò chơi, hôm nay còn '+gdCap()+').</div><div class="mgb" style="height:30px;background:linear-gradient(90deg,#e57373 50%,#64b5f6 50%)"><div class="mgk" id="tgk" style="left:50%"></div></div><div id="tgs" class="mut" style="text-align:center">Sẵn sàng chưa?</div><button class="b mgbig" id="tgb" onpointerdown="tugBtn()">▶ BẮT ĐẦU</button>')}
+ openUI(head('🪢 Kéo co')+'<div class="mut"><b>Cách chơi:</b> bạn kéo cho <b style="color:#c0392b">đội ĐỎ</b>. Bấm <b>BẮT ĐẦU</b>, rồi bấm nút <b>KÉO!</b> thật nhanh trong 12 giây để kéo vạch về phía đỏ.<br><b>Miễn phí</b> — không mất Xu. Thắng <b>+25 Xu</b> (tối đa 5000 Xu/ngày, hôm nay còn '+ntCap('tug')+').</div><div class="mgb" style="height:30px;background:linear-gradient(90deg,#e57373 50%,#64b5f6 50%)"><div class="mgk" id="tgk" style="left:50%"></div></div><div id="tgs" class="mut" style="text-align:center">Sẵn sàng chưa?</div><button class="b mgbig" id="tgb" onpointerdown="tugBtn()">▶ BẮT ĐẦU</button>')}
 function tugBtn(){const g=TG;if(!g||!$('tgb'))return;
  if(g.over){if(mgBusy())return;return tugGame()}
  if(!g.on){g.on=1;g.last=performance.now();TUGON=1;TUGP=0;$('tgb').textContent='🪢 KÉO!!!';return tugLoop()}
  g.p=Math.min(1,g.p+.035)}
 function tugEnd(win){const g=TG;g.over=1;g.on=0;TUGON=0;qAdd('game',1,'tug');let m;
- if(win){const k=gdPay(25);m='🏆 Đội ĐỎ thắng!'+(k?' +'+k+' Xu 🎉':' (hôm nay đã đủ phần thưởng)')}else m='😅 Đội XANH thắng — bạn không mất Xu, thử lại nhé!';
+ if(win){const k=ntPay('tug',25);m='🏆 Đội ĐỎ thắng!'+(k?' +'+k+' Xu 🎉'+(ntCap('tug')<=0?' — hôm nay đã đủ 5000 Xu, mai chơi tiếp nhé!':''):' (hôm nay đã đủ 5000 Xu)')}else m='😅 Đội XANH thắng — bạn không mất Xu, thử lại nhé!';
  $('tgs').textContent=m;$('tgb').textContent='🔁 CHƠI LẠI';mgDone('tgb')}
 function tugLoop(){const g=TG;if(!g||!UI||!$('tgk')){TUGON=0;return}if(!g.on)return;
  const n=performance.now(),dt=Math.min(.05,(n-g.last)/1000);g.last=n;g.t+=dt;
@@ -4187,7 +4189,7 @@ function giftAct(){const d=new Date().toDateString();if(ST.gf==d)return toast('�
 let RRG=null;
 const rrPos=()=>(Math.sin((performance.now()-RRG.t0)/1000*2.8)+1)/2;
 function rrGame(){if(RCE.run)return toast('🦌 Cuộc đua đang diễn ra!');RRG={st:0,z:.3+Math.random()*.4,t0:performance.now(),lock:0,burst:0,slow:0,last:0};
- openUI(head('🦌 Đua Tuần lộc về đích')+'<div class="mut"><b>Cách chơi:</b> bạn là <b style="color:#c0392b">Rudolph mũi đỏ</b>. Khi cuộc đua bắt đầu, bấm <b>TĂNG TỐC!</b> lúc vạch trắng nằm trong <b style="color:#2e7d32">vùng xanh</b> để tuần lộc bứt tốc. Bấm trượt thì bị chậm lại một chút. Về đích trước 3 đối thủ để thắng.<br><b>Miễn phí</b> — hạng 1 <b>+40 Xu</b>, hạng 2 <b>+15 Xu</b> (tối đa 150 Xu/ngày từ trò chơi, hôm nay còn '+gdCap()+').</div><div id="rrb"></div><div class="mgb"><div class="mgz" id="rrz"></div><div class="mgk" id="rrk"></div></div><div id="rrm" class="mut" style="text-align:center">Sẵn sàng chưa?</div><button class="b mgbig" id="rrbtn" onpointerdown="rrBtn()">▶ BẮT ĐẦU ĐUA</button>');
+ openUI(head('🦌 Đua Tuần lộc về đích')+'<div class="mut"><b>Cách chơi:</b> bạn là <b style="color:#c0392b">Rudolph mũi đỏ</b>. Khi cuộc đua bắt đầu, bấm <b>TĂNG TỐC!</b> lúc vạch trắng nằm trong <b style="color:#2e7d32">vùng xanh</b> để tuần lộc bứt tốc. Bấm trượt thì bị chậm lại một chút. Về đích trước 3 đối thủ để thắng.<br><b>Miễn phí</b> — hạng 1 <b>+40 Xu</b>, hạng 2 <b>+15 Xu</b> (tối đa 5000 Xu/ngày, hôm nay còn '+ntCap('rr')+').</div><div id="rrb"></div><div class="mgb"><div class="mgz" id="rrz"></div><div class="mgk" id="rrk"></div></div><div id="rrm" class="mut" style="text-align:center">Sẵn sàng chưa?</div><button class="b mgbig" id="rrbtn" onpointerdown="rrBtn()">▶ BẮT ĐẦU ĐUA</button>');
  $('ui').style.top='34%';rrUp();rrTick()}
 function rrUp(){const g=RRG;$('rrz').style.left=(g.z-.13)*100+'%';$('rrz').style.width='26%';
  $('rrb').innerHTML=[1,0,2,3].map(i=>'<div style="display:flex;align-items:center;gap:6px;font-size:11px;margin:2px 0"><span style="width:84px'+(i==1?';color:#c0392b':'')+'">'+LNM[i]+'</span><div style="flex:1;height:8px;background:#e8d9b0;border:1px solid #7a4a26"><div style="height:100%;width:'+Math.round(RCE.p[i]*100)+'%;background:'+(i==1?'#d9302a':'#7a8aa8')+'"></div></div></div>').join('')}
@@ -4202,12 +4204,12 @@ function rrBtn(){const g=RRG;if(!g||!$('rrbtn'))return;const n=performance.now()
  if(n<g.lock)return;g.lock=n+700;const hit=Math.abs(rrPos()-g.z)<.13;
  if(hit){g.burst+=.11;$('rrm').textContent='⚡ Bứt tốc!'}else{g.slow=.8;$('rrm').textContent='💨 Trượt nhịp, chậm lại!'}
  g.z=.25+Math.random()*.5}
-function rrEnd(rank){const g=RRG;g.st=2;qAdd('game',1,'rr');let m,k=0;if(rank==1){k=gdPay(40);RCE.winT=performance.now()}else if(rank==2)k=gdPay(15);
- m=rank==1?'🏆 Hạng 1! '+(k?'+'+k+' Xu 🎉':'(hôm nay đã đủ phần thưởng)'):rank==2?'🥈 Hạng 2! '+(k?'+'+k+' Xu':'(hôm nay đã đủ phần thưởng)'):'🦌 Hạng '+rank+' — bạn không mất Xu, thử lại nhé!';
+function rrEnd(rank){const g=RRG;g.st=2;qAdd('game',1,'rr');let m,k=0;if(rank==1){k=ntPay('rr',40);RCE.winT=performance.now()}else if(rank==2)k=ntPay('rr',15);
+ m=rank==1?'🏆 Hạng 1! '+(k?'+'+k+' Xu 🎉':'(hôm nay đã đủ 5000 Xu)'):rank==2?'🥈 Hạng 2! '+(k?'+'+k+' Xu':'(hôm nay đã đủ 5000 Xu)'):'🦌 Hạng '+rank+' — bạn không mất Xu, thử lại nhé!';
  $('rrm').textContent=m;$('rrbtn').textContent='🔁 ĐUA LẠI';mgDone('rrbtn')}
 // ---------- XAC NHAN TRUOC KHI CHOI ----------
 var GLK=0;const GM={nc:'🎯 Ném còn',tug:'🪢 Kéo co',rr:'🦌 Đua Tuần lộc',fish:'🎣 Câu cá (tốn 1 🪱 mồi)'},GO={nc:ncAct,tug:tugGame,rr:rrGame,fish:fishOpen};
-function gAsk(k){if(UI&&performance.now()<GLK)return;GLK=performance.now()+1300;
+function gAsk(k){if((k=='nc'||k=='tug'||k=='rr')&&ntCap(k)<=0){closeUI();return toast('🛑 Hôm nay bạn đã nhận đủ 5000 Xu từ '+GM[k]+' — mai quay lại chơi tiếp nhé!')}if(UI&&performance.now()<GLK)return;GLK=performance.now()+1300;
  openUI(head(GM[k])+'<div class="mut" style="text-align:center;font-size:14px;margin:14px 0">Bạn có muốn chơi <b>'+GM[k]+'</b> không?</div><div style="display:flex;gap:8px"><button class="b mgbig" style="flex:1;margin:0" onclick="closeUI()">❌ Thôi</button><button class="b mgbig" id="gyes" style="flex:1;margin:0;opacity:.4" onclick="gYes(\''+k+'\')">✅ Chơi</button></div>');
  setTimeout(()=>{const b=$('gyes');if(b)b.style.opacity=1},1300)}
 function gYes(k){if(performance.now()<GLK)return;if(MGT1-MGT2<450)return toast('✋ Bạn đang bấm dồn — chạm lại ✅ Chơi một lần nữa nếu muốn vào ván mới nhé!');GO[k]()}
@@ -5802,7 +5804,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 
 </script>
 <script src="park-map.js?v=20261116"></script>
-<script src="pho-map.js?v=20261125b"></script>
+<script src="pho-map.js?v=20261126a"></script>
 <script src="circus.js?v=20261126"></script>
 <script src="sea-map.js?v=20261116"></script>
 <script src="fishing.js?v=20261116"></script>
