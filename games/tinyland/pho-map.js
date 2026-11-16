@@ -3,6 +3,7 @@
    - Tiệm Vàng Kim Long (đổi chỗ với tiệm cắt tóc): giá vàng đổi theo phiên, mua/bán trang sức & vàng miếng, lời/lỗ
    - Ngân hàng Vàng (thay quán Phở bò): gửi tiết kiệm, sổ tiết kiệm, lãi cộng dồn mỗi ngày
    - Shop: bán thú cưỡi / pet / set / tóc-mũ (đồ trong Túi chỉ có khi đã mua)
+   - Cửa hiệu Trùm kim cương (vỉa hè dưới): mặt tiền pastel, biển neon + biển dọc; Hòm kho báu & Đống kim cương bán ở Tiệm nội thất 500 Xu/món
    - Tiệm nội thất (nhà phố số 1): bán đồ trang trí nhà 100–4000 Xu, đồ mua về nằm trong Túi nội thất (chỉ mở khi ở trong nhà)
    - Sạp vé số (xổ sau 2 phút, lồng quay), Miếu cầu phúc (xin xăm 5 lần/ngày)
    - Khách phố tự thoại thưa thớt, vỉa hè, ghế nhựa, bánh mì, trà đá, báo
@@ -264,33 +265,71 @@ function buildBG(){return mk(PW,PH,(g,r)=>{
 // ============================================================
 
 // ============================================================
-//  TRÙM KIM CƯƠNG (NPC) + hòm kho báu + đống kim cương
+//  TRÙM KIM CƯƠNG (NPC) + cửa hiệu pastel xanh kim cương (biển neon + biển dọc)
 // ============================================================
 const BOSS_SET={n:'Trùm kim cương',sh:'#17171e',shl:'#2e2e3a',shd:'#08080c',scarf:'#ffd23f',knot:'#c89a10',tie:'#33d6ff',belt:'#ffd23f',trim:'#ffd23f',pt:'#17171e',shoe:'#ffd23f',cape:'#2a1a4e'};
 const BOSS_HAIR={k:'short',c:'#101014'};
 const gemBig=(r,x,y,c)=>{const rows=[[2,5],[1,6],[0,7],[1,6],[2,5],[3,4]];rows.forEach(([a,b],i)=>{r(c[1],x+a,y+i,b-a+1,1);r(c[0],x+a,y+i,Math.min(2,b-a+1),1);if(b-a>1)r(c[2],x+b-1,y+i,2,1)});r('#ffffff',x+2,y,2,1);r('#ffffff',x+1,y+1,1,1)};
-const mkDiaPile=()=>mk(40,26,(g,r)=>{
- E(r,'rgba(0,0,0,.2)',20,24,17,2);
- const C=[['#f0fdff','#5fd6ff','#2a8ad8'],['#fff0fb','#ff9de0','#d44aa8'],['#f6f0ff','#b79bff','#7a56d8'],['#f0fdff','#7ae8ff','#2a8ad8'],['#fffbe8','#ffe27a','#d9a521']];
- [[1,17],[8,18],[15,19],[22,18],[29,17]].forEach(([x,y],i)=>gemBig(r,x,y,C[i%5]));
- [[5,11],[12,12],[19,12],[26,11]].forEach(([x,y],i)=>gemBig(r,x,y,C[(i+2)%5]));
- [[9,5],[17,4],[24,6]].forEach(([x,y],i)=>gemBig(r,x,y,C[(i+1)%5]));
- gemBig(r,16,-1+1,C[0]);
- r('#ffffff',3,16,1,1);r('#ffffff',33,15,1,1);r('#ffffff',20,3,1,1)});
-const mkChest=()=>mk(34,26,(g,r)=>{
- E(r,'rgba(0,0,0,.2)',17,24,15,2);
- // nắp mở
- r('#5a3418',3,0,28,8);r('#7a4a26',4,1,26,6);r('#3a2412',6,2,22,4);r('#ffd23f',3,0,28,1);r('#ffd23f',3,0,1,8);r('#ffd23f',30,0,1,8);
- // thân
- r('#6b4220',2,9,30,15);r('#8a5a30',2,9,30,3);r('#4a2c14',2,22,30,2);
- for(let x=7;x<30;x+=6)r('#5a3418',x,12,1,10);
- r('#ffd23f',5,9,3,15);r('#ffd23f',26,9,3,15);r('#c89a10',7,9,1,15);r('#c89a10',28,9,1,15);
- r('#ffd23f',14,13,6,7);r('#c89a10',14,19,6,1);r('#3a2412',16,15,2,3);
- // kho báu trào ra
- E(r,'#e0a020',17,9,13,3);E(r,'#ffd23f',17,8,12,2);E(r,'#fff0a0',13,7,5,1);
- for(let i=0;i<8;i++)r(i%2?'#ffe27a':'#ffd23f',5+i*3,6+(i%3),3,2);
- gemBig(r,5,2,['#f0fdff','#5fd6ff','#2a8ad8']);gemBig(r,13,0,['#fff0fb','#ff9de0','#d44aa8']);gemBig(r,21,2,['#f6f0ff','#b79bff','#7a56d8']);
- r('#fff',9,5,1,1);r('#fff',27,6,1,1)});
+// ---- CỬA HIỆU TRÙM KIM CƯƠNG: mặt tiền pastel xanh kim cương (124x96), biển neon + biển dọc vẽ động bên dưới ----
+const DS_C=[['#f0fdff','#5fd6ff','#2a8ad8'],['#fff0fb','#ff9de0','#d44aa8'],['#f6f0ff','#b79bff','#7a56d8'],['#fffbe8','#ffe27a','#d9a521']];
+const mkDiaShop=()=>mk(124,96,(g,r)=>{
+ const ICE='#d6f3f8',ICE2='#b6e4ee',ICEL='#f1fcff',DIAD='#27a9d4',NAVY='#17294d',GOLD='#ffd23f',GOLDD='#c89a10',C=DS_C;
+ r(ICE,0,11,124,85);r(ICEL,0,11,124,1);
+ for(let x=4;x<124;x+=12)r('rgba(120,190,210,.16)',x,34,1,52);
+ // mái đua + 3 viên kim cương trên nóc
+ r(ICEL,0,6,124,3);r(GOLD,0,6,124,1);r(ICE2,0,9,124,2);
+ gemBig(r,58,0,C[0]);gemBig(r,9,1,C[1]);gemBig(r,107,1,C[2]);
+ // bảng hiệu (nền xanh đêm, viền vàng) — chữ neon vẽ động đè lên
+ r(GOLDD,9,12,106,22);r(GOLD,9,12,106,21);r(NAVY,10,13,104,20);r('rgba(255,255,255,.08)',10,13,104,2);
+ // mái hiên sọc xanh kim cương / trắng, viền lượn
+ for(let i=0;i<15;i++){const c=i%2?'#f6fdff':'#7fdcf2',x=2+i*8;r(c,x,37,8,6);r(c,x+1,43,6,1);r(c,x+2,44,4,1)}
+ r(DIAD,2,37,120,1);r('rgba(20,70,100,.18)',3,46,118,2);
+ // hai cột trụ + đèn tường vàng
+ for(const px of[0,114]){r(ICEL,px,46,10,40);r(ICE2,px+9,46,1,40);r('#9fe3f3',px+4,48,2,34);r(GOLD,px+3,58,4,2);r('#fff6b0',px+4,55,2,3)}
+ // 2 tủ kính trưng bày
+ [[12,[C[0],C[1],C[3]],C[2]],[78,[C[2],C[0],C[1]],C[0]]].forEach(([wx,gs,hang])=>{
+  r('#7fbfd4',wx,48,34,34);r('#f6fdff',wx+1,49,32,32);r('#cdeffa',wx+2,50,30,30);r('#e6f9ff',wx+2,50,30,9);
+  r('rgba(255,255,255,.75)',wx+5,52,2,13);r('rgba(255,255,255,.5)',wx+9,52,1,8);
+  r('#e6d9ff',wx+4,73,26,7);r('#c9b6f5',wx+4,79,26,1);r(GOLD,wx+4,73,26,1);
+  gs.forEach((c,i)=>gemBig(r,wx+5+i*9,67-(i==1?2:0),c));
+  r('#b6e4ee',wx+16,50,1,8);gemBig(r,wx+13,58,hang);
+  r(ICEL,wx-2,82,38,3);r(ICE2,wx-2,85,38,1)});
+ // cửa kính đôi viền vàng
+ r(GOLDD,48,46,28,40);r(GOLD,49,47,26,39);r(NAVY,50,48,24,38);
+ for(const dx of[52,63]){r('#9fe3f5',dx,50,9,32);r('#e8fcff',dx,50,9,8);r('rgba(255,255,255,.6)',dx+2,62,1,10)}
+ r(GOLD,60,66,1,6);r(GOLD,63,66,1,6);
+ // chân tường đá + thảm hồng
+ r(ICEL,0,86,124,2);r(ICE2,0,88,124,8);r('#a5dbe9',0,91,124,5);r('#7fc7da',0,95,124,1);
+ r('#ffc9e3',46,90,32,5);r(GOLD,46,90,32,1);r('#f59ac6',46,94,32,1)});
+// biển neon chính: viền ống neon + chữ TRÙM KIM CƯƠNG phát sáng (thỉnh thoảng chớp)
+const diaNeon=(x0,by,tm)=>{const X=x0+10,Y=by-83,Wd=104,Hh=20;
+ if(X>camX+vw||X+Wd<camX||Y>camY+vh||Y+Hh<camY)return;
+ const fl=Math.sin(tm*17+3.1)>.975?.4:1,pu=.8+.2*Math.sin(tm*2.4);
+ cx.save();cx.globalAlpha=fl;
+ cx.shadowColor='#4fe3ff';cx.shadowBlur=5;cx.strokeStyle='#8cf0ff';cx.lineWidth=1;cx.strokeRect(X+2.5,Y+2.5,Wd-5,Hh-5);cx.shadowBlur=0;
+ cx.font='900 9px '+NEONF;cx.textAlign='center';cx.textBaseline='alphabetic';cx.lineJoin='round';
+ const T='TRÙM KIM CƯƠNG',mw=Wd-32;
+ cx.shadowColor='#2fd8ff';cx.shadowBlur=7*pu;cx.lineWidth=1.6;cx.strokeStyle='#2fd8ff';cx.strokeText(T,X+Wd/2,Y+13.5,mw);
+ cx.shadowBlur=0;cx.fillStyle='#fbffff';cx.fillText(T,X+Wd/2,Y+13.5,mw);
+ cx.globalAlpha=fl*(.7+.3*pu);gemBig(r,X+5,Y+7,DS_C[1]);gemBig(r,X+Wd-13,Y+7,DS_C[1]);
+ cx.restore()};
+// biển dọc treo bên hông tiệm (đung đưa nhẹ): KIM CƯƠNG
+const diaBlade=(x0,by,tm)=>{const AX=x0+121,AY=by-86;
+ if(AX+30<camX||AX-4>camX+vw||AY>camY+vh||AY+80<camY)return;
+ cx.save();
+ r('#ffd23f',AX,AY,18,2);r('#c89a10',AX,AY+2,18,1);r('#ffd23f',AX+16,AY+2,2,3);
+ for(let i=0;i<8;i++)r('#c89a10',AX+1+i,AY+10-i,1,1);
+ cx.translate(AX+13,AY+3);cx.rotate(Math.sin(tm*1.4)*.03);
+ const h=74;
+ r('#c89a10',-6,0,1,5);r('#c89a10',5,0,1,5);
+ r('#c89a10',-9,5,18,h);r('#ffd23f',-9,5,18,h-1);r('#17294d',-8,6,16,h-2);
+ cx.save();cx.shadowColor='#4fe3ff';cx.shadowBlur=4;cx.strokeStyle='#8cf0ff';cx.lineWidth=1;cx.strokeRect(-6.5,8.5,13,h-8);cx.restore();
+ gemBig(r,-4,10,DS_C[0]);
+ cx.font='900 6.4px '+NEONF;cx.textAlign='center';cx.textBaseline='alphabetic';
+ const fl=Math.sin(tm*13+1.7)>.98?.45:1;cx.globalAlpha=fl;
+ [['K',25],['I',31],['M',37],['C',45],['Ư',51],['Ơ',57],['N',63],['G',69]].forEach(([ch,y])=>{
+  cx.shadowColor='#2fd8ff';cx.shadowBlur=4;cx.fillStyle='#2fd8ff';cx.fillText(ch,0,y);cx.shadowBlur=0;cx.fillStyle='#fbffff';cx.fillText(ch,0,y)});
+ cx.restore()};
 const bossDraw=(n,tm)=>{const X=Math.round(n.x),Y=Math.round(n.y),p=actPose('diamond',tm),F=ACTFX.diamond,L=Math.round(p.lift);
  F.back(X,Y,tm);
  drawAv(cx,X-10,Y-30-L,{d:p.d,a:tm,mv:0,sit:0,hair:0,set:0,setObj:BOSS_SET,hairObj:BOSS_HAIR});
@@ -457,17 +496,18 @@ function build(){
  dyn(485,()=>psCage(790,456,tmNow()));
  hit(766,430,48,56,'🎰 Vòng quay số — bấm để xem vé của bạn','cv:ps:lot',[790,496]);
  // 2 cô bán hàng rong gánh hàng đi qua đi lại chậm rãi, đến đầu đường thì ngồi nghỉ
- for(const v of[{y:448,x0:200,x1:520,sp:13,rest:10,ph:0,set:5,hair:2,goods:['#e0584a','#f4d38a','#a8d8b0']},{y:470,x0:580,x1:730,sp:11,rest:12,ph:9,set:3,hair:3,goods:['#a8d8b0','#f6f2e2','#f0a7a0']}]){
+ for(const v of[{y:448,x0:200,x1:292,sp:13,rest:10,ph:0,set:5,hair:2,goods:['#e0584a','#f4d38a','#a8d8b0']},{y:470,x0:580,x1:730,sp:11,rest:12,ph:9,set:3,hair:3,goods:['#a8d8b0','#f6f2e2','#f0a7a0']}]){
    put(STL[0],v.x0,v.y+1);put(STL[1],v.x1,v.y+1);walker(Object.assign({k:'vend'},v))}
 
- // ----- TRÙM KIM CƯƠNG: đứng ở vỉa hè cạnh hòm kho báu + đống kim cương -----
- {const bx=372,by=490;   // dời sang giữa vỉa hè dưới: xa đường đi của 2 cô gánh hàng
-  put(mkChest(),bx-46,by+2,[bx-62,by-8,bx-30,by+2]);put(mkDiaPile(),bx+48,by+2,[bx+28,by-8,bx+68,by+2]);
-  dyn(by+3,()=>{const tm=tmNow();for(let i=0;i<5;i++)sparkle(bx-58+i*7,by-22+(i%3)*4,tm,i);for(let i=0;i<5;i++)sparkle(bx+32+i*8,by-24+(i%2)*6,tm,i+7)});
-  mkNpc({id:'boss',boss:1,x:bx,y:by,d:0,set:0,hair:0,prop:'',lines:['Kim cương đây! Ai lấy kim cương nào?','Ánh sáng này là của các con nè!','Muốn phát kim cương hông? Ghé ta nhé!','Lấp lánh cả phố luôn!']});
-  hit(bx-16,by-44,32,50,'💎 Trùm kim cương — bấm để mở Shop kim cương','cv:ps:dia',[bx,by+14]);
-  hit(bx-64,by-26,36,30,'🧰 Hòm kho báu — lấp lánh quá!');hit(bx+28,by-28,42,32,'💎 Đống kim cương của Trùm');
-  PS.lb.push(['TRÙM KIM CƯƠNG',bx,by-52])}
+ // ----- TRÙM KIM CƯƠNG: cửa hiệu pastel nhỏ gọn (chỉ chắn 1 hàng ô sát tường) + ông đứng trước cửa -----
+ // (hòm kho báu + đống kim cương đã chuyển sang Tiệm nội thất, 500 Xu/món)
+ {const bx=372,by=480,x0=bx-62,boy=by+12;
+  put(mkDiaShop(),bx,by,[x0,by-14,x0+124,by-2]);
+  dyn(by+1,()=>{const tm=tmNow();diaNeon(x0,by,tm);diaBlade(x0,by,tm);
+   for(let i=0;i<4;i++){sparkle(x0+16+i*8,by-36+(i%2)*5,tm,i);sparkle(x0+82+i*8,by-36+(i%2)*5,tm,i+5)}});
+  mkNpc({id:'boss',boss:1,x:bx,y:boy,d:0,set:0,hair:0,prop:'',lines:['Kim cương đây! Ai lấy kim cương nào?','Ánh sáng này là của các con nè!','Muốn phát kim cương hông? Ghé ta nhé!','Lấp lánh cả phố luôn!']});
+  hit(bx-16,boy-44,32,50,'💎 Trùm kim cương — bấm để mở Shop kim cương','cv:ps:dia',[bx,boy+2]);
+  hit(x0,by-92,124,60,'💎 Cửa hiệu Trùm kim cương — bấm để mở Shop kim cương','cv:ps:dia',[bx,boy+2])}
  // người
  for(const n of PS.npcs){if(n.cat)continue;dyn(n.sit?n.y+1.5:n.y,()=>drawNpc(n,tmNow()))}
  // ----- nhãn -----
@@ -708,7 +748,7 @@ window.psUse=i=>{const k=SH_TAB;if(!ST.own[k].includes(i))return;ST.av[k]=i;if(k
 // ============================================================
 //  TIỆM NỘI THẤT (giá theo độ đẹp: 100–4000 Xu). Mua → vào Túi nội thất (ST.hm.i), mở khi ở trong nhà.
 // ============================================================
-const FURN_PR={clk:100,cal:100,chr:100,mir:120,lmp:120,drw:130,bsk:140,tbl:140,plt:150,cat:160,rug:170,pic:180,shf:190,wrd:200,tv:220,arm:230,din:260,sofa:300,ctbl:500,cchr:500,clmp:500,wcl:500,wph:500,wpc:500,ftv:500,pcd:4000,ofd:1000,win:150,bkS:500,bkL:700,mdl:1000,spk:2000,mai:1200,quat:700,hphi:1500,cchuc:500,dlong:300,nguqua:800,thong:1500,neon:1200,vong:600,day:350,tat:200,qua:250};
+const FURN_PR={clk:100,cal:100,chr:100,mir:120,lmp:120,drw:130,bsk:140,tbl:140,plt:150,cat:160,rug:170,pic:180,shf:190,wrd:200,tv:220,arm:230,din:260,sofa:300,ctbl:500,cchr:500,clmp:500,wcl:500,wph:500,wpc:500,ftv:500,pcd:4000,ofd:1000,win:150,bkS:500,bkL:700,mdl:1000,spk:2000,mai:1200,quat:700,hphi:1500,cchuc:500,dlong:300,nguqua:800,thong:1500,neon:1200,vong:600,day:350,tat:200,qua:250,tkb:500,dkc:500};
 window.FURN_PR=FURN_PR;
 window.psFurn=()=>{PS.view='furn';if(typeof hmInit=='function')hmInit();const I=ST.hm.i,P=ST.hm.p,ks=Object.keys(CAT).sort((a,b)=>(FURN_PR[a]||200)-(FURN_PR[b]||200));
  let h=head('🛋️ Tiệm nội thất')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu • đồ mua về nằm trong <b>🎒 Túi nội thất</b> (vào nhà → 🛠️ Trang trí để bày)</div><div class="g3">';

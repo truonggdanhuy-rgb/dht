@@ -4183,7 +4183,7 @@ const WK=HR.concat([[188,70,8,38],[40,158,24,24],[200,158,24,24],[252,240,24,44]
 (()=>{const C=2,gw=HW/C,gh=HH/C,rb=[];let open={};for(let j=0;j<gh;j++){const y=j*C,runs=[];let st=-1;for(let i=0;i<=gw;i++){const x=i*C,bl=i<gw&&!WK.some(q=>x>=q[0]&&x<q[0]+q[2]&&y>=q[1]&&y<q[1]+q[3]);if(bl&&st<0)st=x;else if(!bl&&st>=0){runs.push([st,x]);st=-1}}
  const nx={};for(const[u,v]of runs){const k=u+'-'+v;if(open[k]){nx[k]=open[k];open[k][3]+=C}else{nx[k]=[u,y,v-u,C];rb.push(nx[k])}}open=nx}
  HM.rb=rb.concat([[20,30,44,48],[202,30,18,12],[224,30,56,12],[322,182,14,14],[296,182,22,14],[334,202,22,80]])})();
-const CAT={sofa:['Sofa',5,2,'f'],arm:['Ghế bành',2,2,'f'],tbl:['Bàn trà',3,2,'f'],din:['Bàn ăn',6,3,'f'],chr:['Ghế gỗ',2,2,'f'],shf:['Kệ sách',4,3,'f'],wrd:['Tủ quần áo',3,4,'f'],drw:['Tủ ngăn kéo',3,2,'f'],plt:['Chậu cây',2,3,'f'],lmp:['Đèn cây',1,4,'f'],tv:['Tivi',4,3,'f'],cat:['Ổ mèo',3,2,'f'],rug:['Thảm',6,4,'r'],clk:['Đồng hồ',2,2,'w'],pic:['Tranh',4,2,'w'],bsk:['Giỏ hoa treo',2,2,'w'],cal:['Lịch tường',2,2,'w'],mir:['Gương',2,2,'w'],ctbl:['Bàn tai mèo',3,2,'f',1],cchr:['Ghế tai mèo',2,2,'f',1],clmp:['Đèn tai mèo',2,3,'f',1],wcl:['Lịch treo tường',2,2,'w'],wph:['Điện thoại treo tường',2,2,'w'],wpc:['Tranh treo tường',3,2,'w'],ftv:['Tivi màn phẳng',5,3,'f'],pcd:['Bàn làm việc',6,5,'f',1],ofd:['Bàn làm việc 2.0',5,4,'f'],win:['Cửa sổ',4,2,'w'],bkS:['Tủ sách nhỏ',2,3,'f'],bkL:['Tủ sách lớn',4,4,'f'],mdl:['Kệ mô hình',3,5,'f'],spk:['Loa phát nhạc',2,4,'f',1],mai:['Chậu mai vàng',3,4,'f'],quat:['Chậu quất',2,3,'f'],hphi:['Hoành phi',7,2,'w',1],cchuc:['Câu chúc Tết',7,2,'w',1],dlong:['Đèn lồng đỏ',2,2,'w'],nguqua:['Mâm ngũ quả',2,2,'f'],thong:['Cây thông Noel',4,5,'f'],neon:['Đèn neon Noel',5,2,'w',1],vong:['Vòng nguyệt quế',2,2,'w'],day:['Dây đèn nhấp nháy',5,1,'w'],tat:['Tất Noel treo',2,2,'w'],qua:['Hộp quà Noel',2,2,'f']};
+const CAT={sofa:['Sofa',5,2,'f'],arm:['Ghế bành',2,2,'f'],tbl:['Bàn trà',3,2,'f'],din:['Bàn ăn',6,3,'f'],chr:['Ghế gỗ',2,2,'f'],shf:['Kệ sách',4,3,'f'],wrd:['Tủ quần áo',3,4,'f'],drw:['Tủ ngăn kéo',3,2,'f'],plt:['Chậu cây',2,3,'f'],lmp:['Đèn cây',1,4,'f'],tv:['Tivi',4,3,'f'],cat:['Ổ mèo',3,2,'f'],rug:['Thảm',6,4,'r'],clk:['Đồng hồ',2,2,'w'],pic:['Tranh',4,2,'w'],bsk:['Giỏ hoa treo',2,2,'w'],cal:['Lịch tường',2,2,'w'],mir:['Gương',2,2,'w'],ctbl:['Bàn tai mèo',3,2,'f',1],cchr:['Ghế tai mèo',2,2,'f',1],clmp:['Đèn tai mèo',2,3,'f',1],wcl:['Lịch treo tường',2,2,'w'],wph:['Điện thoại treo tường',2,2,'w'],wpc:['Tranh treo tường',3,2,'w'],ftv:['Tivi màn phẳng',5,3,'f'],pcd:['Bàn làm việc',6,5,'f',1],ofd:['Bàn làm việc 2.0',5,4,'f'],win:['Cửa sổ',4,2,'w'],bkS:['Tủ sách nhỏ',2,3,'f'],bkL:['Tủ sách lớn',4,4,'f'],mdl:['Kệ mô hình',3,5,'f'],spk:['Loa phát nhạc',2,4,'f',1],mai:['Chậu mai vàng',3,4,'f'],quat:['Chậu quất',2,3,'f'],hphi:['Hoành phi',7,2,'w',1],cchuc:['Câu chúc Tết',7,2,'w',1],dlong:['Đèn lồng đỏ',2,2,'w'],nguqua:['Mâm ngũ quả',2,2,'f'],thong:['Cây thông Noel',4,5,'f'],neon:['Đèn neon Noel',5,2,'w',1],vong:['Vòng nguyệt quế',2,2,'w'],day:['Dây đèn nhấp nháy',5,1,'w'],tat:['Tất Noel treo',2,2,'w'],qua:['Hộp quà Noel',2,2,'f'],tkb:['Hòm kho báu',5,4,'f'],dkc:['Đống kim cương',5,4,'f']};
 const bxd=(r,x,y,w,h,c,d)=>{r(d,x,y,w,h);r(c,x,y,w,h-1);r('rgba(255,255,255,.22)',x+1,y,w-2,1)};
 const DR={
 sofa:r=>{bxd(r,1,0,38,9,'#5f9188','#456b64');r('#78aea2',3,1,34,2);bxd(r,0,4,6,11,'#4f8077','#3a6660');bxd(r,34,4,6,11,'#4f8077','#3a6660');bxd(r,6,8,14,7,'#7db3a7','#5f9188');bxd(r,20,8,14,7,'#7db3a7','#5f9188');r('#5f9188',20,8,1,7);r('#e8a84a',8,2,6,6);r('#f0c070',9,3,4,1);r('#c0504a',27,2,6,6);r('#5d3a1c',2,15,2,1);r('#5d3a1c',36,15,2,1)},
@@ -4296,6 +4296,33 @@ neon:(b,o,t)=>{const X=b[0],Y=b[1];cx.drawImage(dspr('neon',0),X-1,Y-1);const fl
  for(const[ch,dx,k]of[['N',19,1],['O',25,1],['E',31,fl],['L',36,1]]){cx.globalAlpha=k;cx.fillText(ch,X+dx,Y+12)}cx.restore()},
 vong:(b,o,t)=>{cx.drawImage(dspr('vong',0),b[0]-1,b[1]-1);for(let i=0;i<5;i++){const a=i*1.3+((t*.8+i)|0)*2.1,rad=5.3,x=Math.round(b[0]+8+Math.cos(a)*rad),y=Math.round(b[1]+8.5+Math.sin(a)*rad),k=Math.max(0,Math.sin((t*2.5+i*1.9)%6.28));if(k<.2)continue;cx.globalAlpha=k;r('#fff',x,y,1,1);r('#fff',x-1,y,3,1);r('#fff',x,y-1,1,3);cx.globalAlpha=1}},
 day:(b,o,t)=>{cx.drawImage(dspr('day',0),b[0]-1,b[1]-1);const C=['#ff4a4a','#ffe14a','#4ac8ff','#ff8ae0','#8affb0'];for(let i=0;i<8;i++){const x=2+i*5,y=2+Math.round(Math.sin(Math.PI*(x+.5)/39)*3),on=((t*2.5+i)|0)%2;r(on?C[(i+(t|0))%5]:'#3a3a3a',b[0]+x,b[1]+y+2,2,3);if(on){cx.globalAlpha=.35;r('#fff',b[0]+x-1,b[1]+y+1,4,5);cx.globalAlpha=1}}}};
+/* ---- Hòm kho báu + Đống kim cương (trước đây ở chỗ Trùm kim cương, Phố xá) — bán ở Tiệm nội thất 500 Xu/món. Hình vẽ 34x26 / 40x26 đặt trong khung 5x4 ô ---- */
+{const gB=(r,x,y,c)=>{[[2,5],[1,6],[0,7],[1,6],[2,5],[3,4]].forEach(([a,b],i)=>{r(c[1],x+a,y+i,b-a+1,1);r(c[0],x+a,y+i,Math.min(2,b-a+1),1);if(b-a>1)r(c[2],x+b-1,y+i,2,1)});r('#ffffff',x+2,y,2,1);r('#ffffff',x+1,y+1,1,1)};
+ const sh=(r,ox,oy)=>(c,x,y,w,h)=>r(c,x+ox,y+oy,w,h);
+ DR.tkb=(r0)=>{const r=sh(r0,3,6);
+  E(r,'rgba(0,0,0,.2)',17,24,15,2);
+  r('#5a3418',3,0,28,8);r('#7a4a26',4,1,26,6);r('#3a2412',6,2,22,4);r('#ffd23f',3,0,28,1);r('#ffd23f',3,0,1,8);r('#ffd23f',30,0,1,8);
+  r('#6b4220',2,9,30,15);r('#8a5a30',2,9,30,3);r('#4a2c14',2,22,30,2);
+  for(let x=7;x<30;x+=6)r('#5a3418',x,12,1,10);
+  r('#ffd23f',5,9,3,15);r('#ffd23f',26,9,3,15);r('#c89a10',7,9,1,15);r('#c89a10',28,9,1,15);
+  r('#ffd23f',14,13,6,7);r('#c89a10',14,19,6,1);r('#3a2412',16,15,2,3);
+  E(r,'#e0a020',17,9,13,3);E(r,'#ffd23f',17,8,12,2);E(r,'#fff0a0',13,7,5,1);
+  for(let i=0;i<8;i++)r(i%2?'#ffe27a':'#ffd23f',5+i*3,6+(i%3),3,2);
+  gB(r,5,2,['#f0fdff','#5fd6ff','#2a8ad8']);gB(r,13,0,['#fff0fb','#ff9de0','#d44aa8']);gB(r,21,2,['#f6f0ff','#b79bff','#7a56d8']);
+  r('#fff',9,5,1,1);r('#fff',27,6,1,1)};
+ DR.dkc=(r0)=>{const r=sh(r0,0,6);
+  E(r,'rgba(0,0,0,.2)',20,24,17,2);
+  const C=[['#f0fdff','#5fd6ff','#2a8ad8'],['#fff0fb','#ff9de0','#d44aa8'],['#f6f0ff','#b79bff','#7a56d8'],['#f0fdff','#7ae8ff','#2a8ad8'],['#fffbe8','#ffe27a','#d9a521']];
+  [[1,17],[8,18],[15,19],[22,18],[29,17]].forEach(([x,y],i)=>gB(r,x,y,C[i%5]));
+  [[5,11],[12,12],[19,12],[26,11]].forEach(([x,y],i)=>gB(r,x,y,C[(i+2)%5]));
+  [[9,5],[17,4],[24,6]].forEach(([x,y],i)=>gB(r,x,y,C[(i+1)%5]));
+  gB(r,16,0,C[0]);
+  r('#ffffff',3,16,1,1);r('#ffffff',33,15,1,1);r('#ffffff',20,3,1,1)};
+ // lấp lánh nhẹ (hoạt hình)
+ const spk=(id,pts)=>{ANI[id]=(b,o,t)=>{cx.drawImage(dspr(id,o[3]),b[0]-1,b[1]-1);
+  pts.forEach(([x,y],i)=>{const a=Math.sin(t*4+i*2.1);if(a>.55){const X=b[0]+(o[3]?b[2]-x:x),Y=b[1]+y;r('#ffffff',X,Y,1,1);r('rgba(190,240,255,.9)',X-1,Y,3,1);r('rgba(190,240,255,.9)',X,Y-1,1,3)}})}};
+ spk('tkb',[[10,8],[22,6],[30,10],[17,3]]);spk('dkc',[[8,10],[20,5],[32,11],[14,16]])}
+
 DR.win=r=>{/* cửa sổ có rèm hồng, nhìn ra trời + đồng cỏ (lấy từ cửa sổ phòng khách cũ) */
  r('#d9a84a',0,0,32,2);r('#f0c868',0,0,32,1);
  r('#6b4020',5,2,22,13);r('#a77a46',5,2,22,1);
