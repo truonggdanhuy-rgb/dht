@@ -2325,7 +2325,7 @@ function lvUi(){const e=$('hlv');if(!e)return;const mx=ST.lv>=100;e.textContent=
 function addExp(n){if(ST.lv>=100){ST.exp=0;return ''}let up=0;ST.exp+=n;while(ST.lv<100&&ST.exp>=lvNeed(ST.lv)){ST.exp-=lvNeed(ST.lv);ST.lv++;up++}if(ST.lv>=100)ST.exp=0;lvUi();return up?'\n🎉 Lên cấp '+ST.lv+'!':''}
 const head=t=>'<div class="uh"><span>'+t+'</span><button class="b x" onclick="closeUI()">X</button></div>';
 var UIT=0;
-function openUI(h){$('ui').classList.remove('wui','tgn','bbui');if(!UI)UIT=performance.now();UI=1;MUI=-1;BUI=0;$('ui').style.top='';$('ui').innerHTML=h;$('ui').style.display='block';try{fmBarUp()}catch(e){}}
+function openUI(h){$('ui').classList.remove('wui','tgn','bbui','bkui');if(!UI)UIT=performance.now();UI=1;MUI=-1;BUI=0;$('ui').style.top='';$('ui').innerHTML=h;$('ui').style.display='block';try{fmBarUp()}catch(e){}}
 function closeUI(){if(fish&&fish.ph==0){ST.bait++}UI=0;MUI=-1;fish=null;$('ui').style.display='none';save();try{barUp()}catch(e){}try{fmBarUp()}catch(e){}}
 const rd=h=>Math.hypot(Math.max(h[0]-Pl.x,0,Pl.x-h[0]-h[2]),Math.max(h[1]-Pl.y,0,Pl.y-h[1]-h[3]));
 function act(h){const a=h[5];if(!a)return toast(h[4]);if(a.startsWith('cv:'))return cvAct(a.slice(3),h);if(a.startsWith('bench:')){const q=a.split(':');return benchSit(+q[1],+q[2])}if(a.startsWith('sitf:')){const q=a.split(':');SEAT.x=+q[1];SEAT.y=+q[2];return sitGo()}if(a=='sit')return sitGo();if(a=='gate')return switchMap('nt');if(a=='chb')return chbAct();if(a=='qb')return qUI();if(a=='home')return switchMap('hm');if(a.startsWith('hm:'))return hmAct(a.slice(3));if(a=='tug')return tugGame();if(a=='hd')return hdAct();if(a=='bench')return benchAct();if(a=='nc')return ncAct();if(a=='ln')return lnAct();if(a=='wr')return wrAct();if(a=='rr')return rrGame();if(a=='santa')return santaAct();if(a.startsWith('wchair:'))return wChair(a);if(a=='gift')return giftAct();if(a=='tl')return tlAct();if(a=='bl')return blAct();const[t,v]=a.split(':');
@@ -3444,8 +3444,8 @@ function blTick(dt){if(!BUI||!UI||!Array.isArray(ST.bo))return;BT-=dt;if(BT>0)re
 function cdToggle(){const w=$('cdw');w.style.display=w.style.display=='flex'?'none':'flex';if(w.style.display=='flex')$('cdi').focus()}
 function cdGo(){const v=($('cdi').value||'').trim().toLowerCase();
  if(v=='huyhuy03'){ST.codes=(ST.codes&&typeof ST.codes=='object')?ST.codes:{};
-  if(ST.codes.huyhuy03)return toast('🔑 Bạn đã nhập code này rồi');
-  ST.codes.huyhuy03=1;window.IDNOEARN=1;ST.xu+=10000;window.IDNOEARN=0;ST.qv=(ST.qv|0)+5000;
+  // code vĩnh viễn: nhập bao nhiêu lần cũng được, lần nào cũng nhận thưởng
+  ST.codes.huyhuy03=(ST.codes.huyhuy03|0)+1;window.IDNOEARN=1;ST.xu+=10000;window.IDNOEARN=0;ST.qv=(ST.qv|0)+5000;
   xuUp();save();closeUI();return toast('🔑 Nhập code thành công!\n+10000 Xu • +5000 xu quái vật')}
  if(v!='adminhuy')return toast('❌ Code không đúng');
  khoList('ns').forEach(i=>add('ns',i[0],1));[...VPI.map(v=>v[0]),...PRODS.map(p=>p.id)].forEach(k=>add('vp',k,1));

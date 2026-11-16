@@ -1,5 +1,6 @@
 /* ============================================================
    PHỐ XÁ — map online thứ 2 (dùng chung hệ thống mạng của Công viên)
+   - Ngân hàng Vàng (thay quán Phở bò): gửi tiết kiệm, sổ tiết kiệm, lãi cộng dồn mỗi ngày
    - Shop: bán thú cưỡi / pet / set / tóc-mũ (đồ trong Túi chỉ có khi đã mua)
    - Tiệm nội thất (nhà phố số 1): bán đồ trang trí nhà 100–4000 Xu, đồ mua về nằm trong Túi nội thất (chỉ mở khi ở trong nhà)
    - Sạp vé số (xổ sau 2 phút, lồng quay), Miếu cầu phúc (xin xăm 5 lần/ngày)
@@ -44,7 +45,7 @@ window.cvAct=(a,h)=>a.startsWith('ps:')?psAct(a.slice(3),h):pAct(a,h);
 const PAL={cream:'#f1e2c6',pink:'#ebc9c2',sage:'#cfe0cf',lemon:'#eee6b8',sky:'#c9dbe8',mauve:'#e3cfda',peach:'#efd3b3'};
 const mkHouse=(w,h,o)=>mk(w,h,(g,r)=>{
  const W=o.wall,WL=shade(W,.14),WD=shade(W,-.12),WK=shade(W,-.24),TR=o.trim||'#8e7d6a';
- const gh=46,roofY=o.tile?16:o.tank?18:6,top=roofY+8,nf=Math.max(1,Math.round((h-top-gh)/36)),fh=Math.floor((h-top-gh)/nf);
+ const gh=46,roofY=o.tile?16:o.tank?18:6,top=roofY+8,nf=Math.max(1,Math.round((h-top-gh)/46)),fh=Math.floor((h-top-gh)/nf);
  // mái ngói trước / bồn nước trên sân thượng
  if(o.tile){for(let i=0;i<14;i++){const ins=Math.round(i*.9);r(i%3==0?'#d8a08c':'#cf9380',ins,2+i,w-ins*2,1)}r('#b87a68',0,15,w,2);for(let x=3;x<w-3;x+=5)r('#e4b4a2',x,5+(x%3),2,1)}
  if(o.tank){r('#bfc9cf',w-34,2,20,14);r('#dde5ea',w-34,2,20,3);r('#9aa6ad',w-34,13,20,3);r('#8c979d',w-30,16,2,4);r('#8c979d',w-18,16,2,4);E(r,'#dde5ea',w-24,2,10,2)}
@@ -53,10 +54,10 @@ const mkHouse=(w,h,o)=>mk(w,h,(g,r)=>{
  const win=(x,y,ww,hh)=>{r('#7f7062',x-1,y-1,ww+2,hh+2);r('#bcd6e2',x,y,ww,hh);r('#dcecf3',x,y,2,hh);r('#dcecf3',x+3,y,1,hh);r('#9cbccb',x,y+hh-3,ww,3);r('#7f7062',x,y+Math.floor(hh/2),ww,1);
   r(o.shut||'#a7c5ad',x-4,y-1,3,hh+2);r(o.shut||'#a7c5ad',x+ww+1,y-1,3,hh+2);r('rgba(0,0,0,.12)',x-4,y+2,3,1);r('rgba(0,0,0,.12)',x+ww+1,y+2,3,1);r('#7f7062',x-2,y+hh+1,ww+4,2)};
  for(let f=0;f<nf;f++){const y0=top+f*fh;r(WK,0,y0+fh-3,w,3);r(WL,0,y0+fh-3,w,1);
-  const wins=w>=88?2:1;for(let k=0;k<wins;k++){const wx=wins==2?Math.round(w*(k?.64:.24))-7:Math.round(w/2)-8,wy=y0+6;win(wx,wy,14,16);
+  const wins=w>=88?2:1;for(let k=0;k<wins;k++){const wx=wins==2?Math.round(w*(k?.64:.24))-7:Math.round(w/2)-8,wy=y0+4;win(wx,wy,14,16);
    if(o.balc&&f==nf-1){r('#6e7b77',wx-5,wy+20,24,1);for(let x=wx-5;x<wx+19;x+=3)r('#6e7b77',x,wy+20,1,5);r('#6e7b77',wx-5,wy+25,24,1);
     r('#b9805e',wx+1,wy+15,5,5);r('#7fb083',wx,wy+9,7,6);r('#e59ab3',wx+2,wy+9,2,2);r('#b9805e',wx+10,wy+16,5,4);r('#8fbf8a',wx+9,wy+11,7,5)}}
-  if(o.laundry&&f==0){const ly=y0+27;r('#5a5048',3,ly,w-6,1);['#e8b0b0','#b0d0e8','#f0e0a0','#c0e0b8','#e0c0e0'].forEach((c,i)=>{const lx=6+i*Math.floor((w-14)/5);r(c,lx,ly+1,6,7);r(shade(c,-.15),lx,ly+7,6,1)})}}
+  if(false&&o.laundry&&f==0){const ly=y0+27;r('#5a5048',3,ly,w-6,1);['#e8b0b0','#b0d0e8','#f0e0a0','#c0e0b8','#e0c0e0'].forEach((c,i)=>{const lx=6+i*Math.floor((w-14)/5);r(c,lx,ly+1,6,7);r(shade(c,-.15),lx,ly+7,6,1)})}}
  // tầng trệt: mái che sọc + cửa hàng
  const y0=h-gh;
  for(let x=0;x<w;x+=8){r(o.aw[(x/8)%2],x,y0,8,9);r('rgba(255,255,255,.25)',x,y0,8,1)}
@@ -67,10 +68,41 @@ const mkHouse=(w,h,o)=>mk(w,h,(g,r)=>{
   if(o.shelf){r('#a9855f',10,fy+10,w-20,2);r('#a9855f',10,fy+22,w-20,2);const cs=o.shelf;for(let x=12;x<w-14;x+=7){r(cs[(x/7|0)%cs.length],x,fy+4,5,6);r(cs[((x/7|0)+2)%cs.length],x,fy+16,5,6)}}
   r('#6d5c4e',Math.round(w/2)-8,fy+2,16,fhh-2);r('#4f4036',Math.round(w/2)-6,fy+4,12,fhh-4);r('#f0dcb0',Math.round(w/2)-5,fy+5,4,fhh-6);
   r('#dcecf3',8,fy+2,2,fhh-3)}
- // biển hiệu
- r(TR,5,y0-14,w-10,12);r(o.sign.bg,6,y0-13,w-12,10);r('rgba(255,255,255,.3)',6,y0-13,w-12,1);
- g.textAlign='center';g.font='800 8px Nunito, "Segoe UI", sans-serif';g.fillStyle=o.sign.fg;g.fillText(o.sign.t,w/2,y0-5,w-16);
+ // biển hiệu: khung vàng + nền tối (chữ neon chạy + dải đèn LED được vẽ động ở drawSign)
+ r('#2c1c0e',3,y0-24,w-6,24);r('#e2b93b',4,y0-23,w-8,22);r('#ffe27a',4,y0-23,w-8,1);r('#9a7414',4,y0-2,w-8,1);
+ r('#140c26',5,y0-22,w-10,20);r('#241640',5,y0-22,w-10,1);r('#0a0618',6,y0-10,w-12,8);r('#3a2a5a',6,y0-10,w-12,1);
+ // chậu cây hai bên cửa
+ for(const px of[0,w-6]){r('#b9805e',px,h-8,6,8);r('#d49a74',px,h-8,6,2);r('#6fae78',px,h-14,6,6);r('#8fcf98',px+1,h-14,2,2);r('#e59ab3',px+3,h-13,2,2)}
  r('rgba(0,0,0,.1)',0,h-2,w,2)});
+// ---------- NGÂN HÀNG (thay quán Phở bò): mặt tiền cột La Mã màu vàng kem ----------
+const mkBank=()=>mk(80,128,(g,r)=>{
+ const CR='#f6ebc8',CRL='#fff7de',CRD='#d8c690',GD='#e2b93b',GDL='#ffe27a',GDD='#9a7414';
+ // bậc thềm
+ r('#d9d0c0',0,120,80,8);r('#ece5d6',0,120,80,2);r('#cfc6b6',5,114,70,6);r('#ece5d6',5,114,70,1);
+ // thân nhà + tường
+ r(CR,5,62,70,52);r(CRL,5,62,3,52);r(CRD,72,62,3,52);
+ // cửa sổ khe 2 bên (song vàng)
+ for(const x of[12,60]){r(GDD,x-1,76,10,28);r('#26354f',x,77,8,26);r('#6f8fb8',x,77,8,4);r(GD,x+3,77,2,26);r(GD,x,88,8,1);r(GDL,x,77,8,1);r(GD,x-2,104,12,2)}
+ // cột
+ for(const x of[6,20,54,68]){r(CRL,x,62,6,52);r(CR,x+1,62,4,52);r(CRD,x+4,62,2,52);r(GD,x-1,62,8,3);r(GDL,x-1,62,8,1);r(GDD,x-1,64,8,1);r(GD,x-1,111,8,3);r(GDD,x-1,113,8,1)}
+ // cửa chính 2 cánh
+ r(GDD,27,82,26,34);r(GD,28,83,24,2);r('#5a3208',29,86,22,30);r('#8a5416',30,87,9,29);r('#8a5416',41,87,9,29);r('#b07224',31,89,7,10);r('#b07224',42,89,7,10);r('#b07224',31,102,7,12);r('#b07224',42,102,7,12);
+ r(GDL,37,100,2,4);r(GDL,41,100,2,4);r('#ffe27a',30,86,20,1);r('#fff3b0',39,86,2,30);r(GD,39,87,2,29);
+ for(const[x,y]of[[33,92],[45,92],[33,106],[45,106]])r(GDL,x,y,2,2);
+ // đèn vàng 2 bên cửa
+ for(const x of[24,54]){r(GDD,x+1,76,1,6);E(r,'#fff3b0',x+1,74,3,3);E(r,GDL,x+1,74,2,2)}
+ // mái đầu hồi (tam giác) + huy hiệu đồng xu
+ for(let i=0;i<30;i++){const hw=Math.round(i*38/29);r(CR,40-hw,5+i,hw*2,1);r(GD,40-hw,5+i,2,1);r(GD,40+hw-2,5+i,2,1)}
+ for(let i=9;i<28;i++){const hw=Math.round((i-6)*34/23);r('#f1dc98',40-hw,5+i,hw*2,1)}
+ E(r,GDD,40,24,9,9);E(r,GD,40,24,8,8);E(r,GDL,40,23,6,6);E(r,GD,40,24,5,5);
+ g.textAlign='center';g.font='900 11px Nunito, "Segoe UI", sans-serif';g.fillStyle='#8a6a00';g.fillText('$',40,28);g.fillStyle='#fff3b0';g.fillText('$',40,27);
+ r(GD,38,1,4,5);r(GDL,38,1,4,1);
+ // phào chỉ + nền bảng hiệu (chữ neon vẽ động)
+ r(GD,0,34,80,3);r(GDL,0,34,80,1);r(GDD,0,36,80,1);r(CR,2,37,76,2);
+ r('#2c1c0e',3,38,74,24);r(GD,4,39,72,22);r(GDL,4,39,72,1);r(GDD,4,60,72,1);r('#140c26',5,40,70,20);r('#241640',5,40,70,1);r('#0a0618',6,52,68,8);r('#3a2a5a',6,52,68,1);
+ r(CRD,2,62,76,2);
+ // chậu cây
+ for(const px of[0,74]){r('#b9805e',px,106,6,8);r('#d49a74',px,106,6,2);r('#6fae78',px,100,6,6);r('#8fcf98',px+1,100,2,2);r(GDL,px+3,101,2,2)}});
 const mkMieu=()=>mk(184,150,(g,r)=>{
  const RD='#c4675a',RDD='#a24f45',GD='#e2c36b',CR='#f0e4cc',TL='#cf8f7b';
  r('#d9d0c0',4,140,176,10);r('#e8e0d2',4,140,176,2);r('#cfc6b6',12,132,160,8);r('#e8e0d2',12,132,160,1);
@@ -239,6 +271,37 @@ function sayBubble(t,x,y){cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';c
 //  DỰNG MAP
 // ============================================================
 // ============================================================
+//  BIỂN HIỆU NEON CHẠY CHỮ (vẽ động, dùng chung cho các cửa hàng + Ngân hàng)
+//  Mỗi biển: bóng đèn chạy quanh khung, tên tiệm phát sáng neon (tên dài thì tự chạy), dải LED chạy chữ phía dưới
+// ============================================================
+const SIGNS=[],NEONF='"Nunito", "Segoe UI", Arial, sans-serif',LIGHTC=['#ff5a8a','#ffd23f','#5ee0ff','#9cff7a','#ffa24a'];
+function drawSign(s,tm){
+ const X=s.x0,Y=s.Y,W=s.w;
+ if(X>camX+vw||X+W<camX||Y>camY+vh||Y+26<camY)return;
+ cx.save();
+ // bóng đèn chạy trên khung (viền trên + dưới)
+ const ph=Math.floor(tm*7);
+ for(let i=0,x=X+1;x<X+W-2;x+=5,i++){const on=(i+ph)%3==0;cx.fillStyle=on?'#fff8c0':'#a8802a';if(on){cx.shadowColor='#ffd23f';cx.shadowBlur=4}cx.fillRect(x,Y,2,1);cx.fillRect(x,Y+21,2,1);cx.shadowBlur=0}
+ // tên tiệm: chữ neon (viền màu phát sáng + lõi trắng ấm), thỉnh thoảng chớp như neon cũ
+ cx.save();cx.beginPath();cx.rect(X+2,Y+1,W-4,12);cx.clip();
+ cx.font='900 8px '+NEONF;cx.textBaseline='alphabetic';cx.lineJoin='round';
+ const tw=cx.measureText(s.t).width,fl=Math.sin(tm*17+s.ph)>.975?.35:1;
+ const paint=(x,al)=>{cx.globalAlpha=al;cx.shadowColor=s.col;cx.shadowBlur=7;cx.lineWidth=1.6;cx.strokeStyle=s.col;cx.strokeText(s.t,x,Y+10);cx.shadowBlur=0;cx.fillStyle='#fffaf0';cx.fillText(s.t,x,Y+10)};
+ if(tw<=W-8){cx.textAlign='center';paint(X+W/2,fl)}
+ else{cx.textAlign='left';const gap=18,off=(tm*18+s.ph*9)%(tw+gap);paint(X+4-off,fl);paint(X+4-off+tw+gap,fl)}
+ cx.restore();
+ // dải LED chạy chữ
+ cx.save();cx.beginPath();cx.rect(X+2,Y+13,W-4,8);cx.clip();
+ cx.font='800 7px '+NEONF;cx.textAlign='left';cx.textBaseline='alphabetic';
+ const msg=s.m+'      ',mw=cx.measureText(msg).width||120,off=(tm*24+s.ph*13)%mw;
+ cx.shadowColor='#ff9a2e';cx.shadowBlur=3;cx.fillStyle='#ffe94d';
+ for(let k=-1;k<Math.ceil((W-4)/mw)+1;k++)cx.fillText(msg,X+3-off+k*mw,Y+19.5);
+ cx.restore();
+ // dây đèn nhấp nháy dưới mái hiên
+ if(s.lights){const y=Y+36;for(let i=0,x=X+2;x<X+W-3;x+=7,i++){const a=.45+.55*Math.abs(Math.sin(tm*2.6+i*1.3+s.ph));cx.globalAlpha=a;cx.fillStyle=LIGHTC[i%5];cx.shadowColor=LIGHTC[i%5];cx.shadowBlur=3;cx.fillRect(x,y,2,2)}}
+ cx.restore()}
+
+// ============================================================
 //  XE CỘ CHẠY TRÊN ĐƯỜNG + NGƯỜI ĐI LẠI (chỉ để trang trí, không bấm được, không cản đường)
 // ============================================================
 function drawVeh(v,tm){const L=PW+200;let x=(tm*v.sp+v.ph)%L;x=v.dir>0?x-100:PW+100-x;
@@ -270,17 +333,22 @@ function build(){
  PS.built=1;PS.bg=buildBG();const sp=PS.sp,seats=PS.seats;
  // ----- hàng nhà phố (san sát) -----
  put(mkMieu(),96,160,[4,0,190,162]);
+ const SN=(t,bg,fg,n,m)=>({t,bg,fg,n,m});
  const H=[
-  [188,76,132,{wall:PAL.cream,aw:['#cfe0cf','#f4f0e4'],tank:1,shelf:['#c98a52','#7db3a7','#e09a62','#d9a468'],sign:{t:'NỘI THẤT',bg:'#cfe3cf',fg:'#4c6f52'}}],
-  [264,92,152,{wall:PAL.pink,aw:['#e7b4ae','#f8ece6'],balc:1,tile:1,shelf:['#e0a099','#8fb8e0','#f2d79a','#9ccaa6'],sign:{t:'TIỆM MAY & MŨ NÓN',bg:'#f0c8c2',fg:'#8a4a44'},shut:'#cfe0cf'}],
-  [356,80,128,{wall:PAL.sky,aw:['#dba9a0','#f6efe6'],tank:1,shelf:['#f2d79a','#e8c7a0'],sign:{t:'PHỞ BÒ',bg:'#e8c4be',fg:'#8a3f38'},shut:'#e8d9a8'}],
-  [436,98,152,{wall:PAL.sage,aw:['#a9c4dc','#f4f0e4'],balc:1,tile:1,shelf:['#8fb8e0','#e0a099','#9ccaa6'],sign:{t:'TIỆM THÚ CƯỠI',bg:'#bcd6e6',fg:'#3f607a'},shut:'#e8c6b0'}],
-  [534,78,136,{wall:PAL.lemon,aw:['#b9d6bf','#f6f2e2'],laundry:1,sign:{t:'SHOP MINISET',bg:'#ffd9e6',fg:'#b04a72'},shelf:['#f4f0e4','#b9d6bf']}],
-  [612,98,152,{wall:PAL.peach,aw:['#d9c4e6','#f8f0ea'],balc:1,tile:1,shelf:['#e8c06a','#e0a099','#c9b0dc'],sign:{t:'TIỆM THÚ CƯNG',bg:'#e3d0ee',fg:'#6a4a86'},shut:'#c9dbe8'}],
-  [710,80,126,{wall:PAL.mauve,aw:['#a9c9d6','#f4f0e4'],tank:1,door:'shutter',sign:{t:'CẮT TÓC',bg:'#d6e8ee',fg:'#4a6f80'}}],
-  [790,84,140,{wall:PAL.sky,aw:['#e2b89a','#f8efe2'],balc:1,laundry:1,shelf:['#c99a6a','#f2e0b8'],sign:{t:'CÀ PHÊ SÁNG',bg:'#e8cfb4',fg:'#7a5236'}}],
-  [874,86,134,{wall:PAL.cream,aw:['#e8d28a','#f8f2dc'],tank:1,shelf:['#e8c85a','#f6e08a'],sign:{t:'TIỆM VÀNG',bg:'#f0dc96',fg:'#8a6a1c'},shut:'#d6c9a0'}]];
- for(const[x,w,h,o]of H){put(mkHouse(w,h,o),x+w/2,156,[x,0,x+w,158])}
+  [188,76,118,{wall:PAL.cream,aw:['#cfe0cf','#f4f0e4'],tank:1,shelf:['#c98a52','#7db3a7','#e09a62','#d9a468'],sign:SN('NỘI THẤT','#cfe3cf','#4c6f52','#7dffb0','ĐỒ TRANG TRÍ NHÀ • GIÁ HỮU NGHỊ')}],
+  [264,92,116,{wall:PAL.pink,aw:['#e7b4ae','#f8ece6'],balc:1,tile:1,shelf:['#e0a099','#8fb8e0','#f2d79a','#9ccaa6'],sign:SN('TIỆM MAY & MŨ NÓN','#f0c8c2','#8a4a44','#ff7ab8','THỜI TRANG • TÓC • MŨ NÓN'),shut:'#cfe0cf'}],
+  [436,98,116,{wall:PAL.sage,aw:['#a9c4dc','#f4f0e4'],balc:1,tile:1,shelf:['#8fb8e0','#e0a099','#9ccaa6'],sign:SN('TIỆM THÚ CƯỠI','#bcd6e6','#3f607a','#5fd8ff','TRÂU • VOI • KỲ LÂN • XE ĐẠP'),shut:'#e8c6b0'}],
+  [534,78,106,{wall:PAL.lemon,aw:['#b9d6bf','#f6f2e2'],laundry:1,sign:SN('SHOP MINISET','#ffd9e6','#b04a72','#ff9ad0','THỜI TRANG CHO BÉ BỎNG'),shelf:['#f4f0e4','#b9d6bf']}],
+  [612,98,116,{wall:PAL.peach,aw:['#d9c4e6','#f8f0ea'],balc:1,tile:1,shelf:['#e8c06a','#e0a099','#c9b0dc'],sign:SN('TIỆM THÚ CƯNG','#e3d0ee','#6a4a86','#c79bff','MÈO • THỎ • GÀ • MÂY MÂY'),shut:'#c9dbe8'}],
+  [710,80,118,{wall:PAL.mauve,aw:['#a9c9d6','#f4f0e4'],tank:1,door:'shutter',sign:SN('CẮT TÓC','#d6e8ee','#4a6f80','#6ee7ff','THỢ ĐI ĂN SÁNG • QUAY LẠI SAU')}],
+  [790,84,106,{wall:PAL.sky,aw:['#e2b89a','#f8efe2'],balc:1,laundry:1,shelf:['#c99a6a','#f2e0b8'],sign:SN('CÀ PHÊ SÁNG','#e8cfb4','#7a5236','#ffb066','CÀ PHÊ PHIN THƠM NGÀO NGẠT')}],
+  [874,86,118,{wall:PAL.cream,aw:['#e8d28a','#f8f2dc'],tank:1,shelf:['#e8c85a','#f6e08a'],sign:SN('TIỆM VÀNG','#f0dc96','#8a6a1c','#ffe14d','VÀNG BẠC • LẤP LÁNH SAU TỦ KÍNH'),shut:'#d6c9a0'}]];
+ SIGNS.length=0;
+ for(const[x,w,h,o]of H){put(mkHouse(w,h,o),x+w/2,156,[x,0,x+w,158]);const g=o.sign;SIGNS.push({x0:x+4,w:w-8,Y:87,t:g.t,m:g.m,col:g.n,ph:x*.37,lights:1})}
+ // NGÂN HÀNG (thay quán Phở bò cũ)
+ put(mkBank(),396,156,[356,0,436,158]);
+ SIGNS.push({x0:360,w:72,Y:67,t:'NGÂN HÀNG',m:'★ GỬI TIẾT KIỆM • LÃI MỖI NGÀY • AN TOÀN ★',col:'#ffd23f',ph:1.9,lights:0});
+ dyn(157,()=>{const tm=tmNow();for(const s of SIGNS)drawSign(s,tm)});
  blk(0,0,PW,158);blk(0,502,PW,PH);
  // cửa tương tác
  const mm=['m','p','s'];
@@ -288,7 +356,7 @@ function build(){
  hit(268,96,84,60,'👕 Tiệm may — mua trang phục, tóc & mũ','cv:ps:shop:s',[308,178]);
  hit(440,96,90,60,'🐃 Tiệm thú cưỡi — trâu, voi, kỳ lân, xe đạp...','cv:ps:shop:m',[486,178]);
  hit(616,96,90,60,'🐾 Tiệm thú cưng — mèo, thỏ, gà, Mây Mây...','cv:ps:shop:p',[662,178]);
- hit(358,100,76,56,'🍜 Phở bò — thơm nức mũi, chưa mở bán đâu nhé!');
+ hit(358,100,76,56,'🏦 Ngân hàng — gửi tiết kiệm, nhận lãi mỗi ngày','cv:ps:bank',[396,178]);
  hit(190,100,72,56,'🛋️ Tiệm nội thất — mua đồ trang trí cho nhà (100–4000 Xu)','cv:ps:furn',[226,178]);
  hit(536,100,74,56,'🧸 Shop Miniset — thời trang cho Bé bỏng','cv:ps:mini',[572,178]);
  hit(712,100,76,56,'✂️ Tiệm cắt tóc — chú thợ đi ăn sáng rồi');
@@ -304,7 +372,7 @@ function build(){
  const ptab=(x,by,ci,sc)=>{put(TBL[ci],x,by,[x-12,by-8,x+12,by]);for(const dx of[-24,24]){const i=seats.length;put(STL[sc[dx<0?0:1]],x+dx,by+3);
    seats.push({x:x+dx,y:by-1,by:by+3,sy:by+16,kind:'stool'});hit(x+dx-8,by-12,16,15,'🪑 Ghế nhựa vỉa hè — bấm E để ngồi','cv:seat:'+i,[x+dx,by+16])}};
  ptab(216,244,1,[2,0]);ptab(402,244,0,[0,1]);ptab(580,246,0,[2,1]);ptab(910,246,1,[0,2]);
- hit(368,222,70,34,'🍜 Bàn ghế nhựa trước quán phở');
+ hit(368,222,70,34,'🪑 Bàn ghế nhựa vỉa hè');
  // xe bánh mì
  put(mkBmCart(),500,258,[464,242,536,258]);
  hit(462,208,76,50,'🥖 Xe bánh mì — "Bánh mì nóng giòn đây!"','cv:ps:bm');
@@ -387,8 +455,8 @@ PS.fx=psFx;
 function psFx(tm,dt){
  if(CV.cur!='ps')return;
  wires();
- // hơi nước: xe bánh mì + quán phở + nhang miếu
- stT-=dt;if(stT<=0){stT=.35;STEAM.push({x:396+Math.random()*6,y:158,t:0,c:'255,255,255',v:12},{x:496+Math.random()*24,y:210,t:0,c:'255,255,255',v:8},{x:93+Math.random()*6,y:202,t:0,c:'230,225,215',v:10})}
+ // hơi nước: xe bánh mì + nhang miếu
+ stT-=dt;if(stT<=0){stT=.35;STEAM.push({x:496+Math.random()*24,y:210,t:0,c:'255,255,255',v:8},{x:93+Math.random()*6,y:202,t:0,c:'230,225,215',v:10})}
  for(let i=STEAM.length-1;i>=0;i--){const s=STEAM[i];s.t+=dt;s.y-=s.v*dt;s.x+=Math.sin(s.t*2+i)*5*dt;if(s.t>2.2){STEAM.splice(i,1);continue}
   if(s.x<camX-6||s.x>camX+vw+6||s.y<camY-6||s.y>camY+vh+6)continue;cx.fillStyle='rgba('+s.c+','+(.5*(1-s.t/2.2)).toFixed(2)+')';cx.fillRect(Math.round(s.x),Math.round(s.y),3,2)}
  // thoại thưa thớt
@@ -610,6 +678,110 @@ window.psFurnBuy=k=>{if(!CAT[k])return;if(typeof hmInit=='function')hmInit();con
  ST.xu-=pr;ST.hm.i[k]=(ST.hm.i[k]||0)+1;xuUp();save();toast('🛋️ Đã mua '+CAT[k][0]+' — nằm trong Túi nội thất (vào nhà để bày)');
  const box=document.getElementById('ui'),top=box?box.scrollTop:0;psFurn();if(box)box.scrollTop=top};
 
+
+// ============================================================
+//  NGÂN HÀNG — gửi tiết kiệm (sổ tiết kiệm màu vàng)
+//  ST.bank = {no:'số sổ', n:'tên chủ sổ', open:ms, p:gốc đang sinh lãi, w:gốc gửi thêm (chờ kỳ sau), i:lãi đã cộng dồn (chờ rút), tot:tổng lãi, at:mốc kỳ lãi, h:[lịch sử]}
+//  Quy tắc: gửi tối thiểu 1.000, gốc tối đa 5.000.000 • kỳ lãi 24 giờ • lãi cộng dồn vào sổ (lãi mẹ đẻ lãi con) • rút gốc / rút lời bất cứ lúc nào
+//  Gửi lần đầu: tính lãi ngay từ kỳ đầu. Gửi thêm khi sổ đang có tiền: vào "chờ kỳ sau", được gộp vào gốc sau lần trả lãi kế tiếp (chống gửi sát giờ rồi rút).
+//  LÃI SUẤT (chỉnh ở BK_TIERS): lãi/ngày theo từng bậc số dư — 50.000 Xu → 2.000 Xu/ngày; tối đa ở 5 triệu ≈ 28.000/ngày (≈0,56%) để tránh lạm phát
+// ============================================================
+const BK_MIN=1000,BK_MAX=5000000,BK_DAY=86400000,BK_MAXD=30;
+const BK_TIERS=[[100000,.04],[500000,.015],[2000000,.006],[5000000,.003]];   // [số dư tới mức, lãi/ngày của phần số dư trong bậc]
+const bkN=n=>Math.floor(+n||0).toLocaleString('vi-VN');
+function bkRate(base){let r=0,lo=0;for(const[hi,p]of BK_TIERS){if(base>lo)r+=(Math.min(base,hi)-lo)*p;lo=hi}return Math.floor(r)}
+const bkBook=()=>{const b=ST.bank;if(!b||typeof b!='object')return null;['p','w','i','tot'].forEach(k=>b[k]=Math.max(0,Math.floor(+b[k]||0)));if(!(b.at>0))b.at=Date.now();if(!Array.isArray(b.h))b.h=[];return b};
+function bkLog(b,k,a){b.h.push([Date.now(),k,a]);if(b.h.length>14)b.h.splice(0,b.h.length-14)}
+function bkSettle(b){const now=Date.now();if(now<b.at){b.at=now;return 0}
+ const n=Math.floor((now-b.at)/BK_DAY);if(n<1)return 0;let got=0;
+ for(let d=0;d<Math.min(n,BK_MAXD);d++){const it=bkRate(b.p+b.i);b.i+=it;got+=it;b.p+=b.w;b.w=0}
+ b.at=n>BK_MAXD?now:b.at+n*BK_DAY;
+ if(got){b.tot+=got;bkLog(b,'l',got)}return got}
+const bkHas=b=>b&&b.p+b.i>0;
+function bkClock(ms){ms=Math.max(0,Math.floor(ms/1000));const h=Math.floor(ms/3600),m=Math.floor(ms%3600/60),s=ms%60;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+const bkDate=t=>{const d=new Date(t);return d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear()};
+const bkTime=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+' '+d.getDate()+'/'+(d.getMonth()+1)};
+let bkTmr=0;
+function bkStyle(){if(document.getElementById('bkcss'))return;const st=document.createElement('style');st.id='bkcss';st.textContent=
+ '#ui.bkui{background:linear-gradient(160deg,#fff6c4 0%,#ffe27a 38%,#f6c23a 100%);border:3px solid #b8860b;box-shadow:0 0 0 2px #fff0a0 inset,0 3px 0 #8a6408,0 0 18px rgba(255,200,40,.55);color:#5a3b00;border-radius:12px}'+
+ '#ui.bkui .uh{color:#7a4f00;text-shadow:0 1px 0 #fff3b0}'+
+ '#ui.bkui .b{background:linear-gradient(#ffe98a,#f2b827);border:2px solid #8a6408;box-shadow:0 2px 0 #6a4a05;color:#4a3000;border-radius:8px}'+
+ '#ui.bkui .b:active{transform:translateY(2px);box-shadow:none}'+
+ '#ui.bkui .b.x{background:#fff3b0;border-color:#8a6408}'+
+ '.bkmq{background:#2a1a00;border:2px solid #ffd23f;border-radius:6px;box-shadow:0 0 8px #ffc928,inset 0 0 8px rgba(255,200,40,.4);overflow:hidden;white-space:nowrap;padding:3px 0;margin-bottom:8px}'+
+ '.bkmq span{display:inline-block;padding-left:100%;font-weight:900;font-size:13px;letter-spacing:.5px;color:#ffe94d;text-shadow:0 0 3px #ff9a2e,0 0 9px #ffc928;animation:bkmq 13s linear infinite}'+
+ '@keyframes bkmq{from{transform:translateX(0)}to{transform:translateX(-100%)}}'+
+ '.bkw{display:flex;justify-content:center;margin:0 0 8px}.bkw span{background:#fffbe0;border:2px solid #d9a800;border-radius:14px;padding:2px 12px;font-size:14px;box-shadow:0 1px 0 #b8860b}'+
+ '.bkbook{position:relative;background:linear-gradient(135deg,#7a1f1f,#a8322c 55%,#7a1f1f);border:3px solid #ffd23f;border-radius:10px;padding:8px 10px 10px;color:#fff3c4;box-shadow:0 3px 0 #5a1010,inset 0 0 0 2px #7a1f1f,inset 0 0 0 3px #e2b93b}'+
+ '.bkbook .bt{display:flex;justify-content:space-between;align-items:center;font-weight:900;letter-spacing:1px;color:#ffe27a;text-shadow:0 1px 0 #4a0c0c,0 0 6px rgba(255,210,63,.6);font-size:14px}'+
+ '.bkbook .bt small{font-size:10px;letter-spacing:.5px;color:#ffd9a0}'+
+ '.bkbook .bi{font-size:11.5px;color:#ffe9b8;margin:2px 0 6px;line-height:1.5}.bkbook .bi b{color:#fff}'+
+ '.bkbook .bb{background:rgba(0,0,0,.28);border:1px solid #e2b93b;border-radius:8px;padding:5px 8px;text-align:center}'+
+ '.bkbook .bb small{display:block;font-size:10.5px;color:#ffd9a0}.bkbook .bb b{font-size:24px;color:#ffe27a;text-shadow:0 0 8px rgba(255,210,63,.7);letter-spacing:.5px}'+
+ '.bkbook .br{display:flex;justify-content:space-between;font-size:12px;padding:2px 2px;border-bottom:1px dashed rgba(255,226,122,.35)}.bkbook .br:last-of-type{border:0}'+
+ '.bkbook .br b{color:#fff}'+
+ '.bkcd{margin-top:6px;text-align:center;background:#2a1a00;border:1px solid #ffd23f;border-radius:8px;padding:4px;font-size:12px;color:#ffe9b8}.bkcd b{color:#ffe94d;font-size:15px;text-shadow:0 0 6px #ffc928}'+
+ '.bkbox{background:#fffbe3;border:2px solid #d9a800;border-radius:10px;padding:7px 8px;margin-top:8px}'+
+ '.bkbox h4{margin:0 0 4px;font-size:13px;color:#8a5a00}'+
+ '.bkrow{display:flex;gap:4px;margin:4px 0}.bkrow input{flex:1;min-width:0;font:inherit;padding:6px;border:2px solid #b8860b;background:#fffdf0;border-radius:6px;color:#4a3000}'+
+ '.bkq{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0}.bkq .b{flex:1;padding:4px 2px;font-size:11.5px;min-width:44px}'+
+ '.bkt{width:100%;border-collapse:collapse;font-size:12px}.bkt td{padding:2px 4px;border-bottom:1px dotted #d9a800}.bkt td:last-child{text-align:right;font-weight:800;color:#8a5a00}'+
+ '.bkh{max-height:110px;overflow:auto;font-size:11.5px}.bkh div{display:flex;justify-content:space-between;padding:2px 2px;border-bottom:1px dotted #d9a800}'+
+ '.bkmut{font-size:11.5px;color:#7a5600;margin:3px 0}';
+ document.head.appendChild(st)}
+function bkTick(){if(!UI||PS.view!='bank'||!$('bkcd')){clearInterval(bkTmr);bkTmr=0;return}
+ const b=bkBook();if(!b)return;const rem=b.at+BK_DAY-Date.now();
+ if(rem<=0){const g=bkSettle(b);if(g){save();toast('🏦 Lãi kỳ mới +'+bkN(g)+' Xu đã vào sổ');bankUI(1)}else{b.at=Date.now()-BK_DAY+1000}return}
+ $('bkcd').textContent=bkClock(rem)}
+window.bankUI=keep=>{PS.view='bank';bkStyle();const b=bkBook();let got=0;if(b)got=bkSettle(b);if(got){save();if(!keep)toast('🏦 Lãi kỳ mới +'+bkN(got)+' Xu đã vào sổ')}
+ const base=b?b.p+b.i:0,exp=bkRate(base),room=BK_MAX-(b?b.p+b.w:0);
+ const LOGN={g:'Gửi tiền',rg:'Rút gốc',rl:'Rút lời',l:'Nhận lãi',tt:'Tất toán sổ'};
+ let h=head('🏦 Ngân hàng Vàng')+'<div class="bkmq"><span>★ NGÂN HÀNG VÀNG — GỬI TIẾT KIỆM • LÃI CỘNG DỒN MỖI NGÀY • RÚT GỐC, RÚT LỜI TỰ DO ★</span></div>'+
+ '<div class="bkw"><span>🪙 Ví của bạn: <b>'+bkN(ST.xu)+'</b> Xu</span></div>';
+ if(!b)h+='<div class="bkbook"><div class="bt"><span>📒 SỔ TIẾT KIỆM</span><small>NGÂN HÀNG VÀNG</small></div><div class="bi">Bạn chưa có sổ. Gửi tối thiểu <b>'+bkN(BK_MIN)+' Xu</b> để được cấp sổ tiết kiệm riêng, lãi tính mỗi 24 giờ.</div><div class="bb"><small>SỐ DƯ</small><b>0</b></div></div>';
+ else h+='<div class="bkbook"><div class="bt"><span>📒 SỔ TIẾT KIỆM</span><small>NGÂN HÀNG VÀNG</small></div>'+
+  '<div class="bi">Chủ sổ: <b>'+escH(b.n||ST.name||'Khách')+'</b><br>Số sổ: <b>'+escH(b.no)+'</b> • Mở ngày: <b>'+bkDate(b.open)+'</b></div>'+
+  '<div class="bb"><small>TỔNG SỐ DƯ TRONG SỔ</small><b>'+bkN(b.p+b.w+b.i)+'</b></div>'+
+  '<div style="margin-top:6px"><div class="br"><span>💰 Gốc đang sinh lãi</span><b>'+bkN(b.p)+'</b></div>'+
+  '<div class="br"><span>⏳ Gốc gửi thêm (tính lãi từ kỳ sau)</span><b>'+bkN(b.w)+'</b></div>'+
+  '<div class="br"><span>✨ Lãi đã cộng dồn (rút được)</span><b>'+bkN(b.i)+'</b></div>'+
+  '<div class="br"><span>🏆 Tổng lãi đã nhận từ trước tới giờ</span><b>'+bkN(b.tot)+'</b></div></div>'+
+  '<div class="bkcd">'+(bkHas(b)?'Kỳ lãi tiếp theo sau <b id="bkcd">'+bkClock(b.at+BK_DAY-Date.now())+'</b><br>Lãi dự kiến: <b>+'+bkN(exp)+' Xu</b>':'Chưa có số dư sinh lãi — gửi thêm để bắt đầu kỳ lãi')+'</div></div>';
+ h+='<div class="bkbox"><h4>📥 Gửi tiết kiệm</h4><div class="bkmut">Tối thiểu '+bkN(BK_MIN)+' • gốc tối đa '+bkN(BK_MAX)+' Xu • còn nhận được '+bkN(Math.max(0,room))+' Xu</div>'+
+  '<div class="bkrow"><input id="bka" type="number" inputmode="numeric" min="'+BK_MIN+'" max="'+BK_MAX+'" placeholder="Số Xu muốn gửi"><button class="b" onclick="bkDep()">📥 Gửi</button></div>'+
+  '<div class="bkq">'+[1000,10000,50000,100000].map(v=>'<button class="b" onclick="$(\'bka\').value='+v+'">'+bkN(v)+'</button>').join('')+'<button class="b" onclick="bkAll()">Tối đa</button></div>'+
+  (b&&bkHas(b)?'<div class="bkmut">💡 Gửi thêm khi sổ đã có tiền: số mới được tính lãi từ <b>kỳ kế tiếp</b>.</div>':'<div class="bkmut">💡 Gửi lần đầu được tính lãi ngay kỳ đầu tiên (24 giờ).</div>')+'</div>';
+ if(b&&(b.p+b.w+b.i)>0)h+='<div class="bkbox"><h4>📤 Rút tiền</h4>'+
+  '<div class="bkrow"><button class="b" style="flex:1" '+(b.i>0?'':'disabled style="flex:1;opacity:.5"')+' onclick="bkWdI()">✨ Rút lời ('+bkN(b.i)+')</button></div>'+
+  '<div class="bkrow"><input id="bkw" type="number" inputmode="numeric" min="1" placeholder="Số gốc muốn rút (tối đa '+bkN(b.p+b.w)+')"><button class="b" onclick="bkWdP()">📤 Rút gốc</button></div>'+
+  '<div class="bkq"><button class="b" onclick="$(\'bkw\').value='+(b.p+b.w)+'">Rút hết gốc</button><button class="b" onclick="bkClose()">🔒 Tất toán sổ (rút hết)</button></div>'+
+  '<div class="bkmut">Rút gốc trước kỳ lãi sẽ làm giảm tiền sinh lãi của các kỳ sau.</div></div>';
+ h+='<div class="bkbox"><h4>📈 Bảng lãi suất (lãi mỗi ngày)</h4><table class="bkt">';
+ let lo=0;for(const[hi,p]of BK_TIERS){h+='<tr><td>'+(lo?'Phần từ '+bkN(lo):'Phần đầu tới')+(lo?' đến '+bkN(hi):' '+bkN(hi))+' Xu</td><td>'+(p*100).toFixed(p*100%1?1:0).replace('.',',')+'%</td></tr>';lo=hi}
+ h+='</table><div class="bkmut">Ví dụ: gửi 50.000 Xu → nhận khoảng <b>'+bkN(bkRate(50000))+' Xu</b> mỗi ngày; 100.000 Xu → <b>'+bkN(bkRate(100000))+' Xu</b>. Lãi được cộng dồn vào sổ nên các kỳ sau lãi tính trên cả gốc lẫn lãi.</div></div>';
+ if(b&&b.h.length)h+='<div class="bkbox"><h4>🧾 Lịch sử giao dịch gần đây</h4><div class="bkh">'+b.h.slice().reverse().map(x=>'<div><span>'+bkTime(x[0])+' • '+(LOGN[x[1]]||'')+'</span><b style="color:'+(x[1]=='g'?'#b03a2e':'#2e7d32')+'">'+(x[1]=='g'?'−':'+')+bkN(x[2])+'</b></div>').join('')+'</div></div>';
+ openUI(h);$('ui').classList.add('bkui');if(!bkTmr)bkTmr=setInterval(bkTick,1000)};
+const bkKeep=fn=>{const box=$('ui'),top=box?box.scrollTop:0;fn();const b2=$('ui');if(b2)b2.scrollTop=top};
+window.bkAll=()=>{const b=bkBook(),room=BK_MAX-(b?b.p+b.w:0),a=Math.max(0,Math.min(Math.floor(ST.xu),room));$('bka').value=a||''};
+window.bkDep=()=>{const a=Math.floor(+($('bka').value||0));
+ if(!(a>=BK_MIN))return toast('🏦 Gửi tối thiểu '+bkN(BK_MIN)+' Xu');
+ if(a>ST.xu)return toast('🪙 Bạn không đủ Xu để gửi');
+ let b=bkBook();
+ if(!b){b=ST.bank={no:String(Math.floor(10000000+Math.random()*89999999)).replace(/(\d{4})(\d{4})/,'$1 $2'),n:ST.name||'',open:Date.now(),p:0,w:0,i:0,tot:0,at:Date.now(),h:[]};toast('📒 Ngân hàng đã cấp cho bạn sổ tiết kiệm mới!')}
+ else bkSettle(b);
+ if(b.p+b.w+a>BK_MAX)return toast('🏦 Sổ chỉ nhận thêm tối đa '+bkN(Math.max(0,BK_MAX-b.p-b.w))+' Xu gốc');
+ ST.xu-=a;
+ if(b.p+b.i<=0){b.p+=a;b.at=Date.now()}else b.w+=a;
+ bkLog(b,'g',a);xuUp();save();toast('🏦 Đã gửi '+bkN(a)+' Xu vào sổ tiết kiệm');bkKeep(()=>bankUI(1))};
+function bkPay(pr,li){window.IDNOEARN=1;ST.xu+=pr;window.IDNOEARN=0;if(li)ST.xu+=li}
+window.bkWdI=()=>{const b=bkBook();if(!b||b.i<1)return toast('✨ Chưa có lãi để rút');bkSettle(b);const a=b.i;b.i=0;bkPay(0,a);bkLog(b,'rl',a);if(!bkHas(b)&&b.w<1)b.at=Date.now();xuUp();save();toast('✨ Đã rút lời +'+bkN(a)+' Xu');bkKeep(()=>bankUI(1))};
+window.bkWdP=()=>{const b=bkBook();if(!b)return;bkSettle(b);const a=Math.floor(+($('bkw').value||0));
+ if(!(a>=1))return toast('Nhập số gốc muốn rút');if(a>b.p+b.w)return toast('Sổ chỉ có '+bkN(b.p+b.w)+' Xu gốc');
+ let t=a;const fw=Math.min(b.w,t);b.w-=fw;t-=fw;b.p-=t;bkPay(a,0);bkLog(b,'rg',a);if(!bkHas(b)&&b.w<1)b.at=Date.now();xuUp();save();toast('📤 Đã rút gốc +'+bkN(a)+' Xu');bkKeep(()=>bankUI(1))};
+window.bkClose=()=>{const b=bkBook();if(!b)return;bkSettle(b);const pr=b.p+b.w,li=b.i;if(pr+li<1)return toast('Sổ đang trống');
+ if(window.bkCf!==1){window.bkCf=1;setTimeout(()=>{window.bkCf=0},4000);return toast('🔒 Bấm "Tất toán" lần nữa để rút hết '+bkN(pr+li)+' Xu và dừng sinh lãi')}
+ window.bkCf=0;b.p=0;b.w=0;b.i=0;bkPay(pr,li);bkLog(b,'tt',pr+li);b.at=Date.now();xuUp();save();toast('🔒 Đã tất toán: nhận '+bkN(pr+li)+' Xu (gốc '+bkN(pr)+' + lãi '+bkN(li)+')');bkKeep(()=>bankUI(1))};
+
 function psAct(a,h){const[t,v]=a.split(':');
  if(t=='shop')return psShop(v);
  if(t=='mini')return window.bbShop?bbShop():toast('🧸 Shop Miniset đang chuẩn bị');
@@ -617,6 +789,7 @@ function psAct(a,h){const[t,v]=a.split(':');
  if(t=='bm')return buffShopUI('bm');
  if(t=='wheel')return wheelUI();
  if(t=='furn')return psFurn();
+ if(t=='bank')return bankUI();
  if(t=='dia')return diaShop();
  if(t=='mieu')return mieuUI()}
 })();
