@@ -101,14 +101,15 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 <div id="hud">
  <div id="hleft">
  <div class="hb" id="hpanel" onclick="infoUI()" style="cursor:pointer"><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><canvas id="hav" width="20" height="20" style="width:44px;height:44px;image-rendering:pixelated;background:linear-gradient(#bfe6ff,#d9f0b8);border:2px solid #7a4a26;border-radius:8px"></canvas><span id="hlv" style="display:none">Lv.1</span><div style="display:none"><div id="hlb"></div></div></div><span id="hxu">0</span></div>
- <div id="hevrow"><button class="hb" id="hev" onclick="evUI()">🎉<small>Sự kiện</small></button><button class="hb" id="hbb" onclick="bbUI()">🍼<small>Bé bỏng</small></button></div>
+ <div id="hevrow"><button class="hb" id="hev" onclick="nqUI()">📜<small>N.Vụ NPC</small></button><button class="hb" id="hbb" onclick="bbUI()">🍼<small>Bé bỏng</small></button></div>
  </div>
  <div id="hgrid">
   <button class="hb" onclick="mapUI()">🗺️<small>Map</small></button>
   <button class="hb" onclick="bagUI()">🎒<small>Túi</small></button>
   <button class="hb" onclick="khoHub()">📦<small>Kho</small></button>
   <button class="hb" onclick="idUI()" title="Căn cước Tinyland">🪪<small>Thẻ</small></button>
-  <button class="hb" id="hact" onclick="actUI()" style="grid-column:span 2;width:80px;flex-direction:row;gap:5px;font-size:15px"><small style="font-size:10px">Hành động</small></button>
+  <button class="hb" id="hact" onclick="actUI()"><small style="font-size:8.5px;line-height:1.05;text-align:center">Hành<br>động</small></button>
+  <button class="hb" id="htb" onclick="tbaoUI()">🔔<small>T.Báo</small></button>
  </div>
 </div>
 <button class="b" id="dbtn" style="position:fixed;left:10px;top:calc(100px + env(safe-area-inset-top,0px));display:none;z-index:4;padding:6px 10px" onclick="decoToggle()">🛠️ Trang trí</button>
@@ -808,7 +809,10 @@ const SETS=[
   {n:'Mascot Thỏ tuyết (Nam)',mascot:'bunny',bn:'m',wide:1,sh:'#fbfcff',pt:'#fbfcff',rpt:'#fbfcff',shoe:'#dfe6f5',scarf:'#fbfcff'},
   {n:'Mascot Thỏ tuyết (Nữ)',mascot:'bunny',bn:'f',wide:1,sh:'#fbfcff',pt:'#fbfcff',rpt:'#fbfcff',shoe:'#dfe6f5',scarf:'#fbfcff'},
   // ---- Mascot Ma đồng giáng thế — bán ở Shop kim cương 💎15. wide:1 = dải lụa/tóc vượt khung chuẩn 20x31 nên mascotCheck bỏ qua. Hình vẽ: newitems2.js ----
-  {n:'Ma đồng giáng thế',k:'madong',mascot:'madong',bn:'m',wide:1,ach:1,dia:15,ds:'Tóc đen dựng cao, vằn đỏ trên mặt, dải lụa đỏ bay phấp phới quanh người. Hợp với Thương ma đồng & Phong hỏa luân. Không che mặt.',sh:'#f0b68a',pt:'#4a2a2a',rpt:'#f0b68a',shoe:'#7a2a1c',scarf:'#d81f4a'}];
+  {n:'Ma đồng giáng thế',k:'madong',mascot:'madong',bn:'m',wide:1,ach:1,dia:15,ds:'Tóc đen dựng cao, vằn đỏ trên mặt, dải lụa đỏ bay phấp phới quanh người. Hợp với Thương ma đồng & Phong hỏa luân. Không che mặt.',sh:'#f0b68a',pt:'#4a2a2a',rpt:'#f0b68a',shoe:'#7a2a1c',scarf:'#d81f4a'},
+  // ---- Set Pijama (bán ở Shop Phố xá 3000 Xu / set — giá: SHOP.s.pr trong pho-map.js). Hình vẽ: pajama.js (mascot:'pj', pjv:'f'|'m'). Không che mặt, có sẵn tóc & dép bông thú. LUÔN để ở CUỐI mảng SETS ----
+  {n:'Pijama hồng (Nữ)',k:'pjf',mascot:'pj',pjv:'f',sh:'#ffc2d0',pt:'#ffc2d0',rpt:'#ffc2d0',shoe:'#fff3f7',scarf:'#ffc2d0'},
+  {n:'Pijama cam (Nam)',k:'pjm',mascot:'pj',pjv:'m',sh:'#ffa648',pt:'#ffa648',rpt:'#ffa648',shoe:'#ffb25a',scarf:'#ffa648'}];
 const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'},{n:'Tóc nâu buộc',k:'tail',c:'#6a3e1e'},{n:'Tóc vàng',k:'short',c:'#e0b84a'},{n:'Mũ len đỏ',k:'beanie',c:'#c0392b',hr:'#2b1d12'},{n:'Mũ len xanh',k:'beanie',c:'#2f6fe0',hr:'#6a3e1e'},
  {n:'Tóc Sailor Moon',k:'sailor',c:'#f6d96b'},{n:'Tóc 2 chùm',k:'bun2',c:'#2a2224'},{n:'Tóc nữ yêu kiều',k:'longf',c:'#201a24'},{n:'Tóc xinh yêu',k:'bobf',c:'#17151c'},
  {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'},
@@ -3095,7 +3099,8 @@ const avItems=k=>{if(k=='f')return[];if(k=='b')return window.MQ?MQ.items():[];if
 const avCur=k=>avItems(k).findIndex(x=>x.idx==ST.av[k]);
 function bagUI(t){AVTAB=t||AVTAB;const old=$('ui').scrollTop,L=avItems(AVTAB),cur=avCur(AVTAB),mt=AVTAB=='m';
  let h=head('🎒 Túi nhân vật')+'<div style="text-align:center"><canvas id="avp" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#bfe6ff,#d9f0b8 70%);border:2px solid #7a4a26;cursor:pointer" onclick="avTurn()"></canvas><div class="mut" style="margin:2px 0 6px">Chạm vào hình để xoay nhân vật</div></div>';
- if(SETS[ST.av.s]&&SETS[ST.av.s].mascot)h+='<div class="mut">🧸 Đang mặc Mascot — đã gồm cả tóc & khuôn mặt nên tóc/biểu cảm tạm ẩn, nhưng <b>phụ kiện cầm tay vẫn hiện</b>.</div>';
+ if(SETS[ST.av.s]&&SETS[ST.av.s].pjv)h+='<div class="mut">🌙 Đang mặc Pijama — bộ có sẵn tóc & dép bông (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
+ else if(SETS[ST.av.s]&&SETS[ST.av.s].mascot)h+='<div class="mut">🧸 Đang mặc Mascot — đã gồm cả tóc & khuôn mặt nên tóc/biểu cảm tạm ẩn, nhưng <b>phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].dn)h+='<div class="mut">🌕 Đang mặc Dạ nguyệt — bộ có sẵn tóc & mão/trâm (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].aul)h+='<div class="mut">⚔️ Đang mặc Chiến binh Âu Lạc — bộ có sẵn tóc & mão (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].tn)h+='<div class="mut">🧚 Đang mặc Tiên nữ — bộ có sẵn tóc búi & mão hoa (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
@@ -3155,7 +3160,7 @@ function tickMach(dt){let ch=false;const n=now(),done={};let xp=0;
  if(ch){qAdd('cook',xp);const mx=ST.lv>=100,lu=addExp(xp);save();const ks=Object.keys(done),sh=ks.slice(0,6).map(k=>k+(done[k]>1?' x'+done[k]:'')).join(', ');toast('✅ Xong: '+sh+(ks.length>6?' ...':'')+' → Kho vật phẩm'+(mx?'':' • +'+xp+' EXP')+lu)}
  if(MUI>=0&&UI){mUiT-=dt;if(mUiT<=0){mUiT=.5;mRefresh()}if(ch){const st=$('ui').scrollTop,mi=MUI;machAct(mi);$('ui').scrollTop=st}}}
 /* ===================================================================================
-   SỰ KIỆN TIÊN NỮ  (nút 🎉 Sự kiện dưới panel avatar)
+   NHIỆM VỤ NPC: TIÊN NỮ  (nút 📜 N.Vụ NPC dưới panel avatar; hàm nqUI/nqTnUI/nqTiUI — KHÔNG trùng Nhiệm vụ ngày qUI)
    • Mỗi tuần (từ 0h Thứ Hai, giờ máy) có 1 danh sách 6 nhiệm vụ: 5 món nấu khác nhau + 1 nhiệm vụ câu quái vật.
      Danh sách sinh theo số tuần (ai cũng giống nhau), 15 món xoay vòng 3 tuần/vòng, hết tuần là mất & đổi chuỗi mới (mảnh ghép đã nhận thì giữ).
    • Xong 1 nhiệm vụ → tự nhận 1 🧩 Mảnh ghép Tiên Nữ. Đủ 10 mảnh → ra NPC Tiên Nữ (Công viên) ghép 1 🎫 Phiếu Tiên Giới.
@@ -3185,15 +3190,24 @@ function tnLeft(){const ms=tnWk()+7*864e5-Date.now(),d=Math.floor(ms/864e5),h=Ma
  +'.tnq{background:linear-gradient(#fff6fb,#f6e6ff);border:2px solid #c9a0e0;padding:6px 8px;margin:5px 0;color:#4a2a5a;font-size:13px}.tnq.ok{background:linear-gradient(#f2ffe8,#dcf6c8);border-color:#8cc66a;color:#2f5a1c}.tnq b{display:block}.tnq small{color:#7a5a8a}'
  +'@media (max-width:700px){#hevrow{transform:scale(.82);transform-origin:top right;margin-top:-14px}}';document.head.appendChild(css)})();
 /* 🍼 Bé bỏng: toàn bộ hệ thống nằm trong baby.js (nút 🍼 gọi bbUI()) */
-function evUI(){tnEnsure();
- openUI(head('🎉 Sự kiện')
-  +'<button class="b w" style="font-size:15px;padding:12px;margin-top:6px" onclick="evTnUI()">🧚 Sự kiện Tiên Nữ</button>'
-  +'<button class="b w" style="font-size:15px;padding:12px;margin-top:8px" onclick="evTiUI()">🧸 Sự kiện Tí Nị</button>')}
-function evTnUI(){tnEnsure();
- openUI(head('🧚 Sự kiện Tiên Nữ')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧚</span><b>Sự kiện Tiên Nữ</b>Tiên Nữ đứng ở Công viên, bạn ra đó đổi quà nha.</div>'
-  +'<button class="b w" style="font-size:14px;padding:10px" onclick="tnQuestUI()">📜 Nhiệm vụ Tiên Nữ</button>'
-  +'<div class="pf"><button class="b" onclick="evUI()">⬅ Quay lại</button></div>')}
-/* ===================== SỰ KIỆN TÍ NỊ (NPC ở Công viên, Tiệm Mô Hình) =====================
+/* 🔔 T.Báo: Bảng Thông Báo (panel xanh pastel, tạm chưa có nội dung). Sau này đẩy tin vào mảng TBAO_LIST: {t:'tiêu đề',d:'nội dung',e:'🎁'} */
+const TBAO_LIST=[];
+function tbaoUI(){
+ let h=head('🔔 Bảng Thông Báo');
+ if(!TBAO_LIST.length)h+='<div class="sbnote" style="padding:26px 6px;font-size:13px">📭 Chưa có thông báo nào.<br><small>Tin mới sẽ hiện ở đây nha~</small></div>';
+ else h+=TBAO_LIST.map(n=>'<div class="sbtop" style="margin:6px 0"><span class="sbav" style="background:#dff0ff;border-color:#b5d2f0">'+(n.e||'📢')+'</span><div><b>'+n.t+'</b><div class="sbsay">'+(n.d||'')+'</div></div></div>').join('');
+ openUI(h+'<div class="pf"><button class="b x" onclick="closeUI()">Đóng</button></div>');
+ $('ui').classList.add('wui');
+}
+function nqUI(){tnEnsure();
+ openUI(head('📜 Nhiệm vụ NPC')
+  +'<button class="b w" style="font-size:15px;padding:12px;margin-top:6px" onclick="nqTnUI()">🧚 Nhiệm vụ Tiên Nữ</button>'
+  +'<button class="b w" style="font-size:15px;padding:12px;margin-top:8px" onclick="nqTiUI()">🧸 Nhiệm vụ Tí Nị</button>')}
+function nqTnUI(){tnEnsure();
+ openUI(head('🧚 Nhiệm vụ Tiên Nữ')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧚</span><b>Nhiệm vụ Tiên Nữ</b>Tiên Nữ đứng ở Công viên, bạn ra đó đổi quà nha.</div>'
+  +'<button class="b w" style="font-size:14px;padding:10px" onclick="tnQuestUI()">📜 Danh sách nhiệm vụ tuần</button>'
+  +'<div class="pf"><button class="b" onclick="nqUI()">⬅ Quay lại</button></div>')}
+/* ===================== NHIỆM VỤ TÍ NỊ (NPC ở Công viên, Tiệm Mô Hình) =====================
    • Mỗi ngày (từ 0h, giờ máy) có 5 nhiệm vụ: thu hoạch n cây TRỒNG TỪ CHẬU (8 loại trong POTS). Cây lâu (>=40 phút) 2-3 cây, cây ngắn 3-6 cây.
    • Xong 1 nhiệm vụ → 1 🎟️ Vé Tí Nị (vé giữ lại khi reset). Dùng vé để 🎱 Thả bi ở NPC Tí Nị (xem khối THẢ BI TÍ NỊ bên dưới).
    • DỮ LIỆU: ST.ti = {d:mốc 0h hôm nay, q:[{k:số thứ tự trong POTS,need,p,done}], tk:số vé}
@@ -3208,15 +3222,15 @@ function tiProg(k){const T=tiEnsure();let g=0;
  for(const q of T.q){if(q.done||q.k!=k)continue;q.p=Math.min(q.need,q.p+1);if(q.p>=q.need){q.done=1;T.tk++;g++}}
  if(g)setTimeout(()=>toast('🧸 Hoàn thành nhiệm vụ Tí Nị!\n+'+g+' 🎟️ Vé Tí Nị ('+T.tk+')'),1500)}
 function tiLeft(){const ms=tiDay()+864e5-Date.now(),h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);return h+' giờ '+m+' phút'}
-function evTiUI(){const T=tiEnsure(),nd=T.q.filter(q=>q.done).length,names=POTS.map(c=>c[1]+' '+c[0]).join(', ');
- let h=head('🧸 Sự kiện Tí Nị')+'<div class="mut" style="text-align:center">⏳ Làm mới sau <b>'+tiLeft()+'</b> • Xong 1 nhiệm vụ nhận 1 🎟️<br>🔄 Reset nhiệm vụ mỗi 12h đêm (chỉ tồn tại 24 giờ)<br>🎟️ Vé Tí Nị: <b>'+T.tk+'</b> • Hoàn thành hôm nay: <b>'+nd+'/'+T.q.length+'</b></div>'
+function nqTiUI(){const T=tiEnsure(),nd=T.q.filter(q=>q.done).length,names=POTS.map(c=>c[1]+' '+c[0]).join(', ');
+ let h=head('🧸 Nhiệm vụ Tí Nị')+'<div class="mut" style="text-align:center">⏳ Làm mới sau <b>'+tiLeft()+'</b> • Xong 1 nhiệm vụ nhận 1 🎟️<br>🔄 Reset nhiệm vụ mỗi 12h đêm (chỉ tồn tại 24 giờ)<br>🎟️ Vé Tí Nị: <b>'+T.tk+'</b> • Hoàn thành hôm nay: <b>'+nd+'/'+T.q.length+'</b></div>'
   +'<div class="tnq"><b>Lưu ý:</b> các cây trồng '+names+' phải thu hoạch <b style="display:inline">từ chậu ở nông trại</b>, không phải từ ô đất.</div>';
  T.q.forEach(q=>{const c=POTS[q.k],pc=Math.round(q.p/q.need*100);
   h+='<div class="tnq'+(q.done?' ok':'')+'"><b>🌱 Thu hoạch <b style="display:inline">'+q.need+'</b> '+c[1]+' <b style="display:inline">'+c[0]+'</b> (từ chậu)'+(q.done?' ✅':'')+'</b><div class="tnb"><i style="width:'+pc+'%"></i></div><small>'+q.p+'/'+q.need+(q.done?' • Đã nhận 🎟️ +1':' • Thưởng: 🎟️ +1')+'</small></div>'});
- openUI(h+'<div class="mut" style="text-align:center">🎱 Vé Tí Nị dùng để Thả bi ở NPC Tí Nị — trúng vé quay số hoặc mô hình!</div><div class="pf"><button class="b" onclick="evUI()">⬅ Quay lại</button></div>')}
+ openUI(h+'<div class="mut" style="text-align:center">🎱 Vé Tí Nị dùng để Thả bi ở NPC Tí Nị — trúng vé quay số hoặc mô hình!</div><div class="pf"><button class="b" onclick="nqUI()">⬅ Quay lại</button></div>')}
 function tiNpcUI(){const T=tiEnsure();
  openUI(head('🧸 Tí Nị')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧸</span><b>"Chào bạn~ mình là Tí Nị, chủ Tiệm Mô Hình!"</b>Làm nhiệm vụ trồng chậu mỗi ngày để lấy Vé Tí Nị nha.<br><small>🎟️ '+T.tk+' Vé Tí Nị</small></div>'
-  +'<button class="b w" style="font-size:14px;padding:9px" onclick="evTiUI()">🌱 Nhiệm vụ Tí Nị</button>'
+  +'<button class="b w" style="font-size:14px;padding:9px" onclick="nqTiUI()">🌱 Nhiệm vụ Tí Nị</button>'
   +'<button class="b w" style="font-size:14px;padding:9px;margin-top:6px" onclick="tbUI()">🎱 Thả bi Tí Nị</button>')}
 /* ===================== THẢ BI TÍ NỊ (NPC Tí Nị → 🎱 Thả bi Tí Nị) =====================
    • Mỗi lần thả trừ 1 🎟️ Vé Tí Nị (ST.ti.tk). Bi rơi ngẫu nhiên vào 1 trong 6 khay xếp xen kẽ: Vé / Mô hình / Vé / Mô hình / Vé / Mô hình.
@@ -3313,7 +3327,7 @@ function tnQuestUI(){const T=tnEnsure(),nd=T.q.filter(q=>q.done).length;
  let h=head('📜 Nhiệm vụ Tiên Nữ')+'<div class="mut" style="text-align:center">⏳ Làm mới sau <b>'+tnLeft()+'</b> • Xong 1 nhiệm vụ nhận 1 🧩<br>🔄 Reset nhiệm vụ mỗi 12h đêm Chủ Nhật<br>🧩 Mảnh ghép: <b>'+T.pc+'</b> • Hoàn thành tuần này: <b>'+nd+'/'+T.q.length+'</b></div>';
  T.q.forEach(q=>{const o=q.k=='cook'?PRODS.find(x=>x.n==q.n):null,tx=q.k=='cook'?'🍳 Nấu '+(o?ic(o.e,o.n)+' ':'')+'<b style="display:inline">'+q.n+'</b> '+q.need+' lần':'🎣 Nhiệm vụ câu <b style="display:inline">'+q.need+' quái vật</b> ở bãi biển',pc=Math.round(q.p/q.need*100);
   h+='<div class="tnq'+(q.done?' ok':'')+'"><b>'+tx+(q.done?' ✅':'')+'</b><div class="tnb"><i style="width:'+pc+'%"></i></div><small>'+q.p+'/'+q.need+(q.done?' • Đã nhận 🧩 +1':' • Thưởng: 🧩 +1')+'</small></div>'});
- openUI(h+'<div class="pf"><button class="b" onclick="evTnUI()">⬅ Quay lại</button></div>')}
+ openUI(h+'<div class="pf"><button class="b" onclick="nqTnUI()">⬅ Quay lại</button></div>')}
 function tnNpcUI(){const T=tnEnsure();
  openUI(head('🧚 Tiên Nữ')+'<div class="tnq" style="text-align:center"><span style="font-size:34px">🧚</span><b>"Chào con~ ta là Tiên Nữ!"</b>Gom đủ '+TN_NEED+' mảnh ghép thì ta ghép thành Phiếu Tiên Giới cho nè.<br><small>🧩 '+T.pc+' mảnh • 🎫 '+T.tk+' Phiếu Tiên Giới</small></div>'
   +'<button class="b w" style="font-size:14px;padding:9px" onclick="tnMergeUI()">🧩 Ghép mảnh Tiên Nữ</button>'
@@ -5712,5 +5726,6 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="baby.js?v=20261116"></script>
 <script src="newitems3.js?v=20261116"></script>
 <script src="newitems4.js?v=20261117"></script>
+<script src="pajama.js?v=20261118"></script>
 <script src="gianhang.js?v=20261116"></script>
 </body></html>
