@@ -178,7 +178,7 @@ window.circusUI=()=>{
   '<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#e63946 0 14px,#fff 14px 28px);margin:2px 0 8px"></div>'+
   '<div style="text-align:center;font-weight:800;color:#6a2fb0;font-size:14px;margin-bottom:8px">“Hề hề! Lại đây chơi với Chú Hề nào!” 🎈</div>'+
   '<button class="b" onclick="circusGo(\'wheel\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #8c1c13;background:linear-gradient(135deg,#ff5a5f 0%,#ff8c1a 50%,#ffd23f 100%);text-shadow:0 2px 0 #8c1c13">🎡 Vòng quay may mắn<br><small style="font-weight:700">Quay trúng Xu & 💎 Kim cương</small></button>'+
-  '<button class="b" onclick="circusGo(\'blind\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #0b4f8a;background:linear-gradient(135deg,#22d3ee 0%,#3a86ff 55%,#7c5cff 100%);text-shadow:0 2px 0 #0b4f8a">🎁 Blind Box Kim Cương<br><small style="font-weight:700">20 Xu / hộp • Có thể trúng tới 💎 10</small></button>'+
+  '<button class="b" onclick="circusGo(\'blind\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #0b4f8a;background:linear-gradient(135deg,#22d3ee 0%,#3a86ff 55%,#7c5cff 100%);text-shadow:0 2px 0 #0b4f8a">🎁 Blind Box Kim Cương<br><small style="font-weight:700">20 Xu / hộp • tối đa 30 hộp/ngày • trúng tới 💎 10</small></button>'+
   '<button class="b" onclick="circusGo(\'shop\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #4a1d82;background:linear-gradient(135deg,#9b5de5 0%,#3a86ff 55%,#1fb5a6 100%);text-shadow:0 2px 0 #4a1d82">🤡 Tiệm Chú Hề<br><small style="font-weight:700">🔒 Sắp ra mắt — Coming soon</small></button>'+
   '<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#1fb5a6 0 14px,#fff 14px 28px);margin:8px 0 2px"></div>');
 };
@@ -267,11 +267,11 @@ window.whGo=n=>{if(WA)return;const tk=ST.tk|0,useT=Math.min(tk,n),cost=(n-useT)*
 };
 
 /* ============================================================
-   BLIND BOX KIM CƯƠNG — 20 Xu / hộp • mỗi lần chỉ 1 hộp • chạm 3–5 lần để khui
+   BLIND BOX KIM CƯƠNG — 20 Xu / hộp • tối đa 30 hộp/ngày • mỗi lần chỉ 1 hộp • chạm 3–5 lần để khui
    • Quà được bốc lúc mua và lưu vào ST.lbx.pen (thoát game giữa chừng vẫn mở tiếp được), trao quà khi khui xong
    • CÂN BẰNG KINH TẾ: chỉnh tỉ lệ ở bảng LBT bên dưới (p = % , tổng = 100)
    ============================================================ */
-const LB_COST=20;
+const LB_COST=20,LB_DAY=30;   // giới hạn 30 hộp / ngày (reset theo ngày máy, giống nhiệm vụ hằng ngày)
 const LBT=[
  {k:'Thường',p:66,xu:20,c:'#3a86ff',c2:'#9fd0ff'},
  {k:'Trung', p:29,xu:50,c:'#9b5de5',c2:'#e0c6ff'},
@@ -279,7 +279,7 @@ const LBT=[
  {k:'Secret',p:.5,dia:10,c:'#ff3d7f',c2:'#fff6a0'}];
 const lbRoll=()=>{const u=Math.random()*100;let a=0;for(let i=0;i<LBT.length;i++){a+=LBT[i].p;if(u<a)return i}return 0};
 function lbS(){if(!ST.lbx||typeof ST.lbx!='object')ST.lbx={n:0,pen:null};const B=ST.lbx,p=B.pen;
- if(p&&!(p.t>=0&&p.t<LBT.length&&p.need>=3&&p.need<=5&&p.tap>=0&&p.tap<p.need))B.pen=null;if(!(B.n>=0))B.n=0;return B}
+ if(p&&!(p.t>=0&&p.t<LBT.length&&p.need>=3&&p.need<=5&&p.tap>=0&&p.tap<p.need))B.pen=null;if(!(B.n>=0))B.n=0;const dk=new Date().toDateString();if(B.dd!=dk||!(B.dc>=0)){B.dd=dk;B.dc=0}return B}
 let LBLOOP=0,LBO=null,LBD=null,LBP=[],LBSH=0;
 function lbSnd(k,i){const ac=window.__cvAC;if(!ac||!window.CV||CV.snd===0)return;
  try{if(ac.state=='suspended')ac.resume();const t=ac.currentTime+.01,o=ac.createOscillator(),g=ac.createGain();o.type='square';
@@ -358,9 +358,9 @@ function lbDraw(c,tm){
 }
 function lbLoop(id){const c=$('lbxc');if(!c||!UI||id!=LBLOOP)return;lbDraw(c,0);requestAnimationFrame(()=>lbLoop(id))}
 function lbInfo(){const el=$('lbxi');if(!el)return;const B=lbS(),busy=!!B.pen||(LBO&&!LBO.fin);
- el.innerHTML='<div class="sg" style="grid-template-columns:repeat(2,1fr)"><div class="sq" style="cursor:default;min-height:54px;background:#ffb3c855"><b style="font-size:15px">🪙 '+fmtXu(ST.xu)+'</b></div><div class="sq" style="cursor:default;min-height:54px;background:#c9a8ff55"><b style="font-size:15px">💎 '+(ST.dia|0)+'</b></div></div>';
+ el.innerHTML='<div class="sg" style="grid-template-columns:repeat(2,1fr)"><div class="sq" style="cursor:default;min-height:54px;background:#ffb3c855"><b style="font-size:15px">🪙 '+fmtXu(ST.xu)+'</b></div><div class="sq" style="cursor:default;min-height:54px;background:#c9a8ff55"><b style="font-size:15px">💎 '+(ST.dia|0)+'</b></div></div>'+'<div class="mut" style="text-align:center;margin:4px 0">Hôm nay: <b>'+B.dc+'/'+LB_DAY+'</b> hộp • làm mới mỗi ngày</div>';
  const b=$('lbxb');if(!b)return;b.style.display=busy?'none':'';
- if(!busy){const ok=ST.xu>=LB_COST;b.innerHTML='<button class="b w'+(ok?'':' z')+'" onclick="lbxBuy()"'+(ok?' style="font-weight:800;color:#fff;border:3px solid #0b4f8a;border-radius:12px;background:linear-gradient(135deg,#22d3ee,#3a86ff,#7c5cff);text-shadow:0 1px 0 #0b4f8a"':'')+'>🎁 Mua hộp — '+LB_COST+' Xu</button>'}}
+ if(!busy){const left=LB_DAY-B.dc,ok=ST.xu>=LB_COST&&left>0;b.innerHTML='<button class="b w'+(ok?'':' z')+'" onclick="lbxBuy()"'+(ok?' style="font-weight:800;color:#fff;border:3px solid #0b4f8a;border-radius:12px;background:linear-gradient(135deg,#22d3ee,#3a86ff,#7c5cff);text-shadow:0 1px 0 #0b4f8a"':'')+'>'+(left>0?'🎁 Mua hộp — '+LB_COST+' Xu':'🌙 Hết lượt hôm nay — mai quay lại nhé')+'</button>'}}
 window.lbxUI=()=>{lbS();LBO=null;LBD=null;LBP=[];LBSH=0;
  const bar=(a,b)=>'<div style="height:9px;border-radius:5px;background:repeating-linear-gradient(90deg,'+a+' 0 14px,'+b+' 14px 28px);margin:4px 0"></div>';
  openUI(head('🎁 Blind Box Kim Cương')+
@@ -372,8 +372,9 @@ window.lbxUI=()=>{lbS();LBO=null;LBD=null;LBP=[];LBSH=0;
   '<button class="b" onclick="circusUI()" style="display:block;width:100%;margin-top:4px">← Quay lại Xe Hề</button></div>');
  lbInfo();lbLoop(++LBLOOP)};
 window.lbxBuy=()=>{const B=lbS();if(B.pen||(LBO&&!LBO.fin))return;
+ if(B.dc>=LB_DAY)return toast('🌙 Hôm nay bạn đã mở đủ '+LB_DAY+' hộp rồi, mai quay lại nhé!');
  if(ST.xu<LB_COST)return toast('🪙 Không đủ Xu (cần '+LB_COST+' Xu)');
- ST.xu-=LB_COST;B.pen={t:lbRoll(),need:3+Math.floor(Math.random()*3),tap:0};LBO=null;LBP=[];LBD={t0:performance.now()};LBSH=0;
+ ST.xu-=LB_COST;B.dc++;B.pen={t:lbRoll(),need:3+Math.floor(Math.random()*3),tap:0};LBO=null;LBP=[];LBD={t0:performance.now()};LBSH=0;
  const r=$('lbxr');if(r)r.textContent='';xuUp();save();lbInfo();lbSnd(1,0)};
 window.lbxTap=e=>{if(e&&e.preventDefault)e.preventDefault();const B=lbS(),p=B.pen;if(!p||LBD||LBO)return;
  p.tap++;LBSH=1;
