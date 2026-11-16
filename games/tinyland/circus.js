@@ -1,5 +1,5 @@
 /* ============================================================
-   XE HỀ XIẾC — đỗ trên đường ở PHỐ XÁ
+   XE HỀ XIẾC — đỗ ở vỉa hè dưới, cạnh ngõ vào PHỐ XÁ
    • Xe pixel-art: mái lều xiếc, loa phát thanh trên nóc, chú hề lái xe, bóng bay, đèn nhấp nháy
    • Cứ vài giây xe "phát loa": rung loa, sóng âm, nốt nhạc, confetti, bong bóng thoại + âm thanh (nhạc xiếc, còi hề)
    • Bấm vào xe → 2 nút: 🎡 Vòng quay may mắn (đã dời từ sạp cũ, đổi màu hề) • 🤡 Tiệm Chú Hề (sắp ra mắt)
@@ -8,7 +8,7 @@
 (()=>{
 'use strict';
 const tmNow=()=>performance.now()/1000;
-const VX=640,VB=308,VW=128,VH=72;            // tâm x, chân xe (y), kích thước sprite
+const VX=156,VB=462,VW=128,VH=72;            // tâm x, chân xe (y), kích thước sprite — đỗ ở vỉa hè dưới, cạnh ngõ vào (chỗ người chơi hay đứng)
 const INK='#2a1540',RED='#e63946',RDK='#b3202e',CRM='#fff4dc',CRD='#e8d3a8',YEL='#ffd23f',YDK='#d9a514',
       PUR='#6a2fb0',PDK='#4a1d82',TEAL='#1fb5a6',TDK='#128a7e',BLU='#3a86ff',ORG='#ff8c1a',PNK='#ff7eb6';
 

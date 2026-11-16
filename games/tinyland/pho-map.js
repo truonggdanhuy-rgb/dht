@@ -395,6 +395,60 @@ function drawVeh(v,tm){const L=PW+200;let x=(tm*v.sp+v.ph)%L;x=v.dir>0?x-100:PW+
 function pingPos(v,tm){const leg=(v.x1-v.x0)/v.sp,cyc=2*(leg+v.rest),u=(tm+v.ph)%cyc;
  if(u<v.rest)return{x:v.x0,d:0,mv:0,rest:1};if(u<v.rest+leg)return{x:v.x0+(u-v.rest)*v.sp,d:3,mv:1,rest:0};
  if(u<2*v.rest+leg)return{x:v.x1,d:0,mv:0,rest:1};return{x:v.x1-(u-2*v.rest-leg)*v.sp,d:2,mv:1,rest:0}}
+// ============================================================
+//  NPC TRANG TRÍ MỚI (không thoại, không bấm được, không cản đường — chỉ để phố thêm sống động)
+//  • Người đạp xe đạp: chạy trên đường từ trái sang phải, ra khỏi map thì biến mất, nghỉ vài giây rồi quay lại
+//  • Người đẩy xe trái cây: đi sát lề trên của đường, chậm rãi từ phải sang trái, hết map thì biến mất rồi lặp lại
+// ============================================================
+// vị trí x trong 1 vòng lặp (null = đang "biến mất" ngoài map, chờ lượt sau)
+function loopX(v,tm,dir){const span=PW+2*v.m,run=span/v.sp,u=(tm+v.ph)%(run+v.pause);if(u>=run)return null;const s=u*v.sp;return dir>0?-v.m+s:PW+v.m-s}
+const FCW=64,FCH=46;   // kích thước sprite xe trái cây (gốc ở giữa, chân xe = đáy)
+const mkFruitCart=()=>mk(FCW,FCH,(g,r)=>{
+ const W1='#b98d58',W2='#d9b36a',W3='#8d6b3f',W4='#6b4a2a',SW='#e8564a',SC='#fff4dc';
+ E(r,'rgba(0,0,0,.2)',38,45,26,1.5);
+ // tay đẩy chếch xuống phía người đẩy (bên trái)
+ for(let i=0;i<14;i++)r(W4,16-i,29+(i>>1),1,2);
+ // 2 cột đỡ mái
+ r(W4,17,7,1,20);r(W4,59,7,1,20);
+ // thân xe gỗ + mặt trước sơn xanh bạc hà
+ r(W4,18,36,40,1);
+ r(W3,16,27,44,9);r(W2,16,27,44,2);r(W1,16,29,44,5);r(W3,16,34,44,2);
+ r('#9fd3b6',19,30,38,4);r('#7fb897',19,33,38,1);
+ for(let x=22;x<56;x+=6)r('#f4f0e0',x,31,3,2);
+ const fr=(x,y,c)=>{r(c,x,y,3,3);r(shade(c,.4),x,y,1,1);r(shade(c,-.3),x+1,y+2,2,1)};
+ // khay 1: táo đỏ
+ r(W3,17,24,15,3);r(W2,17,23,15,1);
+ for(const[x,y]of[[18,20],[21,20],[24,20],[27,20],[19,17],[22,17],[25,17],[21,14]])fr(x,y,'#e0443a');
+ r('#3fa34d',22,13,2,1);
+ // khay 2: cam
+ r(W3,33,24,14,3);r(W2,33,23,14,1);
+ for(const[x,y]of[[34,20],[37,20],[40,20],[43,20],[35,17],[38,17],[41,17],[38,14]])fr(x,y,'#f39a2b');
+ // khay 3: dưa hấu
+ r(W3,48,24,12,3);r(W2,48,23,12,1);
+ E(r,'#2f8a43',54,19,5.5,4.5);r('#1f6a33',52,15,1,9);r('#1f6a33',55,15,1,9);r('#5fbf6a',50,16,2,1);
+ // nải chuối treo dưới mái
+ for(const dx of[0,2,4])for(const[x,y]of[[0,9],[0,10],[1,11],[1,12],[2,13]])r('#f6d84a',44+dx+x,y,1,1);
+ r('#8a6a2a',44,8,6,1);
+ // mái che sọc đỏ-kem
+ for(const[y,x0,x1]of[[0,26,50],[1,20,56],[2,15,61],[3,12,63],[4,12,63],[5,12,63]])for(let x=x0;x<=x1;x++)r(((x-12)>>2)%2?SC:SW,x,y,1,1);
+ for(let x=12;x<64;x+=4){const c=((x-12)>>2)%2?SC:SW;r(c,x,6,4,2);r(c,x+1,8,2,1)}
+ r('rgba(255,255,255,.35)',26,0,24,1);r('rgba(0,0,0,.12)',12,5,52,1)});
+const FRUITCART=outl(mkFruitCart());
+// bánh xe 6px có nan hoa quay theo quãng đường đi được
+function fcWheel(X,Y,th){
+ for(let dy=-6;dy<=6;dy++)for(let dx=-6;dx<=6;dx++){const d=Math.hypot(dx,dy);if(d>6.3)continue;cx.fillStyle=d>4.8?'#3d3d46':'#c9a064';cx.fillRect(X+dx,Y+dy,1,1)}
+ cx.fillStyle='#6b4a2a';for(let k=0;k<4;k++){const a=th+k*Math.PI/2;for(let q=1;q<=4;q++)cx.fillRect(X+Math.round(Math.cos(a)*q),Y+Math.round(Math.sin(a)*q),1,1)}
+ cx.fillStyle='#e4e4e8';cx.fillRect(X,Y,1,1)}
+function drawCyclist(v,tm){const x0=loopX(v,tm,1);if(x0==null)return;const x=Math.round(x0);if(x<camX-70||x>camX+vw+70)return;
+ const mi=MOUNTS.findIndex(m=>m.n=='Xe đạp');if(mi<0)return;
+ drawRide(cx,x,v.by,{d:3,a:tm*1.2,mv:1,sit:0,set:v.set,hair:v.hair},mi,tm)}
+function drawFruitCart(v,tm){const dir=-1,x0=loopX(v,tm,dir);if(x0==null)return;const x=Math.round(x0);if(x<camX-100||x>camX+vw+100)return;
+ const by=v.by,bob=Math.sin(x/4)>.7?-1:0,o=FRUITCART;
+ cx.save();if(dir>0)cx.drawImage(o,Math.round(x-FCW/2)-1,by-FCH-1+bob);else{cx.translate(x,0);cx.scale(-1,1);cx.drawImage(o,-Math.round(FCW/2)-1,by-FCH-1+bob)}cx.restore();
+ // bánh xe (tâm sprite 24.5 và 52.5, cao 39.5)
+ const wy=by-FCH+39+bob;for(const sx of[24.5,52.5])fcWheel(Math.round(dir>0?x-FCW/2+sx:x+FCW/2-sx),wy,x/6);
+ // người đẩy đứng sau xe, hai tay nắm tay đẩy
+ const px=dir>0?x-29:x+29;drawAv(cx,px-10,by-30,{d:dir>0?3:2,a:tm*.9,mv:1,sit:0,set:v.set,hair:v.hair})}
 const DOG=[mkDog(0),mkDog(1)].map(outl);
 function drawWalker(w,tm){
  if(w.k=='gym'){const X=Math.round(w.x),b=Math.abs(Math.sin(tm*3.2))*3,Y=Math.round(w.y-b);
@@ -483,20 +537,21 @@ function build(){
  const VL=PW+200;
  [[1,344,44,[['c','#e9d27a']]],[-1,384,52,[['c','#8fb8e0']]]].forEach(([dir,by,sp,L])=>L.forEach((q,i)=>{
    const im=q[0]=='m'?mkMoto(q[1]):q[0]=='c'?mkCar(q[1]):mkBike(),v={dir,by,sp,ph:i*VL/L.length,im,o:outl(im)};dyn(by,()=>drawVeh(v,tmNow()))}));
- // Xe Hề Xiếc đỗ sát lề trên của đường (circus.js); 2 làn xe chạy dời xuống để không đụng xe hề
+ // NPC trang trí mới: người đạp xe (chạy → qua phải) & người đẩy xe trái cây (đi sát lề trên, ← qua trái); không thoại, không chạm được
+ {const CY={by:316,sp:34,m:60,pause:11,ph:3,set:3,hair:2},FC={by:298,sp:14,m:80,pause:9,ph:30,set:1,hair:0};
+  dyn(CY.by,()=>drawCyclist(CY,tmNow()));dyn(FC.by,()=>drawFruitCart(FC,tmNow()))}
+ // Xe Hề Xiếc đỗ ở vỉa hè dưới, ngay cạnh ngõ vào (circus.js) — chỗ người chơi hay đứng khi mới vào phố
  if(window.circusBuild)circusBuild({dyn,hit,blk});
- // ===== VỈA HÈ DƯỚI (y394–500): "bên kia đường" — sạp vé số, gánh hàng (Vòng quay may mắn đã dời sang Xe Hề Xiếc ở Công viên — chỗ cũ để trống) =====
- for(const[x,y]of[[24,424],[470,490],[250,490]])put(mkBin(),x,y,[x-6,y-8,x+6,y]);
- hit(14,402,22,24,'🗑️ Thùng rác xinh xắn');
+ // ===== VỈA HÈ DƯỚI (y394–500): sạp vé số, cửa hiệu Trùm kim cương, Xe Hề Xiếc (đỗ cạnh ngõ vào) — gánh hàng rong & thùng rác đã dời/xóa =====
+ // (đã xóa các thùng rác ở vỉa hè dưới để nhường chỗ cho Xe Hề)
  put(mkLotStall(),866,486,[827,470,905,486]);
  hit(826,440,80,46,'🎟️ Sạp vé số Kiến thiết — bấm để mua vé, xổ sau 2 phút','cv:ps:lot',[866,496]);
  mkNpc({id:'vs',x:920,y:486,d:2,set:4,hair:3,prop:'',lines:['Vé số đây! Thử vận may nào!','Mua tờ vé số lấy hên nè!','Xổ số sắp quay rồi nha!']});
  put(mkCage(),790,486,[776,480,804,486]);
  dyn(485,()=>psCage(790,456,tmNow()));
  hit(766,430,48,56,'🎰 Vòng quay số — bấm để xem vé của bạn','cv:ps:lot',[790,496]);
- // 2 cô bán hàng rong gánh hàng đi qua đi lại chậm rãi, đến đầu đường thì ngồi nghỉ
- for(const v of[{y:448,x0:200,x1:292,sp:13,rest:10,ph:0,set:5,hair:2,goods:['#e0584a','#f4d38a','#a8d8b0']},{y:470,x0:580,x1:730,sp:11,rest:12,ph:9,set:3,hair:3,goods:['#a8d8b0','#f6f2e2','#f0a7a0']}]){
-   put(STL[0],v.x0,v.y+1);put(STL[1],v.x1,v.y+1);walker(Object.assign({k:'vend'},v))}
+ // 2 cô bán hàng rong gánh hàng đã dời sang VỈA HÈ TRÊN ("bên kia đường") để không đụng Xe Hề; đi qua đi lại chậm rãi, không ngồi nghỉ nên không cần ghế
+ for(const v of[{y:224,x0:140,x1:252,sp:13,rest:0,ph:0,set:5,hair:2,goods:['#e0584a','#f4d38a','#a8d8b0']},{y:204,x0:400,x1:570,sp:11,rest:0,ph:9,set:3,hair:3,goods:['#a8d8b0','#f6f2e2','#f0a7a0']}])walker(Object.assign({k:'vend'},v))
 
  // ----- TRÙM KIM CƯƠNG: cửa hiệu pastel nhỏ gọn (chỉ chắn 1 hàng ô sát tường) + ông đứng trước cửa -----
  // (hòm kho báu + đống kim cương đã chuyển sang Tiệm nội thất, 500 Xu/món)
