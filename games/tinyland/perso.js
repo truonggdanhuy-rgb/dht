@@ -16,12 +16,15 @@ const CARD_MS=3600000;         // 1 giờ thật mỗi lần mua (mua khi còn h
 const DIG_MS=1400;             // thời gian 1 lần cuốc (ms)
 const DIG_RESPAWN=5000;        // điểm cuốc ẩn bao lâu thì tái xuất (ms)
 const SWING_EVERY=5;           // mỗi bao nhiêu giây vung gậy ném bóng nước (giây)
-/* Bảng vật phẩm nâng cấp: thêm vật phẩm / cấp mới = thêm 1 dòng.
-   k = khóa trong ACCS (index.html), star/snow = số Mảnh sao/Mảnh tuyết, xu/dia = giá, lock = chưa mở */
+/* Bảng vật phẩm nâng cấp: mỗi dòng = 1 cấp của 1 vật phẩm. Thêm vật phẩm / cấp / mùa mới = thêm dòng.
+   season = mùa (chỉ để sắp xếp, KHÔNG hiện cho người chơi). Mỗi vật phẩm nâng cấp độc lập nhau nên sang mùa mới
+   là mua được ngay, không cần nâng đầy mùa trước. id = khóa vật phẩm; ACCS phải có mục k = id + số cấp (vd. scepter1)
+   star/snow = số Mảnh sao/Mảnh tuyết, xu/dia = giá, lock = chưa mở */
 const UPG=[
- {id:'scepter',name:'Quyền trượng Thủy Thần',lv:1,k:'scepter1',star:10, snow:10, xu:0,    dia:0},
- {id:'scepter',name:'Quyền trượng Thủy Thần',lv:2,k:'scepter2',star:40, snow:40, xu:10000,dia:0},
- {id:'scepter',name:'Quyền trượng Thủy Thần',lv:3,k:'scepter3',star:100,snow:100,xu:30000,dia:10,lock:1}];
+ {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:1,star:10, snow:10, xu:0,    dia:0},
+ {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:2,star:40, snow:40, xu:10000,dia:0},
+ {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:3,star:100,snow:100,xu:30000,dia:10,lock:1}];
+const SOON=[2];                // các mùa sắp ra mắt: hiện "Coming soon" trong panel (khi có vật phẩm mùa đó trong UPG thì tự hiện vật phẩm thay thế)
 /* Vị trí điểm cuốc cố định (tọa độ chân) */
 const PTS={
  wt:[[95,178],[350,238],[520,182],[350,338],[565,278]].map(a=>({x:a[0],y:a[1],hide:0,dig:0})),
@@ -31,17 +34,21 @@ const PRX=520,PRY=480,PSTAND=[560,494];
 
 /* ---------- dữ liệu ---------- */
 const P=()=>{let p=ST.pr;if(!p||typeof p!='object')p=ST.pr={};p.t=+p.t||0;p.st=p.st|0;p.sn=p.sn|0;p.lv=Math.max(0,Math.min(3,p.lv|0));return p};
-const sci=lv=>ACCS.findIndex(a=>a.k=='scepter'+lv);
 const now=()=>Date.now();
 const cardLeft=()=>Math.max(0,P().t-now());
 const fmtT=ms=>{const s=Math.ceil(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60;return (h?h+' giờ ':'')+(h||m?m+' phút ':'')+c+' giây'};
 const N=n=>fmtXu(n|0);
-/* đặt cấp gậy: gậy cũ bị loại, đang trang bị thì đổi cấp tại chỗ */
-function setScepter(lv){const p=P(),old=p.lv;let wore=0;
- for(let l=1;l<=3;l++){const i=sci(l);if(i<0)continue;const k=ST.own.a.indexOf(i);if(k>=0)ST.own.a.splice(k,1);if(ST.av.a==i){wore=1;ST.av.a=-1}}
- p.lv=lv;const ni=sci(lv);if(ni>=0){ST.own.a.push(ni);if(wore)ST.av.a=ni}}
-/* đồng bộ: nếu có gậy trong dữ liệu nhưng thiếu trong Túi (vd. tải lại) thì bổ sung */
-function fixOwn(){const p=P();if(p.lv>0){const i=sci(p.lv);if(i>=0&&!ST.own.a.includes(i))ST.own.a.push(i)}}
+const sci=(id,l)=>ACCS.findIndex(a=>a.k==id+l);
+const IDS=()=>[...new Set(UPG.slice().sort((a,b)=>a.season-b.season).map(u=>u.id))];
+const lvOf=id=>id=='scepter'?P().lv:(((P().it||{})[id])|0);
+const rowsOf=id=>UPG.filter(u=>u.id==id).sort((a,b)=>a.lv-b.lv);
+/* đặt cấp vật phẩm: bản cũ bị loại, đang trang bị thì đổi cấp tại chỗ */
+function setLv(id,lv){const p=P();let wore=0;
+ for(let l=1;l<=9;l++){const i=sci(id,l);if(i<0)continue;const k=ST.own.a.indexOf(i);if(k>=0)ST.own.a.splice(k,1);if(ST.av.a==i){wore=1;ST.av.a=-1}}
+ if(id=='scepter')p.lv=lv;else{p.it=p.it||{};p.it[id]=lv}
+ const ni=sci(id,lv);if(ni>=0){ST.own.a.push(ni);if(wore)ST.av.a=ni}}
+/* nếu dữ liệu có vật phẩm mà thiếu trong Túi (vd. tải lại) thì bổ sung */
+function fixOwn(){for(const id of IDS()){const l=lvOf(id);if(l>0){const i=sci(id,l);if(i>=0&&!ST.own.a.includes(i))ST.own.a.push(i)}}}
 
 /* ---------- hình vẽ nhỏ ---------- */
 const rgba=(c,a)=>'rgba('+c+','+a+')';
@@ -142,44 +149,45 @@ function dig(key,i){const p=(PTS[key]||[])[i];if(!p)return;const n=now();
 
 /* ===== PANEL THÁI TỬ (phong cách cung điện Ba Tư) ===== */
 function css(){if(document.getElementById('prcss'))return;const s=document.createElement('style');s.id='prcss';
- s.textContent='.prp{background:radial-gradient(ellipse at 50% -10%,#6a46c8 0,#2f1d7a 42%,#150d3d 100%);border:3px solid #e8b83a;border-radius:18px 18px 8px 8px;box-shadow:inset 0 0 0 2px #7a5a14,inset 0 0 24px rgba(0,0,0,.55);color:#ffe9a0;padding:6px 10px 10px;text-align:left}'+
- '.prp:before{content:"";display:block;height:14px;margin:0 -4px 2px;background:radial-gradient(circle at 10px 15px,transparent 7px,#e8b83a 7px,#e8b83a 8.5px,transparent 8.5px) repeat-x;background-size:20px 14px}'+
- '.prh{display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:17px;color:#ffd75a;text-shadow:0 1px 0 #000,0 0 8px rgba(255,200,60,.6)}'+
- '.prs{font-size:11px;color:#cdbcff;margin:2px 0 6px}.prr{font-size:12px;color:#ffe9a0;background:rgba(0,0,0,.28);border:1px solid #b58a1c;border-radius:8px;padding:4px 6px;margin-bottom:6px}'+
- '.prc{border:1px solid #e8b83a;background:rgba(18,8,60,.6);border-radius:10px;padding:8px;margin:7px 0;box-shadow:inset 0 0 0 1px rgba(232,184,58,.25)}'+
- '.prc h4{margin:0 0 4px;font-size:14px;color:#ffd75a}.prc div{font-size:12px;line-height:1.5}.ok{color:#8dffb0}.no{color:#ff9a9a}'+
- '.prb{display:block;width:100%;margin-top:6px;padding:8px;border:2px solid #7a5a14;border-radius:9px;background:linear-gradient(#ffe27a,#e0a92e);color:#3a2000;font-weight:900;font-size:13px;cursor:pointer}'+
- '.prb[disabled]{background:#6b6280;color:#c9c0e0;border-color:#4a4260;cursor:not-allowed}';
+ s.textContent='.prp{background:linear-gradient(180deg,#8e6df0 0,#6a4fd6 38%,#4a38b4 100%);border:3px solid #f2c84a;border-radius:18px 18px 8px 8px;box-shadow:inset 0 0 0 2px #fff2b8,inset 0 0 26px rgba(255,255,255,.18);color:#fff8e0;padding:6px 10px 10px;text-align:left}'+
+ '.prp:before{content:"";display:block;height:14px;margin:0 -4px 2px;background:radial-gradient(circle at 10px 15px,transparent 7px,#ffe58a 7px,#ffe58a 8.5px,transparent 8.5px) repeat-x;background-size:20px 14px}'+
+ '.prh{display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:17px;color:#fff1a8;text-shadow:0 1px 0 #3a2a8a,0 0 10px rgba(255,230,120,.7)}'+
+ '.prg{margin:6px 0;padding:7px 9px 7px 26px;font-size:12px;line-height:1.5;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:10px}.prg b{color:#ffe27a}'+
+ '.prc{border:1px solid #f2c84a;background:rgba(255,255,255,.14);border-radius:10px;padding:8px 10px;margin:6px 0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}'+
+ '.prs{margin:10px 2px 2px;font-size:13px;font-weight:900;color:#2a1a5a;background:linear-gradient(90deg,#7fe8e0,#b9f4ee);border-radius:8px;padding:3px 10px;display:inline-block;box-shadow:0 1px 0 rgba(0,0,0,.25)}'+
+ '.prc.soon{background:rgba(255,255,255,.08);border-style:dashed;text-align:center;opacity:.9}'+
+ '.prt{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px;font-weight:900;color:#ffe27a}.prt small{font-size:12px;font-weight:700;color:#e9f6ff}'+
+ '.prk{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;margin-top:5px;color:#fff8e0}.ok{color:#a8ffc4;font-weight:800}.no{color:#ffc4c4;font-weight:800}'+
+ '.prb{display:block;width:100%;margin-top:7px;padding:7px;border:2px solid #b8861c;border-radius:9px;background:linear-gradient(#fff0a0,#f0b630);color:#4a2a00;font-weight:900;font-size:13px;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.25)}'+
+ '.prb[disabled]{background:linear-gradient(#cfc8ea,#a79fd0);color:#5a5280;border-color:#8a82b8;cursor:not-allowed;box-shadow:none}';
  document.head.appendChild(s)}
 let tmr=0;
-function prince(){css();fixOwn();const p=P(),L=cardLeft(),lv=p.lv;
- const need=(have,n)=>'<span class="'+(have>=n?'ok':'no')+'">'+N(have)+'/'+N(n)+'</span>';
- const reqHtml=u=>'⭐ Mảnh sao '+need(p.st,u.star)+' • ❄️ Mảnh tuyết '+need(p.sn,u.snow)+(u.xu?' • 🪙 Xu '+need(ST.xu|0,u.xu):'')+(u.dia?' • 💎 '+need(ST.dia|0,u.dia):'');
+function prince(){css();fixOwn();const p=P(),L=cardLeft();
+ const chip=(ic,have,n)=>'<span>'+ic+' <span class="'+(have>=n?'ok':'no')+'">'+N(have)+'/'+N(n)+'</span></span>';
  const can=u=>p.st>=u.star&&p.sn>=u.snow&&(ST.xu|0)>=u.xu&&(ST.dia|0)>=u.dia;
- const u1=UPG.find(u=>u.lv==1),nx=UPG.find(u=>u.lv==lv+1);
  let h='<div class="prp" id="prp"><div class="prh"><span>👑 Thái tử Ba Tư</span><button class="b x" onclick="closeUI()">X</button></div>'+
- '<div class="prs">“Chào lữ khách! Hãy cuốc mảnh ở Làng Tuyết và Làng Lễ hội, ta sẽ ban cho ngươi báu vật.”</div>'+
- '<div class="prr">🪙 '+N(ST.xu)+' • 💎 '+N(ST.dia)+' • Xu quái vật '+N(ST.qv)+'<br>⭐ Mảnh sao <b>'+p.st+'</b> • ❄️ Mảnh tuyết <b>'+p.sn+'</b></div>';
- h+='<div class="prc"><h4>⛏️ Thẻ cuốc</h4><div>Cuốc mảnh ở Làng Tuyết & Làng Lễ hội. Hiệu lực 1 giờ (tính giờ thật, tắt game vẫn trôi), mua thêm khi còn hạn sẽ cộng dồn.</div>'+
-  '<div>Còn lại: <b id="prl">'+(L>0?fmtT(L):'chưa có thẻ')+'</b></div>'+
-  '<button class="prb" onclick="PERSO.buyCard()"'+((ST.qv|0)<CARD_PRICE?' disabled':'')+'>Mua Thẻ cuốc — '+CARD_PRICE+' xu quái vật (+1 giờ)</button></div>';
- h+='<div class="prc"><h4>🔱 Ghép Quyền trượng Thủy Thần</h4>';
- if(lv>0)h+='<div class="ok">✓ Bạn đã có Quyền trượng Thủy Thần cấp '+lv+' (xem trong 🎒 Túi › Phụ kiện).</div>';
- else h+='<div>Nộp nguyên liệu để nhận Quyền trượng cấp 1:<br>'+reqHtml(u1)+'</div><button class="prb" onclick="PERSO.craft()"'+(can(u1)?'':' disabled')+'>Ghép Quyền trượng cấp 1</button>';
- h+='</div><div class="prc"><h4>✨ Nâng cấp</h4>';
- if(lv==0)h+='<div>Hãy ghép Quyền trượng cấp 1 trước.</div>';
- else if(!nx)h+='<div class="ok">Quyền trượng đã ở cấp cao nhất.</div>';
- else{h+='<div>Lên cấp '+nx.lv+':<br>'+reqHtml(nx)+'</div>';
-  if(nx.lock)h+='<button class="prb" disabled>🔒 Sắp ra mắt</button>';
-  else h+='<button class="prb" onclick="PERSO.upgrade()"'+(can(nx)?'':' disabled')+'>Nâng lên cấp '+nx.lv+'</button>'}
- h+='</div></div>';
+ '<ol class="prg"><li>Thuê <b>Thẻ cuốc</b> 1 giờ ở đây.</li><li>Sang <b>Làng Tuyết</b> đào người tuyết ❄️ và <b>Làng Lễ hội</b> đào ngôi sao ⭐ để nhận mảnh.</li><li>Mang mảnh về đây để nâng cấp vật phẩm.</li></ol>'+
+ '<div class="prc"><div class="prt"><span>⛏️ Thẻ cuốc</span><small>Còn lại: <b id="prl">'+(L>0?fmtT(L):'chưa có thẻ')+'</b></small></div>'+
+ '<button class="prb" onclick="PERSO.buyCard()"'+((ST.qv|0)<CARD_PRICE?' disabled':'')+'>Thuê 1 giờ — '+CARD_PRICE+' xu quái vật</button></div>'+
+ '<div class="prk" style="justify-content:center;margin:4px 0">Mảnh đang có: <span>⭐ <b>'+p.st+'</b></span><span>❄️ <b>'+p.sn+'</b></span></div>';
+ const seasons=[...new Set(UPG.map(u=>u.season).concat(SOON))].sort((x,y)=>x-y);
+ for(const se of seasons){const ids=IDS().filter(id=>rowsOf(id)[0].season==se);
+  h+='<div class="prs">Mùa '+se+(ids.length?': '+ids.map(id=>rowsOf(id)[0].name).join(', '):'')+'</div>';
+  if(!ids.length){h+='<div class="prc soon"><div class="prt" style="justify-content:center">✨ Coming soon</div><div class="prk" style="justify-content:center">Bạn đợi nhé!</div></div>';continue}
+  for(const id of ids){const R=rowsOf(id),lv=lvOf(id),nx=R.find(u=>u.lv==lv+1);
+   h+='<div class="prc"><div class="prt"><span>🔱 '+R[0].name+'</span><small>'+(lv?'Cấp '+lv+(nx?'':' (tối đa)'):'Chưa có')+'</small></div>';
+   if(nx){h+='<div class="prk">'+chip('⭐',p.st,nx.star)+chip('❄️',p.sn,nx.snow)+(nx.xu?chip('🪙',ST.xu|0,nx.xu):'')+(nx.dia?chip('💎',ST.dia|0,nx.dia):'')+'</div>';
+    h+=nx.lock?'<button class="prb" disabled>🔒 Sắp ra mắt</button>':'<button class="prb" onclick="PERSO.up(\''+id+'\')"'+(can(nx)?'':' disabled')+'>'+(lv?'Nâng lên cấp '+nx.lv:'Ghép vật phẩm')+'</button>'}
+   else h+='<div class="prk ok">Đã đạt cấp cao nhất</div>';
+   h+='</div>'}}
+ h+='</div>';
  openUI(h);clearInterval(tmr);tmr=setInterval(()=>{const e=$('prl');if(!UI||!e){clearInterval(tmr);return}const l=cardLeft();e.textContent=l>0?fmtT(l):'chưa có thẻ';if(l<=0&&e.dataset.x!='1'){e.dataset.x='1';prince()}},1000)}
 function buyCard(){const p=P();if((ST.qv|0)<CARD_PRICE)return toast('Không đủ xu quái vật! Cần '+CARD_PRICE);
- ST.qv-=CARD_PRICE;p.t=Math.max(now(),p.t)+CARD_MS;xuUp();save();toast('⛏️ Đã mua Thẻ cuốc +1 giờ');prince()}
-function pay(u){const p=P();if(!(p.st>=u.star&&p.sn>=u.snow&&(ST.xu|0)>=u.xu&&(ST.dia|0)>=u.dia))return 0;
- p.st-=u.star;p.sn-=u.snow;ST.xu-=u.xu;ST.dia-=u.dia;return 1}
-function craft(){const p=P(),u=UPG.find(x=>x.lv==1);if(p.lv>0||u.lock)return;if(!pay(u))return toast('Chưa đủ nguyên liệu');setScepter(1);xuUp();save();toast('🔱 Nhận Quyền trượng Thủy Thần cấp 1!\nMở 🎒 Túi › Phụ kiện để trang bị');prince()}
-function upgrade(){const p=P(),u=UPG.find(x=>x.lv==p.lv+1);if(!u||u.lock||p.lv<1)return;if(!pay(u))return toast('Chưa đủ nguyên liệu');setScepter(u.lv);xuUp();save();toast('✨ Quyền trượng lên cấp '+u.lv+'!');prince()}
+ ST.qv-=CARD_PRICE;p.t=Math.max(now(),p.t)+CARD_MS;xuUp();save();toast('⛏️ Đã thuê Thẻ cuốc +1 giờ');prince()}
+function up(id){const p=P(),u=rowsOf(id).find(x=>x.lv==lvOf(id)+1);if(!u||u.lock)return;
+ if(!(p.st>=u.star&&p.sn>=u.snow&&(ST.xu|0)>=u.xu&&(ST.dia|0)>=u.dia))return toast('Chưa đủ nguyên liệu');
+ p.st-=u.star;p.sn-=u.snow;ST.xu-=u.xu;ST.dia-=u.dia;setLv(id,u.lv);xuUp();save();
+ toast(u.lv==1?'🔱 Nhận '+u.name+'!\nMở 🎒 Túi › Phụ kiện để trang bị':'✨ '+u.name+' lên cấp '+u.lv+'!');prince()}
 
 /* ===== QUYỀN TRƯỢNG: hình vẽ (art của ACCS, t:'hold') ===== */
 function art(Pa,lv){
@@ -243,5 +251,5 @@ const standAt=(M,p)=>{const bad=(x,y)=>{const tx=Math.floor(x/16),ty=Math.floor(
 [['wt',WT,drawSnowman,'⛄ Người tuyết — bấm để cuốc Mảnh tuyết (cần Thẻ cuốc)'],['lh',LH,drawStar,'⭐ Ngôi sao lấp lánh — bấm để cuốc Mảnh sao (cần Thẻ cuốc)']].forEach(([key,M,fn,msg])=>{
  PTS[key].forEach((p,i)=>{M.sp.push({by:p.y+2,d:()=>fn(p)});M.hits.push([p.x-12,p.y-26,24,32,msg,'cv:pr:dig:'+key+':'+i,standAt(M,p)])})});
 hookBag();
-window.PERSO={art,buyCard,craft,upgrade,prince,PTS,UPG};
+window.PERSO={art,buyCard,up,prince,PTS,UPG};
 })();
