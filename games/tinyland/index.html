@@ -785,7 +785,12 @@ const SETS=[
   {n:'Tiên nữ',k:'tn',tn:1,ach:1,dia:50,ds:'Váy voan nhiều tầng lơ lửng, dải lụa trong suốt lấp lánh quấn thân, mão hoa & búi tóc to, tay cầm gậy phép chớp sáng. Bling quanh người. Không che mặt.',sh:'#fff1fa',scarf:'#ffc6e0',belt:'#ffd45a',pt:'#d9c8ff',rpt:'#d9c8ff',shoe:'#ffd45a'},
   // ---- Set Chiến binh Âu Lạc (Nam / Nữ) — mascot KHÔNG che mặt. Đổi ở Shop Tiên Nữ (Công viên) bằng 1 🎫 Phiếu Tiên Giới / set. Hình vẽ: aulac.js. LUÔN để ở CUỐI mảng SETS ----
   {n:'Chiến binh Âu Lạc (Nam)',k:'aulm',aul:'m',ach:1,tk:1,ds:'Mão lông vũ đỏ thẫm cao vút, tóc dài bay, giáp đồng nâu đỏ, khăn đỏ vắt vai, kiếm lưỡi xanh thép. Không che mặt.',sh:'#7a2c1f',scarf:'#e03a4a',belt:'#2a1c18',pt:'#3a2a24',rpt:'#3a2a24',shoe:'#2a1c18'},
-  {n:'Chiến binh Âu Lạc (Nữ)',k:'aulf',aul:'f',ach:1,tk:1,ds:'Mão vàng cài lông vũ, tóc đen dài ánh vàng, giáp đỏ nâu viền vàng ngọc lục bảo, dải lụa xanh ngọc bay. Không che mặt.',sh:'#8f3322',scarf:'#3fd18a',belt:'#f2c14e',pt:'#8f3322',rpt:'#8f3322',shoe:'#6b4a22'}];
+  {n:'Chiến binh Âu Lạc (Nữ)',k:'aulf',aul:'f',ach:1,tk:1,ds:'Mão vàng cài lông vũ, tóc đen dài ánh vàng, giáp đỏ nâu viền vàng ngọc lục bảo, dải lụa xanh ngọc bay. Không che mặt.',sh:'#8f3322',scarf:'#3fd18a',belt:'#f2c14e',pt:'#8f3322',rpt:'#8f3322',shoe:'#6b4a22'},
+  // ---- Mascot Thỏ tuyết (Nam / Nữ) — bán ở Shop Phố xá 5000 Xu / set (giá: SHOP.s.pr trong pho-map.js). Hình vẽ: newitems2.js. LUÔN để ở CUỐI mảng SETS ----
+  {n:'Mascot Thỏ tuyết (Nam)',mascot:'bunny',bn:'m',wide:1,sh:'#fbfcff',pt:'#fbfcff',rpt:'#fbfcff',shoe:'#dfe6f5',scarf:'#fbfcff'},
+  {n:'Mascot Thỏ tuyết (Nữ)',mascot:'bunny',bn:'f',wide:1,sh:'#fbfcff',pt:'#fbfcff',rpt:'#fbfcff',shoe:'#dfe6f5',scarf:'#fbfcff'},
+  // ---- Mascot Ma đồng giáng thế — bán ở Shop kim cương 💎15. wide:1 = dải lụa/tóc vượt khung chuẩn 20x31 nên mascotCheck bỏ qua. Hình vẽ: newitems2.js ----
+  {n:'Ma đồng giáng thế',k:'madong',mascot:'madong',bn:'m',wide:1,ach:1,dia:15,ds:'Tóc đen dựng cao, vằn đỏ trên mặt, dải lụa đỏ bay phấp phới quanh người. Hợp với Thương ma đồng & Phong hỏa luân. Không che mặt.',sh:'#f0b68a',pt:'#4a2a2a',rpt:'#f0b68a',shoe:'#7a2a1c',scarf:'#d81f4a'}];
 const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'},{n:'Tóc nâu buộc',k:'tail',c:'#6a3e1e'},{n:'Tóc vàng',k:'short',c:'#e0b84a'},{n:'Mũ len đỏ',k:'beanie',c:'#c0392b',hr:'#2b1d12'},{n:'Mũ len xanh',k:'beanie',c:'#2f6fe0',hr:'#6a3e1e'},
  {n:'Tóc Sailor Moon',k:'sailor',c:'#f6d96b'},{n:'Tóc 2 chùm',k:'bun2',c:'#2a2224'},{n:'Tóc nữ yêu kiều',k:'longf',c:'#201a24'},{n:'Tóc xinh yêu',k:'bobf',c:'#17151c'},
  {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'},
@@ -1434,7 +1439,7 @@ function drawAv(g,ox,oy,o){
  const SK='#f1c08a',SKS='#d99e6a',EY='#2b1d12',SH=S.sh,SHL=S.shl||shade(SH,.18),SHD=S.shd||shade(SH,-.28),PT=S.pt,PTL=shade(PT,.25),SD=S.shoe,RD='#c0392b',KN=S.knot||shade(S.scarf,-.3);
  const gtr=o.acc>=0&&!rd&&!sit&&ACCS[o.acc]&&ACCS[o.acc].k=='guitar',bob=o.nobob?0:o.mv?((f==1||f==3)?-1:0):(gtr?gtBob():0),u=(c,a,b,w,h)=>r(c,a,b+bob,w,h);
  // FIX: set Mascot (hươu/dạ nguyệt/tiên nữ/âu lạc/mascot) trước đây return sớm nên phụ kiện cầm tay bị ẩn -> vẽ phụ kiện sau khi vẽ xong set
- const MACC=()=>{if(o.acc>=0&&!rd&&!sit)drawAcc(r,o,{side,Rt,back,lg,sx:side?lg*(Rt?2:-2):0})};
+ const MACC=()=>{if(o.acc>=0&&(!rd||o.rdAcc)&&!sit)drawAcc(r,o,{side,Rt,back,lg,sx:side?lg*(Rt?2:-2):0})};
  if(window.WingBack)WingBack(r,o,{side,Rt,back,sit,rd});   // cánh nằm SAU thân (nhìn trước / cánh xa khi nhìn ngang)
  if(S.deer){drawDeerSet(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});return MACC()}
  if(S.dn){drawDaNguyet(g,r,u,o,S,{f,lg,side,Rt,back,sit,rd});return MACC()}
@@ -1503,7 +1508,9 @@ const ACCS=[{n:'Lồng đèn trăng rằm',k:'moon',t:'hang',art:accMoon},{n:'Xe
  {n:'Muôi đầu bếp',k:'ladle',t:'hold',art:accLadle},{n:'Giáo lính Việt',k:'spear',t:'hold',art:accSpear},
  {n:'Đàn guitar',k:'guitar',t:'hold',art:accGuitar},
  // t:'wing' = CÁNH đeo sau lưng (hình vẽ ở newitems.js). dia = giá Kim cương, chỉ bán ở Shop kim cương. Cánh ẩn khi cưỡi thú / ngồi nghỉ.
- {n:'Cánh Dực Ưng',k:'wingeagle',t:'wing',wing:'eagle',dia:10},{n:'Cánh Đại dương',k:'wingocean',t:'wing',wing:'ocean',dia:10}];   // guitar 3000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accGuitar trong outfits.js
+ {n:'Cánh Dực Ưng',k:'wingeagle',t:'wing',wing:'eagle',dia:10},{n:'Cánh Đại dương',k:'wingocean',t:'wing',wing:'ocean',dia:10},
+ // Thương ma đồng: giáo vàng mỏng, dài (t:'hold', 400 Xu ở Shop Phố xá — SHOP.a.pr trong pho-map.js; hình vẽ: accMaSpear trong newitems2.js)
+ {n:'Thương ma đồng',k:'maspear',t:'hold',art:(P)=>window.accMaSpear&&accMaSpear(P)}];   // guitar 3000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accGuitar trong outfits.js
 //   t:'float' = cầm DÂY dài, vật bay lơ lửng phía trên đầu -> art(P) giống 'hang'
 // ===== Pet đổi bằng Huy hiệu tuyết: Bánh quy gừng + Mây tuyết =====
 function drawPetGinger(g,x,y,d,mv,a,t){
@@ -1655,7 +1662,7 @@ function drawAcc(r0,o,c){const A=ACCS[o.acc];if(!A)return;if(A.t=='wing'){if(win
   A.art(T,mf)}}
 // ---- tự kiểm tra mascot theo khung chuẩn MSTD: gõ mascotCheck() trong Console (F12) ----
 window.mascotCheck=function(quiet){const res=[];
- SETS.forEach((S,si)=>{if(!S.mascot)return;const bad=[];let tag=S.n;
+ SETS.forEach((S,si)=>{if(!S.mascot||S.wide)return;const bad=[];let tag=S.n;
   const st=[];for(let d=0;d<4;d++){for(let f=0;f<4;f++)st.push({d,a:(f+.05)/9,mv:1,k:'đi d'+d+' f'+f});st.push({d,a:0,mv:0,sit:2,k:'ngồi d'+d});st.push({d,a:0,mv:0,ride:1,k:'cưỡi d'+d})}
   for(const q of st){let x0=99,x1=-99,y0=99,y1=-99,n=0,fs='';
    const g={set fillStyle(v){fs=v},get fillStyle(){return fs},fillRect(x,y,w,h){if(String(fs).startsWith('rgba(0,0,0'))return;if(w<=0||h<=0)return;n++;x0=Math.min(x0,x);x1=Math.max(x1,x+w);y0=Math.min(y0,y);y1=Math.max(y1,y+h)}};
@@ -1888,7 +1895,14 @@ const MOUNTS=[{n:'Trâu Việt',hw:9,drop:8,spd:1.8,seat:{0:[0,-22],1:[0,-22],si
  draw(R,d,f,b,t,pt,c){aulFish(R,d,f,b,t,pt,c)}},
 // ===== Xe bí ngô (💎15 ở Shop kim cương; hình vẽ nằm ở newitems.js; món mới LUÔN thêm vào CUỐI mảng MOUNTS) =====
 {n:'Xe bí ngô',k:'pumpkin',dia:15,hw:10,drop:0,spd:2.3,sh:[30,24],seat:{0:[0,-12],1:[0,-12],side:[0,-12]},legs(){},
- draw(R,d,f,b,t,pt,c){if(window.pumpkinDraw)pumpkinDraw(R,d,f,b,t,pt,c)}}
+ draw(R,d,f,b,t,pt,c){if(window.pumpkinDraw)pumpkinDraw(R,d,f,b,t,pt,c)}},
+// ===== Thú cưỡi BAY, nhân vật ĐỨNG (acc:1 = vẫn cầm được phụ kiện cầm tay). Hình vẽ nằm ở newitems2.js; món mới LUÔN thêm vào CUỐI mảng MOUNTS =====
+{n:'Bánh ngọt',k:'cake',dia:20,hw:12,drop:0,spd:2.4,nobob:1,acc:1,sh:[0,0],seat:{0:[0,-19],1:[0,-19],side:[0,-19]},
+ legs(){},hov:(t,mv)=>window.cakeHov?cakeHov(t,mv):0,
+ draw(R,d,f,b,t,pt,c){if(window.cakeDraw)cakeDraw(R,d,f,b,t,pt,c)}},
+{n:'Phong hỏa luân',k:'firewheel',dia:10,hw:11,drop:0,spd:3,nobob:1,acc:1,sh:[0,0],seat:{0:[0,-19],1:[0,-19],side:[0,-19]},
+ legs(){},hov:(t,mv)=>window.wheelHov?wheelHov(t,mv):0,
+ draw(R,d,f,b,t,pt,c){if(window.wheelDraw)wheelDraw(R,d,f,b,t,pt,c)}}
 ];
 // nguoi ngoi tren thu cuoi
 function drawRide(g,x,y,o,mi,t){
@@ -1901,7 +1915,7 @@ function drawRide(g,x,y,o,mi,t){
  if(M.legs)M.legs(R,d,ph,sx,sy,PT,SD,S);
  else if(side){R(shade(PT,-.15),sx-2,sy-3+bob,8,3);R(PT,sx+3,sy-1+bob,3,dr);R(shade(PT,.25),sx+3,sy-1+bob,1,dr);R(SD,sx+3,sy-1+bob+dr,5,2)}
  else for(const x0 of[-M.hw-2,M.hw]){R(PT,x0,sy-3+bob,3,dr+2);R(shade(PT,.25),x0,sy-3+bob,1,dr+2);R(SD,x0,sy-1+bob+dr,3,2)}
- drawAv(g,x+(mir?-sx:sx)-10,y+sy-24+hv,Object.assign({},o,{ride:1,nobob:M.nobob,noarm:M.noarm&&side}));
+ drawAv(g,x+(mir?-sx:sx)-10,y+sy-24+hv,Object.assign({},o,{ride:1,nobob:M.nobob,noarm:M.noarm&&side,rdAcc:M.acc}));
  M.draw(R,d,f,bob+hv,t,1,C)}
 // pet meo con (4 huong), di theo nhan vat
 function drawPetCat(g,x,y,d,mv,a,t){
@@ -5593,7 +5607,7 @@ function diaShop(){const L=ACTS.filter(a=>a.k=='solo'&&!a.bd);
  +L.map(a=>{const have=!!ST.acts[a.id],ok=(ST.dia|0)>=a.pr;
   return '<div class="dcd">'+actCv(a.id,72,100,'mini')+'<b>'+a.n+'</b>'+(have?'<button class="b" onclick="actUI()">✓ Đã có</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuy(\''+a.id+'\')">💎 '+a.pr+'</button>')+'</div>'}).join('')
  +'</div>');actAnimGo();if(!dsRaf)dsLoop()}
-const DSETS=['deerm','deerf','dnm','dnf','tn'];let dsRaf=0;
+const DSETS=['deerm','deerf','dnm','dnf','tn','madong'];let dsRaf=0;
 /* ---- Biểu cảm bán bằng kim cương (EXPRS có thuộc tính dia) ---- */
 function diaExprRows(){return EXPRS.map((x,i)=>{if(!x.dia)return '';const have=ownE().includes(i),ok=(ST.dia|0)>=x.dia;
  return '<div class="dcd"><canvas class="dec" data-i="'+i+'" width="144" height="176"></canvas><b>'+x.n+'</b>'+(have?'<button class="b" onclick="diaWearE('+i+')">'+(ST.av.e==i?'✓ Đang dùng':'✓ Đã có • Dùng')+'</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuyE('+i+')">💎 '+x.dia+'</button>')+'</div>'}).join('')}
@@ -5613,7 +5627,7 @@ function dsLoop(){const cs=document.querySelectorAll('canvas.dsc,canvas.dec');if
   if(c.classList.contains('dac')){const A=ST.av||{},S=SETS[A.s|0],ix=+c.dataset.i;g.scale(3,3);drawAv(g,12,14,{d,a:t,mv:1,sit:0,hair:A.h|0,set:A.s|0,e:A.e|0,acc:ix,nosh:0})}
   else if(c.classList.contains('dmc')){const A=ST.av||{},ix=+c.dataset.i;g.scale(3,3);drawRide(g,24,52,{d:[3,0,2,1][Math.floor(t/2.4)%4],a:t,mv:Math.floor(t/2.4)%4==0?1:0,sit:0,hair:A.h|0,set:A.s|0,e:A.e|0},ix,t)}
   else if(c.classList.contains('dec')){const A=ST.av||{},S=SETS[A.s|0];g.scale(3,3);drawAv(g,14,26,{d:de,a:t,mv:0,sit:0,hair:A.h|0,set:S&&S.mascot?0:(A.s|0),e:+c.dataset.i})}   // chừa chỗ phía trên đầu cho tim bay lên
-  else{g.scale(5,5);drawAv(g,4,3,{d,a:t,mv:0,sit:0,hair:0,set:+c.dataset.i,e:ST.av.e})}
+  else{const SW=SETS[+c.dataset.i];if(SW&&SW.wide){g.scale(4,4);drawAv(g,8,8,{d,a:t,mv:0,sit:0,hair:0,set:+c.dataset.i,e:ST.av.e})}else{g.scale(5,5);drawAv(g,4,3,{d,a:t,mv:0,sit:0,hair:0,set:+c.dataset.i,e:ST.av.e})}}
   g.restore()});
  dsRaf=requestAnimationFrame(dsLoop)}
 function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
@@ -5636,5 +5650,6 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="food-icons.js"></script>
 <script src="actions2.js"></script>
 <script src="newitems.js"></script>
+<script src="newitems2.js"></script>
 <script src="baby.js"></script>
 </body></html>
