@@ -2,7 +2,7 @@
    XE HỀ XIẾC — đỗ ở vỉa hè dưới, cạnh ngõ vào PHỐ XÁ
    • Xe pixel-art: mái lều xiếc, loa phát thanh trên nóc, chú hề lái xe, bóng bay, đèn nhấp nháy
    • Cứ vài giây xe "phát loa": rung loa, sóng âm, nốt nhạc, confetti, bong bóng thoại + âm thanh (nhạc xiếc, còi hề)
-   • Bấm vào xe → 2 nút: 🎡 Vòng quay may mắn (đã dời từ sạp cũ, đổi màu hề) • 🤡 Tiệm Chú Hề (sắp ra mắt)
+   • Bấm vào xe → các nút: 🎡 Vòng quay may mắn • 🎁 Blind Box Kim Cương • 🎈 Xé túi Hề • 🤡 Tiệm Chú Hề (sắp ra mắt)
    • Gắn vào pho-map.js qua: circusBuild({dyn,hit,blk}) và circusUI()
    ============================================================ */
 (()=>{
@@ -76,7 +76,7 @@ function mkVan(){return mk(VW,VH,(g,r)=>{
 });}
 
 /* ---------------- DỮ LIỆU PHÁT LOA ---------------- */
-const LINES=['Alo alo! Mời bà con quay Vòng quay may mắn nè! 🎡','Chú Hề đây! Quay trúng kim cương luôn nha! 💎','Tiệm Chú Hề sắp khai trương, đón chờ nha! 🎪','Hề hề hề! Ai quay là trúng! 🤡','Pa-pa-pa! Xiếc đến rồi, vui quá vui! 🎉','Có vé là quay miễn phí nhé bà con ơi! 🎟️','Blind Box Kim Cương đây! Khui hộp là có quà nha! 🎁'];
+const LINES=['Alo alo! Mời bà con quay Vòng quay may mắn nè! 🎡','Chú Hề đây! Quay trúng kim cương luôn nha! 💎','Tiệm Chú Hề sắp khai trương, đón chờ nha! 🎪','Hề hề hề! Ai quay là trúng! 🤡','Pa-pa-pa! Xiếc đến rồi, vui quá vui! 🎉','Có vé là quay miễn phí nhé bà con ơi! 🎟️','Blind Box Kim Cương đây! Khui hộp là có quà nha! 🎁','Muốn nhiều xu thì cứ việc xé túi Hề! 🎈','Túi Hề VIP đây, xé là trúng 1000 xu nha! 🤡'];
 const B={t0:-99,dur:3.6,line:'',next:4,kind:0,conf:[],notes:[]};
 let LASTT=0;
 
@@ -166,7 +166,7 @@ function drawVan(tm){
 window.circusBuild=H=>{
  H.blk(VX-60,VB-16,VX+60,VB);                                    // thân xe chặn đường đi
  H.dyn(VB,()=>drawVan(tmNow()));
- H.hit(VX-62,VB-VH+10,124,VH-8,'🤡 Xe Hề Xiếc — Vòng quay may mắn • Blind Box Kim Cương • Tiệm Chú Hề','cv:ps:circus',[VX,VB+26]);
+ H.hit(VX-62,VB-VH+10,124,VH-8,'🤡 Xe Hề Xiếc — Vòng quay may mắn • Blind Box Kim Cương • Xé túi Hề • Tiệm Chú Hề','cv:ps:circus',[VX,VB+26]);
 };
 window.CIRCUS={x:VX,by:VB};
 
@@ -179,12 +179,14 @@ window.circusUI=()=>{
   '<div style="text-align:center;font-weight:800;color:#6a2fb0;font-size:14px;margin-bottom:8px">“Hề hề! Lại đây chơi với Chú Hề nào!” 🎈</div>'+
   '<button class="b" onclick="circusGo(\'wheel\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #8c1c13;background:linear-gradient(135deg,#ff5a5f 0%,#ff8c1a 50%,#ffd23f 100%);text-shadow:0 2px 0 #8c1c13">🎡 Vòng quay may mắn<br><small style="font-weight:700">Quay trúng Xu & 💎 Kim cương</small></button>'+
   '<button class="b" onclick="circusGo(\'blind\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #0b4f8a;background:linear-gradient(135deg,#22d3ee 0%,#3a86ff 55%,#7c5cff 100%);text-shadow:0 2px 0 #0b4f8a">🎁 Blind Box Kim Cương<br><small style="font-weight:700">20 Xu / hộp • tối đa 30 hộp/ngày • trúng tới 💎 10</small></button>'+
+  '<button class=\"b\" onclick=\"circusGo(\'tui\')\" style=\"display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #8c1c13;background:linear-gradient(135deg,#ff4d6d 0%,#ff8c1a 55%,#ffd23f 100%);text-shadow:0 2px 0 #8c1c13\">🎈 Xé túi Hề<br><small style=\"font-weight:700\">20 Xu / túi • mua tùy thích • trúng tới 🪙 1000</small></button>'+
   '<button class="b" onclick="circusGo(\'shop\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #4a1d82;background:linear-gradient(135deg,#9b5de5 0%,#3a86ff 55%,#1fb5a6 100%);text-shadow:0 2px 0 #4a1d82">🤡 Tiệm Chú Hề<br><small style="font-weight:700">🔒 Sắp ra mắt — Coming soon</small></button>'+
   '<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#1fb5a6 0 14px,#fff 14px 28px);margin:8px 0 2px"></div>');
 };
 window.circusGo=w=>{
  if(w=='wheel')return wheelUI();
  if(w=='blind')return lbxUI();
+ if(w=='tui')return tuUI();
  toast('🤡 Tiệm Chú Hề — Sắp ra mắt! Chú Hề đang bày đồ chơi bất ngờ, đón chờ nhé 🎪');
 };
 
@@ -383,4 +385,134 @@ window.lbxTap=e=>{if(e&&e.preventDefault)e.preventDefault();const B=lbS(),p=B.pe
  const T=LBT[p.t];B.pen=null;B.n++;if(T.xu)ST.xu+=T.xu;else ST.dia=(ST.dia|0)+T.dia;
  LBO={t0:performance.now()/1000,t:p.t};xuUp();save();lbInfo();
  play(p.t>=2?2:0,.06);if(p.t>=2)toast(p.t==3?'💎 SECRET! +10 Kim cương!!!':'💎 Trúng Kim cương!')};
+/* ============================================================
+   XÉ TÚI HỀ — 20 Xu / túi • mua bao nhiêu tùy thích • mỗi túi chạm 3 lần để xé
+   • Túi Hề cấp 1: nhận lại 20 Xu • Túi Hề cấp 2: nhận 50 Xu • Túi Hề VIP: nhận 1000 Xu
+   • CÂN BẰNG KINH TẾ (chỉnh ở các hằng số bên dưới):
+       - Cấp 2 chia theo "bộ bài" 100 túi: đúng 12 túi cấp 2 + 88 túi cấp 1, xáo trộn  → lãi đều 12×30 = +360 Xu / 100 túi
+       - VIP rất hiếm 0.03% / túi (≈ 1 lần mỗi 3.300 túi)
+       - Mỗi túi tối thiểu ≈ 2,3 giây (3 lần chạm cách nhau ≥0,35s + 1,2s khui quà) → mở liên tục 10 phút ≈ 200–260 túi
+         ⇒ lời ≈ 720–940 Xu (nếu may trúng VIP thì cộng thêm +980)
+   • Giới hạn Xu NHẬN được từ túi hề: 20.000 Xu / ngày (reset theo ngày máy). Quá giới hạn thì túi được hoàn 20 Xu.
+   • Túi đang xé dở lưu ở ST.tui.pen (thoát game giữa chừng vẫn xé tiếp được)
+   ============================================================ */
+const TU_COST=20,TU_TAPS=3,TU_CAP=20000,TU_DECK=100,TU_L2=12,TU_VIP=0.0003,TU_TAPGAP=350,TU_REVEAL=1200;
+const TUT=[
+ {k:'Cấp 1',xu:20,  c:'#3a86ff',c2:'#9fd0ff',lb:'Túi Hề cấp 1'},
+ {k:'Cấp 2',xu:50,  c:'#9b5de5',c2:'#e0c6ff',lb:'Túi Hề cấp 2'},
+ {k:'VIP',  xu:1000,c:'#ff8c1a',c2:'#fff6a0',lb:'Túi Hề VIP'}];
+const tuDeck=()=>{const d=[];for(let i=0;i<TU_DECK;i++)d.push(i<TU_L2?1:0);for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}return d};
+function tuS(){if(!ST.tui||typeof ST.tui!='object')ST.tui={stock:0,pen:null,dk:[],n:0};const S=ST.tui;
+ if(!(S.stock>=0))S.stock=0;S.stock=Math.floor(S.stock);if(!(S.n>=0))S.n=0;if(!Array.isArray(S.dk))S.dk=[];
+ const p=S.pen;if(p&&!(p.t>=0&&p.t<TUT.length&&p.tap>=0&&p.tap<TU_TAPS))S.pen=null;
+ const dk=new Date().toDateString();if(S.dd!=dk||!(S.rc>=0)){S.dd=dk;S.rc=0;S.dn=0}if(!(S.dn>=0))S.dn=0;return S}
+function tuRoll(){const S=tuS();if(!S.dk.length)S.dk=tuDeck();const c=S.dk.pop();return Math.random()<TU_VIP?2:(c==1?1:0)}
+let TULOOP=0,TUO=null,TUD=null,TUP=[],TUSH=0,TULAST=0,TUTOK=0;
+function tuTake(){const S=tuS();if(S.pen||TUO)return;
+ if(S.stock>=1){S.stock--;S.pen={t:tuRoll(),tap:0};TUD={t0:performance.now()};TUSH=0;save()}}
+function tuCoin(g,amt,x,y,s,vip){
+ g.textAlign='center';g.textBaseline='middle';g.lineJoin='round';
+ g.fillStyle=vip?'#ffe27a':'#ffd23f';g.strokeStyle='#7a4a00';g.lineWidth=3;g.beginPath();g.arc(x,y,(vip?28:24)*s,0,7);g.fill();g.stroke();
+ g.fillStyle=vip?'#ffb300':'#ffb300';g.beginPath();g.arc(x,y,(vip?21:17)*s,0,7);g.fill();
+ g.fillStyle='rgba(255,255,255,.6)';g.beginPath();g.arc(x-8*s,y-8*s,4*s,0,7);g.fill();
+ const fs=Math.round((amt>=1000?14:17)*s);g.font='900 '+fs+'px Nunito,Arial,sans-serif';g.lineWidth=4;g.strokeStyle='#7a4a00';g.strokeText(amt,x,y+1);g.fillStyle='#fff';g.fillText(amt,x,y+1)}
+function tuFlap(g,jag){ // phần miệng túi (zigzag), gốc = đáy phần miệng
+ const INK='#2a1540';g.lineJoin='round';g.lineWidth=3;g.strokeStyle=INK;
+ g.fillStyle='#ff5a5f';g.beginPath();g.moveTo(-46,0);
+ for(let i=0;i<=8;i++){g.lineTo(-46+i*11.5,-20-(i%2?0:8))}
+ g.lineTo(46,0);g.closePath();g.fill();g.stroke();
+ g.fillStyle='rgba(255,255,255,.28)';g.fillRect(-44,-6,88,4);
+ g.fillStyle='#ffd23f';g.fillRect(-9,-4,18,4);
+ if(jag){g.strokeStyle='#fff6a0';g.lineWidth=2}}
+function tuBag(g,tap,open,tr){ // gốc = giữa đáy túi
+ const INK='#2a1540';g.lineJoin='round';g.lineWidth=3;g.strokeStyle=INK;
+ // thân túi giấy sọc kẹo
+ g.fillStyle='#fff4dc';g.beginPath();g.moveTo(-40,0);g.lineTo(40,0);g.lineTo(46,-82);g.lineTo(-46,-82);g.closePath();g.fill();
+ g.save();g.clip();g.fillStyle='rgba(230,57,70,.85)';for(let i=-5;i<=5;i+=2){g.fillRect(i*9-4,-84,9,86)}g.fillStyle='rgba(0,0,0,.10)';g.fillRect(-46,-8,92,8);g.restore();
+ g.beginPath();g.moveTo(-40,0);g.lineTo(40,0);g.lineTo(46,-82);g.lineTo(-46,-82);g.closePath();g.stroke();
+ // mặt chú hề
+ g.fillStyle='#fff';g.strokeStyle=INK;g.lineWidth=2.5;
+ for(const sx of[-1,1]){g.beginPath();g.arc(sx*15,-54,9,0,7);g.fill();g.stroke();g.fillStyle=INK;g.beginPath();g.arc(sx*15+(open?0:sx*-1),-53,3.4,0,7);g.fill();g.fillStyle='#fff'}
+ g.fillStyle='#e63946';g.beginPath();g.arc(0,-38,10,0,7);g.fill();g.stroke();g.fillStyle='rgba(255,255,255,.65)';g.beginPath();g.arc(-3,-41,3,0,7);g.fill();
+ g.strokeStyle='#e63946';g.lineWidth=3.5;g.lineCap='round';g.beginPath();
+ if(open){g.ellipse(0,-20,12,8,0,0,7)}else{g.arc(0,-26,15,.25,Math.PI-.25)}g.stroke();g.lineCap='butt';
+ g.fillStyle='#ff8c1a';for(const sx of[-1,1])for(let k=0;k<3;k++){g.beginPath();g.arc(sx*(48+k*3),-70+k*9,7-k,0,7);g.fill()}
+ // miệng túi: đã xé / chưa xé
+ if(open){g.fillStyle='#4a1d82';g.beginPath();g.moveTo(-46,-82);for(let i=0;i<=8;i++)g.lineTo(-46+i*11.5,-82+(i%2?7:-1));g.lineTo(46,-82);g.closePath();g.fill();
+  g.strokeStyle=INK;g.lineWidth=3;g.beginPath();g.moveTo(-46,-82);for(let i=0;i<=8;i++)g.lineTo(-46+i*11.5,-82+(i%2?7:-1));g.lineTo(46,-82);g.stroke()}
+ else{g.save();g.translate(0,-82);tuFlap(g);
+  // vết xé sáng theo số lần chạm
+  if(tap>0){g.strokeStyle='#fff6a0';g.lineWidth=2.8;g.beginPath();const ex=-46+tap*30;g.moveTo(-46,-8);for(let x=-46,i=0;x<=ex;x+=7,i++)g.lineTo(x,i%2?-12:-4);g.stroke()}
+  g.restore()}}
+function tuDraw(c){
+ const g=c.getContext('2d'),W=c.width,H=c.height,CX=W/2,BY=212,S=tuS(),p=S.pen,now=performance.now()/1000;g.clearRect(0,0,W,H);
+ g.fillStyle='rgba(0,0,0,.16)';g.beginPath();g.ellipse(CX,BY+10,86,11,0,0,7);g.fill();
+ g.fillStyle='#4a1d82';g.beginPath();g.ellipse(CX,BY+4,86,12,0,0,7);g.fill();g.fillStyle='#ffd23f';g.beginPath();g.ellipse(CX,BY+1,82,10,0,0,7);g.fill();
+ g.fillStyle='#e63946';for(let i=0;i<10;i++){const a=i/10*Math.PI*2;g.beginPath();g.arc(CX+Math.cos(a)*68,BY+1+Math.sin(a)*8,2.4,0,7);g.fill()}
+ if(TUO){
+  const t=now-TUO.t0,T=TUT[TUO.t],ease=e=>1-Math.pow(1-Math.min(1,Math.max(0,e)),3);
+  const ra=Math.min(1,t*4)*(t>1.6?Math.max(.3,1-(t-1.6)*.6):1);
+  if(TUO.t>0||t<.9){g.save();g.translate(CX,BY-70);g.rotate(t*.6);g.globalAlpha=(TUO.t==2?.6:.4)*ra;g.fillStyle=T.c2;
+   for(let i=0;i<12;i++){const a=i/12*Math.PI*2;g.beginPath();g.moveTo(0,0);g.arc(0,0,(TUO.t==2?170:130)*Math.min(1,t*3),a,a+Math.PI/18);g.closePath();g.fill()}g.restore()}
+  if(!TUO.sp){TUO.sp=1;const n=TUO.t==2?120:(TUO.t==1?60:30),cols=['#e63946','#ffd23f','#1fc8b8','#ff7eb6','#3a86ff','#ff8c1a','#9b5de5',T.c,T.c2];
+   for(let i=0;i<n;i++){const a=-Math.PI/2+(Math.random()-.5)*2.4,v=120+Math.random()*(TUO.t==2?280:200);TUP.push({x:CX,y:BY-80,vx:Math.cos(a)*v,vy:Math.sin(a)*v,r:Math.random()*6,vr:(Math.random()-.5)*14,c:cols[i%cols.length],t:0,l:1.3+Math.random()*.9})}}
+  g.save();g.translate(CX,BY);tuBag(g,0,true);g.restore();
+  const pe=ease((t-.1)/.6),py=BY-82-pe*80+(pe>=1?Math.sin(now*3)*3:0),ps=(TUO.t==2?1.35:1.1)*(pe<1?pe*1.1:1);
+  if(pe>0)tuCoin(g,TUO.shown,CX,py,ps,TUO.t==2);
+  if(t>.3){g.save();g.globalAlpha=Math.min(1,(t-.3)*4);g.textAlign='center';g.textBaseline='middle';g.font='900 '+(TUO.t==2?24:19)+'px Nunito,Arial,sans-serif';g.lineJoin='round';g.lineWidth=6;g.strokeStyle='#2a1540';
+   const lb=T.lb.toUpperCase()+(TUO.t>=1?'!':'');g.strokeText(lb,CX,24);g.fillStyle=T.c2;g.fillText(lb,CX,24);g.restore()}
+  // miệng túi bay đi
+  if(t<1.2){const lx=CX+t*70,ly=BY-82-(-260*t+380*t*t),al=Math.max(0,1-t/1.2);g.save();g.globalAlpha=al;g.translate(lx,ly);g.rotate(t*3.4);tuFlap(g);g.restore()}
+  if(t>.9&&!TUO.fin){TUO.fin=1;const r=$('tur');if(r)r.innerHTML=TUO.msg;tuInfo()}
+ }else if(p){
+  let off=0,land=1;if(TUD){const e=(performance.now()-TUD.t0)/450;if(e<1){land=0;off=-250*Math.pow(1-e,2)}else{TUD=null;TUSH=.8;lbSnd(1,0)}}
+  TUSH*=.88;if(TUSH<.01)TUSH=0;
+  const dx=Math.sin(now*70)*TUSH*7,rot=Math.sin(now*55)*TUSH*.07,sq=TUSH*.07,idle=land&&!TUSH&&p.tap==0?Math.sin(now*2.4)*1.5:0;
+  g.save();g.translate(CX+dx,BY+off+idle);g.rotate(rot);g.scale(1+sq,1-sq*.8);tuBag(g,p.tap,false);g.restore();
+  if(land&&!TUSH&&now*1000%1400<900){g.textAlign='center';g.textBaseline='middle';g.font='800 12px Nunito,Arial,sans-serif';g.fillStyle='#4a1d82';g.fillText('👆 Chạm '+(TU_TAPS-p.tap)+' lần nữa để xé!',CX,H-6)}
+ }else{
+  for(let i=0;i<5;i++){const a=now*.6+i*1.9,x=CX+Math.cos(a)*(40+i*14),y=BY-60+Math.sin(a*1.3)*(26+i*6),s=2+Math.abs(Math.sin(now*3+i))*2;g.fillStyle=i%2?'#ffd23f':'#ff9ec8';g.fillRect(x-s/2,y-s/2,s,s);g.fillRect(x-s*1.4,y-.5,s*2.8,1);g.fillRect(x-.5,y-s*1.4,1,s*2.8)}
+  g.textAlign='center';g.textBaseline='middle';g.font='800 13px Nunito,Arial,sans-serif';g.fillStyle='#4a1d82';g.fillText(S.stock>0?'':'Mua túi ở dưới để bắt đầu xé nhé!',CX,BY-70)}
+ for(let i=TUP.length-1;i>=0;i--){const q=TUP[i];q.t+=.016;q.x+=q.vx*.016;q.y+=q.vy*.016;q.vy+=300*.016;q.r+=q.vr*.016;if(q.t>q.l||q.y>H+8){TUP.splice(i,1);continue}
+  g.save();g.translate(q.x,q.y);g.rotate(q.r);g.globalAlpha=Math.min(1,(q.l-q.t)*3);g.fillStyle=q.c;g.fillRect(-3,-2,6,4);g.restore()}
+}
+function tuLoop(id){const c=$('tuc');if(!c||!UI||id!=TULOOP)return;tuDraw(c);requestAnimationFrame(()=>tuLoop(id))}
+function tuInfo(){const el=$('tui');if(!el)return;const S=tuS(),capped=S.rc>=TU_CAP;
+ el.innerHTML='<div class="sg" style="grid-template-columns:repeat(2,1fr)"><div class="sq" style="cursor:default;min-height:54px;background:#ffb3c855"><b style="font-size:15px">🪙 '+fmtXu(ST.xu)+'</b></div><div class="sq" style="cursor:default;min-height:54px;background:#c9a8ff55"><b style="font-size:15px">🎈 '+(S.stock+(S.pen?1:0))+' túi</b><small>chưa xé</small></div></div>'+
+  '<div class="mut" style="text-align:center;margin:4px 0">Hôm nay nhận từ túi hề: <b>'+fmtXu(S.rc)+' / '+fmtXu(TU_CAP)+'</b> Xu • xé '+S.dn+' túi</div>';
+ const b=$('tub');if(!b)return;const xu=ST.xu|0,maxN=Math.floor(xu/TU_COST);
+ const mk=(n,lab)=>{const ok=!capped&&n>0&&maxN>=n;return '<button class="b w'+(ok?'':' z')+'" onclick="tuBuy('+n+')"'+(ok?' style="font-weight:800;color:#fff;border:3px solid #8c1c13;border-radius:12px;background:linear-gradient(135deg,#ff5a5f,#ff8c1a);text-shadow:0 1px 0 #8c1c13"':'')+'>'+lab+'</button>'};
+ b.innerHTML=(capped?'<div class="mut" style="text-align:center;font-weight:800;color:#b3202e">🌙 Hôm nay đã nhận đủ '+fmtXu(TU_CAP)+' Xu từ túi hề — mai quay lại nhé!</div>':'')+
+  mk(1,'🎈 Mua 1 túi — '+TU_COST+' Xu')+mk(10,'🎈 Mua 10 túi — '+10*TU_COST+' Xu')+mk(50,'🎈 Mua 50 túi — '+50*TU_COST+' Xu')+
+  '<button class="b w'+(!capped&&maxN>0?'':' z')+'" onclick="tuBuy(-1)">🎈 Mua tối đa ('+maxN+' túi)</button>'}
+window.tuUI=()=>{tuS();TUO=null;TUD=null;TUP=[];TUSH=0;TUTOK++;
+ const bar=(a,b)=>'<div style="height:9px;border-radius:5px;background:repeating-linear-gradient(90deg,'+a+' 0 14px,'+b+' 14px 28px);margin:4px 0"></div>';
+ openUI(head('🎈 Xé túi Hề')+
+  '<div style="border-radius:14px;padding:6px;background:linear-gradient(180deg,#fff0f3,#fff7d6)">'+bar('#e63946','#fff')+
+  '<div style="text-align:center;font-weight:800;color:#6a2fb0;font-size:14px;margin:2px 0 4px">🤡 “Bạn muốn nhiều xu thì cứ việc xé túi!”</div>'+
+  '<div style="text-align:center"><canvas id="tuc" width="260" height="250" onpointerdown="tuTap(event)" style="width:100%;max-width:250px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none"></canvas></div>'+
+  '<div id="tur" style="text-align:center;min-height:30px;font-weight:800;color:#4a1d82;font-size:15px;margin:2px 0"></div><div id="tub" class="pf"></div><div id="tui"></div>'+
+  '<div class="sg" style="grid-template-columns:repeat(3,1fr);margin-top:6px">'+
+   TUT.map((t,i)=>'<div class="sq" style="cursor:default;min-height:62px;background:'+t.c+';color:#fff"><small style="color:#fff;opacity:.92">'+t.lb+'</small><b style="font-size:15px">🪙 '+t.xu+'</b><small style="color:#fff;opacity:.92">'+['~88%','~12%','~0,03%'][i]+'</small></div>').join('')+'</div>'+
+  '<div class="mut" style="text-align:center;margin-top:6px">Mỗi túi chạm '+TU_TAPS+' lần để xé • Giới hạn nhận '+fmtXu(TU_CAP)+' Xu/ngày</div>'+
+  bar('#7c5cff','#fff')+
+  '<button class="b" onclick="circusUI()" style="display:block;width:100%;margin-top:4px">← Quay lại Xe Hề</button></div>');
+ tuInfo();tuLoop(++TULOOP);tuTake()};
+window.tuBuy=n=>{const S=tuS();if(S.rc>=TU_CAP)return toast('🌙 Hôm nay đã nhận đủ '+fmtXu(TU_CAP)+' Xu từ túi hề rồi, mai quay lại nhé!');
+ const maxN=Math.floor((ST.xu|0)/TU_COST);if(n<0)n=maxN;
+ if(!(n>0)||maxN<n)return toast('🪙 Không đủ Xu (cần '+n*TU_COST+' Xu)');
+ ST.xu-=n*TU_COST;S.stock+=n;xuUp();save();tuTake();tuInfo();const r=$('tur');if(r&&!TUO)r.textContent='';lbSnd(1,0)};
+window.tuTap=e=>{if(e&&e.preventDefault)e.preventDefault();const S=tuS(),p=S.pen;if(!p||TUD||TUO)return;
+ const now=performance.now();if(now-TULAST<TU_TAPGAP)return;TULAST=now;
+ p.tap++;TUSH=1;
+ if(p.tap<TU_TAPS){lbSnd(0,p.tap);save();return}
+ // xé xong!
+ const T=TUT[p.t],tier=p.t;S.pen=null;S.n++;S.dn++;
+ const rem=TU_CAP-S.rc;let got,msg;
+ if(rem<=0){got=TU_COST;msg='🌙 Đã đạt giới hạn ngày — hoàn lại '+TU_COST+' Xu';ST.xu+=got}
+ else{got=Math.min(T.xu,rem);ST.xu+=got;S.rc+=got;msg='<span style="color:'+T.c+'">'+T.lb+'</span> • 🪙 +'+fmtXu(got)+' Xu'+(got<T.xu?' (chạm giới hạn ngày)':'')}
+ TUO={t0:performance.now()/1000,t:tier,shown:got,msg:msg};
+ xuUp();save();tuInfo();play(tier>=1?2:0,.05);
+ if(tier==2)toast('🤡 TÚI HỀ VIP!!! +'+fmtXu(got)+' Xu');
+ const tok=++TUTOK;setTimeout(()=>{if(tok!=TUTOK||!$('tuc'))return;TUO=null;TUP=[];tuTake();tuInfo()},TU_REVEAL+300)};
 })();
