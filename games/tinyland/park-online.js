@@ -20,8 +20,8 @@ window.setNm=()=>{const n=clean($('pnm').value);if(!n)return toast('Tên không 
 const bub={}; // id -> {t,until}
 // Đang làm HÀNH ĐỘNG CÁ NHÂN (k:'solo') thì ẩn tên cho khỏi che cảnh. ac = số thứ tự hành động + 1 (0 = không làm gì)
 const actHideName=ac=>{const a=ac>0&&ACTS[ac-1];return !!(a&&a.k=='solo')};
-const TAG_FONT='600 7px Nunito,"Segoe UI",Arial,sans-serif',TAG_LOGO_H=8,TAG_STROKE=2;   // cỡ chữ / cao logo / viền của tên trên đầu: chỉnh 3 số này nếu muốn to-nhỏ khác
-const tag=(t,x,y,col,bf)=>{cx.font=TAG_FONT;cx.textAlign='center';
+const TAG_FONT='400 7px Nunito,"Segoe UI",Arial,sans-serif',TAG_LOGO_H=8,TAG_STROKE=1.2,TAG_UP=9;   // cỡ chữ / cao logo / viền / độ nâng cao của tên trên đầu (TAG_UP: càng lớn tên càng cao, chừa chỗ cho mũ to)
+const tag=(t,x,y,col,bf)=>{y-=TAG_UP;cx.font=TAG_FONT;cx.textAlign='center';
  let tx=x;const L=window.idLogo?window.idLogo(bf):null; // logo Bạn thân đứng trước tên, luôn cao 11px dù ảnh gốc to/bé
  if(L){const h=TAG_LOGO_H,w=Math.round(L.width*h/L.height),tw=cx.measureText(t).width,sx=x-(w+2+tw)/2;cx.save();cx.imageSmoothingEnabled=true;cx.drawImage(L,Math.round(sx),Math.round(y-h+2),w,h);cx.restore();tx=sx+w+2+tw/2}
  cx.lineWidth=TAG_STROKE;cx.lineJoin='round';cx.strokeStyle='rgba(30,20,10,.8)';cx.strokeText(t,tx,y);cx.fillStyle=col;cx.fillText(t,tx,y)};
@@ -30,8 +30,8 @@ const bubble=(t,x,y)=>{cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.t
 window.drawNames=tm=>{const now=performance.now(),dt=Math.min(.05,(now-lastT)/1000);lastT=now;
  if(CVON&&CV.fx)CV.fx(tm,dt);
  if(!(HMA&&HMA.hide)){let x,y;if(CVON){const p=cvHeadPos();x=p.x;y=p.y}else{x=Math.round(Pl.x);y=Math.round(Pl.y)-(Pl.sit?34:tagOff(ST.av.m,Pl.d))}
-  if(!actHideName(ACT?actIdx(ACT)+1:0))tag(ST.name,x,y,'#fff6c0',((ST.id&&typeof ST.id.bt=='number')?ST.id.bt:-1));const b=bub[ME.id];if(b&&b.until>now)bubble(b.t,x,y-8)}
- if(CVON)for(const o of CV.others.values()){if(o.hx==null)continue;if(!actHideName(o.ac))tag(o.n||'?',o.hx,o.hy,'#d8f4ff',o.bf);const b=bub[o.id];if(b&&b.until>now)bubble(b.t,o.hx,o.hy-8)};if(CVON&&HRT.length)hrtDraw(now)};
+  if(!actHideName(ACT?actIdx(ACT)+1:0))tag(ST.name,x,y,'#fff6c0',((ST.id&&typeof ST.id.bt=='number')?ST.id.bt:-1));const b=bub[ME.id];if(b&&b.until>now)bubble(b.t,x,y-8-TAG_UP)}
+ if(CVON)for(const o of CV.others.values()){if(o.hx==null)continue;if(!actHideName(o.ac))tag(o.n||'?',o.hx,o.hy,'#d8f4ff',o.bf);const b=bub[o.id];if(b&&b.until>now)bubble(b.t,o.hx,o.hy-8-TAG_UP)};if(CVON&&HRT.length)hrtDraw(now)};
 
 // ---------- tạo nhân vật lần đầu ----------
 window.welcomeName=()=>{openUI('<div class="uh"><span>🌾 Chào mừng đến Tinyland!</span></div><div class="mut">Hãy đặt tên nhân vật (tối đa 12 ký tự). Tên hiện trên đầu bạn và bạn bè trong Công viên sẽ thấy tên này (không phải tên đăng nhập DHT). Sau này vẫn đổi được khi bấm avatar.</div><div style="display:flex;gap:4px;margin:8px 0"><input id="pnm0" maxlength="12" value="'+escH(ST.name)+'" style="flex:1;min-width:0;font:inherit;padding:6px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" onclick="welcomeOk()">Bắt đầu</button></div>');
