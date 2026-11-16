@@ -812,7 +812,10 @@ const SETS=[
   {n:'Ma đồng giáng thế',k:'madong',mascot:'madong',bn:'m',wide:1,ach:1,dia:15,ds:'Tóc đen dựng cao, vằn đỏ trên mặt, dải lụa đỏ bay phấp phới quanh người. Hợp với Thương ma đồng & Phong hỏa luân. Không che mặt.',sh:'#f0b68a',pt:'#4a2a2a',rpt:'#f0b68a',shoe:'#7a2a1c',scarf:'#d81f4a'},
   // ---- Set Pijama (bán ở Shop Phố xá 3000 Xu / set — giá: SHOP.s.pr trong pho-map.js). Hình vẽ: pajama.js (mascot:'pj', pjv:'f'|'m'). Không che mặt, có sẵn tóc & dép bông thú. LUÔN để ở CUỐI mảng SETS ----
   {n:'Pijama hồng (Nữ)',k:'pjf',mascot:'pj',pjv:'f',sh:'#ffc2d0',pt:'#ffc2d0',rpt:'#ffc2d0',shoe:'#fff3f7',scarf:'#ffc2d0'},
-  {n:'Pijama cam (Nam)',k:'pjm',mascot:'pj',pjv:'m',sh:'#ffa648',pt:'#ffa648',rpt:'#ffa648',shoe:'#ffb25a',scarf:'#ffa648'}];
+  {n:'Pijama cam (Nam)',k:'pjm',mascot:'pj',pjv:'m',sh:'#ffa648',pt:'#ffa648',rpt:'#ffa648',shoe:'#ffb25a',scarf:'#ffa648'},
+  // ---- Mascot À Lôi (Nam / Nữ) — Tây Bắc Việt Nam, bán ở Shop kim cương 💎10 / set. wide:1 = mấn đội/lá bay vượt khung chuẩn. Hình vẽ: alo.js (mascot:'aloi', al:'m'|'f'). Không che mặt. LUÔN để ở CUỐI mảng SETS ----
+  {n:'À Lôi (Nam)',k:'aloim',mascot:'aloi',al:'m',wide:1,ach:1,dia:10,ds:'Mũ vải thêu xanh ngọc viền vàng, tóc bạc, áo chàm Tây Bắc khuy vàng. Lá cây bay quanh người. Không che mặt.',sh:'#232a55',pt:'#1e2348',rpt:'#1e2348',shoe:'#2a2f5a',scarf:'#2fd0cf'},
+  {n:'À Lôi (Nữ)',k:'aloif',mascot:'aloi',al:'f',wide:1,ach:1,dia:10,ds:'Mấn đội to thêu thổ cẩm có dây rủ, tóc tím xoăn sóng, áo hồng thêu Tây Bắc. Lá cây bay quanh người. Không che mặt.',sh:'#e8458f',pt:'#e8458f',rpt:'#e8458f',shoe:'#e9609a',scarf:'#ffd23a'}];
 const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'},{n:'Tóc nâu buộc',k:'tail',c:'#6a3e1e'},{n:'Tóc vàng',k:'short',c:'#e0b84a'},{n:'Mũ len đỏ',k:'beanie',c:'#c0392b',hr:'#2b1d12'},{n:'Mũ len xanh',k:'beanie',c:'#2f6fe0',hr:'#6a3e1e'},
  {n:'Tóc Sailor Moon',k:'sailor',c:'#f6d96b'},{n:'Tóc 2 chùm',k:'bun2',c:'#2a2224'},{n:'Tóc nữ yêu kiều',k:'longf',c:'#201a24'},{n:'Tóc xinh yêu',k:'bobf',c:'#17151c'},
  {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'},
@@ -5679,7 +5682,7 @@ function diaShop(){const L=ACTS.filter(a=>a.k=='solo'&&!a.bd);
  +L.map(a=>{const have=!!ST.acts[a.id],ok=(ST.dia|0)>=a.pr;
   return '<div class="dcd">'+actCv(a.id,72,100,'mini')+'<b>'+a.n+'</b>'+(have?'<button class="b" onclick="actUI()">✓ Đã có</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuy(\''+a.id+'\')">💎 '+a.pr+'</button>')+'</div>'}).join('')
  +'</div>');actAnimGo();if(!dsRaf)dsLoop()}
-const DSETS=['deerm','deerf','dnm','dnf','tn','madong','mushm','mushf'];let dsRaf=0;
+const DSETS=['deerm','deerf','dnm','dnf','tn','madong','mushm','mushf','aloim','aloif'];let dsRaf=0;
 /* ---- Biểu cảm bán bằng kim cương (EXPRS có thuộc tính dia) ---- */
 function diaExprRows(){return EXPRS.map((x,i)=>{if(!x.dia)return '';const have=ownE().includes(i),ok=(ST.dia|0)>=x.dia;
  return '<div class="dcd"><canvas class="dec" data-i="'+i+'" width="144" height="176"></canvas><b>'+x.n+'</b>'+(have?'<button class="b" onclick="diaWearE('+i+')">'+(ST.av.e==i?'✓ Đang dùng':'✓ Đã có • Dùng')+'</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuyE('+i+')">💎 '+x.dia+'</button>')+'</div>'}).join('')}
@@ -5727,5 +5730,6 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="newitems3.js?v=20261116"></script>
 <script src="newitems4.js?v=20261117"></script>
 <script src="pajama.js?v=20261118"></script>
+<script src="alo.js?v=20261119"></script>
 <script src="gianhang.js?v=20261116"></script>
 </body></html>
