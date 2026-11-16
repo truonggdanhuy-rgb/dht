@@ -1510,7 +1510,9 @@ const ACCS=[{n:'Lồng đèn trăng rằm',k:'moon',t:'hang',art:accMoon},{n:'Xe
  // t:'wing' = CÁNH đeo sau lưng (hình vẽ ở newitems.js). dia = giá Kim cương, chỉ bán ở Shop kim cương. Cánh ẩn khi cưỡi thú / ngồi nghỉ.
  {n:'Cánh Dực Ưng',k:'wingeagle',t:'wing',wing:'eagle',dia:10},{n:'Cánh Đại dương',k:'wingocean',t:'wing',wing:'ocean',dia:10},
  // Thương ma đồng: giáo vàng mỏng, dài (t:'hold', 400 Xu ở Shop Phố xá — SHOP.a.pr trong pho-map.js; hình vẽ: accMaSpear trong newitems2.js)
- {n:'Thương ma đồng',k:'maspear',t:'hold',art:(P)=>window.accMaSpear&&accMaSpear(P)}];   // guitar 3000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accGuitar trong outfits.js
+ {n:'Thương ma đồng',k:'maspear',t:'hold',art:(P)=>window.accMaSpear&&accMaSpear(P)},
+ // Gậy Nấm pháp sư: gậy dài mảnh, đầu uốn cong treo vầng sáng (t:'hold', 💎5 ở Shop kim cương mục Phụ kiện; hình vẽ: accMushStaff trong newitems3.js)
+ {n:'Gậy Nấm pháp sư',k:'mushstaff',t:'hold',dia:5,art:(P)=>window.accMushStaff&&accMushStaff(P)}];   // guitar 3000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accGuitar trong outfits.js
 //   t:'float' = cầm DÂY dài, vật bay lơ lửng phía trên đầu -> art(P) giống 'hang'
 // ===== Pet đổi bằng Huy hiệu tuyết: Bánh quy gừng + Mây tuyết =====
 function drawPetGinger(g,x,y,d,mv,a,t){
@@ -5607,11 +5609,11 @@ function actAsk(id){const a=ACTS[actIdx(id)];if(!a||!actHas(a))return;
  openUI(head('Hành động')+'<div class="aq2">'+actCv(id,72,100,'big')+'<b>'+a.n+'</b><div class="mut" style="margin:2px 0">'+a.ds+'<br>Di chuyển bất cứ lúc nào để dừng lại.</div></div><div class="pf"><button class="b" onclick="actStart(\''+id+'\')">✅ Thực hiện</button><button class="b" onclick="actUI()">⬅ Quay lại</button></div>');actAnimGo()}
 function diaShop(){const L=ACTS.filter(a=>a.k=='solo'&&!a.bd);
  openUI(head('💎 Shop kim cương')+'<div class="mut" style="text-align:center">Bạn có <b>💎 '+(ST.dia|0)+'</b> kim cương</div>'
- +'<div class="dsh">✨ Set mascot</div><div class="dg">'+diaSetRows()+'</div><div class="dsh">😄 Biểu cảm</div><div class="dg">'+diaExprRows()+'</div><div class="dsh">🪽 Cánh <small>(phụ kiện)</small></div><div class="dg">'+(window.diaWingRows?diaWingRows():'')+'</div><div class="dsh">🎃 Thú cưỡi</div><div class="dg">'+(window.diaMountRows?diaMountRows():'')+'</div><div class="dsh">⚡ Hành động cá nhân</div><div class="dg">'
+ +'<div class="dsh">✨ Set mascot</div><div class="dg">'+diaSetRows()+'</div><div class="dsh">😄 Biểu cảm</div><div class="dg">'+diaExprRows()+'</div><div class="dsh">🎀 Phụ kiện <small>(cánh, gậy...)</small></div><div class="dg">'+(window.diaWingRows?diaWingRows():'')+'</div><div class="dsh">🎃 Thú cưỡi</div><div class="dg">'+(window.diaMountRows?diaMountRows():'')+'</div><div class="dsh">⚡ Hành động cá nhân</div><div class="dg">'
  +L.map(a=>{const have=!!ST.acts[a.id],ok=(ST.dia|0)>=a.pr;
   return '<div class="dcd">'+actCv(a.id,72,100,'mini')+'<b>'+a.n+'</b>'+(have?'<button class="b" onclick="actUI()">✓ Đã có</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuy(\''+a.id+'\')">💎 '+a.pr+'</button>')+'</div>'}).join('')
  +'</div>');actAnimGo();if(!dsRaf)dsLoop()}
-const DSETS=['deerm','deerf','dnm','dnf','tn','madong'];let dsRaf=0;
+const DSETS=['deerm','deerf','dnm','dnf','tn','madong','mushm','mushf'];let dsRaf=0;
 /* ---- Biểu cảm bán bằng kim cương (EXPRS có thuộc tính dia) ---- */
 function diaExprRows(){return EXPRS.map((x,i)=>{if(!x.dia)return '';const have=ownE().includes(i),ok=(ST.dia|0)>=x.dia;
  return '<div class="dcd"><canvas class="dec" data-i="'+i+'" width="144" height="176"></canvas><b>'+x.n+'</b>'+(have?'<button class="b" onclick="diaWearE('+i+')">'+(ST.av.e==i?'✓ Đang dùng':'✓ Đã có • Dùng')+'</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuyE('+i+')">💎 '+x.dia+'</button>')+'</div>'}).join('')}
@@ -5631,7 +5633,7 @@ function dsLoop(){const cs=document.querySelectorAll('canvas.dsc,canvas.dec');if
   if(c.classList.contains('dac')){const A=ST.av||{},S=SETS[A.s|0],ix=+c.dataset.i;g.scale(3,3);drawAv(g,12,14,{d,a:t,mv:1,sit:0,hair:A.h|0,set:A.s|0,e:A.e|0,acc:ix,nosh:0})}
   else if(c.classList.contains('dmc')){const A=ST.av||{},ix=+c.dataset.i;g.scale(3,3);drawRide(g,24,52,{d:[3,0,2,1][Math.floor(t/2.4)%4],a:t,mv:Math.floor(t/2.4)%4==0?1:0,sit:0,hair:A.h|0,set:A.s|0,e:A.e|0},ix,t)}
   else if(c.classList.contains('dec')){const A=ST.av||{},S=SETS[A.s|0];g.scale(3,3);drawAv(g,14,26,{d:de,a:t,mv:0,sit:0,hair:A.h|0,set:S&&S.mascot?0:(A.s|0),e:+c.dataset.i})}   // chừa chỗ phía trên đầu cho tim bay lên
-  else{const SW=SETS[+c.dataset.i];if(SW&&SW.wide){g.scale(4,4);drawAv(g,8,8,{d,a:t,mv:0,sit:0,hair:0,set:+c.dataset.i,e:ST.av.e})}else{g.scale(5,5);drawAv(g,4,3,{d,a:t,mv:0,sit:0,hair:0,set:+c.dataset.i,e:ST.av.e})}}
+  else{const SW=SETS[+c.dataset.i];if(SW&&SW.mascot=='mush'){g.scale(3.6,3.6);drawAv(g,10,17,{d,a:t,mv:0,sit:0,hair:0,set:+c.dataset.i,e:ST.av.e})}else if(SW&&SW.wide){g.scale(4,4);drawAv(g,8,8,{d,a:t,mv:0,sit:0,hair:0,set:+c.dataset.i,e:ST.av.e})}else{g.scale(5,5);drawAv(g,4,3,{d,a:t,mv:0,sit:0,hair:0,set:+c.dataset.i,e:ST.av.e})}}
   g.restore()});
  dsRaf=requestAnimationFrame(dsLoop)}
 function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
@@ -5656,4 +5658,5 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="newitems.js"></script>
 <script src="newitems2.js"></script>
 <script src="baby.js"></script>
+<script src="newitems3.js"></script>
 </body></html>
