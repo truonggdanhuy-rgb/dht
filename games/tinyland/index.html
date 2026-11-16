@@ -4268,7 +4268,7 @@ const WK=HR.concat([[188,70,8,38],[40,158,24,24],[200,158,24,24],[252,240,24,44]
 (()=>{const C=2,gw=HW/C,gh=HH/C,rb=[];let open={};for(let j=0;j<gh;j++){const y=j*C,runs=[];let st=-1;for(let i=0;i<=gw;i++){const x=i*C,bl=i<gw&&!WK.some(q=>x>=q[0]&&x<q[0]+q[2]&&y>=q[1]&&y<q[1]+q[3]);if(bl&&st<0)st=x;else if(!bl&&st>=0){runs.push([st,x]);st=-1}}
  const nx={};for(const[u,v]of runs){const k=u+'-'+v;if(open[k]){nx[k]=open[k];open[k][3]+=C}else{nx[k]=[u,y,v-u,C];rb.push(nx[k])}}open=nx}
  HM.rb=rb.concat([[20,30,44,48],[202,30,18,12],[224,30,56,12],[322,182,14,14],[296,182,22,14],[334,202,22,80]])})();
-const CAT={sofa:['Sofa',5,2,'f'],arm:['Ghế bành',2,2,'f'],tbl:['Bàn trà',3,2,'f'],din:['Bàn ăn',6,3,'f'],chr:['Ghế gỗ',2,2,'f'],shf:['Kệ sách',4,3,'f'],wrd:['Tủ quần áo',3,4,'f'],drw:['Tủ ngăn kéo',3,2,'f'],plt:['Chậu cây',2,3,'f'],lmp:['Đèn cây',1,4,'f'],tv:['Tivi',4,3,'f'],cat:['Ổ mèo',3,2,'f'],rug:['Thảm',6,4,'r'],clk:['Đồng hồ',2,2,'w'],pic:['Tranh',4,2,'w'],bsk:['Giỏ hoa treo',2,2,'w'],cal:['Lịch tường',2,2,'w'],mir:['Gương',2,2,'w'],ctbl:['Bàn tai mèo',3,2,'f',1],cchr:['Ghế tai mèo',2,2,'f',1],clmp:['Đèn tai mèo',2,3,'f',1],wcl:['Lịch treo tường',2,2,'w'],wph:['Điện thoại treo tường',2,2,'w'],wpc:['Tranh treo tường',3,2,'w'],ftv:['Tivi màn phẳng',5,3,'f'],pcd:['Bàn làm việc',6,5,'f',1],ofd:['Bàn làm việc 2.0',5,4,'f'],win:['Cửa sổ',4,2,'w'],bkS:['Tủ sách nhỏ',2,3,'f'],bkL:['Tủ sách lớn',4,4,'f'],mdl:['Kệ mô hình',3,5,'f'],spk:['Loa phát nhạc',2,4,'f',1],mai:['Chậu mai vàng',3,4,'f'],quat:['Chậu quất',2,3,'f'],hphi:['Hoành phi',7,2,'w',1],cchuc:['Câu chúc Tết',7,2,'w',1],dlong:['Đèn lồng đỏ',2,2,'w'],nguqua:['Mâm ngũ quả',2,2,'f'],thong:['Cây thông Noel',4,5,'f'],neon:['Đèn neon Noel',5,2,'w',1],vong:['Vòng nguyệt quế',2,2,'w'],day:['Dây đèn nhấp nháy',5,1,'w'],tat:['Tất Noel treo',2,2,'w'],qua:['Hộp quà Noel',2,2,'f'],tkb:['Hòm kho báu',5,4,'f'],dkc:['Đống kim cương',5,4,'f']};
+const CAT={sofa:['Sofa',5,2,'f'],arm:['Ghế bành',2,2,'f'],tbl:['Bàn trà',3,2,'f'],din:['Bàn ăn',6,3,'f'],chr:['Ghế gỗ',2,2,'f'],shf:['Kệ sách',4,3,'f'],wrd:['Tủ quần áo',3,4,'f'],drw:['Tủ ngăn kéo',3,2,'f'],plt:['Chậu cây',2,3,'f'],lmp:['Đèn cây',1,4,'f'],tv:['Tivi',4,3,'f'],cat:['Ổ mèo',3,2,'f'],rug:['Thảm',6,4,'r'],clk:['Đồng hồ',2,2,'w'],pic:['Tranh',4,2,'w'],bsk:['Giỏ hoa treo',2,2,'w'],cal:['Lịch tường',2,2,'w'],mir:['Gương',2,2,'w'],ctbl:['Bàn tai mèo',3,2,'f',1],cchr:['Ghế tai mèo',2,2,'f',1],clmp:['Đèn tai mèo',2,3,'f',1],wcl:['Lịch treo tường',2,2,'w'],wph:['Điện thoại treo tường',2,2,'w'],wpc:['Tranh treo tường',3,2,'w'],ftv:['Tivi màn phẳng',5,3,'f'],pcd:['Bàn làm việc',6,5,'f',1],ofd:['Bàn làm việc 2.0',5,4,'f'],win:['Cửa sổ',4,2,'w'],bkS:['Tủ sách nhỏ',2,3,'f'],bkL:['Tủ sách lớn',4,4,'f'],mdl:['Kệ mô hình',3,5,'f'],spk:['Loa phát nhạc',2,4,'f',1],mai:['Chậu mai vàng',3,4,'f'],quat:['Chậu quất',2,3,'f'],hphi:['Hoành phi',7,2,'w',1],cchuc:['Câu chúc Tết',7,2,'w',1],dlong:['Đèn lồng đỏ',2,2,'w'],nguqua:['Mâm ngũ quả',2,2,'f'],thong:['Cây thông Noel',4,5,'f'],neon:['Đèn neon Noel',5,2,'w',1],vong:['Vòng nguyệt quế',2,2,'w'],day:['Dây đèn nhấp nháy',5,1,'w'],tat:['Tất Noel treo',2,2,'w'],qua:['Hộp quà Noel',2,2,'f'],tkb:['Hòm kho báu',5,4,'f'],dkc:['Đống kim cương',5,4,'f'],fan:['Quạt gió',2,4,'f'],ac:['Máy lạnh',4,2,'w'],rack:['Giá treo quần áo',6,4,'f']};
 const bxd=(r,x,y,w,h,c,d)=>{r(d,x,y,w,h);r(c,x,y,w,h-1);r('rgba(255,255,255,.22)',x+1,y,w-2,1)};
 const DR={
 sofa:r=>{bxd(r,1,0,38,9,'#5f9188','#456b64');r('#78aea2',3,1,34,2);bxd(r,0,4,6,11,'#4f8077','#3a6660');bxd(r,34,4,6,11,'#4f8077','#3a6660');bxd(r,6,8,14,7,'#7db3a7','#5f9188');bxd(r,20,8,14,7,'#7db3a7','#5f9188');r('#5f9188',20,8,1,7);r('#e8a84a',8,2,6,6);r('#f0c070',9,3,4,1);r('#c0504a',27,2,6,6);r('#5d3a1c',2,15,2,1);r('#5d3a1c',36,15,2,1)},
@@ -4418,6 +4418,28 @@ DR.win=r=>{/* cửa sổ có rèm hồng, nhìn ra trời + đồng cỏ (lấy 
  r('#d9a84a',4,14,24,2);r('#a87a3a',4,15,24,1);
  r('#f08aa0',1,2,6,13);r('#f6b0c0',1,2,2,13);r('#d4647e',6,2,1,13);
  r('#f08aa0',25,2,6,13);r('#f6b0c0',25,2,2,13);r('#d4647e',30,2,1,13)};
+/* ---- Quạt gió (đứng, ảnh tĩnh) • Máy lạnh (treo tường) • Giá treo quần áo (dài) ---- */
+DR.fan=r=>{E(r,'rgba(0,0,0,.2)',8,30,7,1);
+ E(r,'#5f6775',8,29,6,2);E(r,'#8b94a3',8,28,5,2);r('#b4bcc9',5,27,6,1);
+ r('#8b94a3',7,17,2,11);r('#c9d0dc',7,17,1,11);r('#e8505a',7,21,2,2);
+ bxd(r,5,13,6,5,'#6b7380','#4a505c');
+ E(r,'#8b94a3',8,7,7,7);E(r,'#dfe6f0',8,7,6,6);E(r,'#bfe3f5',8,7,5,5);
+ r('#6aaee8',7,2,3,4);r('#4a8fd0',8,2,1,4);r('#6aaee8',3,8,4,3);r('#4a8fd0',3,10,4,1);r('#6aaee8',10,8,4,3);r('#4a8fd0',10,10,4,1);
+ r('rgba(110,122,142,.75)',8,0,1,14);r('rgba(110,122,142,.75)',1,7,14,1);r('rgba(110,122,142,.5)',3,3,1,8);r('rgba(110,122,142,.5)',12,3,1,8);
+ E(r,'#e8505a',8,7,1,1);r('#fff',6,4,2,1)};
+DR.ac=r=>{bxd(r,0,0,32,12,'#f4f6fa','#c3cad6');r('#dfe4ec',1,1,30,1);r('#e9edf3',1,3,30,5);
+ r('#2a2e34',22,4,6,3);r('#5ee0a0',23,5,2,1);r('#ff7a5a',26,5,1,1);r('#4a90d9',4,4,7,1);r('#9fd0f5',4,6,4,1);
+ bxd(r,1,11,30,3,'#e3e8f0','#aeb6c4');r('#aeb6c4',3,12,26,1);r('#9aa3b2',3,14,26,1)};
+DR.rack=r=>{E(r,'rgba(0,0,0,.18)',24,31,22,1);
+ r('#8b94a3',4,3,2,25);r('#c9d0dc',4,3,1,25);r('#8b94a3',42,3,2,25);r('#c9d0dc',42,3,1,25);
+ r('#8b94a3',1,27,11,2);r('#8b94a3',36,27,11,2);r('#3a3a4a',2,29,3,2);r('#3a3a4a',8,29,3,2);r('#3a3a4a',37,29,3,2);r('#3a3a4a',43,29,3,2);
+ r('#a8b0be',5,23,38,1);r('#b8c0cc',3,2,42,2);r('#e8edf4',3,2,42,1);
+ [[7,'#f08aa0','t'],[16,'#4a78c8','p'],[24,'#ffd23f','d'],[32,'#6fbf73','t'],[39,'#a98ae8','t']].forEach(([x,c,k])=>{
+  r('#6b7380',x+3,4,1,2);
+  if(k=='t'){r(c,x,6,8,10);r(c,x-2,6,2,4);r(c,x+8,6,2,4);r('#fff',x+2,6,4,1);r('rgba(0,0,0,.14)',x,14,8,2)}
+  else if(k=='p'){r(c,x,6,7,14);r('#2f5aa0',x+3,11,1,9);r('#2f5aa0',x,6,7,1)}
+  else{r(c,x+1,6,6,4);r(c,x,10,8,10);r('#f0b020',x+1,10,6,1);r('rgba(0,0,0,.14)',x,18,8,2)}});
+ r('#e8505a',9,24,4,3);r('#f4f4f4',9,26,4,1);r('#4a78c8',15,25,5,2);r('#f6c47e',22,25,4,2)};
 const SPC={};function dspr(id,f){const k=id+f;if(!SPC[k]){const c=CAT[id],w=c[1]*8;SPC[k]=outl(mk(w,c[2]*8,(g,r)=>{if(f){g.translate(w,0);g.scale(-1,1)}DR[id](r,g)}))}return SPC[k]}
 let SEL=null,DECO=0;
 const hov=(a,b)=>a[0]<b[0]+b[2]&&b[0]<a[0]+a[2]&&a[1]<b[1]+b[3]&&b[1]<a[1]+a[3],box=o=>[o[1]*8,o[2]*8,CAT[o[0]][1]*8,CAT[o[0]][2]*8];
