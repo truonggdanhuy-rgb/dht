@@ -179,7 +179,7 @@ window.circusUI=()=>{
   '<div style="text-align:center;font-weight:800;color:#6a2fb0;font-size:14px;margin-bottom:8px">“Hề hề! Lại đây chơi với Chú Hề nào!” 🎈</div>'+
   '<button class="b" onclick="circusGo(\'wheel\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #8c1c13;background:linear-gradient(135deg,#ff5a5f 0%,#ff8c1a 50%,#ffd23f 100%);text-shadow:0 2px 0 #8c1c13">🎡 Vòng quay may mắn<br><small style="font-weight:700">Quay trúng Xu & 💎 Kim cương</small></button>'+
   '<button class="b" onclick="circusGo(\'blind\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #0b4f8a;background:linear-gradient(135deg,#22d3ee 0%,#3a86ff 55%,#7c5cff 100%);text-shadow:0 2px 0 #0b4f8a">🎁 Blind Box Kim Cương<br><small style="font-weight:700">20 Xu / hộp • tối đa 30 hộp/ngày • trúng tới 💎 10</small></button>'+
-  '<button class=\"b\" onclick=\"circusGo(\'tui\')\" style=\"display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #8c1c13;background:linear-gradient(135deg,#ff4d6d 0%,#ff8c1a 55%,#ffd23f 100%);text-shadow:0 2px 0 #8c1c13\">🎈 Xé túi Hề<br><small style=\"font-weight:700\">20 Xu / túi • mua tùy thích • trúng tới 🪙 1000</small></button>'+
+  '<button class=\"b\" onclick=\"circusGo(\'tui\')\" style=\"display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #8c1c13;background:linear-gradient(135deg,#ff4d6d 0%,#ff8c1a 55%,#ffd23f 100%);text-shadow:0 2px 0 #8c1c13\">🎈 Xé túi Hề<br><small style=\"font-weight:700\">20 Xu / túi • mỗi lần 1 túi • trúng tới 🪙 1000</small></button>'+
   '<button class="b" onclick="circusGo(\'shop\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #4a1d82;background:linear-gradient(135deg,#9b5de5 0%,#3a86ff 55%,#1fb5a6 100%);text-shadow:0 2px 0 #4a1d82">🤡 Tiệm Chú Hề<br><small style="font-weight:700">🔒 Sắp ra mắt — Coming soon</small></button>'+
   '<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#1fb5a6 0 14px,#fff 14px 28px);margin:8px 0 2px"></div>');
 };
@@ -386,7 +386,7 @@ window.lbxTap=e=>{if(e&&e.preventDefault)e.preventDefault();const B=lbS(),p=B.pe
  LBO={t0:performance.now()/1000,t:p.t};xuUp();save();lbInfo();
  play(p.t>=2?2:0,.06);if(p.t>=2)toast(p.t==3?'💎 SECRET! +10 Kim cương!!!':'💎 Trúng Kim cương!')};
 /* ============================================================
-   XÉ TÚI HỀ — 20 Xu / túi • mua bao nhiêu tùy thích • mỗi túi chạm 3 lần để xé
+   XÉ TÚI HỀ — 20 Xu / túi • mỗi lần chỉ mua 1 túi (xé xong mới mua tiếp) • mỗi túi chạm 3 lần để xé
    • Túi Hề cấp 1: nhận lại 20 Xu • Túi Hề cấp 2: nhận 50 Xu • Túi Hề VIP: nhận 1000 Xu
    • CÂN BẰNG KINH TẾ (chỉnh ở các hằng số bên dưới):
        - Cấp 2 chia theo "bộ bài" 100 túi: đúng 12 túi cấp 2 + 88 túi cấp 1, xáo trộn  → lãi đều 12×30 = +360 Xu / 100 túi
@@ -480,11 +480,10 @@ function tuLoop(id){const c=$('tuc');if(!c||!UI||id!=TULOOP)return;tuDraw(c);req
 function tuInfo(){const el=$('tui');if(!el)return;const S=tuS(),capped=S.rc>=TU_CAP;
  el.innerHTML='<div class="sg" style="grid-template-columns:repeat(2,1fr)"><div class="sq" style="cursor:default;min-height:54px;background:#ffb3c855"><b style="font-size:15px">🪙 '+fmtXu(ST.xu)+'</b></div><div class="sq" style="cursor:default;min-height:54px;background:#c9a8ff55"><b style="font-size:15px">🎈 '+(S.stock+(S.pen?1:0))+' túi</b><small>chưa xé</small></div></div>'+
   '<div class="mut" style="text-align:center;margin:4px 0">Hôm nay nhận từ túi hề: <b>'+fmtXu(S.rc)+' / '+fmtXu(TU_CAP)+'</b> Xu • xé '+S.dn+' túi</div>';
- const b=$('tub');if(!b)return;const xu=ST.xu|0,maxN=Math.floor(xu/TU_COST);
- const mk=(n,lab)=>{const ok=!capped&&n>0&&maxN>=n;return '<button class="b w'+(ok?'':' z')+'" onclick="tuBuy('+n+')"'+(ok?' style="font-weight:800;color:#fff;border:3px solid #8c1c13;border-radius:12px;background:linear-gradient(135deg,#ff5a5f,#ff8c1a);text-shadow:0 1px 0 #8c1c13"':'')+'>'+lab+'</button>'};
+ const b=$('tub');if(!b)return;const xu=ST.xu|0,busy=!!(S.pen||S.stock>0||TUO),ok=!capped&&!busy&&xu>=TU_COST;
  b.innerHTML=(capped?'<div class="mut" style="text-align:center;font-weight:800;color:#b3202e">🌙 Hôm nay đã nhận đủ '+fmtXu(TU_CAP)+' Xu từ túi hề — mai quay lại nhé!</div>':'')+
-  mk(1,'🎈 Mua 1 túi — '+TU_COST+' Xu')+mk(10,'🎈 Mua 10 túi — '+10*TU_COST+' Xu')+mk(50,'🎈 Mua 50 túi — '+50*TU_COST+' Xu')+
-  '<button class="b w'+(!capped&&maxN>0?'':' z')+'" onclick="tuBuy(-1)">🎈 Mua tối đa ('+maxN+' túi)</button>'}
+  '<button class="b w'+(ok?'':' z')+'" onclick="tuBuy()"'+(ok?' style="font-weight:800;color:#fff;border:3px solid #8c1c13;border-radius:12px;background:linear-gradient(135deg,#ff5a5f,#ff8c1a);text-shadow:0 1px 0 #8c1c13"':'')+'>🎈 Mua 1 túi — '+TU_COST+' Xu</button>'+
+  (busy&&!capped?'<div class="mut" style="text-align:center">Xé xong túi này mới mua được túi tiếp theo nhé!</div>':'')}
 window.tuUI=()=>{tuS();TUO=null;TUD=null;TUP=[];TUSH=0;TUTOK++;
  const bar=(a,b)=>'<div style="height:9px;border-radius:5px;background:repeating-linear-gradient(90deg,'+a+' 0 14px,'+b+' 14px 28px);margin:4px 0"></div>';
  openUI(head('🎈 Xé túi Hề')+
@@ -498,10 +497,10 @@ window.tuUI=()=>{tuS();TUO=null;TUD=null;TUP=[];TUSH=0;TUTOK++;
   bar('#7c5cff','#fff')+
   '<button class="b" onclick="circusUI()" style="display:block;width:100%;margin-top:4px">← Quay lại Xe Hề</button></div>');
  tuInfo();tuLoop(++TULOOP);tuTake()};
-window.tuBuy=n=>{const S=tuS();if(S.rc>=TU_CAP)return toast('🌙 Hôm nay đã nhận đủ '+fmtXu(TU_CAP)+' Xu từ túi hề rồi, mai quay lại nhé!');
- const maxN=Math.floor((ST.xu|0)/TU_COST);if(n<0)n=maxN;
- if(!(n>0)||maxN<n)return toast('🪙 Không đủ Xu (cần '+n*TU_COST+' Xu)');
- ST.xu-=n*TU_COST;S.stock+=n;xuUp();save();tuTake();tuInfo();const r=$('tur');if(r&&!TUO)r.textContent='';lbSnd(1,0)};
+window.tuBuy=()=>{const S=tuS();if(S.rc>=TU_CAP)return toast('🌙 Hôm nay đã nhận đủ '+fmtXu(TU_CAP)+' Xu từ túi hề rồi, mai quay lại nhé!');
+ if(S.pen||S.stock>0||TUO)return toast('🎈 Xé xong túi này rồi mới mua túi tiếp theo nhé!');
+ if((ST.xu|0)<TU_COST)return toast('🪙 Không đủ Xu (cần '+TU_COST+' Xu)');
+ ST.xu-=TU_COST;S.stock=1;xuUp();save();tuTake();tuInfo();const r=$('tur');if(r&&!TUO)r.textContent='';lbSnd(1,0)};
 window.tuTap=e=>{if(e&&e.preventDefault)e.preventDefault();const S=tuS(),p=S.pen;if(!p||TUD||TUO)return;
  const now=performance.now();if(now-TULAST<TU_TAPGAP)return;TULAST=now;
  p.tap++;TUSH=1;
