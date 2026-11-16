@@ -815,7 +815,10 @@ const SETS=[
   {n:'Pijama cam (Nam)',k:'pjm',mascot:'pj',pjv:'m',sh:'#ffa648',pt:'#ffa648',rpt:'#ffa648',shoe:'#ffb25a',scarf:'#ffa648'},
   // ---- Mascot À Lôi (Nam / Nữ) — Tây Bắc Việt Nam, bán ở Shop kim cương 💎10 / set. wide:1 = mấn đội/lá bay vượt khung chuẩn. Hình vẽ: alo.js (mascot:'aloi', al:'m'|'f'). Không che mặt. LUÔN để ở CUỐI mảng SETS ----
   {n:'À Lôi (Nam)',k:'aloim',mascot:'aloi',al:'m',wide:1,ach:1,dia:10,ds:'Mũ vải thêu xanh ngọc viền vàng, tóc bạc, áo chàm Tây Bắc khuy vàng. Lá cây bay quanh người. Không che mặt.',sh:'#232a55',pt:'#1e2348',rpt:'#1e2348',shoe:'#2a2f5a',scarf:'#2fd0cf'},
-  {n:'À Lôi (Nữ)',k:'aloif',mascot:'aloi',al:'f',wide:1,ach:1,dia:10,ds:'Mấn đội to thêu thổ cẩm có dây rủ, tóc tím xoăn sóng, áo hồng thêu Tây Bắc. Lá cây bay quanh người. Không che mặt.',sh:'#e8458f',pt:'#e8458f',rpt:'#e8458f',shoe:'#e9609a',scarf:'#ffd23a'}];
+  {n:'À Lôi (Nữ)',k:'aloif',mascot:'aloi',al:'f',wide:1,ach:1,dia:10,ds:'Mấn đội to thêu thổ cẩm có dây rủ, tóc tím xoăn sóng, áo hồng thêu Tây Bắc. Lá cây bay quanh người. Không che mặt.',sh:'#e8458f',pt:'#e8458f',rpt:'#e8458f',shoe:'#e9609a',scarf:'#ffd23a'},
+  // ---- Mascot Chú bé / Cô bé mùa đông (bộ yêu tinh Noel, chỉ khác tóc) — đổi ở Ông già Noel bằng 3 ❄️ Huy hiệu tuyết (SBSHOP trong snow-village.js). Hình vẽ: winter.js (mascot:'wint', wn:'m'|'f'). LUÔN để ở CUỐI mảng SETS ----
+  {n:'Chú bé mùa đông',k:'wintm',mascot:'wint',wn:'m',wide:1,ach:1,bd:3,ds:'Bộ yêu tinh Noel: mũ xanh đỏ chuông vàng, áo xanh đai đen, tất sọc đỏ trắng. Tóc đen. Không che mặt.',sh:'#2fa04a',pt:'#e23a3a',rpt:'#e23a3a',shoe:'#3fae4e',scarf:'#d8232a'},
+  {n:'Cô bé mùa đông',k:'wintf',mascot:'wint',wn:'f',wide:1,ach:1,bd:3,ds:'Bộ yêu tinh Noel: mũ xanh đỏ chuông vàng, áo xanh đai đen, tất sọc đỏ trắng. Tóc hồng nhạt dài ngang cổ. Không che mặt.',sh:'#2fa04a',pt:'#e23a3a',rpt:'#e23a3a',shoe:'#3fae4e',scarf:'#d8232a'}];
 const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'},{n:'Tóc nâu buộc',k:'tail',c:'#6a3e1e'},{n:'Tóc vàng',k:'short',c:'#e0b84a'},{n:'Mũ len đỏ',k:'beanie',c:'#c0392b',hr:'#2b1d12'},{n:'Mũ len xanh',k:'beanie',c:'#2f6fe0',hr:'#6a3e1e'},
  {n:'Tóc Sailor Moon',k:'sailor',c:'#f6d96b'},{n:'Tóc 2 chùm',k:'bun2',c:'#2a2224'},{n:'Tóc nữ yêu kiều',k:'longf',c:'#201a24'},{n:'Tóc xinh yêu',k:'bobf',c:'#17151c'},
  {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'},
@@ -5721,7 +5724,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="park-online.js?v=20261116"></script>
 <script src="frames.js?v=20261116"></script>
 <script src="idcard.js?v=20261116"></script>
-<script src="snow-village.js?v=20261116"></script>
+<script src="snow-village.js?v=20261120"></script>
 <script src="food-icons.js?v=20261116"></script>
 <script src="actions2.js?v=20261116"></script>
 <script src="newitems.js?v=20261116"></script>
@@ -5731,5 +5734,6 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="newitems4.js?v=20261117"></script>
 <script src="pajama.js?v=20261118"></script>
 <script src="alo.js?v=20261119"></script>
+<script src="winter.js?v=20261120"></script>
 <script src="gianhang.js?v=20261116"></script>
 </body></html>
