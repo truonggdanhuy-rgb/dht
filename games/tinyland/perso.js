@@ -23,7 +23,7 @@ const SWING_EVERY=5;           // mỗi bao nhiêu giây vung gậy ném bóng n
 const UPG=[
  {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:1,star:10, snow:10, xu:0,    dia:0},
  {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:2,star:40, snow:40, xu:10000,dia:0},
- {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:3,star:100,snow:100,xu:30000,dia:10,lock:1}];
+ {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:3,star:60,snow:60,xu:30000,dia:10}];
 const SOON=[2];                // các mùa sắp ra mắt: hiện "Coming soon" trong panel (khi có vật phẩm mùa đó trong UPG thì tự hiện vật phẩm thay thế)
 /* Vị trí điểm cuốc cố định (tọa độ chân) */
 const PTS={
@@ -212,9 +212,11 @@ function art(Pa,lv){
  for(let i=0;i<3;i++){const p=((t*.45)+i/3)%1,bxx=ox+Math.round(Math.sin(t*2.5+i*2.1)*2)+(i-1)*2,byy=oy-5-Math.round(p*14),a=(1-p).toFixed(2);
   R('rgba(190,235,255,'+a+')',bxx,byy,2,2);R('rgba(255,255,255,'+a+')',bxx,byy,1,1)}
  // mỗi 5 giây: vung gậy, ném các bóng nước (chỉ để đẹp)
- if(cyc<2.4){const sx=Math.round(Math.sin(1.2)*L+4),sy=Math.round(hy-Math.cos(1.2)*L)-3;
-  for(let k=0;k<5;k++){const e=cyc-(.3+.11*k);if(e<=0||e>1.5)continue;
-   const x=Math.round(sx+e*(12+k*5)),y=Math.round(sy-e*(7-k*2)+e*e*9+Math.sin(e*5+k)*1);
+ if(cyc<(lv>=3?3.1:2.4)){const sx=Math.round(Math.sin(1.2)*L+4),sy=Math.round(hy-Math.cos(1.2)*L)-3,NB=lv>=3?16:5;
+  for(let k=0;k<NB;k++){const e=cyc-(.3+(lv>=3?.07:.11)*k);if(e<=0||e>1.5)continue;
+   let x,y;
+   if(lv>=3){const vx=6+((k*37)%24),vy=2+((k*53)%12),sg=k%3==2?-.7:1;x=Math.round(sx+sg*e*vx);y=Math.round(sy-e*vy+e*e*9+Math.sin(e*5+k))}
+   else{x=Math.round(sx+e*(12+k*5));y=Math.round(sy-e*(7-k*2)+e*e*9+Math.sin(e*5+k)*1)}
    if(e<1.3){R('rgba(90,190,255,.9)',x+1,y,1,1);R('rgba(90,190,255,.9)',x,y+1,1,1);R('rgba(90,190,255,.9)',x+2,y+1,1,1);R('rgba(90,190,255,.9)',x+1,y+2,1,1);R('rgba(200,240,255,.5)',x+1,y+1,1,1);R('#fff',x+1,y,1,1)}
    else{R('rgba(220,245,255,.8)',x-1,y,1,1);R('rgba(220,245,255,.8)',x+3,y,1,1);R('rgba(220,245,255,.8)',x+1,y-1,1,1);R('rgba(220,245,255,.8)',x+1,y+3,1,1)}}}
  // cấp 2: vòng sáng nước dưới chân (ít pixel, ít khung hình)
@@ -224,6 +226,42 @@ function art(Pa,lv){
    R(cy0>=0?'rgba(120,205,255,'+(.75-q*.15).toFixed(2)+')':'rgba(120,205,255,.35)',c0+cx0,29+cy0,1,1)}
   R('rgba(60,160,240,.3)',c0-6,30,12,1);
   const bs=[[-7,0],[6,1],[-3,2],[3,0]][q];R('rgba(230,250,255,.95)',c0+bs[0],27-bs[1],1,1);R('rgba(230,250,255,.8)',c0-bs[0],26+bs[1],1,1)}}
+
+
+/* ===== CẤP 3: bóng nước nhỏ bay chậm vây quanh người + dấu chân là bóng nước trồi lên từ mặt đất =====
+   Chỉ vẽ cho nhân vật của mình, khi đang cầm Quyền trượng cấp 3 và không cưỡi thú. */
+const TRL=[];let tlx=null,tly=0,tls=1;
+const dome=(x,y,rx,ry,al)=>{const f=cx.fillStyle;
+ for(let dy=-ry;dy<=ry;dy++){const w=Math.round(rx*Math.sqrt(Math.max(0,1-dy*dy/((ry+.6)*(ry+.6)))));cx.fillStyle='rgba(110,200,255,'+(al*.5).toFixed(2)+')';cx.fillRect(x-w,y+dy,w*2+1,1)}
+ cx.fillStyle='rgba(170,230,255,'+al.toFixed(2)+')';cx.fillRect(x-rx+1,y-ry,Math.max(1,rx*2-1),1);cx.fillRect(x-rx,y,1,1);cx.fillRect(x+rx,y,1,1);cx.fillRect(x-rx+1,y+ry,Math.max(1,rx*2-1),1);
+ cx.fillStyle='rgba(255,255,255,'+al.toFixed(2)+')';cx.fillRect(x-rx+1,y-ry+1,1,1);cx.fillStyle=f};
+const orb=(x,y,s,al)=>{const f=cx.fillStyle;
+ if(s>=3){cx.fillStyle='rgba(110,200,255,'+(al*.45).toFixed(2)+')';cx.fillRect(x-1,y-1,3,3);cx.fillStyle='rgba(150,220,255,'+al.toFixed(2)+')';cx.fillRect(x,y-2,1,1);cx.fillRect(x,y+2,1,1);cx.fillRect(x-2,y,1,1);cx.fillRect(x+2,y,1,1)}
+ else{cx.fillStyle='rgba(130,210,255,'+(al*.8).toFixed(2)+')';cx.fillRect(x,y,2,2)}
+ cx.fillStyle='rgba(255,255,255,'+al.toFixed(2)+')';cx.fillRect(x-(s>=3?1:0),y-(s>=3?1:0),1,1);cx.fillStyle=f};
+function orbits(X,Y,tm,front){const t=tm/1000;
+ for(let i=0;i<10;i++){const ring=i%2,ang=t*.6*(ring?-1:1)+i*0.6283,z=Math.sin(ang);if((z>=0)!==front)continue;
+  const x=Math.round(X+Math.cos(ang)*(ring?19:15)),y=Math.round(Y-(ring?9:19)+z*5+Math.sin(t*1.7+i)*1.5);
+  orb(x,y,i%3?2:3,front?.95:.55)}}
+const dp0=window.drawPlayer;
+window.drawPlayer=function(){
+ let on=0;try{const A=ST.av;on=A&&A.m<0&&A.a>=0&&A.a==sci('scepter',3)&&!Pl.sit&&!(HMA&&HMA.hide)&&!(CVON&&CV.boat)}catch(e){}
+ if(!on){TRL.length=0;tlx=null;return dp0.apply(this,arguments)}
+ const tm=performance.now(),X=Math.round(Pl.x),Y=Math.round(Pl.y);
+ if(tlx==null){tlx=X;tly=Y}
+ if(Pl.mv&&Math.hypot(X-tlx,Y-tly)>=9){tls=-tls;const d=Pl.d,hz=d>1;
+  TRL.push({x:X+(hz?(d==3?-4:4):tls*3),y:Y+(hz?tls*2:(d==1?2:-1)),t:tm});tlx=X;tly=Y;if(TRL.length>16)TRL.shift()}
+ else if(!Pl.mv){tlx=X;tly=Y}
+ for(let i=TRL.length-1;i>=0;i--){const q=TRL[i],a=(tm-q.t)/1000;
+  if(a>1.8){TRL.splice(i,1);continue}
+  if(a<.3){dome(q.x,q.y,1+Math.round(a/.3*2),1+Math.round(a/.3),.9)}                     // trồi lên
+  else if(a<1.5){dome(q.x,q.y-(a>1.3?1:0),3,2,a>1.3?.6:.95)}                                 // đứng yên, sắp vỡ
+  else{const e=(a-1.5)/.3,al=(1-e).toFixed(2);cx.fillStyle='rgba(200,240,255,'+al+')';       // vỡ tung bọt
+   for(const[ox,oy]of[[-1,-1],[1,-1],[-1,1],[1,1]]){cx.fillRect(Math.round(q.x+ox*(2+e*4)),Math.round(q.y+oy*(1+e*3)),1,1)}}}
+ orbits(X,Y,tm,false);
+ const r0=dp0.apply(this,arguments);
+ orbits(X,Y,tm,true);
+ return r0};
 
 /* ===== Túi: bấm lại để cất + hiện số nguyên liệu ===== */
 function hookBag(){
