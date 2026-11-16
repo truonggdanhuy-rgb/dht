@@ -440,4 +440,136 @@ function wheelDraw(R,d,f,b,t,pt,c){
 }
 window.wheelDraw=wheelDraw;
 
+// ===================================================================================
+//  🌙 THÚ CƯỠI TRĂNG KHUYẾT — 💎15, bán ở Shop kim cương (mục Thú cưỡi). Người NGỒI trên vầng trăng khuyết xanh dịu,
+//  chân buông thõng, lơ lửng cách đất như Bánh ngọt (có bóng mờ dưới đất, nhún nhẹ).
+//  Có: thân trăng xanh ngọc nhạt + viền sáng, vài bông hoa xanh tím, TUA RUA mỏng rủ dưới vầng trăng (đung đưa, đính hạt),
+//      CÁNH BƯỚM xanh vỗ cánh bay quanh đầu trăng, và những mặt trăng xanh BÉ 🌙 bay lên lấp lánh.
+//  Món này được thêm vào CUỐI mảng MOUNTS bằng MOUNTS.push ở cuối khối này (nên chỉ cần thay file newitems2.js, không phải sửa index.html).
+//  Muốn đổi giá: sửa dia:15 ở dòng MOUNTS.push cuối khối.
+// ===================================================================================
+window.moonHov=function(t,mv){return mv?-Math.round(1.3+sin(t*7)*.9):-Math.round(1.8+sin(t*2.1)*1.3)};
+let moonCache=null;
+const MG={OX:-4,OY:-24,OR:17,IX:2,IY:-29,IR:14};      // vòng ngoài (OX,OY,OR) trừ vòng trong (IX,IY,IR) = vầng trăng khuyết, mở sang phải
+function moonSpans(){
+ // thân trăng = vòng tròn ngoài trừ vòng tròn trong (hướng mở sang phải). Tính 1 lần rồi dùng lại.
+ if(moonCache)return moonCache;
+ const OX=MG.OX,OY=MG.OY,OR=MG.OR,IX=MG.IX,IY=MG.IY,IR=MG.IR,out=[];
+ const L=[-.55,-.83];                                   // hướng sáng từ trên-trái
+ for(let y=-46;y<=-5;y++){
+  let run=null;
+  for(let x=-26;x<=14;x++){
+   const px=x+.5,py=y+.5,d1=Math.hypot(px-OX,py-OY),d2=Math.hypot(px-IX,py-IY);
+   let col=null;
+   if(d1<=OR&&d2>IR){
+    const e1=OR-d1,e2=d2-IR,e=Math.min(e1,e2);
+    const nOut=[(px-OX)/d1,(py-OY)/d1],nIn=[(IX-px)/d2,(IY-py)/d2];
+    const litO=nOut[0]*L[0]+nOut[1]*L[1]>.15,litI=nIn[0]*L[0]+nIn[1]*L[1]>.15;
+    if(e<1){col=e1<e2?(litO?'#bdeefb':'#4f9bd2'):(litI?'#aee6f7':'#5aa5d8')}
+    else if(e<2.3){col=e1<e2?(litO?'#e2f9ff':'#86cdee'):(litI?'#d2f4fd':'#7ec6ea')}
+    else{
+     const ys=(y+46)/40;
+     col=ys<.3?'#b0e8f8':ys<.62?'#98ddf3':'#82d0ee';
+     if(e>3.2&&e<4.5&&((x*3+y*2)%7+7)%7==0)col='#dcf7ff'
+    }
+   }
+   if(run&&run.c===col)run.w++;
+   else{if(run)out.push(run);run=col?{c:col,x,y,w:1}:null}
+  }
+  if(run)out.push(run)
+ }
+ return moonCache=out
+}
+function moonFlower(P,cx,cy,big){
+ const pc=big?'#8f94f2':'#a29cf5',pl='#c9c6ff',pd='#6f72d6';
+ P(pd,cx-1,cy-2,3,1);P(pc,cx-1,cy-2,3,1);
+ P(pc,cx-2,cy-1,5,3);P(pl,cx-2,cy-1,2,1);P(pl,cx-1,cy-2,1,1);
+ P(pd,cx-1,cy+2,3,1);P(pd,cx+2,cy,1,2);
+ P('#ffe38a',cx,cy,1,1);P('#fff6c8',cx,cy-1,1,1)
+}
+function moonTassel(P,ax,ay,len,t,i){
+ const sw=sin(t*2.3+i*1.4);
+ for(let k=0;k<len;k++){
+  const x=ax+rnd(sw*(k/len)*1.3);
+  P(k%2?'#a6e0f7':'#d8f4ff',x,ay+k,1,1);
+  if(k==2||k==len-3)P('#fff0a8',x,ay+k,1,1)
+ }
+ const ex=ax+rnd(sw*1.3);
+ P('#bfeaff',ex-1,ay+len,1,2);P('#fff0a8',ex,ay+len,1,2);P('#bfeaff',ex+1,ay+len,1,2);
+ P('rgba(191,234,255,.55)',ex-1,ay+len+2,1,1);P('rgba(191,234,255,.55)',ex+1,ay+len+2,1,1)
+}
+function moonButterfly(P,cx,cy,t){
+ const fl=abs(sin(t*9)),w=2+rnd(fl*1.2);        // vỗ cánh: cánh khép lại / mở ra
+ for(const s of[-1,1]){
+  const x0=s<0?cx-w:cx+1,sh=s<0?1:0;
+  P('#8fcfff',x0+sh,cy-3,w-1,1);P('#8fcfff',x0,cy-2,w,2);P('#e4f8ff',x0+sh,cy-3,w-1,1);P('#c3a4f5',x0+(s<0?0:w-1),cy-2,1,1);   // cánh trên (đốm tím)
+  P('#6fb4f0',x0+sh,cy,w-1,2);P('#b9e4ff',x0+sh,cy,w-1,1)                                                                      // cánh dưới
+ }
+ P('#3f55c0',cx,cy-3,1,6);P('#8fa0ff',cx,cy-3,1,1);                      // thân + đầu
+ P('#3f55c0',cx-1,cy-5,1,2);P('#3f55c0',cx+1,cy-5,1,2);                   // râu
+ if(sin(t*3)>.2)star(P,cx+5,cy-4,.8,'220,245,255',0)
+}
+function moonMini(P,x,y,a){
+ // trăng khuyết bé 4x5 (mở sang phải) có quầng sáng nhỏ, mờ/sáng theo a
+ if(a<=.05)return;a=Math.min(1,a);
+ const q=v=>'rgba('+v+','+a.toFixed(2)+')',c1=q('168,236,255'),c2=q('96,190,240'),c3=q('255,255,255');
+ P(c1,x+1,y,2,1);P(c3,x+1,y,1,1);P(c1,x,y+1,2,1);P(c1,x,y+2,1,1);P(c1,x,y+3,2,1);P(c2,x+1,y+4,2,1);P(c2,x,y+3,1,1)
+}
+function moonDraw(R,d,f,b,t,pt,c){
+ const mv=!!(c&&c.mv),RR=(col,x,y,w,h)=>R(col,x,y+b,w,h),back=d==1,side=d>1,sg=back?-1:1;
+ const P=(col,x,y,w,h)=>{w=w||1;h=h||1;RR(col,sg>0?x:-x-w,y,w,h)};
+ if(!pt){
+  // bóng mờ dưới đất (không nhún theo vầng trăng)
+  const lift=-b,k2=Math.max(.8,1-lift*.035);
+  ell(R,'rgba(0,0,0,.10)',-3*sg,1,rnd(21*k2),3);ell(R,'rgba(0,0,0,.13)',-3*sg,1,rnd(14*k2),2);
+  // quầng sáng xanh nhạt quanh trăng
+  ell(P,'rgba(150,224,255,.07)',MG.OX+3,MG.OY-1,22,22);ell(P,'rgba(190,240,255,.07)',MG.OX+3,MG.OY-1,19,19);
+  const sp=moonSpans();
+  for(let i=0;i<sp.length;i++){const s=sp[i];P(s.c,s.x,s.y,s.w,1)}
+  // hoa xanh tím gắn trên thân trăng (phía sau lưng người)
+  moonFlower(P,-17,-30,1);moonFlower(P,-13,-22,0);moonFlower(P,-18,-21,0);
+  P('#7fd0a8',-15,-26,1,1);P('#7fd0a8',-16,-27,1,1);
+  // tua rua mỏng rủ dưới vầng trăng
+  [[100,8],[115,7],[130,6],[145,5]].forEach(([ang,len],i)=>{
+   const a=ang*PI/180,ax=rnd(MG.OX+MG.OR*cos(a)),ay=rnd(MG.OY+MG.OR*sin(a))+1;
+   moonTassel(P,ax,ay,len,t,i)});
+  // 2 sợi dài rủ từ đầu sừng dưới
+  moonTassel(P,10,-16,8,t,5);moonTassel(P,7,-12,6,t,6)
+ }else{
+  // cánh bướm bay quanh đầu trăng phía trên
+  const bx=rnd(9+sin(t*1.3)*6),by=rnd(-43+sin(t*2.1)*3);
+  moonButterfly(P,bx,by,t);
+  // mặt trăng xanh bé bay lên lấp lánh
+  const bases=[-19,-11,-3,5,12,18,-7,9];
+  for(let i=0;i<bases.length;i++){
+   const ph=(t*.3+i/bases.length)%1,a=Math.min(1,sin(ph*PI)*1.6),x=bases[i]+rnd(sin(t*1.7+i*2.1)*3.5),y=-10-rnd(ph*34);
+   moonMini(P,x,y,a*(.75+.25*sin(t*6+i*1.9)));
+   if(i%2==0)star(P,x+3,y-2,a*(sin(t*7+i*3)+1)/2,'200,240,255',i%4==0)
+  }
+  for(let i=0;i<7;i++){const a=(sin(t*3.3+i*2.1)+1)/2;star(P,-22+hash(i+11)*44,-48+hash(i+5)*40,a*a,i%2?'255,255,255':'190,236,255',i%3==0)}
+ }
+}
+window.moonDraw=moonDraw;
+// chân ngồi buông thõng (vẽ sau lớp trăng, trước người). R = hàm vẽ đã lật theo hướng; hv = độ nhún của thú cưỡi
+function moonLegs(R,d,ph,sx,sy,PT,SD,S,hv,c){
+ const t=performance.now()/1000,mv=!!(c&&c.mv),sw=rnd(sin(t*(mv?7:2.2))*(mv?1.4:1)),y=sy-3+hv,sh=shadeC(PT,-.18);
+ if(d>1){
+  // nhìn ngang: đùi ngang, 2 cẳng chân buông thõng đung đưa ngược nhau
+  R(shadeC(PT,-.3),sx-1,y,6,3);
+  R(shadeC(PT,-.25),sx+1-sw,y+2,3,8);R(shadeC(SD,-.2),sx+1-sw,y+10,5,2);
+  R(shadeC(PT,-.12),sx-2,y,8,3);R(PT,sx+3+sw,y+2,3,8);R(shadeC(PT,.25),sx+3+sw,y+2,1,8);R(SD,sx+3+sw,y+10,5,2)
+ }else{
+  // nhìn trước/sau: 2 chân thõng gần nhau
+  R(PT,sx-4,y,3,9+(sw>0?1:0));R(shadeC(PT,.25),sx-4,y,1,9);R(sh,sx-2,y,1,9);R(SD,sx-4,y+9+(sw>0?1:0),3,2);
+  R(PT,sx+1,y,3,9+(sw<0?1:0));R(shadeC(PT,.25),sx+1,y,1,9);R(sh,sx+3,y,1,9);R(SD,sx+1,y+9+(sw<0?1:0),3,2)
+ }
+}
+window.moonLegs=moonLegs;
+// đăng ký thú cưỡi vào CUỐI mảng MOUNTS (index.html khai báo MOUNTS trước khi file này chạy)
+if(typeof MOUNTS!=='undefined'&&!MOUNTS.some(m=>m.k==='moon'))
+ MOUNTS.push({n:'Trăng khuyết',k:'moon',dia:15,hw:10,drop:9,spd:2.4,nobob:1,sh:[0,0],seat:{0:[0,-15],1:[0,-15],side:[1,-15]},
+  legs(R,d,ph,sx,sy,PT,SD,S,hv,c){moonLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
+  hov:(t,mv)=>window.moonHov?moonHov(t,mv):0,
+  draw(R,d,f,b,t,pt,c){moonDraw(R,d,f,b,t,pt,c)}});
+
 })();
