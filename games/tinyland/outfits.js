@@ -668,3 +668,8 @@ function accGuitar(P){
   d('rgba(255,255,255,'+(al*.55).toFixed(2)+')',1,1);d(gtHexA(NC[k],al),0,0)}
  const[tx,ty]=at(15.5,0);if(Math.sin(t*5)>.55){const X=Math.round(tx),Y=Math.round(ty);for(const[a,b]of[[0,-2],[0,2],[-2,0],[2,0]])R('rgba(255,255,255,.9)',X+a,Y+b,1,1);R('#ffffff',X,Y,1,1)}
 }
+
+/* ---------------------- GUITAR ĐIỆN (t:'hold') — bán ở Shop Phố xá: 4000 Xu ----------------------
+   Dùng lại dáng + động tác của Đàn guitar, đổi sang thân hồng cánh sen, cần đàn đen, có lấp lánh. Giá: SHOP.a.pr (số 15) trong pho-map.js */
+const EGT_MAP={'#f2b872':'#ff9ad0','#e0944a':'#e8409a','#c47a38':'#b02270','#6b3414':'#4a0f33','#2a1408':'#c9d2dc','#3a1d0c':'#8a96a4','#4a2a14':'#22222c','#2a160a':'#101018','#8a5a2c':'#2e2e3a','#a8743a':'#3c3c4a'};
+function accEGuitar(P){const R0=P.R;accGuitar(Object.assign({},P,{R:(c,x,y,w,h)=>R0(EGT_MAP[c]||c,x,y,w,h)}))}
