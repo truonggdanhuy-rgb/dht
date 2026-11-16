@@ -1577,7 +1577,9 @@ const ACCS=[{n:'Lồng đèn trăng rằm',k:'moon',t:'hang',art:accMoon},{n:'Xe
  {n:'Thương ma đồng',k:'maspear',t:'hold',art:(P)=>window.accMaSpear&&accMaSpear(P)},
  // Gậy Nấm pháp sư: gậy dài mảnh, đầu uốn cong treo vầng sáng (t:'hold', 💎5 ở Shop kim cương mục Phụ kiện; hình vẽ: accMushStaff trong newitems3.js)
  {n:'Gậy Nấm pháp sư',k:'mushstaff',t:'hold',dia:5,art:(P)=>window.accMushStaff&&accMushStaff(P)},
- {n:'Guitar điện',k:'guitar',t:'hold',art:(P)=>accEGuitar(P)}];   // số 15 = Guitar điện 4000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accEGuitar trong outfits.js   // guitar 3000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accGuitar trong outfits.js
+ {n:'Guitar điện',k:'guitar',t:'hold',art:(P)=>accEGuitar(P)},
+ // 16-18 = Quyền trượng Thủy Thần cấp 1/2/3 (nhận ở Thái tử Ba Tư, KHÔNG bán ở shop). Hình vẽ + nâng cấp: perso.js. Mỗi cấp 1 mục để người chơi khác tự thấy đúng cấp qua số phụ kiện sẵn có.
+ {n:'Quyền trượng Thủy Thần cấp 1',k:'scepter1',t:'hold',ach:1,sc:1,art:(P)=>window.PERSO&&PERSO.art(P,1)},{n:'Quyền trượng Thủy Thần cấp 2',k:'scepter2',t:'hold',ach:1,sc:2,art:(P)=>window.PERSO&&PERSO.art(P,2)},{n:'Quyền trượng Thủy Thần cấp 3',k:'scepter3',t:'hold',ach:1,sc:3,art:(P)=>window.PERSO&&PERSO.art(P,3)}];   // số 15 = Guitar điện 4000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accEGuitar trong outfits.js   // guitar 3000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accGuitar trong outfits.js
 //   t:'float' = cầm DÂY dài, vật bay lơ lửng phía trên đầu -> art(P) giống 'hang'
 // ===== Pet đổi bằng Huy hiệu tuyết: Bánh quy gừng + Mây tuyết =====
 function drawPetGinger(g,x,y,d,mv,a,t){
@@ -5716,7 +5718,7 @@ function actSfx(id,t){if(id=='bell'){const p=ACTSFX.t==null?t-.001:ACTSFX.t;ACTS
  const p=ACTSFX.t==null?t-.001:ACTSFX.t;ACTSFX.t=t;
  for(const h of CH_HIT)if(Math.floor((t-h)/CH_T)>Math.floor((p-h)/CH_T)&&t-p<.5)sndChieng()}
 /* ---- vẽ 1 nhân vật đang làm hành động (dùng chung: người chơi, người khác, xem trước) ---- */
-function actDraw(g,X,Y,t,o,id){const p=actPose(id,t),F=ACTFX[id];o.d=p.d;o.mv=0;if(p.e!=null)o.e=p.e;o.aup=p.aup||null;if(o.aup&&o.aup[0]==null){const S0=SETS[o.set];if(S0&&(S0.dn||S0.tn||S0.aul||S0.mascot||S0.dk||S0.fx=='duckfloat'))o.aup=[1,o.aup[1]]}o.nosh=p.nosh||0;if(p.noacc)o.acc=-1;
+function actDraw(g,X,Y,t,o,id){const p=actPose(id,t),F=ACTFX[id];o.d=p.d;o.mv=0;if(p.e!=null)o.e=p.e;o.aup=p.aup||null;if(o.aup&&o.aup[0]==null){const S0=SETS[o.set];if(S0&&(S0.dn||S0.tn||S0.aul||S0.mascot||S0.dk||S0.fx=='duckfloat'))o.aup=[1,o.aup[1]]}o.nosh=p.nosh||0;if(p.noacc||(ACCS[o.acc]&&ACCS[o.acc].sc))o.acc=-1;
  if(F&&F.back)F.back(X,Y,t,o,p);drawAv(g,X-10,Y-30-Math.round(p.lift),o);if(F&&F.front)F.front(X,Y-Math.round(p.lift*.5),t,o,p)}
 /* ---- trái tim bay (Bắn tim) ---- */
 const HRTC=['#ff4d7a','#ff7aa8','#ff4d7a','#ff6fa0','#ff4d7a'],HRTS=[5,3,5,3,5];
@@ -5819,4 +5821,5 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="alo.js?v=20261119"></script>
 <script src="winter.js?v=20261120"></script>
 <script src="gianhang.js?v=20261116"></script>
+<script src="perso.js?v=20261116"></script>
 </body></html>
