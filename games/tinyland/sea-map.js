@@ -1,9 +1,9 @@
 /* ============================================================
    BIỂN — map online thứ 3 (dùng chung hệ thống mạng với Công viên / Phố xá)
    - Bãi biển nhỏ ở góc TRÁI màn hình lúc mới vào, còn lại là mặt biển rất rộng
-   - Tiệm câu Quái vật (biển hiệu to) + NPC bạch tuộc đứng rao "Đồ câu quái vật đây!"
+   - Shop quái vật (biển hiệu to) + NPC bạch tuộc đứng rao "Đồ câu quái vật đây!"
    - Xu quái vật (ST.qv) = đơn vị tiền tệ mới, hiện ở panel avatar góc phải
-   - RA KHƠI bằng THUYỀN: Thuyền mini (1.000 xu vàng) / Thuyền thiên nga (xu quái vật) — bán ở Tiệm câu
+   - RA KHƠI bằng THUYỀN: Thuyền mini (1.000 xu vàng) / Thuyền thiên nga (xu quái vật) — bán ở Shop quái vật
    - CHỈ câu được khi đang đứng trên thuyền ngoài biển (không câu trên cầu tàu / bãi cát)
    - Thỉnh thoảng có VÙNG NƯỚC TỐI: câu ở đó dính quái có 15% nhận thêm 1 vé quay hoặc 1 món ăn từ máy chế biến
    - Rương kho báu: mỗi 1 giờ nhận 10–40 xu quái vật (không cộng dồn)
@@ -44,37 +44,114 @@ const bnSolid=(x,y)=>{
 const line=(r,c,x0,y0,x1,y1,t)=>{const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0))|0;for(let i=0;i<=n;i++){const k=n?i/n:0;r(c,Math.round(x0+(x1-x0)*k),Math.round(y0+(y1-y0)*k),t||1,t||1)}};
 const WD='#b8864e',WDL='#d6a66a',WDD='#8a5f33',WDK='#5e3f20';
 
-// --- Tiệm câu Quái vật: nhà sàn gỗ, mái hiên sọc xanh, BIỂN HIỆU TO ---
-const mkShop=()=>mk(138,114,(g,r)=>{
- const W=138;
- E(r,'rgba(0,0,0,.22)',69,112,62,3);
- for(const x of[12,66,122])r(WDK,x,96,5,16);
- r(WDD,8,52,122,46);for(let x=8;x<130;x+=10){r(x%20?WD:WDL,x,52,9,46);r(WDK,x+9,52,1,46)}
- r('#47301c',16,62,106,26);r('#62432a',16,62,106,3);
- r('#9a6d3a',18,74,102,3);r('#c18f55',18,74,102,1);
- const lure=['#e0584a','#f4d38a','#7ed6c8','#c9a8ff','#ffb08a'];
- for(let i=0;i<11;i++){const x=21+i*9;r(lure[i%5],x,66,5,7);r('#fff',x+1,67,1,2);r(shade(lure[i%5],-.25),x,72,5,1);r('#d8d8e0',x+2,63,1,3)}
- for(let i=0;i<4;i++){const x=28+i*24;r('#cfe6ec',x,78,8,9);r('#e8f4f7',x,78,2,9);r(lure[(i+2)%5],x+2,82,4,5);r('#7a5a33',x+1,76,6,2)}
- r(WDL,3,86,132,5);r('#f0c88a',3,86,132,1);r(WD,5,91,128,12);
- for(let x=5;x<133;x+=14){r(WDD,x,91,1,12);r(WDL,x+1,91,1,12)}r(WDK,5,101,128,3);
- r('#6a7a86',12,79,13,8);r('#8fa1ae',12,79,13,2);r('#5a6a76',12,86,13,1);r('#7cd1a8',15,77,4,3);r('#e0584a',20,78,3,2);
- r('#e8c35a',68,81,8,5);E(r,'#e8c35a',72,81,4,3);r('#8a6a1c',71,85,3,2);
- E(r,'#7a63d6',106,82,8,4);r('#5d49b5',113,79,5,6);r('#fff',100,81,2,2);r('#161022',101,82,1,1);for(let i=0;i<4;i++)r('#fff',97+i*2,84,1,2);
- for(let x=0;x<W;x+=12){const c=(x/12)%2?'#fff4d6':'#1fa6b4';r(c,x,40,12,14);r(shade(c,-.14),x,51,12,3);r(c,x+2,54,8,2);r(c,x+4,56,4,2)}
- r('rgba(255,255,255,.35)',0,40,W,1);
- for(const x of[34,104]){r('#6b5a48',x,56,1,4);r('#e0584a',x-3,60,7,6);r('#ff9a8a',x-2,61,2,3);r('#ffd23f',x-3,60,7,1)}
- r(WDK,22,28,5,14);r(WDK,111,28,5,14);
- r('#2c1c0e',1,0,136,31);r('#ffd23f',3,2,132,27);r('#1a8f9c',5,4,128,23);r('#27b3c0',5,4,128,3);r('#12707b',5,24,128,3);
- for(const x of[7,129]){r('#ffd23f',x-1,7,3,3);r('#ffd23f',x-1,21,3,3)}
- g.textAlign='center';g.lineJoin='round';
- g.font='900 8px Nunito, "Segoe UI", Arial, sans-serif';g.lineWidth=2;g.strokeStyle='#0d4a52';g.strokeText('TIỆM CÂU',69,12,80);g.fillStyle='#fff6d0';g.fillText('TIỆM CÂU',69,12,80);
- g.font='900 13px Nunito, "Segoe UI", Arial, sans-serif';g.lineWidth=3;g.strokeStyle='#3a2412';g.strokeText('QUÁI VẬT',69,26,96);g.fillStyle='#ffd23f';g.fillText('QUÁI VẬT',69,26,96);
- line(r,'#e8f0f4',13,9,13,18,2);line(r,'#e8f0f4',13,18,10,21,2);r('#e8f0f4',8,20,3,2);
- E(r,'#a56bd8',123,15,6,4);r('#7f48b0',128,12,4,6);r('#fff',119,14,2,2);r('#2a1a3a',120,15,1,1);for(let i=0;i<3;i++)r('#fff',117+i*2,17,1,2);
- line(r,'#6b4a2a',128,100,133,48,1);line(r,'#7a5a33',131,102,136,54,1);line(r,'#5e3f20',125,98,130,58,1);
- r('#e0584a',132,47,3,3);line(r,'#e8f0f4',134,50,134,66,1);
- for(let y=56;y<84;y+=4){for(let x=0;x<7;x+=4)r('#b8d4c4',x+(y%8?0:2),y,2,1);r('#b8d4c4',3,y,1,3)}
- r('#6b4a2a',0,54,8,2)});
+// --- Shop quái vật: nhà sàn gỗ to, mái hiên sọc xanh, bảng neon chạy chữ kiểu Hồng Kông (phần neon vẽ động ở drawShopNeon) ---
+const SHW=172,SHH=134;
+const mkShop=()=>mk(SHW,SHH,(g,r)=>{
+ const W=SHW;
+ E(r,'rgba(0,0,0,.22)',86,131,82,3);
+ for(const x of[8,44,82,120,156]){r(WDK,x,112,6,20);r(WDD,x,112,2,20)}                 // cọc nhà sàn
+ r(WDD,6,66,160,48);for(let x=6;x<166;x+=10){r(x%20?WD:WDL,x,66,9,48);r(WDK,x+9,66,1,48)}  // vách gỗ
+ r('#47301c',14,74,144,28);r('#62432a',14,74,144,3);                                   // ô quầy mở
+ // kệ trong tiệm: mồi câu, chai, cần câu
+ r('#9a6d3a',16,86,140,3);r('#c18f55',16,86,140,1);
+ const lure=['#e0584a','#f4d38a','#7ed6c8','#c9a8ff','#ffb08a','#ff8ac0'];
+ for(let i=0;i<14;i++){const x=18+i*10;r(lure[i%6],x,78,5,7);r('#fff',x+1,79,1,2);r(shade(lure[i%6],-.25),x,84,5,1);r('#d8d8e0',x+2,75,1,3)}
+ for(let i=0;i<5;i++){const x=30+i*26;r('#cfe6ec',x,92,8,9);r('#e8f4f7',x,92,2,9);r(lure[(i+2)%6],x+2,96,4,5);r('#7a5a33',x+1,90,6,2)}
+ // quầy
+ r(WDL,2,100,168,6);r('#f0c88a',2,100,168,1);r(WD,4,106,164,12);
+ for(let x=4;x<168;x+=14){r(WDD,x,106,1,12);r(WDL,x+1,106,1,12)}r(WDK,4,116,164,3);
+ // hàng bày trên quầy: thuyền mini + thuyền thiên nga mẫu, máy tính tiền, bạch tuộc bông, thùng cá
+ r('#c98a5a',16,93,22,5);r('#f6dc9c',16,93,22,1);r('#e0584a',16,95,22,1);r('#8a5a30',16,98,22,1);r('#fff6d0',26,86,1,7);r('#e0584a',27,86,6,4);
+ E(r,'#ffffff',58,95,9,4);r('#ffffff',64,86,3,9);r('#ff9a2a',67,87,3,1);r('#6fb8ff',50,97,18,2);r('#ffd6e8',52,92,10,2);
+ r('#6a7a86',90,92,14,8);r('#8fa1ae',90,92,14,2);r('#5a6a76',90,99,14,1);r('#7cd1a8',93,90,4,3);r('#e0584a',100,91,3,2);
+ E(r,'#a56bd8',122,92,9,6);r('#7f48b0',130,88,5,8);r('#fff',116,90,2,2);r('#2a1a3a',117,91,1,1);for(let i=0;i<4;i++)r('#fff',113+i*3,96,1,3);
+ r('#8a6a3c',140,88,22,12);r('#a98450',140,88,22,2);r('#5e3f20',140,99,22,1);r('#7ed6c8',144,86,5,4);r('#ffb08a',151,85,6,5);r('#fff',145,87,1,1);
+ // mái hiên sọc xanh – trắng
+ for(let x=0;x<W;x+=12){const c=(x/12)%2?'#fff4d6':'#1fa6b4';r(c,x,52,12,14);r(shade(c,-.14),x,63,12,3);r(c,x+2,66,8,2);r(c,x+4,68,4,2)}
+ r('rgba(255,255,255,.35)',0,52,W,1);
+ for(let x=6;x<W;x+=14){const c=['#ff5a8a','#ffd23f','#5ee0ff','#9cff7a'][(x/14|0)%4];r('#2c1c0e',x,69,1,2);r(c,x-1,71,3,3);r('#fff',x,71,1,1)}   // dây đèn nhỏ
+ r(WDK,4,50,5,20);r(WDK,163,50,5,20);
+ // bảng neon (khung) + dải chạy chữ (khung); nội dung phát sáng vẽ động
+ r('#2c1c0e',4,0,164,38);r('#ffd23f',6,2,160,34);r('#161022',8,4,156,30);r('#241640',8,4,156,2);
+ r('#2c1c0e',8,39,156,12);r('#0a0612',10,41,152,8);r('#6b5a48',10,50,152,1);
+ r(WDK,22,34,5,6);r(WDK,145,34,5,6);
+ // phao cứu sinh + lưới + cần câu bên hông
+ E(r,'#ffffff',160,86,7,7);E(r,'#e0584a',160,86,6,6);E(r,'#ffffff',160,86,3,3);E(r,'#47301c',160,86,2,2);r('#fff',158,81,4,2);r('#fff',158,91,4,2);
+ line(r,'#6b4a2a',166,112,170,60,1);r('#e0584a',169,59,3,3);line(r,'#e8f0f4',171,62,171,82,1);
+});
+
+// --- dù nghỉ mát + bàn ghế bên cạnh shop ---
+const mkBeachSet=()=>mk(92,76,(g,r)=>{
+ E(r,'rgba(0,0,0,.18)',46,72,40,3);
+ // ghế dài
+ r('#fff4d6',6,60,26,6);for(let x=6;x<32;x+=6)r('#e0584a',x,60,3,6);r('#c98a5a',6,66,26,2);r('#8a5a30',8,68,2,4);r('#8a5a30',28,68,2,4);
+ r('#fff4d6',4,54,8,8);for(let y=54;y<62;y+=4)r('#e0584a',4,y,8,2);
+ // bàn tròn + ly nước + bóng
+ E(r,'#8a5a30',62,64,13,4);E(r,'#c98a5a',62,63,13,3);r('#6b4a2a',61,64,3,8);r('#cfe6ec',56,56,4,7);r('#ff8ac0',56,56,4,3);r('#6fe0a0',66,57,4,6);r('#fff',68,53,1,5);r('#ffd23f',67,52,3,1);
+ E(r,'#ffffff',80,68,5,5);r('#e0584a',77,66,6,2);r('#4aa0e8',77,70,6,2);
+ // cột dù + tán dù to
+ r('#8a6a3c',44,16,4,52);r('#b89058',44,16,1,52);r('#6b4a2a',40,66,12,3);
+ for(let y=0;y<18;y++){const w=Math.round(44*Math.sqrt(1-((y-18)/18)**2*.9));for(let x=-w;x<=w;x++){const k=Math.floor((x+44)/11)%2;r(k?'#fff6e0':'#ff6a5a',46+x,y,1,1)}}
+ r('#c0453a',2,17,88,2);for(let x=2;x<90;x+=11)r(Math.floor(x/11)%2?'#fff6e0':'#ff6a5a',x,19,11,2);
+ r('rgba(255,255,255,.4)',18,3,12,2);r('#8a6a3c',44,0,4,3)});
+
+// --- đảo nhỏ có cây dừa (chỉ là hình tĩnh, không bấm được, chỉ làm vật cản) ---
+const mkIslet=()=>mk(92,56,(g,r)=>{
+ E(r,'rgba(150,236,226,.45)',46,36,45,17);E(r,'rgba(190,248,240,.5)',46,36,40,14);
+ E(r,'#cdb27a',46,35,35,13);E(r,'#e8cf98',46,34,34,12);E(r,'#f3deae',46,32,30,9);
+ E(r,'rgba(255,255,255,.6)',46,46,40,2);
+ E(r,'#6fb865',40,29,11,4);E(r,'#58a04f',40,30,10,3);E(r,'#82cc76',38,28,5,2);
+ for(const[x,y]of[[30,36],[58,34],[50,40],[36,38],[62,38]])r('#d6b57a',x,y,2,1);
+ r('#f4a8c0',54,32,3,2);r('#fff',54,32,1,1);r('#e2574c',26,34,2,1);
+ r('#8a8f96',60,30,5,3);r('#aab0b6',60,30,3,1)});
+
+// --- thuyền mini + thuyền thiên nga (ảnh to cho panel Shop quái vật) ---
+const mkSwanIcon=()=>mk(64,42,(g,r)=>{
+ E(r,'rgba(0,70,110,.28)',32,38,27,3);
+ // đuôi + cánh
+ r('#ffffff',5,22,6,3);r('#ffffff',3,19,5,4);r('#dfe9f5',3,22,5,1);r('#ffffff',9,24,8,3);
+ // thân thuyền
+ E(r,'#cfe0f0',32,31,26,8);E(r,'#ffffff',32,30,25,7);E(r,'#f4f8ff',30,28,20,4);
+ r('#5aa8e8',9,32,46,2);r('#ff8ab0',9,34,46,1);
+ E(r,'#eaf1fb',27,25,14,6);r('#cfdceb',16,25,22,1);r('#cfdceb',18,27,18,1);
+ r('#ff8ab0',27,23,12,3);r('#ffb0cb',27,23,12,1);                                  // đệm ngồi
+ // cổ + đầu thiên nga (hướng phải)
+ for(const[x,y,w]of[[44,26,5],[46,22,5],[48,18,5],[49,14,5],[49,10,5],[50,7,5]]){r('#cfdceb',x+1,y,w,4);r('#ffffff',x,y,w,4)}
+ r('#ffffff',49,3,8,6);r('#ffffff',52,2,5,2);r('#ff9a2a',57,5,6,3);r('#ffcf5a',57,5,6,1);r('#222',54,5,2,2);r('#ff8ab0',49,1,3,3);r('#fff',50,1,1,1);
+ r('#ffd23f',44,30,3,2)});
+// --- bảng neon Hồng Kông + chữ chạy (vẽ động mỗi khung hình, X0/Y0 = góc trên-trái ảnh tiệm) ---
+const NEONF='"Nunito", "Segoe UI", Arial, sans-serif';
+function neonTxt(txt,x,y,size,col,glow,al){
+ cx.font='900 '+size+'px '+NEONF;cx.lineJoin='round';cx.globalAlpha=al;
+ cx.shadowColor=glow;cx.shadowBlur=11;cx.lineWidth=3;cx.strokeStyle=col;cx.strokeText(txt,x,y);
+ cx.shadowBlur=0;cx.lineWidth=1;cx.fillStyle='#fffafc';cx.fillText(txt,x,y);cx.globalAlpha=1}
+function drawShopNeon(X0,Y0,tm){
+ if(X0>camX+vw||X0+SHW<camX||Y0>camY+vh||Y0+54<camY)return;
+ cx.save();cx.textAlign='center';cx.textBaseline='alphabetic';
+ // viền neon xanh lơ + bóng đèn chạy quanh bảng
+ cx.shadowColor='#2ff3ff';cx.shadowBlur=8;cx.strokeStyle='#5ff7ff';cx.lineWidth=1.5;cx.strokeRect(X0+11.5,Y0+7.5,150,23);cx.shadowBlur=0;
+ const per=[];for(let x=0;x<156;x+=8){per.push([X0+8+x,Y0+4]);per.push([X0+8+x,Y0+31])}for(let y=8;y<30;y+=8){per.push([X0+8,Y0+y]);per.push([X0+162,Y0+y])}
+ const ph=Math.floor(tm*9);
+ per.forEach((p,i)=>{const on=((i>>1)+ph)%4==0;cx.fillStyle=on?'#fff3a0':'#6a4a18';if(on){cx.shadowColor='#ffd23f';cx.shadowBlur=6}cx.fillRect(p[0],p[1],2,2);cx.shadowBlur=0});
+ // chữ: SHOP (xanh lơ) + QUÁI VẬT (hồng) — thỉnh thoảng chớp như neon cũ
+ const fl1=Math.sin(tm*21)>.965?.3:1,fl2=Math.sin(tm*13+2)>.985?.35:1;
+ neonTxt('SHOP',X0+52,Y0+26,14,'#27e8ff','#00cfff',fl1);
+ neonTxt('QUÁI VẬT',X0+112,Y0+26,14,'#ff3d9a','#ff1f86',fl2);
+ // icon neon: cá (trái) + thuyền (phải)
+ cx.lineWidth=1.5;cx.shadowBlur=7;cx.strokeStyle='#ffe94d';cx.shadowColor='#ffb800';
+ cx.beginPath();cx.ellipse(X0+23,Y0+19,7,4,0,0,6.283);cx.moveTo(X0+30,Y0+19);cx.lineTo(X0+35,Y0+15);cx.lineTo(X0+35,Y0+23);cx.closePath();cx.stroke();
+ cx.fillStyle='#ffe94d';cx.fillRect(X0+19,Y0+17,2,2);
+ const bb=Math.round(Math.sin(tm*2.4)*1);
+ cx.strokeStyle='#8affc0';cx.shadowColor='#2bff9a';cx.beginPath();cx.moveTo(X0+143,Y0+22+bb);cx.lineTo(X0+158,Y0+22+bb);cx.lineTo(X0+155,Y0+27+bb);cx.lineTo(X0+146,Y0+27+bb);cx.closePath();
+ cx.moveTo(X0+150,Y0+21+bb);cx.lineTo(X0+150,Y0+11+bb);cx.lineTo(X0+157,Y0+20+bb);cx.stroke();
+ cx.shadowBlur=0;cx.restore();
+ // dải đèn LED chạy chữ
+ cx.save();cx.beginPath();cx.rect(X0+10,Y0+41,152,8);cx.clip();
+ const msg='★ BÁN THUYỀN & THU MUA QUÁI VẬT ★     ';cx.font='800 8px '+NEONF;cx.textAlign='left';cx.textBaseline='alphabetic';
+ const w=cx.measureText(msg).width||200,off=(tm*28)%w;
+ cx.shadowColor='#ff9a2e';cx.shadowBlur=4;cx.fillStyle='#ffe94d';
+ for(let k=-1;k<Math.ceil(152/w)+1;k++)cx.fillText(msg,X0+10-off+k*w,Y0+48);
+ cx.shadowBlur=0;cx.restore()}
 
 // --- bạch tuộc rao hàng (vẽ động) ---
 const OCT={x:236,y:346};
@@ -212,10 +289,12 @@ function build(){
    hw(PIER.x1+4,Math.max(y,PIER.y0-2),SW,Math.min(y1,PIER.y1+4)-Math.max(y,PIER.y0-2));
    if(y1>PIER.y1+4)hw(sx,PIER.y1+4,SW,y1-PIER.y1-4)}
   else hw(sx,y,SW,60)}
- // --- TIỆM CÂU QUÁI VẬT ---
- const SX=76,SY=402;
- put(mkShop(),SX,SY,[SX-62,SY-22,SX+62,SY-2]);
- hit(SX-66,SY-98,132,100,'🎣 Tiệm câu Quái vật — bấm để vào xem','cv:bn:shop',[SX,SY+16]);
+ // --- SHOP QUÁI VẬT (to, có neon chạy chữ + dù nghỉ mát bên cạnh) ---
+ const SX=96,SY=402;
+ put(mkShop(),SX,SY,[SX-82,SY-24,SX+82,SY-2]);
+ {const X0=Math.round(SX-SHW/2),Y0=Math.round(SY-SHH);dyn(SY+.4,()=>drawShopNeon(X0,Y0,tmNow()))}
+ hit(SX-84,SY-132,168,134,'🎣 Shop quái vật — bán thuyền & thu mua quái vật, bấm để vào','cv:bn:shop',[SX,SY+16]);
+ {const ux=150,uy=486;put(mkBeachSet(),ux,uy,[ux-8,uy-8,ux+22,uy-2]);hit(ux-44,uy-76,90,78,'⛱️ Dù nghỉ mát của Shop quái vật — ngồi hóng gió biển cũng thích lắm')}
  // --- bạch tuộc đứng rao ở mép nước cạnh tiệm ---
  OCT.x=Math.round(shoreX(SY+30))+16;OCT.y=SY+30;
  dyn(OCT.y+.5,()=>drawOcto(tmNow()));
@@ -260,8 +339,11 @@ function build(){
  // --- thả phao + đá ngoài biển + thuyền buồm xa xa + đảo nhỏ ---
  for(const[x,y]of[[560,300],[640,640],[900,860],[820,180],[1250,470],[1500,760],[1800,300],[2100,640],[2500,420],[2750,880]]){const bo=outl(mkBuoy()),ph=x*.013;dyn(y,()=>{const t=tmNow();cx.drawImage(bo,x-8,Math.round(y-18+Math.sin(t*1.7+ph)*1.5));
   const a=.18+.12*Math.sin(t*1.7+ph);r('rgba(255,255,255,'+a.toFixed(2)+')',x-8,y+1,16,1)});hit(x-9,y-20,18,22,'🔴 Phao tiêu — đánh dấu luồng biển')}
- for(const[x,y,w,h]of[[700,520,60,36],[1150,250,70,40],[1450,950,64,38],[2000,420,70,40],[2350,820,60,34]]){const o=outl(mkRock(w,h,['#7d8a94','#586470','#a9b6c0']));dyn(y+h,()=>{const t=tmNow(),a=.45+.25*Math.sin(t*1.8+x);
-  cx.drawImage(o,x-1,y-1);r('rgba(255,255,255,'+a.toFixed(2)+')',x-3,y+h-4,w+6,1);r('rgba(255,255,255,'+(a*.7).toFixed(2)+')',x-6,y+h-1,w+12,1)});hit(x,y,w,h,'🪨 Ghềnh đá giữa biển — sóng vỗ trắng xoá')}
+ // --- đảo nhỏ có dừa (thay cho ghềnh đá cũ; chỉ là vật cản, không bấm được) ---
+ {const ik=mkIslet();BROCK.forEach(([x,y,w,h],i)=>{const cx0=Math.round(x+w/2),cy0=Math.round(y+h/2)+2,ph=i*1.7;
+  dyn(cy0-6,()=>{const t=tmNow(),a=.35+.2*Math.sin(t*1.8+ph);
+   cx.drawImage(ik,cx0-46,cy0-34);r('rgba(255,255,255,'+a.toFixed(2)+')',cx0-44,cy0+12,88,1);r('rgba(255,255,255,'+(a*.6).toFixed(2)+')',cx0-48,cy0+14,96,1)});
+  put(mkPalm(i%2?-.3:.3),cx0-4,cy0+3)})}
  for(const[x,y,sp,ph]of[[1300,600,5,0],[2200,300,4,60],[2700,700,3,120]]){const m=mkSail(),o=outl(m);dyn(y+34,()=>{const t=tmNow(),px=x+((t*sp+ph*10)%520)-260;cx.drawImage(o,Math.round(px),Math.round(y+Math.sin(t*1.2+x)*1.2))})}
  for(const[x,y]of[[1900,150],[1000,980]])put(mkIsle(),x+60,y+56);
  for(const[x,y,l]of[[1946,128,.3],[1030,950,-.3]])put(mkPalm(l),x,y+36);
@@ -390,7 +472,7 @@ window.cvBoatSolid=(x,y)=>MAP=='bn'?boatSolid(x,y):pBS(x,y);
 window.cvBoatMe=()=>{if(MAP!='bn')return pBM();const A=ST.av,tm=performance.now()/1000;(CV.bk==3?swanSea:miniSea)(Math.round(Pl.x),Math.round(Pl.y),CV.bdir||1,tm,Pl.mv,window.cvBoatRider(A.s,A.h,A.e,A.a,CV.bdir||1))};
 
 // lên thuyền / cập bến
-function noBoatUI(){openUI(head('⛵ Bến thuyền')+'<div class="mut" style="text-align:center">🐙 <i>"Chưa có thuyền thì chưa ra biển được nha! Ghé tiệm tôi mua Thuyền mini giá '+fmtXu(SB_MINI)+' xu vàng đi~"</i></div><button class="b w" style="font-size:14px;padding:9px" onclick="bnShop()">🛒 Tới Tiệm câu mua thuyền</button>')}
+function noBoatUI(){openUI(head('⛵ Bến thuyền')+'<div class="mut" style="text-align:center">🐙 <i>"Chưa có thuyền thì chưa ra biển được nha! Ghé tiệm tôi mua Thuyền mini giá '+fmtXu(SB_MINI)+' xu vàng đi~"</i></div><button class="b w" style="font-size:14px;padding:9px" onclick="bnShop()">🛒 Tới Shop quái vật mua thuyền</button>')}
 function sail(){
  if(CV.boat||MAP!='bn'||Pl.sit||CVLOCK||CV.seat>=0||CV.hz>=0)return;
  const o=sbs();if(!o.use)return noBoatUI();
@@ -413,7 +495,7 @@ function boatTick(){
 window.cvBoatTap=(wx,wy)=>{
  if(MAP!='bn')return pBT(wx,wy);
  if(!CV.boat)return;
- if(boatSolid(wx,wy)){if(nearLand(wx,wy))return dockNow();return toast('🪨 Chỗ đó có đá ngầm — lái thuyền vòng qua nhé')}
+ if(boatSolid(wx,wy)){if(nearLand(wx,wy))return dockNow();return toast('🏝️ Có đảo nhỏ chắn đường — lái thuyền vòng qua nhé')}
  SEAB.dock=0;goal=null;fishHere()};   // bấm mặt nước = câu
 function fishHere(){if(window.MQ)MQ.open({boat:CV.bk})}
 window.cvLeave=()=>{if(DB)DB.style.display='none';SEAB.dock=0;
@@ -457,6 +539,7 @@ function bnAct(a){const t=a.split(':')[0];
  if(t=='sail')return sail()}
 window.bnShop=()=>bnShop();
 const qvImg=()=>'<img src="'+QVI+'" style="width:15px;height:15px;vertical-align:-3px;image-rendering:pixelated">';
+window.qvImg=qvImg;
 window.bnBuy=k=>{const o=sbs();
  if(k=='mini'){if(o.mini)return;if((ST.xu|0)<SB_MINI)return toast('Không đủ Xu vàng! Cần '+fmtXu(SB_MINI)+' Xu');ST.xu-=SB_MINI;o.mini=1}
  else if(k=='swan'){if(o.swan)return;if((ST.qv|0)<SB_SWAN)return toast('Không đủ Xu quái vật! Cần '+fmtXu(SB_SWAN)+' Xu quái vật');ST.qv-=SB_SWAN;o.swan=1}
@@ -503,22 +586,47 @@ function bnPrev(c,t){const q=QSHOP[+c.dataset.q],m=q&&qItem(q);if(!m)return;cons
  drawAv(g,Math.round(W/2)-10,H-33+(q.t=='a'&&m.it.t=='float'?6:0),{d,a:t,mv:q.t=='a'?1:0,sit:0,hair:q.t=='h'?m.i:(A.h|0),set:q.t=='s'?m.i:(A.s|0),e:A.e|0,acc:q.t=='a'?m.i:-1});
  g.restore()}
 function bnAnim(){const cs=document.querySelectorAll('canvas.bsc');if(!cs.length||!UI){BRAF=0;return}const t=performance.now()/1000;cs.forEach(c=>bnPrev(c,t));BRAF=requestAnimationFrame(bnAnim)}
-{const st=document.createElement('style');st.textContent='.bsg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.bst{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 3px;background:#fff3cf;border:2px solid #c9a06a;text-align:center}.bst b{font-size:12px;line-height:1.15}.bst small{font-size:11px}canvas.bsc{width:88px;height:96px;image-rendering:pixelated;background:linear-gradient(#cfeeff,#eaf7ff 66%,#e8d49c 66%);border-radius:6px}.bst .b{padding:3px 8px;font-size:12px}';document.head.appendChild(st)}
+{const st=document.createElement('style');st.textContent=
+ '.bnp{background:linear-gradient(#e6fbff,#fffbe8 55%,#fff3cf);border:2px solid #5ccbd6;border-radius:10px;padding:6px;margin-top:4px}'+
+ '.bnmq{background:#160a2e;border:2px solid #ff4fa3;border-radius:6px;box-shadow:0 0 8px #ff4fa3,inset 0 0 8px rgba(255,79,163,.4);overflow:hidden;white-space:nowrap;padding:3px 0;margin-bottom:6px}'+
+ '.bnmq span{display:inline-block;padding-left:100%;font-weight:900;font-size:13px;letter-spacing:.5px;color:#ffe94d;text-shadow:0 0 3px #ff9a2e,0 0 8px #ff4fa3;animation:bnmq 11s linear infinite}'+
+ '@keyframes bnmq{from{transform:translateX(0)}to{transform:translateX(-100%)}}'+
+ '.bnbal{display:flex;justify-content:center;gap:14px;margin:2px 0 6px;font-size:14px;color:#1d5a66}'+
+ '.bnbal span{background:#fff;border:2px solid #9fe3ea;border-radius:14px;padding:2px 10px}'+
+ '.bnh{margin:8px 0 5px;padding:4px 10px;font-weight:800;color:#fff;background:linear-gradient(90deg,#17b6c4,#46d9c4);border-radius:14px;text-shadow:0 1px 0 rgba(0,70,80,.5)}'+
+ '.bnb2{display:grid;grid-template-columns:1fr 1fr;gap:8px}'+
+ '.bnbt{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;background:linear-gradient(#ffffff,#e8f9ff);border:2px solid #7fd6e0;border-radius:10px;text-align:center}'+
+ '.bnbt canvas{width:136px;height:96px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#bfeaff,#e6f8ff 55%,#4fc3dc 55%,#2f9fc4);border-radius:8px;border:2px solid #9fe3ea}'+
+ '.bnbt b{font-size:13px}.bnbt small{font-size:12px;color:#3a6a74}.bnbt .b{padding:3px 12px;font-size:12px}'+
+ '.bsg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}'+
+ '.bst{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 3px;background:linear-gradient(#ffffff,#fff4d2);border:2px solid #ffc86a;border-radius:10px;text-align:center}'+
+ '.bst b{font-size:12px;line-height:1.15}.bst small{font-size:11px}'+
+ 'canvas.bsc{width:88px;height:96px;image-rendering:pixelated;background:linear-gradient(#cfeeff,#eaf7ff 66%,#f3dca4 66%);border-radius:8px}.bst .b{padding:3px 8px;font-size:12px}';
+ document.head.appendChild(st)}
+let BOATIM=null;
+function boatIcons(){if(!BOATIM)BOATIM={mini:outl(mkBoat()),swan:outl(mkSwanIcon())};
+ document.querySelectorAll('canvas.bnbi').forEach(c=>{const g=c.getContext('2d'),im=BOATIM[c.dataset.b];if(!im)return;g.imageSmoothingEnabled=false;g.clearRect(0,0,c.width,c.height);
+  const k=Math.min(Math.floor(c.width/im.width),Math.floor(c.height/im.height))||1,tm=performance.now()/1000,bob=Math.round(Math.sin(tm*1.8)*1.5);
+  g.drawImage(im,Math.round((c.width-im.width*k)/2),Math.round(c.height-im.height*k-4+bob),im.width*k,im.height*k)})}
+function bnAnim2(){const cs=document.querySelectorAll('canvas.bnbi');if(!cs.length||!UI){BIRAF=0;return}boatIcons();BIRAF=requestAnimationFrame(bnAnim2)}
+let BIRAF=0;
 function bnShop(){
  const o=sbs();
- const B=[['mini','🛶','Thuyền mini',fmtXu(SB_MINI)+' 🪙',o.mini],['swan','🦢','Thuyền thiên nga',fmtXu(SB_SWAN)+' '+qvImg(),o.swan]];
+ const B=[['mini','Thuyền mini',fmtXu(SB_MINI)+' 🪙',o.mini],['swan','Thuyền thiên nga',fmtXu(SB_SWAN)+' '+qvImg(),o.swan]];
  const tile=(q,n)=>{const m=qItem(q);if(!m)return '';const own=qOwn(q,m);
   return '<div class="bst"><canvas class="bsc" data-q="'+n+'" width="88" height="96"></canvas><b>'+m.n+'</b>'+
    (own?'<small>✓ Đã có</small>':'<small>'+qvImg()+' <b>'+fmtXu(q.p)+'</b>'+(q.t=='k'&&(ST.kcn|0)>0?' • có x'+(ST.kcn|0):'')+'</small><button class="b" onclick="bnBuyItem('+n+')">Mua</button>')+'</div>'};
- openUI(head('🎣 Tiệm câu Quái vật')+
-  '<div class="mut" style="text-align:center">🪙 <b>'+fmtXu(ST.xu|0)+'</b> • '+qvImg()+' <b>'+fmtXu(ST.qv|0)+'</b></div>'+
+ openUI(head('🎣 Shop quái vật')+'<div class="bnp">'+
+  '<div class="bnmq"><span>★ BÁN THUYỀN &amp; THU MUA QUÁI VẬT ★ &nbsp; ★ CẦN CÂU • KEM CHỐNG NẮNG • ĐỒ BIỂN ★</span></div>'+
+  '<div class="bnbal"><span>🪙 <b>'+fmtXu(ST.xu|0)+'</b></span><span>'+qvImg()+' <b>'+fmtXu(ST.qv|0)+'</b></span></div>'+
   '<button class="b w" style="font-size:14px;padding:9px" onclick="MQ.sellUI()">💰 Thu mua quái vật</button>'+
   (window.MQ&&MQ.rodBroken&&MQ.rodBroken()?'<button class="b w" style="font-size:14px;padding:9px" onclick="MQ.repair();bnShop()">🔧 Sửa cần câu • '+qvImg()+' '+MQ.rodFix+'</button>':'')+
-  '<div class="fh2">⛵ Thuyền</div>'+
-  '<div class="g1">'+B.map(b=>{const k=b[0],own=b[4],eq=o.use==k;
-   return '<div class="it"><span>'+b[1]+' <b>'+b[2]+'</b>'+(own?'':'<br><small>'+b[3]+'</small>')+'</span>'+
-    (own?(eq?'<b>✅ Đang dùng</b>':'<button class="b" onclick="bnEquip(\''+k+'\')">Trang bị</button>'):'<button class="b" onclick="bnBuy(\''+k+'\')">Mua</button>')+'</div>'}).join('')+'</div>'+
-  '<div class="fh2">🛍️ Đồ biển</div>'+
-  '<div class="bsg">'+QSHOP.map(tile).join('')+'</div>');
+  '<div class="bnh">⛵ Thuyền</div>'+
+  '<div class="bnb2">'+B.map(b=>{const k=b[0],own=b[3],eq=o.use==k;
+   return '<div class="bnbt"><canvas class="bnbi" data-b="'+k+'" width="136" height="96"></canvas><b>'+b[1]+'</b>'+(own?'':'<small>'+b[2]+'</small>')+
+    (own?(eq?'<b style="color:#1a9a5a">✅ Đang dùng</b>':'<button class="b" onclick="bnEquip(\''+k+'\')">Trang bị</button>'):'<button class="b" onclick="bnBuy(\''+k+'\')">Mua</button>')+'</div>'}).join('')+'</div>'+
+  '<div class="bnh">🛍️ Đồ biển</div>'+
+  '<div class="bsg">'+QSHOP.map(tile).join('')+'</div></div>');
+ boatIcons();if(!BIRAF)BIRAF=requestAnimationFrame(bnAnim2);
  if(!BRAF)BRAF=requestAnimationFrame(bnAnim)}
 })();

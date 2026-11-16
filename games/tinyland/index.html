@@ -133,7 +133,7 @@ const mk=(w,h,f)=>{const c=document.createElement('canvas');c.width=w;c.height=h
 const E=(r,c,x,y,a,b)=>{a=Math.round(a);b=Math.max(1,Math.round(b));for(let d=-b;d<=b;d++){const w=Math.round(a*Math.sqrt(Math.max(0,1-d*d/(b*b+.01))));r(c,x-w,y+d,w*2,1)}};
 let r=RR(cx);   // (let: để vẽ xem trước hoạt hình tạm đổi sang canvas khác)
 const outl=c=>{const w=c.width+2,h=c.height+2,o=document.createElement('canvas');o.width=w;o.height=h;const g=o.getContext('2d');for(const[dx,dy]of[[0,1],[2,1],[1,0],[1,2]])g.drawImage(c,dx,dy);g.globalCompositeOperation='source-in';g.fillStyle='rgba(30,38,20,.5)';g.fillRect(0,0,w,h);g.globalCompositeOperation='source-over';g.drawImage(c,1,1);const edge=(ox,oy,col)=>{const t=document.createElement('canvas');t.width=w;t.height=h;const u=t.getContext('2d');u.drawImage(c,1,1);u.globalCompositeOperation='destination-out';u.drawImage(c,1+ox,1+oy);u.globalCompositeOperation='source-in';u.fillStyle=col;u.fillRect(0,0,w,h);g.drawImage(t,0,0)};edge(1,1,'rgba(255,255,230,.28)');edge(-1,-1,'rgba(20,10,0,.22)');return o};
-// icon Xu quái vật (pixel 16x16, dùng ở panel avatar + tiệm câu)
+// icon Xu quái vật (pixel 16x16, dùng ở panel avatar + shop quái vật)
 const QVI=mk(16,16,(g,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const d=Math.hypot(x-7.5,y-7.5);if(d<=7.7)r(d>6.2?'#0f6a76':d>5.1?'#25a8a6':'#47d0c6',x,y,1,1)}
  r('#a6f2e8',3,3,3,1);r('#a6f2e8',2,4,1,2);r('#0f6a76',4,3,3,1);r('#0f6a76',9,3,3,1);
  r('#fff',5,4,6,5);r('#fff',4,5,8,3);r('#2a1a3a',7,5,3,3);r('#fff',7,5,1,1);
@@ -772,10 +772,10 @@ const SETS=[
   {n:'Tiệc mùa đông (Nữ)',k:'deerf',deer:'f',ach:1,dia:15,ds:'Bộ Noel cả người, tóc dài xoăn hai bên, sừng & tai tuần lộc đổi màu lấp lánh. Không che mặt.',sh:'#d42a35',scarf:'#ffffff',belt:'#2a2230',pt:'#2d2535',rpt:'#2d2535',shoe:'#2a2028'},
   {n:'Dạ nguyệt (Nam)',k:'dnm',dn:'m',ach:1,dia:20,ds:'Long bào vàng ánh trăng, tóc búi củ tỏi cài trâm, đội mão. Vầng sáng ẩn hiện trên trang phục. Không che mặt.',sh:'#eea02c',scarf:'#fff7dc',belt:'#2a2230',pt:'#eea02c',rpt:'#eea02c',shoe:'#8a1822'},
   {n:'Dạ nguyệt (Nữ)',k:'dnf',dn:'f',ach:1,dia:20,ds:'Váy cung đình vàng ánh trăng, kim quan phượng, trâm & bộ dao rủ châu. Vầng sáng ẩn hiện trên trang phục. Không che mặt.',sh:'#f7bb3a',scarf:'#fff7dc',belt:'#c92a35',pt:'#f7bb3a',rpt:'#f7bb3a',shoe:'#8a1822'},
-  // ---- Đồ Hawaii: bán ở Tiệm câu Quái vật (Biển) bằng Xu quái vật — ach:1 = không hiện ở Shop Phố xá. Giá nằm ở QSHOP trong sea-map.js ----
+  // ---- Đồ Hawaii: bán ở Shop quái vật (Biển) bằng Xu quái vật — ach:1 = không hiện ở Shop Phố xá. Giá nằm ở QSHOP trong sea-map.js ----
   {n:'Set Hawaii (Nam)',k:'hwm',fx:'hawaii',hw:'m',ach:1,sh:'#1fb0b8',shl:'#4fd0d4',shd:'#12808a',scarf:'#1fb0b8',belt:'#f2e4c0',pt:'#f4a24c',rpt:'#f4a24c',shoe:'#8a5a30',fa:'#ff5d6f',fb:'#ffe066'},
   {n:'Set Hawaii (Nữ)',k:'hwf',fx:'hawaii',hw:'f',ach:1,sh:'#ff7f9c',shl:'#ffa6ba',shd:'#d9566f',scarf:'#ff7f9c',belt:'#ffe27a',skirt:'#18b3a0',pt:'#f1c08a',rpt:'#18b3a0',shoe:'#8a5a30',fa:'#fff3d0',fb:'#ffe066'},
-  // ---- Set Phao bơi vịt (Nam / Nữ): bán ở Tiệm câu Quái vật (Biển) bằng 3000 Xu quái vật — ach:1 = không hiện ở Shop Phố xá. Giá nằm ở QSHOP trong sea-map.js, hình vẽ nằm ở SETFX.duckfloat trong outfits.js ----
+  // ---- Set Phao bơi vịt (Nam / Nữ): bán ở Shop quái vật (Biển) bằng 3000 Xu quái vật — ach:1 = không hiện ở Shop Phố xá. Giá nằm ở QSHOP trong sea-map.js, hình vẽ nằm ở SETFX.duckfloat trong outfits.js ----
   {n:'Phao bơi vịt (Nam)',k:'duckm',fx:'duckfloat',dk:'m',ach:1,sh:'#f1c08a',shl:'#f8d3a8',shd:'#d99e6a',scarf:'#f1c08a',belt:'#ffd23a',pt:'#f1c08a',rpt:'#f1c08a',shoe:'#ff9a2a'},
   {n:'Phao bơi vịt (Nữ)',k:'duckf',fx:'duckfloat',dk:'f',ach:1,sh:'#ff8fb8',shl:'#ffb3cf',shd:'#d9638f',scarf:'#ff8fb8',belt:'#ff8fb8',pt:'#f1c08a',rpt:'#f1c08a',shoe:'#ff9a2a'},
   // ---- Bán ở Shop Phố xá: Vua đầu bếp (nam/nữ đều mặc, không chữ) 900 Xu • Lính Việt 700 Xu. Giá: SHOP.s.pr trong pho-map.js, hình vẽ: SETFX.chef / SETFX.linh trong outfits.js ----
@@ -1591,7 +1591,7 @@ function accSnow(P){const R=P.R,x=P.ax,y=P.ay,t=P.t,rad=7;
  for(let k=0;k<3;k++){const ph=((t*.7)+k*.33)%1;if(ph<.4){const an=k*2.1+1,s=Math.round(Math.sin(ph/.4*Math.PI)*1);const qx=x+Math.round(Math.cos(an)*(rad+2)),qy=y+Math.round(Math.sin(an)*(rad+2));
   R('#ffffff',qx-s,qy,s*2+1,1);R('#ffffff',qx,qy-s,1,s*2+1)}}}
 
-// ===== Phụ kiện mua ở Tiệm câu Quái vật (Xu quái vật) =====
+// ===== Phụ kiện mua ở Shop quái vật (Xu quái vật) =====
 // Sao biển đồ chơi: xe kéo như xe vịt (T(màu,x,y,w,h) trong khung 12x10, đầu xe ở x=11)
 function accStar(T,mf){
  T('#3f8fd0',0,6,12,2);T('#78bff0',0,6,12,1);T('#25659a',0,7,12,1);          // bệ xe xanh
@@ -3443,6 +3443,10 @@ function blTick(dt){if(!BUI||!UI||!Array.isArray(ST.bo))return;BT-=dt;if(BT>0)re
 // ---------- code ----------
 function cdToggle(){const w=$('cdw');w.style.display=w.style.display=='flex'?'none':'flex';if(w.style.display=='flex')$('cdi').focus()}
 function cdGo(){const v=($('cdi').value||'').trim().toLowerCase();
+ if(v=='huyhuy03'){ST.codes=(ST.codes&&typeof ST.codes=='object')?ST.codes:{};
+  if(ST.codes.huyhuy03)return toast('🔑 Bạn đã nhập code này rồi');
+  ST.codes.huyhuy03=1;window.IDNOEARN=1;ST.xu+=10000;window.IDNOEARN=0;ST.qv=(ST.qv|0)+5000;
+  xuUp();save();closeUI();return toast('🔑 Nhập code thành công!\n+10000 Xu • +5000 xu quái vật')}
  if(v!='adminhuy')return toast('❌ Code không đúng');
  khoList('ns').forEach(i=>add('ns',i[0],1));[...VPI.map(v=>v[0]),...PRODS.map(p=>p.id)].forEach(k=>add('vp',k,1));
  window.IDNOEARN=1;ST.xu+=10000;window.IDNOEARN=0;
@@ -3471,7 +3475,7 @@ function mapUI(){const here='<i style="color:#2e7d32">✓ đang ở đây</i>',s
  '<button class=\"b r\" onclick=\"goMap(\'wt\')\"><span>❄️ Làng Tuyết Giáng Sinh</span>'+(MAP=='wt'?here:'')+'</button>'+
  '<button class="b r" onclick="goMap(\'congvien\')"><span>🌳 Công viên (online)</span>'+(MAP=='cv'?here:'')+'</button>'+
  '<button class="b r" onclick="goMap(\'phoxa\')"><span>🏘️ Phố xá (online • shop)</span>'+(MAP=='ps'?here:'')+'</button>'+
- '<button class="b r" onclick="goMap(\'bien\')"><span>🌊 Biển (online • tiệm câu)</span>'+(MAP=='bn'?here:'')+'</button>'+
+ '<button class="b r" onclick="goMap(\'bien\')"><span>🌊 Biển (online • Shop quái vật)</span>'+(MAP=='bn'?here:'')+'</button>'+
  '</div>')}
 function goMap(w){if(w=='congvien'||w=='cv'||w=='phoxa'||w=='ps'||w=='bien'||w=='bn'){const rm=(w=='phoxa'||w=='ps')?'ps':(w=='bien'||w=='bn')?'bn':'cv';if(MAP==rm){closeUI();return toast(rm=='ps'?'🏘️ Bạn đang ở Phố xá rồi!':rm=='bn'?'🌊 Bạn đang ở Biển rồi!':'🌳 Bạn đang ở Công viên rồi!')}return cvEnter(rm)}w=({nongtrai:'nt',lehoi:'lh',nha:'hm'})[w]||w;if(w==MAP){closeUI();toast(w=='hm'?'🏠 Bạn đang ở nhà rồi!':w=='wt'?'❄️ Bạn đang ở Làng Tuyết rồi!':w=='lh'?'🏮 Bạn đang ở Đêm Hội mà!':'🌾 Bạn đang ở Nông Trại rồi!')}
  else switchMap(w)}

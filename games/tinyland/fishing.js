@@ -6,8 +6,8 @@
    - Bóng rỉa mồi vài lần -> cắn câu -> thanh trượt dọc, canh vạch trắng vào vùng sáng
    - Câu được: vào Túi > Biển (ST.qvm = số quái đã câu). Bấm quái vật trong Túi để cầm trên tay (đi là mất)
    - Cần câu có tỉ lệ HƯ (hiếm, chỉ sau ROD_N con): sửa ROD_FIX xu quái vật
-   - Tiệm câu: nút "Thu mua quái vật" -> bán lấy Xu quái vật (ST.qv)
-   - Kem chống nắng (ST.kcn, mua ở Tiệm câu 10 xu quái vật): ngoài biển có tỉ lệ (thấp) bị RÁT DA khi câu nhiều/ở biển lâu: tạm không câu được; thoa kem trong Túi > Biển để hết rát + được bảo vệ. Chỉnh ở khối SUN_* bên dưới
+   - Shop quái vật: nút "Thu mua quái vật" -> bán lấy Xu quái vật (ST.qv)
+   - Kem chống nắng (ST.kcn, mua ở Shop quái vật 10 xu quái vật): ngoài biển có tỉ lệ (thấp) bị RÁT DA khi câu nhiều/ở biển lâu: tạm không câu được; thoa kem trong Túi > Biển để hết rát + được bảo vệ. Chỉnh ở khối SUN_* bên dưới
    Muốn chỉnh độ khó / tỉ lệ / giá: sửa bảng RAR và MON ngay bên dưới.
    ============================================================ */
 (()=>{
@@ -132,7 +132,7 @@ setInterval(()=>{if(HOLD==null)return;try{if(Pl.mv||(ST.av&&ST.av.m>=0)||Pl.sit|
 
 // ---------- CẦN CÂU HƯ (tiền sink) ----------
 // Mỗi lần câu được quái tính +1 (ST.rodN). Chỉ khi đã câu TRÊN ROD_N con kể từ lần sửa gần nhất mới có tỉ lệ ROD_P bị hư sau mỗi con (ngẫu nhiên, không cố định).
-// Hư thì không câu được cho tới khi sửa: ROD_FIX xu quái vật (sửa ngay trong khung câu hoặc ở Tiệm câu). Cân bằng: trung bình ~45 con mới hư 1 lần ≈ 1,7 xu/con (khoảng 6% thu nhập).
+// Hư thì không câu được cho tới khi sửa: ROD_FIX xu quái vật (sửa ngay trong khung câu hoặc ở Shop quái vật). Cân bằng: trung bình ~45 con mới hư 1 lần ≈ 1,7 xu/con (khoảng 6% thu nhập).
 const ROD_N=20,ROD_P=.04,ROD_FIX=75;
 const rodBroken=()=>!!ST.rodBroken;
 MQ.rodBroken=rodBroken;MQ.rodFix=ROD_FIX;
@@ -230,7 +230,7 @@ function pull(){const p=markPos(),ok=p>=F.zx-.015&&p<=F.zx+F.zone+.015;
  if(ok){const m=F.mon,b=bag();b[m.id]=(b[m.id]|0)+1;try{tnProg('mon')}catch(e){}let bonus='';try{const zn=window.seaZoneHere&&seaZoneHere();if(zn&&Math.random()<ZB)bonus=giveBonus()}catch(e){}try{save()}catch(e){}
   try{sunCatch()}catch(e){}let broke=false;try{broke=rodRoll()}catch(e){}F.ph='win';F.t=0;F.parts=[];for(let i=0;i<(m.r==2?46:m.r==1?18:9);i++)F.parts.push({a:rr(0,6.283),v:rr(20,m.r==2?70:46),l:rr(.5,1.3),t:0,c:m.r==2?['#fff','#ffe27a','#ffcf3a','#ffb0e8'][i%4]:m.r==1?'#ffe27a':'#bfe8ff'});
   F.rip.push({x:HX,t:0});hideBar();
-  say('🎉 Câu được <b style="color:'+RAR[m.r].col+';text-shadow:0 0 1px #000">'+m.n+'</b> ('+RAR[m.r].n.toLowerCase()+')!<br><small>Đã vào Túi › Biển • bán ở Tiệm câu: '+m.p+' xu quái vật</small>'+(bonus?'<br>'+bonus:'')+(broke?'<br><b style="color:#c4382e">🔧 Cần câu bị hư rồi!</b>':''),'#2a7a2a');
+  say('🎉 Câu được <b style="color:'+RAR[m.r].col+';text-shadow:0 0 1px #000">'+m.n+'</b> ('+RAR[m.r].n.toLowerCase()+')!<br><small>Đã vào Túi › Biển • bán ở Shop quái vật: '+m.p+' xu quái vật</small>'+(bonus?'<br>'+bonus:'')+(broke?'<br><b style="color:#c4382e">🔧 Cần câu bị hư rồi!</b>':''),'#2a7a2a');
   const bt=$('mqg');if(bt)bt.textContent='🎣 CÂU TIẾP';cnt();rodBtn();
   if(m.r==2)toast('✨🐢 WOW! Bạn câu được KIM QUY huyền thoại!');if(broke)toast('🔧 Cần câu bị hư! Sửa tốn '+ROD_FIX+' xu quái vật')}
  else{F.ph='lose';F.t=0;say('💨 Hụt rồi! Quái vật tuột câu và bơi mất. Thử lại nhé!','#c4382e');F.sh.mode=9;MQ.stat();hideBar()}}
@@ -302,7 +302,7 @@ function loop(ts){raf=0;if(!F)return;const c=$('mqc');if(!c||!UI){F=null;return}
  const dt=Math.min(.05,(ts-last)/1000||0);last=ts;upd(dt);draw(c);raf=requestAnimationFrame(loop)}
 
 // ============================================================
-//  THU MUA QUÁI VẬT (trong Tiệm câu)
+//  THU MUA QUÁI VẬT (trong Shop quái vật)
 // ============================================================
 let SC=null,SCT=0;
 MQ.sellUI=()=>{F=null;const b=bag(),L=MON.map((m,i)=>({m,i,c:b[m.id]|0})).filter(x=>x.c>0).sort((a,c)=>c.m.r-a.m.r||a.i-c.i);

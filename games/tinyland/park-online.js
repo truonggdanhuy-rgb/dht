@@ -42,7 +42,9 @@ if(!ST.nm)setTimeout(welcomeName,500);
 // ---------- lì xì (tặng Xu) qua máy chủ Supabase ----------
 let giftBusy=0;
 window.claimGifts=async()=>{if(!dhtOk()||giftBusy)return;giftBusy=1;
- try{const L=await dhtRpc('claim_gifts');if(Array.isArray(L)&&L.length){let t=0;L.forEach(g=>{t+=g.a|0});ST.xu+=t;xuUp();save();toast('🧧 '+(L.length==1?escH(L[0].n)+' lì xì bạn':L.length+' lì xì')+' +'+fmtXu(t)+' Xu!')}}catch(e){}
+ try{const L=await dhtRpc('claim_gifts');if(Array.isArray(L)&&L.length){let t=0,q=0;L.forEach(g=>{if(g.k=='qv')q+=g.a|0;else t+=g.a|0});ST.xu+=t;ST.qv=(ST.qv|0)+q;xuUp();save();
+  const parts=[];if(t)parts.push('+'+fmtXu(t)+' Xu');if(q)parts.push('+'+fmtXu(q)+' xu quái vật');
+  toast('🧧 '+(L.length==1?escH(L[0].n)+' lì xì bạn':L.length+' lì xì')+' '+parts.join(' • ')+'!')}}catch(e){}
  giftBusy=0};
 setTimeout(claimGifts,2500);setInterval(claimGifts,20000);
 let tapO=null;
@@ -61,19 +63,26 @@ window.pkActs=()=>{const o=tapO;if(!o||!CV.others.has(o.id))return closeUI();con
  +L.map(a=>'<button class=\"sq aq\" onclick=\"pkDuo(\''+a.id+'\')\">'+actCv(a.id,96,88,'',1)+'<b>'+a.n+'</b><small>Bấm để dùng</small></button>').join('')+'</div><div class=\"pf\"><button class=\"b\" onclick=\"pkBack()\">⬅ Quay lại</button></div>');actAnimGo()};
 window.pkDuo=id=>{const o=tapO;if(!o||!CV.others.has(o.id))return closeUI();
  if(id=='heart'){const n=performance.now();if(n<hrtCd)return toast('💖 Chờ chút rồi bắn tim tiếp nhé!');hrtCd=n+2500;closeUI();hrtAdd(ME.id,o.id);bcast('heart',{f:ME.id,t:o.id});toast('💖 Bạn đã bắn tim cho '+(o.n||'bạn ấy')+'!')}};
-window.liXiUI=()=>{const o=tapO;if(!o||!CV.others.has(o.id))return closeUI();if(!o.u)return toast('Người này chưa thể nhận lì xì');
- openUI('<div class="uh"><span>🧧 Lì xì cho '+escH(o.n||'?')+'</span><button class="b x" onclick="closeUI()">X</button></div><div class="mut">Bạn đang có 🪙 <b>'+fmtXu(ST.xu)+'</b> Xu. Xu tặng sẽ bị trừ của bạn và cộng cho '+escH(o.n||'?')+'.</div>'+
- '<div style="display:flex;gap:4px;margin:8px 0"><input id="lxn" type="number" inputmode="numeric" min="1" max="1000000" placeholder="Số Xu muốn tặng" style="flex:1;min-width:0;font:inherit;padding:6px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" id="lxb" onclick="liXiGo()">🧧 Tặng</button></div>'+
- '<div class="pf">'+[10,50,100,500].map(v=>'<button class="b" onclick="$(\'lxn\').value='+v+'">'+v+'</button>').join('')+'</div>');
+let lxK='xu';   // loại lì xì đang chọn: 'xu' (Xu vàng) | 'qv' (Xu quái vật)
+window.liXiKind=k=>{lxK=k;liXiUI(1)};
+window.liXiUI=keep=>{const o=tapO;if(!o||!CV.others.has(o.id))return closeUI();if(!o.u)return toast('Người này chưa thể nhận lì xì');
+ if(keep!==1)lxK='xu';
+ const q=lxK=='qv',have=q?(ST.qv|0):ST.xu,ico=q?(window.qvImg?qvImg():'🐙'):'🪙',nm=q?'xu quái vật':'Xu',on='style="outline:3px solid #e0584a"';
+ openUI('<div class="uh"><span>🧧 Lì xì cho '+escH(o.n||'?')+'</span><button class="b x" onclick="closeUI()">X</button></div>'+
+ '<div class="pf" style="margin-bottom:4px"><button class="b" '+(!q?on:'')+' onclick="liXiKind(\'xu\')">🪙 Xu vàng</button><button class="b" '+(q?on:'')+' onclick="liXiKind(\'qv\')">'+(window.qvImg?qvImg():'🐙')+' Xu quái vật</button></div>'+
+ '<div class="mut">Bạn đang có '+ico+' <b>'+fmtXu(have)+'</b> '+nm+'. Số tặng sẽ bị trừ của bạn và cộng cho '+escH(o.n||'?')+'.</div>'+
+ '<div style="display:flex;gap:4px;margin:8px 0"><input id="lxn" type="number" inputmode="numeric" min="1" max="1000000" placeholder="Số '+nm+' muốn tặng" style="flex:1;min-width:0;font:inherit;padding:6px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" id="lxb" onclick="liXiGo()">🧧 Tặng</button></div>'+
+ '<div class="pf">'+(q?[50,100,500,1000]:[10,50,100,500]).map(v=>'<button class="b" onclick="$(\'lxn\').value='+v+'">'+v+'</button>').join('')+'</div>');
  const i=$('lxn');if(i)i.addEventListener('keydown',e=>{e.stopPropagation();if(e.key=='Enter')liXiGo()})};
-window.liXiGo=async()=>{if(giftBusy)return;const o=tapO,a=Math.floor(+($('lxn').value||0));
+window.liXiGo=async()=>{if(giftBusy)return;const o=tapO,a=Math.floor(+($('lxn').value||0)),q=lxK=='qv',nm=q?'xu quái vật':'Xu',have=q?(ST.qv|0):ST.xu;
  if(!o||!o.u||!CV.others.has(o.id))return toast('Người này đã rời đi');
- if(!(a>=1))return toast('Nhập số Xu muốn tặng');if(a>1000000)return toast('Tối đa 1.000.000 Xu mỗi lần');if(a>ST.xu)return toast('🪙 Bạn không đủ Xu');
+ if(!(a>=1))return toast('Nhập số '+nm+' muốn tặng');if(a>1000000)return toast('Tối đa 1.000.000 '+nm+' mỗi lần');if(a>have)return toast((q?'🐙':'🪙')+' Bạn không đủ '+nm);
  giftBusy=1;$('lxb').disabled=true;
- try{const ok=await dhtRpc('send_gift',{p_to:o.u,p_amount:a,p_name:ST.name});
-  if(ok===true){ST.xu-=a;xuUp();save();bcast('gift',{to:o.u});closeUI();toast('🧧 Đã lì xì '+fmtXu(a)+' Xu cho '+(o.n||'bạn ấy'))}
+ try{const args={p_to:o.u,p_amount:a,p_name:ST.name};if(q)args.p_kind='qv';
+  const ok=await dhtRpc('send_gift',args);
+  if(ok===true){if(q)ST.qv=(ST.qv|0)-a;else ST.xu-=a;xuUp();save();bcast('gift',{to:o.u});closeUI();toast('🧧 Đã lì xì '+fmtXu(a)+' '+nm+' cho '+(o.n||'bạn ấy'))}
   else{toast('❌ Chưa gửi được (gửi quá nhanh hoặc người nhận không hợp lệ)');if($('lxb'))$('lxb').disabled=false}}
- catch(e){toast('❌ Chưa gửi được, thử lại nhé');if($('lxb'))$('lxb').disabled=false}
+ catch(e){toast(q?'❌ Chưa gửi được xu quái vật — nhớ chạy file lixi_qv.sql trên Supabase 1 lần':'❌ Chưa gửi được, thử lại nhé');if($('lxb'))$('lxb').disabled=false}
  giftBusy=0};
 
 
