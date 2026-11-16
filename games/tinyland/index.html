@@ -3532,8 +3532,8 @@ function cdToggle(){const w=$('cdw');w.style.display=w.style.display=='flex'?'no
 function cdGo(){const v=($('cdi').value||'').trim().toLowerCase();
  if(v=='huyhuy03'){ST.codes=(ST.codes&&typeof ST.codes=='object')?ST.codes:{};
   // code vĩnh viễn: nhập bao nhiêu lần cũng được, lần nào cũng nhận thưởng
-  ST.codes.huyhuy03=(ST.codes.huyhuy03|0)+1;window.IDNOEARN=1;ST.xu+=10000;window.IDNOEARN=0;ST.qv=(ST.qv|0)+5000;
-  xuUp();save();closeUI();return toast('🔑 Nhập code thành công!\n+10000 Xu • +5000 xu quái vật')}
+  ST.codes.huyhuy03=(ST.codes.huyhuy03|0)+1;window.IDNOEARN=1;ST.xu+=10000;window.IDNOEARN=0;ST.qv=(ST.qv|0)+5000;ST.pr=(ST.pr&&typeof ST.pr=='object')?ST.pr:{};ST.pr.st=(ST.pr.st|0)+100;ST.pr.sn=(ST.pr.sn|0)+100;
+  xuUp();save();closeUI();return toast('🔑 Nhập code thành công!\n+10000 Xu • +5000 xu quái vật\n+100 ⭐ mảnh sao • +100 ❄️ mảnh tuyết')}
  if(v!='adminhuy')return toast('❌ Code không đúng');
  khoList('ns').forEach(i=>add('ns',i[0],1));[...VPI.map(v=>v[0]),...PRODS.map(p=>p.id)].forEach(k=>add('vp',k,1));
  window.IDNOEARN=1;ST.xu+=10000;window.IDNOEARN=0;
@@ -5802,7 +5802,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 
 </script>
 <script src="park-map.js?v=20261116"></script>
-<script src="pho-map.js?v=20261125"></script>
+<script src="pho-map.js?v=20261125b"></script>
 <script src="circus.js?v=20261126"></script>
 <script src="sea-map.js?v=20261116"></script>
 <script src="fishing.js?v=20261116"></script>

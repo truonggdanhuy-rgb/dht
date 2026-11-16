@@ -607,9 +607,9 @@ function psFx(tm,dt){
 // ============================================================
 //  VÉ SỐ
 // ============================================================
-const LOT_PRICE=100,LOT_REFUND=88,LOT_MAXP=10,LOT_WAIT=120000;
-// o = "1 trên o vé" (KHÔNG hiển thị cho người chơi). Giải 4 ≈ 1/15; giải 5 (trùng 1 số cuối, hoàn 100) ≈ 1/3.5; không trùng số nào hoàn 88. Kỳ vọng ≈ 110 Xu / vé 100 Xu.
-const LOT=[{k:'ĐẶC BIỆT',p:99999,o:100000,j:6},{k:'GIẢI NHẤT',p:8888,o:15000,j:5},{k:'GIẢI NHÌ',p:2888,o:2500,j:4},{k:'GIẢI BA',p:888,o:300,j:3},{k:'GIẢI TƯ',p:288,o:15,j:2},{k:'GIẢI NĂM',p:100,o:3.5,j:1}];
+const LOT_PRICE=100,LOT_REFUND=100,LOT_MAXP=10,LOT_WAIT=120000;
+// o = "1 trên o vé" (KHÔNG hiển thị cho người chơi). Giải 4 ≈ 1/15; giải 5 (trùng 1 số cuối, nhận 150) ≈ 1/3.3; không trùng số nào hoàn 100 (hòa vốn). Kỳ vọng ≈ 133 Xu / vé 100 Xu — muốn bớt lời thì tăng số o của giải 5 hoặc giảm p.
+const LOT=[{k:'ĐẶC BIỆT',p:99999,o:100000,j:6},{k:'GIẢI NHẤT',p:8888,o:15000,j:5},{k:'GIẢI NHÌ',p:2888,o:2500,j:4},{k:'GIẢI BA',p:888,o:300,j:3},{k:'GIẢI TƯ',p:288,o:15,j:2},{k:'GIẢI NĂM',p:150,o:3.3,j:1}];
 window.PS_LOT=LOT;
 const lotS=()=>{if(!ST.lot||!Array.isArray(ST.lot.t))ST.lot={t:[]};return ST.lot};
 const dig=()=>String(Math.floor(Math.random()*10));
@@ -633,7 +633,7 @@ window.psLotBuy=n=>{const L=lotS(),pend=L.t.filter(t=>!t.paid).length;
  if(ST.xu<LOT_PRICE*n)return toast('🪙 Không đủ Xu mua vé');
  ST.xu-=LOT_PRICE*n;for(let i=0;i<n;i++)L.t.push(lotMake());xuUp();save();toast('🎟️ Đã mua '+n+' vé — 2 phút nữa xổ số!');psLot()};
 window.psLotRev=()=>{PS.view='rev';const L=lotS(),now=Date.now(),t=L.t.find(t=>!t.paid&&t.at<=now);if(!t)return psLot();
- if(t.g<0){let m=0;while(m<6&&t.n[5-m]==t.w[5-m])m++;if(m>=1){t.g=5;t.p=100;t.j=m}else t.p=LOT_REFUND} // vé cũ mua trước bản cập nhật: tính lại theo số thực sự khớp
+ if(t.g<0){let m=0;while(m<6&&t.n[5-m]==t.w[5-m])m++;if(m>=1){t.g=5;t.p=LOT[5].p;t.j=m}else t.p=LOT_REFUND} // vé cũ mua trước bản cập nhật: tính lại theo số thực sự khớp
  t.paid=1;ST.xu+=t.p;xuUp();save();
  openUI(head('🎰 Xổ số kiến thiết')+'<div style="text-align:center"><canvas id="lotc" width="160" height="104" style="width:100%;max-width:320px;image-rendering:pixelated;background:#efe6d4;border:2px solid #7a4a26"></canvas><div class="mut" style="margin:6px 0 0">Vé của bạn</div><div style="font-size:22px;letter-spacing:5px;font-weight:800">'+t.n+'</div><div class="mut" style="margin:6px 0 0">Số trúng thưởng</div><div id="lotn" style="font-size:28px;letter-spacing:5px;font-weight:800;min-height:36px">······</div><div id="lotr" style="min-height:48px;margin-top:4px"></div></div><div class="pf"><button class="b" id="lotb" disabled onclick="psLot()">Tiếp tục</button></div>');
  const c=$('lotc'),g=c.getContext('2d'),t0=performance.now();let shown=-1;
