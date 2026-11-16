@@ -832,7 +832,8 @@ const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'}
  {n:'Mũ Vua đầu bếp',k:'chef',c:'#2b1d12'},
  {n:'Mũ lính Việt',k:'linh',c:'#2b1d12'}];
 // ---- Bieu cam nhan vat ----
-const EXPRS=[{n:'Mặc định'},{n:'😎 Ngầu'},{n:'😍 Iu iu'},{n:'🤤 Đói bụng'},{n:'😢 Sad'},{n:'😄 Vui vẻ'},{n:'🍬 Bong bóng kẹo'},{n:'💖 Thổi tim',dia:10}];   // dia = giá bằng Kim cương, bán ở Shop kim cương (không bán ở Shop Phố xá)
+const EXPRS=[{n:'Mặc định'},{n:'😎 Ngầu'},{n:'😍 Iu iu'},{n:'🤤 Đói bụng'},{n:'😢 Sad'},{n:'😄 Vui vẻ'},{n:'🍬 Bong bóng kẹo'},{n:'💖 Thổi tim',dia:10},{n:'😴 Buồn ngủ'},{n:'😛 Lém lỉnh'}];   // 8 & 9: bán ở Shop Phố xá 500 Xu (pho-map.js → SHOP.e.pr). Món mới LUÔN thêm vào CUỐI mảng
+//   // dia = giá bằng Kim cương, bán ở Shop kim cương (không bán ở Shop Phố xá)
 // 6 biểu cảm đầu miễn phí (ai cũng có); từ số 6 trở đi mua ở Shop Phố xá
 window.ownE=()=>{if(!ST.own)ST.own={};if(!Array.isArray(ST.own.e))ST.own.e=[];for(let i=0;i<6;i++)if(!ST.own.e.includes(i))ST.own.e.push(i);return ST.own.e};
 // vẽ khung xem trước ở một thời điểm cố định (để bong bóng hiện rõ trong ô nhỏ)
@@ -882,6 +883,8 @@ function faceFx(u,e,side,Rt){
    const tw=Math.sin(t*4)>0;if(tw){u('#fff3a8',16,6,1,1);u('#fff3a8',15,7,3,1);u('#fff3a8',16,8,1,1)}else{u('#fff3a8',2,9,1,1);u('#fff3a8',1,10,3,1);u('#fff3a8',2,11,1,1)}}
   else if(e==6){ bubbleFace(u,t,0,0) }
   else if(e==7){ heartFace(u,t,0,0) }
+  else if(e==8){ sleepFace(u,t,0,0) }
+  else if(e==9){ cheekyFace(u,t,0,0) }
  }else{
   if(e==1){s(SG2,8,11,2,1);s(SG1,10,11,3,1);s(SG2,10,12,3,1);s(GL,11,11,1,1);s(MO,11,13,3,1)}
   else if(e==2){const pu=Math.sin(t*5)>0?PK:'#ff2f66';
@@ -895,7 +898,38 @@ function faceFx(u,e,side,Rt){
    s(DK,12,13,2,1);s(TG,12,14,1,1);s(DK,13,14,1,1)}
   else if(e==6){ bubbleFace(u,t,1,Rt) }
   else if(e==7){ heartFace(u,t,1,Rt) }
+  else if(e==8){ sleepFace(u,t,1,Rt) }
+  else if(e==9){ cheekyFace(u,t,1,Rt) }
  }
+}
+/* ---- 😴 Buồn ngủ: nhắm mắt, miệng nhỏ phập phồng, chữ Z bay lên nhẹ ---- */
+function sleepFace(u,t,side,Rt){
+ const EY='#2b1d12',MO='#b5604a',BS='rgba(236,110,110,.5)',px=(c,x,y)=>side?u(c,Rt?x:19-x,y,1,1):u(c,x,y,1,1);
+ if(!side){px(EY,6,12);px(EY,7,13);px(EY,8,12);px(EY,11,12);px(EY,12,13);px(EY,13,12);px(BS,7,14);px(BS,12,14);
+  const o=Math.sin(t*2)>0;px(MO,9,14);px(MO,10,14);if(o){px(MO,9,15);px(MO,10,15)}}
+ else{px(EY,10,12);px(EY,11,13);px(EY,12,12);px(BS,9,14);const o=Math.sin(t*2)>0;px(MO,12,14);px(MO,13,14);if(o){px(MO,12,15);px(MO,13,15)}}
+ for(let k=0;k<3;k++){
+  const p=((t/3.6)+k/3)%1,z=k==2?5:4,x=(side?12:14)+Math.round(p*3+Math.sin(p*6.3+k)*1),y=Math.round(8-p*13),a=Math.min(1,p*6,(1-p)*2.5).toFixed(2);
+  if(a<=0)continue;
+  const c='rgba(120,170,255,'+a+')',w='rgba(255,255,255,'+a+')';
+  for(let i=0;i<z;i++){px(c,x+i,y);px(c,x+i,y+z-1)}
+  for(let i=1;i<z-1;i++)px(c,x+z-1-i,y+i);
+  px(w,x,y)}
+}
+/* ---- 😛 Lém lỉnh: nháy 1 mắt, thè lưỡi, thả 1 trái tim nhỏ bay lên ---- */
+function cheekyFace(u,t,side,Rt){
+ const EY='#2b1d12',WH='#ffffff',DK='#6b2230',TG='#ff8c9c',TD='#e8587a',BS='rgba(236,110,110,.55)',px=(c,x,y)=>side?u(c,Rt?x:19-x,y,1,1):u(c,x,y,1,1);
+ const wink=!side||(t%1.8)<1.2;
+ if(!side){px(EY,7,11);px(EY,8,11);px(EY,7,12);px(EY,8,12);px(WH,7,11);
+  px(EY,11,12);px(EY,12,11);px(EY,13,12);                          // mắt phải nháy ^
+  px(BS,6,13);px(BS,13,13);
+  px(DK,8,13);px(DK,9,13);px(DK,10,13);px(DK,11,13);px(TG,9,14);px(TG,10,14);px(TG,9,15);px(TG,10,15);px(TD,10,14)}
+ else{
+  if(wink){px(EY,10,12);px(EY,11,11);px(EY,12,12)}else{px(EY,11,11);px(EY,12,11);px(EY,11,12);px(EY,12,12);px(WH,11,11)}
+  px(BS,9,13);px(DK,12,13);px(DK,13,13);px(TG,13,14);px(TG,13,15);px(TD,13,14)}
+ const p=(t%2.6)/2.6;
+ if(p<.92){const x=(side?14:14)+Math.round(p*5),y=Math.round(9-p*11),a=Math.min(1,(1-p)*2.2).toFixed(2),c='rgba(255,77,122,'+a+')',h='rgba(255,194,207,'+a+')';
+  px(c,x,y);px(c,x+2,y);px(c,x,y+1);px(c,x+1,y+1);px(c,x+2,y+1);px(c,x+1,y+2);px(h,x,y)}
 }
 /* ---- 💖 Thổi tim: chu môi thổi ra tim đỏ / xanh / vàng, bay lên càng cao càng to rồi nổ ---- */
 function heartFace(u,t,side,Rt){
@@ -5718,7 +5752,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 
 </script>
 <script src="park-map.js?v=20261116"></script>
-<script src="pho-map.js?v=20261121"></script>
+<script src="pho-map.js?v=20261123"></script>
 <script src="sea-map.js?v=20261116"></script>
 <script src="fishing.js?v=20261116"></script>
 <script src="park-online.js?v=20261116"></script>
