@@ -1529,7 +1529,7 @@ function drawAv(g,ox,oy,o){
 //   t:'pull' = cầm DÂY dài kéo xe đồ chơi chạy theo sau (vịt, tàu hỏa, cá chép...)             -> art(T,mf)
 // (giữ nguyên thứ tự trong ACCS vì ST.own.a / ST.av.a lưu theo số thứ tự)
 const ACCS=[{n:'Lồng đèn trăng rằm',k:'moon',t:'hang',art:accMoon},{n:'Xe kéo vịt',k:'duck',t:'pull',art:accDuck},
- {n:'Hộp quà kéo',k:'gift',t:'pull',art:accGift,ach:1,bd:5},{n:'Bong bóng tuyết',k:'snowbub',t:'float',art:accSnow,ach:1,bd:5},
+ {n:'Hộp quà kéo',k:'gift',t:'pull',art:accGift,ach:1,bd:2},{n:'Bong bóng tuyết',k:'snowbub',t:'float',art:accSnow,ach:1,bd:2},
  {n:'Sao biển đồ chơi',k:'starfish',t:'pull',art:accStar,ach:1},{n:'Bóng bạch tuộc',k:'octobub',t:'float',art:accOcto,ach:1},
  // t:'hold' = cầm thẳng trong tay (hình vẽ ở outfits.js). Bán ở Shop Phố xá: Song kiếm 5000 • iPad 1500 • Muôi đầu bếp 300 • Giáo lính Việt 800
  {n:'Song kiếm',k:'dsword',t:'hold',art:accSword},{n:'iPad',k:'ipad',t:'hold',art:accIpad},
@@ -2189,7 +2189,7 @@ function drawPetHeron(g,x,y,d,mv,a,t){
  }
 }
 const PETS=[{n:'Mèo con',k:'cat',fn:drawPetCat},{n:'Mây Mây',k:'cloud',fn:drawPetCloud,fly:1},{n:'Thỏ',k:'rabbit',fn:drawPetRabbit},{n:'Gà trống',k:'rooster',fn:drawPetRooster},{n:'Gấu trúc mini',k:'panda',fn:drawPetPanda},{n:'Heo hồng',k:'pig',fn:drawPetPig},{n:'Vẹt',k:'parrot',fn:drawPetParrot,fly:1,ach:1},{n:'Vẹt tím',k:'parrot2',fn:drawPetParrot2,fly:1,ach:1},{n:'Gấu trắng',k:'polar',fn:drawPetBear,ach:1},{n:'Cò trắng',k:'heron',fn:drawPetHeron,ach:1},
- {n:'Bánh quy gừng',k:'ginger',fn:drawPetGinger,ach:1,bd:3},{n:'Mây tuyết',k:'snowcloud',fn:drawPetSnowCloud,fly:1,ach:1,bd:10}];
+ {n:'Bánh quy gừng',k:'ginger',fn:drawPetGinger,ach:1,bd:1},{n:'Mây tuyết',k:'snowcloud',fn:drawPetSnowCloud,fly:1,ach:1,bd:3}];
 const drawPet=(g,x,y,d,mv,a,t,pi)=>(PETS[pi]||PETS[0]).fn(g,x,y,d,mv,a,t);
 const PET={x:560,y:292,d:0,a:0,mv:0,k:0};
 function petReset(){PET.x=Pl.x-38;PET.y=Pl.y+4;PET.mv=0;PET.k=0}
@@ -5337,7 +5337,7 @@ const ACTS=[
  {id:'aihoi',n:'Ai hỏi?',e:'❓',pr:5,k:'solo',ds:'Nhún vai chất vấn “Ai hỏi?”, dấu ? bay vòng quanh người'},
  {id:'che',n:'Chê',e:'👎',pr:5,k:'solo',ds:'Giơ tấm biển “Chê” lên rồi hạ xuống'},
  {id:'live',n:'Livestream',e:'📱',pr:10,k:'solo',ds:'Giá kẹp điện thoại + đèn ring, vừa nhún nhảy hát vừa phát live, tim và like bay lên'},
- {id:'bell',n:'Rung chuông Noel',e:'🔔',bd:5,k:'solo',ds:'Rung qua rung lại chiếc chuông Giáng Sinh có lá, ruy băng và đèn nhấp nháy'},
+ {id:'bell',n:'Rung chuông Noel',e:'🔔',bd:3,k:'solo',ds:'Rung qua rung lại chiếc chuông Giáng Sinh có lá, ruy băng và đèn nhấp nháy'},
  {id:'chaosep',n:'Chào sếp',e:'🫡',pr:7,k:'solo',ds:'Giơ tay chào lên trán, hộp thoại pastel “Chào sếp ạ”, những nụ cười nhỏ bay lên nhẹ nhàng'}];   // bd = giá bằng Huy hiệu tuyết (đổi ở Ông già Noel, không bán ở Shop kim cương)
 var ACTTAB='solo';
 ST.acts=ST.acts||{};
@@ -5724,7 +5724,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="park-online.js?v=20261116"></script>
 <script src="frames.js?v=20261116"></script>
 <script src="idcard.js?v=20261116"></script>
-<script src="snow-village.js?v=20261121"></script>
+<script src="snow-village.js?v=20261122"></script>
 <script src="food-icons.js?v=20261116"></script>
 <script src="actions2.js?v=20261116"></script>
 <script src="newitems.js?v=20261116"></script>
