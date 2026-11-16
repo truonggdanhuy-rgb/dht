@@ -111,13 +111,15 @@ const bag=()=>{ST.qvm=(ST.qvm&&typeof ST.qvm=='object'&&!Array.isArray(ST.qvm))?
 const total=()=>Object.values(bag()).reduce((a,b)=>a+(b|0),0);
 const MQ=window.MQ={};
 MQ.items=()=>{const b=bag();const L=MON.map((m,i)=>({n:m.n,idx:i,r:m.r,c:b[m.id]|0})).filter(x=>x.c>0).sort((a,b)=>b.r-a.r||a.idx-b.idx).map(x=>({n:x.n,idx:x.idx,sm:'x'+x.c+(HOLD===x.idx?' • đang cầm':'')}));
- const k=ST.kcn|0;if(k>0)L.push({n:'Kem chống nắng',idx:SUN_ID,sm:'x'+k+(protLeft()>0?' • đang bảo vệ':'')});return L};
-MQ.paint=(g,ix,c)=>{if(ix===SUN_ID){const sm=g.imageSmoothingEnabled;g.imageSmoothingEnabled=false;const s=sunSpr(),w=Math.round(c.width*.55),h=Math.round(w*s.height/s.width);g.drawImage(s,Math.round(c.width/2-w/2),Math.round(c.height/2-h/2),w,h);g.imageSmoothingEnabled=sm;return}
+ const k=ST.kcn|0;if(k>0)L.push({n:'Kem chống nắng',idx:SUN_ID,sm:'x'+k+(protLeft()>0?' • đang bảo vệ':'')});
+ for(const id of[101,102,103]){const c=(ST.pot&&ST.pot[POTK[id]])|0;if(c>0)L.push({n:POTN[id],idx:id,sm:'x'+c+(id==103&&toanLeft()>0?' • đang có tác dụng':'')})}return L};
+MQ.paint=(g,ix,c)=>{if(POTK[ix]){const sm=g.imageSmoothingEnabled;g.imageSmoothingEnabled=false;const s=potSpr(POTK[ix]),w=Math.round(c.width*.55),h=Math.round(w*s.height/s.width);g.drawImage(s,Math.round(c.width/2-w/2),Math.round(c.height/2-h/2),w,h);g.imageSmoothingEnabled=sm;return}
+ if(ix===SUN_ID){const sm=g.imageSmoothingEnabled;g.imageSmoothingEnabled=false;const s=sunSpr(),w=Math.round(c.width*.55),h=Math.round(w*s.height/s.width);g.drawImage(s,Math.round(c.width/2-w/2),Math.round(c.height/2-h/2),w,h);g.imageSmoothingEnabled=sm;return}
  if(ix<0||!MON[ix])return;const t=performance.now()/1000;put(g,MON[ix].id,c.width/2,c.height/2,MON[ix].r==2?34:30,t)};
 
 // ---------- cầm trên tay ----------
 let HOLD=null;
-MQ.hold=i=>{if(i===SUN_ID)return useSun();if(!MON[i])return;HOLD=i;window.MQH=1;closeUI();toast('🖐️ Bạn đang cầm '+MON[i].n+' trên tay (di chuyển để cất)')};
+MQ.hold=i=>{if(i===SUN_ID)return useSun();if(POTK[i])return usePot(i);if(!MON[i])return;HOLD=i;window.MQH=1;closeUI();toast('🖐️ Bạn đang cầm '+MON[i].n+' trên tay (di chuyển để cất)')};
 MQ.clear=()=>{HOLD=null;window.MQH=0};
 const HC={};
 MQ.drawHold=(X,Y,d)=>{if(HOLD==null)return;const m=MON[HOLD],t=performance.now()/1000,w=m.r==2?22:m.r==1?17:15,
@@ -165,6 +167,26 @@ function useSun(){
  if(!atSea())return toast('☀️ Ra biển rồi hãy thoa kem nhé');
  if(protLeft()>30000)return toast('🧴 Bạn vẫn đang được bảo vệ khỏi nắng');
  ST.kcn=(ST.kcn|0)-1;ST.kcnU=Date.now()+SUN_PROT;burnUntil=0;seaSec=0;seaCatch=0;sunHud();try{save()}catch(e){}closeUI();toast('🧴 Đã thoa kem chống nắng!')}
+
+// ---------- 3 LOẠI DƯỢC (Shop quái vật, xu quái vật) — dùng ở Túi › Biển; số lượng ST.pot = {phuclac, bachthuc, toany} ----------
+// Phúc lạc dược 40: hết buồn ngủ ngay (Sức khỏe về 100%) • Bách thực dược 40: no căng (Độ no 100%) • Toàn ý dược 50: thuyền chạy nhanh TOAN_MS
+// Hệ số tốc độ thuyền (1.6) nằm ở dòng tính tốc độ trong index.html (ST.toanU).
+const POTK={101:'phuclac',102:'bachthuc',103:'toany'},POTN={101:'Phúc lạc dược',102:'Bách thực dược',103:'Toàn ý dược'},TOAN_MS=5*60000;
+MQ.potId=k=>+Object.keys(POTK).find(i=>POTK[i]==k);
+const toanLeft=()=>Math.max(0,(+ST.toanU||0)-Date.now());
+const POTC={phuclac:['#b79bff','#d6c6ff','#7a56d8'],bachthuc:['#ffb84d','#ffd98a','#d9801a'],toany:['#4fe3c8','#9ff5e6','#1fa98f']},_pot={};
+const potSpr=k=>_pot[k]||(_pot[k]=mkS(20,26,(r,E)=>{const[c,l,d]=POTC[k];
+ r('#c98a52',7,1,6,3);r('#e0a46a',7,1,6,1);r('#e8f4f7',8,4,4,5);r('#cfe6ec',8,4,1,5);
+ r('#e8f4f7',5,9,10,1);r('#e8f4f7',3,10,14,13);r('#e8f4f7',4,23,12,1);r('#cfe6ec',3,10,1,13);r('#cfe6ec',16,10,1,13);
+ r(c,4,13,12,10);r(l,4,13,12,1);r(l,4,14,3,8);r(d,4,22,12,1);r(d,13,14,3,8);r('#fff',5,11,1,2);
+ if(k=='phuclac'){r('#fff',8,15,4,1);r('#fff',11,16,1,1);r('#fff',10,17,1,1);r('#fff',8,18,4,1)}
+ else if(k=='bachthuc'){r('#fff',8,15,4,4);r(c,9,16,2,2)}
+ else{r('#fff',11,14,2,2);r('#fff',10,16,2,2);r('#fff',8,18,3,2);r('#fff',7,20,2,2)}}));
+function usePot(i){const k=POTK[i];ST.pot=ST.pot||{};if(!(ST.pot[k]>0))return;
+ if(k=='phuclac'){if(vit().h>=99.5)return toast('😊 Bạn đang rất tỉnh táo, chưa cần uống');ST.pot[k]--;vitAdd(100,0);toast('🧪 Phúc lạc dược: hết buồn ngủ rồi, tỉnh như sáo!')}
+ else if(k=='bachthuc'){if(vit().f>=99.5)return toast('🍚 Bạn đang no căng rồi, chưa cần uống');ST.pot[k]--;vitAdd(0,100);toast('🧪 Bách thực dược: no căng bụng!')}
+ else{if(!atSea())return toast('🧪 Lên thuyền ra biển rồi hãy uống nhé');if(toanLeft()>30000)return toast('🌊 Toàn ý dược vẫn đang có tác dụng');ST.pot[k]--;ST.toanU=Date.now()+TOAN_MS;toast('🧪 Toàn ý dược: thuyền lướt nhanh '+(TOAN_MS/60000)+' phút!')}
+ try{save()}catch(e){}closeUI()}
 function sunHud(){
  if(!sunEl){sunEl=document.createElement('div');
   sunEl.style.cssText='position:fixed;left:50%;top:54px;transform:translateX(-50%);z-index:24;pointer-events:none;display:none;padding:5px 12px;font:800 13px Nunito,\'Segoe UI\',Arial,sans-serif;background:#ffe3d6;border:2px solid #c4382e;border-radius:8px;color:#8a2218;box-shadow:0 2px 0 #c4382e';
