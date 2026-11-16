@@ -731,7 +731,7 @@ function shDraw(g,k,ix,o,t,big){
  else if(k=='e'){g.save();g.scale(3,3);const dr=()=>drawAv(g,-3,-4,o);if(ix==6)tlFreeze(2500,dr);else dr();g.restore()}
  else{g.save();g.scale(2,2);drawPet(g,11,24,0,0,0,t,ix);g.restore()}}
 function shPaint(){const A=ST.av,t=performance.now()/1000;document.querySelectorAll('canvas.shc').forEach(c=>{const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);shDraw(g,SH_TAB,+c.dataset.i,{d:0,a:0,mv:0,sit:0,hair:A.h,set:A.s,e:A.e},t,0)})}
-window.psItem=i=>{if(typeof ownE=='function')ownE();SH_I=i;const S=SHOP[SH_TAB],x=S.all()[i],has=ST.own[SH_TAB].includes(i),pr=price(SH_TAB,i);PS.view='item';
+window.psItem=i=>{if(SH_TAB=='h'){const W=SETS[ST.av.s];if(W&&(W.mascot||W.deer||W.dn||W.tn||W.aul))return toast('🧸 Bạn cần gỡ mascot mới xem được vật phẩm tóc & mũ')}if(typeof ownE=='function')ownE();SH_I=i;const S=SHOP[SH_TAB],x=S.all()[i],has=ST.own[SH_TAB].includes(i),pr=price(SH_TAB,i);PS.view='item';
  const eq=ST.av[SH_TAB]==i;
  openUI(head(S.t+' — '+x.n)+'<div style="text-align:center"><canvas id="shp" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#d6e8f2,#e8efd6 70%);border:2px solid #7a4a26;cursor:pointer" onclick="SH_DIR=(SH_DIR+1)%4"></canvas><div class="mut" style="margin:2px 0 6px">Chạm vào hình để xoay • bạn có 🪙 <b>'+fmtXu(ST.xu)+'</b> Xu</div></div>'+
  '<div class="pf">'+(has?'<button class="b" onclick="psUse('+i+')">'+(eq?'✓ Đang dùng':'✨ Dùng ngay')+'</button>':'<button class="b" onclick="psBuy('+i+')">🪙 Mua — '+pr.toLocaleString('vi-VN')+' Xu</button>')+'<button class="b" onclick="psShop()">⬅ Quay lại</button></div>');
