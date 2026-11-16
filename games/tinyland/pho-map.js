@@ -70,7 +70,7 @@ const mkHouse=(w,h,o)=>mk(w,h,(g,r)=>{
   r('#dcecf3',8,fy+2,2,fhh-3)}
  // biển hiệu: khung vàng + nền tối (chữ neon chạy + dải đèn LED được vẽ động ở drawSign)
  r('#2c1c0e',3,y0-24,w-6,24);r('#e2b93b',4,y0-23,w-8,22);r('#ffe27a',4,y0-23,w-8,1);r('#9a7414',4,y0-2,w-8,1);
- r('#140c26',5,y0-22,w-10,20);r('#241640',5,y0-22,w-10,1);r('#0a0618',6,y0-10,w-12,8);r('#3a2a5a',6,y0-10,w-12,1);
+ r('#140c26',5,y0-22,w-10,20);r('#241640',5,y0-22,w-10,1);if(o.sign.m){r('#0a0618',6,y0-10,w-12,8);r('#3a2a5a',6,y0-10,w-12,1)}
  // chậu cây hai bên cửa
  for(const px of[0,w-6]){r('#b9805e',px,h-8,6,8);r('#d49a74',px,h-8,6,2);r('#6fae78',px,h-14,6,6);r('#8fcf98',px+1,h-14,2,2);r('#e59ab3',px+3,h-13,2,2)}
  r('rgba(0,0,0,.1)',0,h-2,w,2)});
@@ -283,20 +283,21 @@ function drawSign(s,tm){
  const ph=Math.floor(tm*7);
  for(let i=0,x=X+1;x<X+W-2;x+=5,i++){const on=(i+ph)%3==0;cx.fillStyle=on?'#fff8c0':'#a8802a';if(on){cx.shadowColor='#ffd23f';cx.shadowBlur=4}cx.fillRect(x,Y,2,1);cx.fillRect(x,Y+21,2,1);cx.shadowBlur=0}
  // tên tiệm: chữ neon (viền màu phát sáng + lõi trắng ấm), thỉnh thoảng chớp như neon cũ
- cx.save();cx.beginPath();cx.rect(X+2,Y+1,W-4,12);cx.clip();
- cx.font='900 8px '+NEONF;cx.textBaseline='alphabetic';cx.lineJoin='round';
+ const one=!s.m,NY=one?Y+15:Y+10;
+ cx.save();cx.beginPath();cx.rect(X+2,Y+1,W-4,one?20:12);cx.clip();
+ cx.font='900 '+(one?9:8)+'px '+NEONF;cx.textBaseline='alphabetic';cx.lineJoin='round';
  const tw=cx.measureText(s.t).width,fl=Math.sin(tm*17+s.ph)>.975?.35:1;
- const paint=(x,al)=>{cx.globalAlpha=al;cx.shadowColor=s.col;cx.shadowBlur=7;cx.lineWidth=1.6;cx.strokeStyle=s.col;cx.strokeText(s.t,x,Y+10);cx.shadowBlur=0;cx.fillStyle='#fffaf0';cx.fillText(s.t,x,Y+10)};
+ const paint=(x,al)=>{cx.globalAlpha=al;cx.shadowColor=s.col;cx.shadowBlur=7;cx.lineWidth=1.6;cx.strokeStyle=s.col;cx.strokeText(s.t,x,NY);cx.shadowBlur=0;cx.fillStyle='#fffaf0';cx.fillText(s.t,x,NY)};
  if(tw<=W-8){cx.textAlign='center';paint(X+W/2,fl)}
  else{cx.textAlign='left';const gap=18,off=(tm*18+s.ph*9)%(tw+gap);paint(X+4-off,fl);paint(X+4-off+tw+gap,fl)}
  cx.restore();
- // dải LED chạy chữ
- cx.save();cx.beginPath();cx.rect(X+2,Y+13,W-4,8);cx.clip();
+ // dải LED chạy chữ (chỉ Ngân hàng + Shop Miniset)
+ if(s.m){cx.save();cx.beginPath();cx.rect(X+2,Y+13,W-4,8);cx.clip();
  cx.font='800 7px '+NEONF;cx.textAlign='left';cx.textBaseline='alphabetic';
  const msg=s.m+'      ',mw=cx.measureText(msg).width||120,off=(tm*24+s.ph*13)%mw;
  cx.shadowColor='#ff9a2e';cx.shadowBlur=3;cx.fillStyle='#ffe94d';
  for(let k=-1;k<Math.ceil((W-4)/mw)+1;k++)cx.fillText(msg,X+3-off+k*mw,Y+19.5);
- cx.restore();
+ cx.restore()};
  // dây đèn nhấp nháy dưới mái hiên
  if(s.lights){const y=Y+36;for(let i=0,x=X+2;x<X+W-3;x+=7,i++){const a=.45+.55*Math.abs(Math.sin(tm*2.6+i*1.3+s.ph));cx.globalAlpha=a;cx.fillStyle=LIGHTC[i%5];cx.shadowColor=LIGHTC[i%5];cx.shadowBlur=3;cx.fillRect(x,y,2,2)}}
  cx.restore()}
@@ -335,14 +336,14 @@ function build(){
  put(mkMieu(),96,160,[4,0,190,162]);
  const SN=(t,bg,fg,n,m)=>({t,bg,fg,n,m});
  const H=[
-  [188,76,118,{wall:PAL.cream,aw:['#cfe0cf','#f4f0e4'],tank:1,shelf:['#c98a52','#7db3a7','#e09a62','#d9a468'],sign:SN('NỘI THẤT','#cfe3cf','#4c6f52','#7dffb0','ĐỒ TRANG TRÍ NHÀ • GIÁ HỮU NGHỊ')}],
-  [264,92,116,{wall:PAL.pink,aw:['#e7b4ae','#f8ece6'],balc:1,tile:1,shelf:['#e0a099','#8fb8e0','#f2d79a','#9ccaa6'],sign:SN('TIỆM MAY & MŨ NÓN','#f0c8c2','#8a4a44','#ff7ab8','THỜI TRANG • TÓC • MŨ NÓN'),shut:'#cfe0cf'}],
-  [436,98,116,{wall:PAL.sage,aw:['#a9c4dc','#f4f0e4'],balc:1,tile:1,shelf:['#8fb8e0','#e0a099','#9ccaa6'],sign:SN('TIỆM THÚ CƯỠI','#bcd6e6','#3f607a','#5fd8ff','TRÂU • VOI • KỲ LÂN • XE ĐẠP'),shut:'#e8c6b0'}],
-  [534,78,106,{wall:PAL.lemon,aw:['#b9d6bf','#f6f2e2'],laundry:1,sign:SN('SHOP MINISET','#ffd9e6','#b04a72','#ff9ad0','THỜI TRANG CHO BÉ BỎNG'),shelf:['#f4f0e4','#b9d6bf']}],
-  [612,98,116,{wall:PAL.peach,aw:['#d9c4e6','#f8f0ea'],balc:1,tile:1,shelf:['#e8c06a','#e0a099','#c9b0dc'],sign:SN('TIỆM THÚ CƯNG','#e3d0ee','#6a4a86','#c79bff','MÈO • THỎ • GÀ • MÂY MÂY'),shut:'#c9dbe8'}],
-  [710,80,118,{wall:PAL.mauve,aw:['#a9c9d6','#f4f0e4'],tank:1,door:'shutter',sign:SN('CẮT TÓC','#d6e8ee','#4a6f80','#6ee7ff','THỢ ĐI ĂN SÁNG • QUAY LẠI SAU')}],
-  [790,84,106,{wall:PAL.sky,aw:['#e2b89a','#f8efe2'],balc:1,laundry:1,shelf:['#c99a6a','#f2e0b8'],sign:SN('CÀ PHÊ SÁNG','#e8cfb4','#7a5236','#ffb066','CÀ PHÊ PHIN THƠM NGÀO NGẠT')}],
-  [874,86,118,{wall:PAL.cream,aw:['#e8d28a','#f8f2dc'],tank:1,shelf:['#e8c85a','#f6e08a'],sign:SN('TIỆM VÀNG','#f0dc96','#8a6a1c','#ffe14d','VÀNG BẠC • LẤP LÁNH SAU TỦ KÍNH'),shut:'#d6c9a0'}]];
+  [188,76,118,{wall:PAL.cream,aw:['#cfe0cf','#f4f0e4'],tank:1,shelf:['#c98a52','#7db3a7','#e09a62','#d9a468'],sign:SN('NỘI THẤT','#cfe3cf','#4c6f52','#7dffb0','')}],
+  [264,92,116,{wall:PAL.pink,aw:['#e7b4ae','#f8ece6'],balc:1,tile:1,shelf:['#e0a099','#8fb8e0','#f2d79a','#9ccaa6'],sign:SN('TIỆM MAY & MŨ NÓN','#f0c8c2','#8a4a44','#ff7ab8',''),shut:'#cfe0cf'}],
+  [436,98,116,{wall:PAL.sage,aw:['#a9c4dc','#f4f0e4'],balc:1,tile:1,shelf:['#8fb8e0','#e0a099','#9ccaa6'],sign:SN('TIỆM THÚ CƯỠI','#bcd6e6','#3f607a','#5fd8ff',''),shut:'#e8c6b0'}],
+  [534,78,106,{wall:PAL.lemon,aw:['#b9d6bf','#f6f2e2'],laundry:1,sign:SN('SHOP MINISET','#ffd9e6','#b04a72','#ff9ad0','★ THỜI TRANG CHO BÉ BỎNG ★'),shelf:['#f4f0e4','#b9d6bf']}],
+  [612,98,116,{wall:PAL.peach,aw:['#d9c4e6','#f8f0ea'],balc:1,tile:1,shelf:['#e8c06a','#e0a099','#c9b0dc'],sign:SN('TIỆM THÚ CƯNG','#e3d0ee','#6a4a86','#c79bff',''),shut:'#c9dbe8'}],
+  [710,80,118,{wall:PAL.mauve,aw:['#a9c9d6','#f4f0e4'],tank:1,door:'shutter',sign:SN('CẮT TÓC','#d6e8ee','#4a6f80','#6ee7ff','')}],
+  [790,84,106,{wall:PAL.sky,aw:['#e2b89a','#f8efe2'],balc:1,laundry:1,shelf:['#c99a6a','#f2e0b8'],sign:SN('CÀ PHÊ SÁNG','#e8cfb4','#7a5236','#ffb066','')}],
+  [874,86,118,{wall:PAL.cream,aw:['#e8d28a','#f8f2dc'],tank:1,shelf:['#e8c85a','#f6e08a'],sign:SN('TIỆM VÀNG','#f0dc96','#8a6a1c','#ffe14d',''),shut:'#d6c9a0'}]];
  SIGNS.length=0;
  for(const[x,w,h,o]of H){put(mkHouse(w,h,o),x+w/2,156,[x,0,x+w,158]);const g=o.sign;SIGNS.push({x0:x+4,w:w-8,Y:87,t:g.t,m:g.m,col:g.n,ph:x*.37,lights:1})}
  // NGÂN HÀNG (thay quán Phở bò cũ)
