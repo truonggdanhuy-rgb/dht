@@ -2,7 +2,7 @@
    XE HỀ XIẾC — đỗ ở vỉa hè dưới, cạnh ngõ vào PHỐ XÁ
    • Xe pixel-art: mái lều xiếc, loa phát thanh trên nóc, chú hề lái xe, bóng bay, đèn nhấp nháy
    • Cứ vài giây xe "phát loa": rung loa, sóng âm, nốt nhạc, confetti, bong bóng thoại + âm thanh (nhạc xiếc, còi hề)
-   • Bấm vào xe → các nút: 🎡 Vòng quay may mắn • 🎁 Blind Box Kim Cương • 🎈 Xé túi Hề • 🤡 Tiệm Chú Hề (sắp ra mắt)
+   • Bấm vào xe → các nút: 🎡 Vòng quay may mắn • 🎁 Blind Box Kim Cương • 🎈 Xé túi Hề • 🤡 Tiệm Chú Hề (bán Mascot Hề Quái Đản)
    • Gắn vào pho-map.js qua: circusBuild({dyn,hit,blk}) và circusUI()
    ============================================================ */
 (()=>{
@@ -76,7 +76,7 @@ function mkVan(){return mk(VW,VH,(g,r)=>{
 });}
 
 /* ---------------- DỮ LIỆU PHÁT LOA ---------------- */
-const LINES=['Alo alo! Mời bà con quay Vòng quay may mắn nè! 🎡','Chú Hề đây! Quay trúng kim cương luôn nha! 💎','Tiệm Chú Hề sắp khai trương, đón chờ nha! 🎪','Hề hề hề! Ai quay là trúng! 🤡','Pa-pa-pa! Xiếc đến rồi, vui quá vui! 🎉','Có vé là quay miễn phí nhé bà con ơi! 🎟️','Blind Box Kim Cương đây! Khui hộp là có quà nha! 🎁','Muốn nhiều xu thì cứ việc xé túi Hề! 🎈','Túi Hề VIP đây, xé là trúng 1000 xu nha! 🤡'];
+const LINES=['Alo alo! Mời bà con quay Vòng quay may mắn nè! 🎡','Chú Hề đây! Quay trúng kim cương luôn nha! 💎','Tiệm Chú Hề mở cửa rồi! Ghé xem Hề Quái Đản nha! 🎪','Hề hề hề! Ai quay là trúng! 🤡','Pa-pa-pa! Xiếc đến rồi, vui quá vui! 🎉','Có vé là quay miễn phí nhé bà con ơi! 🎟️','Blind Box Kim Cương đây! Khui hộp là có quà nha! 🎁','Muốn nhiều xu thì cứ việc xé túi Hề! 🎈','Túi Hề VIP đây, xé là trúng 1000 xu nha! 🤡'];
 const B={t0:-99,dur:3.6,line:'',next:4,kind:0,conf:[],notes:[]};
 let LASTT=0;
 
@@ -180,14 +180,51 @@ window.circusUI=()=>{
   '<button class="b" onclick="circusGo(\'wheel\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #8c1c13;background:linear-gradient(135deg,#ff5a5f 0%,#ff8c1a 50%,#ffd23f 100%);text-shadow:0 2px 0 #8c1c13">🎡 Vòng quay may mắn<br><small style="font-weight:700">Quay trúng Xu & 💎 Kim cương</small></button>'+
   '<button class="b" onclick="circusGo(\'blind\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #0b4f8a;background:linear-gradient(135deg,#22d3ee 0%,#3a86ff 55%,#7c5cff 100%);text-shadow:0 2px 0 #0b4f8a">🎁 Blind Box Kim Cương<br><small style="font-weight:700">20 Xu / hộp • tối đa 30 hộp/ngày • trúng tới 💎 10</small></button>'+
   '<button class=\"b\" onclick=\"circusGo(\'tui\')\" style=\"display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #8c1c13;background:linear-gradient(135deg,#ff4d6d 0%,#ff8c1a 55%,#ffd23f 100%);text-shadow:0 2px 0 #8c1c13\">🎈 Xé túi Hề<br><small style=\"font-weight:700\">20 Xu / túi • mỗi lần 1 túi • trúng tới 🪙 1000</small></button>'+
-  '<button class="b" onclick="circusGo(\'shop\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #4a1d82;background:linear-gradient(135deg,#9b5de5 0%,#3a86ff 55%,#1fb5a6 100%);text-shadow:0 2px 0 #4a1d82">🤡 Tiệm Chú Hề<br><small style="font-weight:700">🔒 Sắp ra mắt — Coming soon</small></button>'+
+  '<button class="b" onclick="circusGo(\'shop\')" style="display:block;width:100%;margin:6px 0;padding:14px 10px;font-size:16px;font-weight:800;color:#fff;border-radius:14px;border:3px solid #4a1d82;background:linear-gradient(135deg,#9b5de5 0%,#3a86ff 55%,#1fb5a6 100%);text-shadow:0 2px 0 #4a1d82">🤡 Tiệm Chú Hề<br><small style="font-weight:700">Mascot Hề Quái Đản</small></button>'+
   '<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#1fb5a6 0 14px,#fff 14px 28px);margin:8px 0 2px"></div>');
 };
+/* ============================================================
+   TIỆM CHÚ HỀ — bán Mascot Hề Quái Đản (set 'clown', hình vẽ: clown.js)
+   Giá (KHÔNG hiện chữ trên giao diện, người chơi tự biết): 1500 Xu + 500 Xu quái vật + 5 💎 — phải ĐỦ CẢ 3 mới mua được; thiếu gì báo thiếu đó.
+   Muốn đổi giá: sửa CL_PRICE bên dưới.
+   ============================================================ */
+const CL_PRICE={xu:1500,qv:500,dia:5};
+const clIdx=()=>SETS.findIndex(x=>x.k=='clown');
+let CLRAF=0;
+function clPrev(c,t){const g=c.getContext('2d'),i=clIdx();if(i<0)return;g.clearRect(0,0,c.width,c.height);g.imageSmoothingEnabled=false;
+ const K=3,A=ST.av||{};g.save();g.scale(K,K);const W=c.width/K,H=c.height/K;
+ drawAv(g,Math.round(W/2)-10,H-33,{d:[0,3,1,2][Math.floor(t/1.8)%4],a:t,mv:0,sit:0,hair:A.h|0,set:i,e:A.e|0,acc:-1});g.restore()}
+function clAnim(){const c=$('clc');if(!c||!UI){CLRAF=0;return}clPrev(c,performance.now()/1000);CLRAF=requestAnimationFrame(clAnim)}
+window.clownShopUI=()=>{const i=clIdx(),own=i>=0&&ST.own&&ST.own.s&&ST.own.s.includes(i);
+ openUI(head('🤡 Tiệm Chú Hề')+
+  '<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#3b32d6 0 14px,#fff 14px 28px);margin:2px 0 8px"></div>'+
+  '<div style="text-align:center;font-weight:800;color:#4a1d82;font-size:14px;margin-bottom:6px">“Hề hề! Bộ đồ này chỉ có ở tiệm của Chú Hề thôi nha!” 🎪</div>'+
+  '<div style="border-radius:14px;padding:8px;background:linear-gradient(180deg,#efe6ff,#ffe3f3);border:3px solid #4a1d82;text-align:center">'+
+  '<canvas id="clc" width="150" height="231" style="width:150px;height:231px;image-rendering:pixelated;border-radius:10px;background:linear-gradient(#cdbdf5,#efe6ff 70%,#d9c8f0 70%)"></canvas>'+
+  '<div style="font-weight:900;font-size:17px;color:#3b32d6;margin:4px 0 2px">🤡 Mascot Hề Quái Đản</div>'+
+  '<div class="mut" style="margin-bottom:6px">Nón hề cao 2 màu • Không che mặt</div>'+
+  (own?'<button class="b w z" disabled style="font-weight:800">✓ Đã có — mở 🎒 Túi › Set để mặc</button>'
+       :'<button class="b w" onclick="clownBuy()" style="font-weight:800;color:#fff;border:3px solid #4a1d82;border-radius:12px;background:linear-gradient(135deg,#9b5de5,#3a86ff);text-shadow:0 1px 0 #4a1d82">🛒 Mua</button>')+
+  '</div>'+
+  '<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#1fb5a6 0 14px,#fff 14px 28px);margin:8px 0 4px"></div>'+
+  '<button class="b" onclick="circusUI()" style="display:block;width:100%;margin-top:4px">← Quay lại Xe Hề</button>');
+ if(!CLRAF)CLRAF=requestAnimationFrame(clAnim)};
+window.clownBuy=()=>{const i=clIdx();if(i<0)return;ST.own=ST.own||{};ST.own.s=ST.own.s||[];
+ if(ST.own.s.includes(i))return toast('✓ Bạn đã có Hề Quái Đản rồi, mở 🎒 Túi để mặc');
+ const miss=[];
+ if((ST.xu|0)<CL_PRICE.xu)miss.push('🪙 Xu');
+ if((ST.qv|0)<CL_PRICE.qv)miss.push('Xu quái vật');
+ if((ST.dia|0)<CL_PRICE.dia)miss.push('💎 Kim cương');
+ if(miss.length)return toast('🤡 Chú Hề: “Bạn còn thiếu: '+miss.join(', ')+'”');
+ ST.xu-=CL_PRICE.xu;ST.qv=(ST.qv|0)-CL_PRICE.qv;ST.dia=(ST.dia|0)-CL_PRICE.dia;ST.own.s.push(i);
+ try{xuUp()}catch(e){}save();
+ toast('🎉 Chú Hề: “Hề hề! Chúc mừng bạn nhận được Hề Quái Đản!”\nMở 🎒 Túi → Set để mặc');clownShopUI()};
+
 window.circusGo=w=>{
  if(w=='wheel')return wheelUI();
  if(w=='blind')return lbxUI();
  if(w=='tui')return tuUI();
- toast('🤡 Tiệm Chú Hề — Sắp ra mắt! Chú Hề đang bày đồ chơi bất ngờ, đón chờ nhé 🎪');
+ clownShopUI();
 };
 
 /* ============================================================
