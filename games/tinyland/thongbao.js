@@ -26,9 +26,9 @@ let LIST=null,ISADM=null,DET={},DRAFT={t:'',b:'',img:'',note:''},BUSY=0,LASTTOAS
 (function(){const st=document.createElement('style');
  st.textContent='#htb{position:relative}#htb.nw::after{content:"";position:absolute;top:-4px;right:-4px;width:12px;height:12px;border-radius:50%;background:#ff3b3b;border:2px solid #fff;box-shadow:0 0 0 2px #ff3b3b66;animation:tbpulse 1.2s infinite}'+
  '@keyframes tbpulse{50%{transform:scale(1.25)}}'+
- '.tbi{display:flex;gap:8px;align-items:center;width:100%;text-align:left;font:inherit;color:#3d5a80;background:rgba(255,255,255,.75);border:2px solid #c3daf2;border-radius:12px;padding:8px;margin:5px 0;cursor:pointer}.tbi:active{transform:translateY(1px)}'+
+ '.tbi{position:relative;display:block;width:100%;padding:0;margin:8px 0;border:0;background:none;cursor:pointer}.tbi:active{transform:translateY(1px)}'+
  '.tbi .ic{font-size:26px;width:40px;height:40px;border-radius:50%;background:#dff0ff;border:2px solid #b5d2f0;display:flex;align-items:center;justify-content:center;flex:none}'+
- '.tbi b{display:block;font-size:14px}.tbi small{color:#6a86ad;font-size:11px}.tbi .nw{background:#ff3b3b;color:#fff;border-radius:8px;font-size:10px;font-weight:800;padding:1px 6px;margin-left:6px}'+
+ '.tbi b{display:block;font-size:14px}.tbi small{color:#6a86ad;font-size:11px}.tbi .nw{position:absolute;top:8px;right:8px;background:#ff3b3b;color:#fff;border-radius:8px;font-size:11px;font-weight:800;padding:2px 8px;box-shadow:0 1px 4px #0004}'+
  '.tbimg{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:2px solid #9fc4e8;display:block;background:#dfeaf7}'+
  '.tbfm label{display:block;font-weight:800;font-size:12px;margin:8px 0 3px}.tbfm input[type=text],.tbfm textarea{width:100%;box-sizing:border-box;font:inherit;font-size:14px;border:2px solid #9fc4e8;border-radius:8px;padding:6px 8px;background:#fff;color:#2c3e5c}'+
  '.tbfm textarea{min-height:90px;resize:vertical}.tbbtn{display:block;width:100%;margin:6px 0}';
@@ -37,10 +37,10 @@ const badge=on=>{const b=document.getElementById('htb');if(b)b.classList.toggle(
 
 /* ---------- tải dữ liệu ---------- */
 async function loadList(){
- try{LIST=await GET('announcements?select=id,title,author,created_at&order=id.desc&limit=10')}catch(e){LIST=[]}
+ try{LIST=await GET('announcements?select=id,img,created_at&order=id.desc&limit=10')}catch(e){LIST=[]}
  MAXID=LIST.length?LIST[0].id:0;
  // dọn cache ảnh của bài đã bị xóa
- const ids=new Set(LIST.map(x=>x.id));for(const k in DET)if(!ids.has(+k))delete DET[k];
+ const ids=new Set(LIST.map(x=>x.id));for(const k in DET)if(!ids.has(+k))delete DET[k];LIST.forEach(x=>{DET[x.id]=x});
  return LIST}
 async function loadAdmin(){
  if(!logged()){ISADM=false;return false}
@@ -62,7 +62,7 @@ function tbaoShowList(){
  let h=head('🔔 Bảng Thông Báo');
  if(ISADM)h+='<button class="b tbbtn" onclick="tbaoNew()" style="font-weight:800;background:#d6f2dc;border-color:#6bb27a;color:#2f6a3c">✍️ Đăng bài mới</button>';
  if(!LIST.length)h+='<div class="sbnote" style="padding:26px 6px;font-size:13px">📭 Chưa có thông báo nào.<br><small>Tin mới sẽ hiện ở đây nha~</small></div>';
- else h+=LIST.map(n=>'<button class="tbi" onclick="tbaoRead('+n.id+')"><span class="ic">📢</span><span style="flex:1;min-width:0"><b>'+esc(n.title)+(n.id>seen?'<span class="nw">MỚI</span>':'')+'</b><small>'+fdate(n.created_at)+'</small></span><span style="font-size:18px">›</span></button>').join('')+
+ else h+=LIST.map(n=>'<button class="tbi" onclick="tbaoRead('+n.id+')"><img class="tbimg" src="'+esc(n.img)+'" alt="">'+(n.id>seen?'<span class="nw">MỚI</span>':'')+'</button>').join('')+
   '<div class="mut" style="font-size:11px;text-align:center;margin-top:4px">Chỉ lưu '+10+' tin mới nhất</div>';
  openUI(h+'<div class="pf"><button class="b x" onclick="closeUI()">Đóng</button></div>');$('ui').classList.add('wui');
  if(MAXID>seen){setSeen(MAXID)}badge(false)}
@@ -74,9 +74,6 @@ window.tbaoRead=async function(id){
  if(!UI)return;
  let h=head('🔔 Thông báo')+
   '<img class="tbimg" src="'+esc(n.img)+'" alt="">'+
-  '<div style="font-weight:900;font-size:17px;margin:8px 0 2px;color:#2c4a78">'+esc(n.title)+'</div>'+
-  '<div class="mut" style="font-size:11px;margin-bottom:6px">🕒 '+fdate(n.created_at)+(n.author?' • bởi '+esc(n.author):'')+'</div>'+
-  (n.body?'<div style="white-space:pre-wrap;word-break:break-word;font-size:14px;line-height:1.45;background:rgba(255,255,255,.7);border:2px solid #c3daf2;border-radius:10px;padding:8px 10px">'+esc(n.body)+'</div>':'')+
   '<div class="pf"><button class="b x" onclick="tbaoBack()">← Danh sách</button>'+(ISADM?'<button class="b" onclick="tbaoAskDel('+(+n.id)+')" style="background:#ffd9d9;border-color:#c96a6a;color:#7a2020">🗑️ Xóa bài</button>':'')+'</div>';
  openUI(h);$('ui').classList.add('wui')};
 window.tbaoBack=async function(){if(!LIST)await loadList();tbaoShowList()};
@@ -85,7 +82,7 @@ window.tbaoBack=async function(){if(!LIST)await loadList();tbaoShowList()};
 window.tbaoAskDel=function(id){
  const n=DET[id];if(!n)return;
  openUI(head('🗑️ Xóa bài')+'<div style="text-align:center;padding:10px 4px"><div style="font-size:40px">🗑️</div>'+
-  '<div style="font-size:15px;margin:8px 0">Xóa bài <b>“'+esc(n.title)+'”</b>?</div>'+
+  '<div style="font-size:15px;margin:8px 0">Xóa bài này?</div>'+
   '<div class="mut" style="font-size:12px">Bài sẽ biến mất với <b>tất cả người chơi</b> và không khôi phục được.</div></div>'+
   '<div style="display:flex;gap:6px"><button class="b x" style="flex:1" onclick="tbaoRead('+(+id)+')">Giữ lại</button><button class="b" style="flex:1;background:#ffc9c9;border-color:#c96a6a;color:#7a2020" onclick="tbaoDoDel('+(+id)+')">🗑️ Xác nhận xóa</button></div>');
  $('ui').classList.add('wui')};
@@ -115,14 +112,13 @@ function fitImage(file){return new Promise((res,rej)=>{
 window.tbaoNew=function(){
  const D=DRAFT;
  openUI(head('✍️ Đăng bài mới')+'<div class="tbfm">'+
-  '<div class="mut" style="font-size:12px">Ảnh ngang <b>'+IMG_W+' × '+IMG_H+' px</b> (16:9). Đăng xong <b>không sửa được</b>, chỉ xóa được.</div>'+
+  '<div class="mut" style="font-size:12px">Mỗi bài chỉ gồm <b>1 ảnh ngang '+IMG_W+' × '+IMG_H+' px</b> (16:9) — hãy vẽ sẵn chữ vào ảnh. Đăng xong <b>không sửa được</b>, chỉ xóa được.</div>'+
   '<label>Ảnh bài đăng *</label><input type="file" id="tbf" accept="image/*" onchange="tbaoPick(this)">'+
   '<div id="tbpv" style="margin-top:6px">'+(D.img?'<img class="tbimg" src="'+D.img+'"><div class="mut" style="font-size:11px;margin-top:2px">'+esc(D.note)+'</div>':'')+'</div>'+
-  '<label>Tiêu đề * <span class="mut">(tối đa 80 ký tự)</span></label><input type="text" id="tbt" maxlength="80" value="'+esc(D.t)+'" oninput="tbaoDraft()">'+
-  '<label>Nội dung <span class="mut">(tối đa 1500 ký tự)</span></label><textarea id="tbb" maxlength="1500" oninput="tbaoDraft()">'+esc(D.b)+'</textarea></div>'+
+  '</div>'+
   '<div class="pf"><button class="b x" onclick="tbaoBack()">← Hủy</button><button class="b" onclick="tbaoPreview()" style="font-weight:800;background:#d6f2dc;border-color:#6bb27a;color:#2f6a3c">Xem lại & đăng</button></div>');
  $('ui').classList.add('wui')};
-window.tbaoDraft=function(){const t=$('tbt'),b=$('tbb');if(t)DRAFT.t=t.value;if(b)DRAFT.b=b.value};
+window.tbaoDraft=function(){};
 window.tbaoPick=async function(inp){
  const f=inp.files&&inp.files[0];if(!f)return;
  const pv=$('tbpv');if(pv)pv.innerHTML='<span class="mut">⏳ Đang xử lý ảnh…</span>';
@@ -132,24 +128,22 @@ window.tbaoPick=async function(inp){
 window.tbaoPreview=function(){
  tbaoDraft();const D=DRAFT;
  if(!D.img)return toast('📷 Bài đăng cần có 1 tấm ảnh ngang');
- if(!D.t.trim())return toast('✏️ Hãy nhập tiêu đề');
  openUI(head('📣 Xác nhận đăng')+'<div class="mut" style="font-size:12px;margin-bottom:6px">Bài sẽ hiện với <b>tất cả người chơi</b>. Đăng xong <b>không sửa được</b> (chỉ xóa được).</div>'+
-  '<img class="tbimg" src="'+D.img+'"><div style="font-weight:900;font-size:16px;margin:8px 0 2px;color:#2c4a78">'+esc(D.t.trim())+'</div>'+
-  (D.b?'<div style="white-space:pre-wrap;word-break:break-word;font-size:13px;background:rgba(255,255,255,.7);border:2px solid #c3daf2;border-radius:10px;padding:8px 10px">'+esc(D.b)+'</div>':'')+
+  '<img class="tbimg" src="'+D.img+'">'+
   '<div class="pf"><button class="b x" onclick="tbaoNew()">← Sửa lại</button><button class="b" onclick="tbaoDoPost()" style="font-weight:800;background:#d6f2dc;border-color:#6bb27a;color:#2f6a3c">📣 Đăng bài</button></div>');
  $('ui').classList.add('wui')};
 window.tbaoDoPost=async function(){
  if(BUSY)return;BUSY=1;const D=DRAFT;
- try{await RPC('ann_post',{p_title:D.t.trim(),p_body:D.b||'',p_img:D.img});DRAFT={t:'',b:'',img:'',note:''};toast('📣 Đã đăng bài lên Bảng Thông Báo!')}
+ try{await RPC('ann_post',{p_title:'Thông báo',p_body:'',p_img:D.img});DRAFT={t:'',b:'',img:'',note:''};toast('📣 Đã đăng bài lên Bảng Thông Báo!')}
  catch(e){BUSY=0;const m=String(e&&e.message||e);toast(/not_admin/.test(m)?'⛔ Tài khoản này không có quyền đăng bài':'❌ Chưa đăng được: '+m.slice(0,80));return tbaoPreview()}
  BUSY=0;DET={};await loadList();setSeen(MAXID);badge(false);tbaoShowList()};
 
 /* ---------- 5) TỰ ĐỘNG BÁO BÀI MỚI cho người đang online ---------- */
 async function poll(){
  if(!can()||document.hidden)return;
- try{const r=await GET('announcements?select=id,title&order=id.desc&limit=1');
+ try{const r=await GET('announcements?select=id&order=id.desc&limit=1');
   if(!r.length)return;const L=r[0];MAXID=Math.max(MAXID,L.id);
-  if(L.id>getSeen()){badge(true);if(LASTTOAST!=L.id){LASTTOAST=L.id;try{toast('🔔 Thông báo mới: '+L.title)}catch(e){}}}
+  if(L.id>getSeen()){badge(true);if(LASTTOAST!=L.id){LASTTOAST=L.id;try{toast('🔔 Có thông báo mới!')}catch(e){}}}
   else badge(false);
   // bảng đang mở ở màn danh sách → làm mới luôn
   if(UI&&LIST&&$('ui').classList.contains('wui')&&document.querySelector('#ui .tbi')&&(!LIST.length||LIST[0].id!==L.id)){await loadList();tbaoShowList()}
