@@ -4,7 +4,7 @@
    • Ai là admin: tên đăng nhập nằm trong bảng dht_admins (mặc định huyhuy003333). Quyền kiểm tra ở SERVER.
    • Mỗi bài = 1 ảnh ngang (CHUẨN 1280 × 720 px, tỉ lệ 16:9) + tiêu đề (≤80 ký tự) + nội dung (≤1500 ký tự).
        Ảnh khác tỉ lệ sẽ được tự cắt giữa cho vừa 16:9, rồi nén JPG. Đăng xong KHÔNG sửa được, chỉ XÓA được.
-   • Chỉ giữ 20 bài mới nhất (bài thứ 21 đăng lên thì bài cũ nhất tự mất — server tự làm, xem hướng dẫn sửa ann_post từ 10 → 20).
+   • Chỉ giữ 10 bài mới nhất (bài thứ 11 đăng lên thì bài cũ nhất tự mất — server tự làm).
    • Danh sách xếp 2 ảnh / hàng. Bấm 1 ảnh → hiện ảnh TO toàn màn hình (bấm ảnh để phóng to thêm, bấm nền / ✕ để đóng).
    • Người chơi đang online: cứ ~60 giây game tự kiểm tra; có bài mới → nút 🔔 T.Báo hiện chấm đỏ + báo "🔔 Thông báo mới".
    • Người chơi: bấm 🔔 → thấy danh sách → bấm 1 bài để đọc. Admin thấy thêm nút ✍️ Đăng bài mới và 🗑️ Xóa bài.
@@ -39,7 +39,7 @@ const badge=on=>{const b=document.getElementById('htb');if(b)b.classList.toggle(
 
 /* ---------- tải dữ liệu ---------- */
 async function loadList(){
- try{LIST=await GET('announcements?select=id,img,created_at&order=id.desc&limit=20')}catch(e){LIST=[]}
+ try{LIST=await GET('announcements?select=id,img,created_at&order=id.desc&limit=10')}catch(e){LIST=[]}
  MAXID=LIST.length?LIST[0].id:0;
  // dọn cache ảnh của bài đã bị xóa
  const ids=new Set(LIST.map(x=>x.id));for(const k in DET)if(!ids.has(+k))delete DET[k];LIST.forEach(x=>{DET[x.id]=x});
