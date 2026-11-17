@@ -79,6 +79,18 @@ HAIRFX.bbstar=(u,o,K)=>{const{side,Rt,back,HS}=K,HC=HS.c,fe=HS.f,hl=shade(HC,.3)
   if(fe){u(HC,Rt?5:12,8,3,14);u(hd,Rt?5:14,10,1,11);u(hl,Rt?7:12,10,1,9)}else{u(HC,Rt?5:12,8,3,4);u(hd,Rt?5:14,11,1,1)}
   u(G,x0,5,9,2);u(Gl,x0,5,9,1);u(Gd,x0,6,9,1);u(GEM,Rt?11:7,5,2,2);
   star(Rt?5:11,2);star(Rt?9:7,0)}};
+/* ---------------- 🐮🐷🦊 MINISET THÚ BÔNG (hình pixel sẵn) ----------------
+   Các set có spr:'tên' sẽ vẽ thẳng hình pixel bên dưới (PNG nhúng sẵn dạng base64, không cần file ảnh ngoài).
+   Hình chỉ có 1 góc nhìn (nhìn thẳng): quay trái/phải thì lật ngang, đi bộ thì nhún nhẹ. Không có g => bé trai & bé gái đều mua/mặc được.
+   Muốn thêm thú mới: thêm 1 dòng vào SPR (tên: 'data:image/png;base64,...') + 1 dòng trong MINISETS có spr:'tên'. */
+const SPR={
+ trau:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAZCAYAAADAHFVeAAAEFUlEQVR42rWWT0gcZxjGfzM67syoEVnicQkiWIuUsnTZSOluLkrQYtQc0iDYBnPZHrKFog3uul1FCypCzaF7iYdaQhOESIqRXhXKVoTSgxgCJRSPLYvorp3RiTM97M64s38Se+gLw377/Xmfed/3ed5vhMf3LcaWuqyFaFrgf7RkKmTVAtTXSSRTISsRWSsDnE4NWgAqOf6h4a1OReWE+GcbAoCIF5MMXy19bNXXSdSaZADY2fyG4PVey9Q8rsMDfrUwUmmugYMzCHRmMQgisV0GZvAh86luy34xUTlhL71IIDxBbfHG7Z8Xyw4Hr3/JrSsKmiKj53QCAQOgIpA9HxtRiK3kA3BFLeIlGdkSAuGJiodlzUBTZBRN59mLo7emcXZFwyDI8anhzAXCEyQjW4ITWSKyJgTC+foU251ACwdnoCkycFRIVZB2Xy9t3XIZ2BcPx5DY5tu7IuHwPXRFIhHZEEwyiMUbE5E14fjUYMCvcrtDZMCvoud0FC3/9PhbaPVN0e7rZXRm3AUSDt8DYC+94Mz9feoheygi4i08dj7xMp0atIavNqFoOv034yia7nL46NdDB2Q5Pu9a29x84AIFuFx3wsLdLpKpkGWScRNEJUdzjUrPzTjDizH6O5odwCd/avw0PQvgAOqLErJ2XhtdkXgUn2d0ZpzYiFJEpBpEvG6w8chvQjIVsr7fjfFpZzN6TnfIYUuirVtmmXle7m8A0O7r5eX+Bu2+XmedmXPw2EoNychWQXclloisCabmcUihaHlAlZyTprZumb7RIfpGh5wxQH9iskhvQbKHYt5fQcvim2hcWjOgahdp65ZpbDKdiCS2qa+THHIA7jRexOwIS8mwufnAVb9KdiEwO8KX+xuMj1wrY6BT85FrPF9+WtWP8Pj+uY7tpjl8tYlAZxaA3R0p30kaZJ7s/OU6rCuSq9PYZjNxcvU1puZxCFJbDGTfAMW1evbiiBsdl9BzOjc6LtEZMP5zkvLdo4KoB/yqy6H99poiu+ZbfVO0+qYwCDrjivfYyAfONSWWRlYc1eTqa25dUaoy09ZZNbNTKyon+V+TDMlUyClcvuGW16HUXu1//cb/rjRqHkwyCO80fWT9GE/Qn5hkLrou2LeqSo4ef4sTkdwg09aRLXPU6puqCGQQZHr1F7KHInPR9fIOIuJ1FoqBAPSc7jDzIhH9vruHqXlYiKYFW9i1iciacHsm3+3Hlrqs+jqpkGO1opOd3caq9XNpE72yzkwyTKcGrTsBlYOz8+vEvm4Ah4mzK1pZyzo+Nbhcd+KSRnEDrihqmyjHpwYL0bSQTIWsAb/K+53v5r8tKjgobQQGQcYeppmLrgt2TywDe/r8u4rpSP/xg9XYZGJqHt7zfVL127LavqG+z509/wL/57y+ru2PRwAAAABJRU5ErkJggg==',
+ heo:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAYCAYAAAARfGZ1AAADBklEQVR42o1Wz08aQRT+ZoEGolxMOXmBg6QHa+2haRWJCUFt1tCGpF5M2kOPtdGDDW4QT1YC/jpY2j/Ag0kjiYlE0yohsf6oaQ+leLM2cNd40QZaYKcHu+MMu1jfZWH2vW/efO97b5YklRIAIJKQqV2q4Ew1AwBev1wnuKbxsXycWXt5oMwLAbdj4mYlUgUAWKlJ8LNLFaTCc3CqFhSkMgJRmWobmLXAglSGU7WwoANlHgWpDEdTCcenVrh8bl3Gqu1iI49Xxl5oQYgHAAkAZoc+kkB0jC12Tg8DAJyqBT2hcbh8bgbEA0vFKjxeGbvb62iJjwgnZJlrHGtU7IUWDIEAIB1bZOt+5dlFhsUqjjZX0dEbwOzQBhEy5/mrBV5S5lA5yTLgicwyAGAis4x0bBGfN1LsVFp9dOCRhExrgQFgMDaKPz8o+z/pGxCeAODu6odqMyG3u4pIQqY6WoysJT6C7MwUekLjOKYEDkJ1PhOZZWRnpuDu6sfhzprw7kpwB6E4PrViSZljqvn5ZV/wefCwHTdajFuiLnhBKgvUbK1E0YzfaL5/V/DrDoaxtRLV6V9XUN54zR7T6zWrVKwaS7EuNU0lgevuYJj93lqJXhn7X/D9D1lBGbWAk74BfHrzzTCWJJUSIgmZpsJx1uI0nWe8D8ZGhQAjihyEYnd7HVKxilZ/kDWl2YjjzulhNiv2QgsgfpeuU3XGrWu8m7Wsic+lmx+/bp6hsb3t8pipI+SlMlw+N86zOQAQ3mvxhztrcHf1UXNttTt6A2wENJzYDVVE03k0wG6oFu1ppSZRirWZ6wrkdwn61+iqF0+SSgmv3vZRrTC186UWAADOszmBDt74grJ5bgTMK4c3I2DVZkI+cwi7VIFwE0USMi2R+l1otIGOsn/9zo9dcqvRR1PhOJyqhUmQp0S1meDxyoK+HYSyKbk5PcVO0tEbwNiLy8uCNRGfxYEyz7hu9QcNvwS0S11LoM3zSOdHnnre6Y64nXtPtSl3786Tunx9/Z5kSfF+j73PAQB/AZS3V3ZbMhd8AAAAAElFTkSuQmCC',
+ cao:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAaCAYAAACkVDyJAAAD70lEQVR42pWWXUhbZxjHf+9JaERSN9LIxIJfKRsMJ6OyRSoGE92ltLuRebFeVCJlN6OMbi6V7qKpdheb7KYMD91FYVh6sQ9kjDGXDNkGQpFSRejANfFChGbSSdBE0vPu4uQ9OTk5ydwD4XzkOc///f+fj/cV96Ylje0AaAYOuH13QgK8d3FRqHfmteI7o0clwEz8F9GEvyaaxrHMDNQfjtAfjjCjR2WBvKvPWGScscg4SX1Emgv6X4DmByrQ5DkPk+c8VsACRtmnAgZYPkoRu3kbAzZTy6S80rwgqY/Idl8bO8VdAJZW7pcBJwDK7w+q4nmPI6iWFwB0eVYBuDEEN989aVOhxfHFD1wPDbK0UgFykfTA9jOtQJ7Z+VG5NtfNjaEHeLUtAGKz6YYLHJ5ax8fvPNJbavKt2XNVWY0J3ISG4ZcWkN2KDHJca7LxsiS9fXdC7hR30fKCxJVlYTr60fKCktFjgXq1LVKJKCfe+tAK8mpX1LrfzKT57QmUfj7vnh4Ftvx4kc1Mmo1citn5UbOX9LBcm+uuYlgyQjWSbmbSVVclK2DJqlT0mo38vegNDsiNXAqAjVyK3mBMOvtWgX310TS9wRiGX1oFhd9kGhBZ9mQn301P0xdf5JHeUtsWBfK0nXqp6g/DL2vA7Ey/Sb7TMG8dA4cERBZ4zb3xC0erHOmTABzpk1XyqNyVjJD1fOnTW3QMHHI69IyOgUPrdzr0jAu3Fl17ugx4QFIfkamEmXjjzrAFaq7Q3fZkJwCeVl/Ve+ezc2p5zfFUYWG/NrKAyPL8aRFPq4/Rt79gT3YSEFl+WrjccKHepD4iH17rqalE07ZrZAW488dzBoeu4mk9AmD52/er/AaHrvLJ5+6A4sypN2sAASLJbVKJKFpXzpQ6E7Ty+PrNv9Dyoqaw7KPwxZMZfl0wC6Yvvk+7r41LF78WrrPUZLiNV9vC4AVrnKk8OwuqnqnmD4gsu38L991C9VoqEcXoyP1n0D+/XADg5ctTVfdOe7B8nrMXRmTd/dAu8fDUOqlEtGExKbC68Z6mGm/A9p5rZE42buzsw15LxtPi7MdPKBkha5qkElFis2n64vvHYqdA6oE1nQjzRvxHkvG00Oybo6pCBRoQWatQ7D5qODRipgrGyATZKe6SjKeFteMnriyL2OwZa9o45XSyKxkhKI/B+jXwjwlIsGq0iXvTkgJ5mtCY0aPSyUpVrGKv+nJ4ap092Yn9TKMmjL1/++L75SOjBjSbgG6nNOeKH17rqROkckq4Ph+Ta3PdaF05igxaeStgoM6ownkQXn38matESyv3JUC7r43+cETUk1L5AYxFxi2/8CsfAPAv3y3BiK5JwX8AAAAASUVORK5CYII='};
+const SPI={};
+function sprImg(k){let im=SPI[k];if(!im&&SPR[k]){im=SPI[k]=new Image();im.onload=()=>{Object.keys(SPC).forEach(x=>delete SPC[x]);try{if(UI&&$('ui').classList.contains('bbui')){paintFashion();paintShop()}}catch(e){}};im.src=SPR[k]}return im&&im.complete&&im.naturalWidth?im:null}
+Object.keys(SPR).forEach(sprImg);   // nạp trước cho kịp lúc mở shop
+const BBSPR={w:64,h:64};            // khung vẽ của set thú bông (px), vẽ gấp đôi hình gốc
 const MINISETS=[
  {id:'warm',n:'Miniset Ấm áp',
   set:{n:'Miniset Ấm áp',sh:'#fbfbfd',shl:'#ffffff',shd:'#d5d9e6',scarf:'#fbfbfd',knot:'#e3e6ee',belt:'#e3e6ee',pt:'#1c1c22',rpt:'#1c1c22',shoe:'#f4f4f6'},
@@ -88,7 +100,11 @@ const MINISETS=[
  {id:'winf',n:'Miniset Mùa đông',g:'f',xu:250,shop:1,set:XMAS,hf:{n:'Mũ Noel',k:'bbxm',c:'#201a24',f:1,sc:'#ff7ab8'}},
  /* ---- Miniset Ngôi sao (Mi nhon): vương miện ngôi sao, trang phục cute — 1500 Xu / set. Bé gái tóc hồng. ---- */
  {id:'starm',n:'Miniset Ngôi sao',g:'m',xu:1500,shop:1,set:{n:'Miniset Ngôi sao',sh:'#ffe27a',shl:'#fff0a8',shd:'#e0b94a',scarf:'#ffffff',knot:'#7ec8f2',belt:'#7ec8f2',trim:'#ffffff',tail:1,pt:'#7ec8f2',rpt:'#7ec8f2',shoe:'#ffffff'},hm:{n:'Vương miện sao',k:'bbstar',c:'#6a4426',f:0}},
- {id:'starf',n:'Miniset Ngôi sao',g:'f',xu:1500,shop:1,set:{n:'Miniset Ngôi sao',sh:'#ffb6d3',shl:'#ffd3e5',shd:'#e88fb4',scarf:'#ffffff',knot:'#ffe27a',bow:1,belt:'#ffffff',skirt:'#ff94bf',pt:'#f1c08a',rpt:'#ff94bf',shoe:'#ffffff'},hf:{n:'Vương miện sao',k:'bbstar',c:'#ff9cc8',f:1}}
+ {id:'starf',n:'Miniset Ngôi sao',g:'f',xu:1500,shop:1,set:{n:'Miniset Ngôi sao',sh:'#ffb6d3',shl:'#ffd3e5',shd:'#e88fb4',scarf:'#ffffff',knot:'#ffe27a',bow:1,belt:'#ffffff',skirt:'#ff94bf',pt:'#f1c08a',rpt:'#ff94bf',shoe:'#ffffff'},hf:{n:'Vương miện sao',k:'bbstar',c:'#ff9cc8',f:1}},
+ /* ---- 🐮🐷🦊 Miniset thú bông (hình pixel): Trâu bé / Heo bé / Cáo bé — 2000 Xu / set, bé trai & bé gái đều mặc được ---- */
+ {id:'trau',n:'Miniset Trâu bé',xu:2000,shop:1,spr:'trau',set:{n:'Miniset Trâu bé',sh:'#a86838',shl:'#a86838',shd:'#a86838',pt:'#1c1c22',rpt:'#1c1c22',shoe:'#f4f4f6'},hm:{n:'Tóc ngắn',k:'short',c:'#2b1d12'},hf:{n:'Tóc dài',k:'longf',c:'#201a24'}},
+ {id:'heo',n:'Miniset Heo bé',xu:2000,shop:1,spr:'heo',set:{n:'Miniset Heo bé',sh:'#f880c8',shl:'#f880c8',shd:'#f880c8',pt:'#1c1c22',rpt:'#1c1c22',shoe:'#f4f4f6'},hm:{n:'Tóc ngắn',k:'short',c:'#2b1d12'},hf:{n:'Tóc dài',k:'longf',c:'#201a24'}},
+ {id:'cao',n:'Miniset Cáo bé',xu:2000,shop:1,spr:'cao',set:{n:'Miniset Cáo bé',sh:'#f88838',shl:'#f88838',shd:'#f88838',pt:'#1c1c22',rpt:'#1c1c22',shoe:'#f4f4f6'},hm:{n:'Tóc ngắn',k:'short',c:'#2b1d12'},hf:{n:'Tóc dài',k:'longf',c:'#201a24'}}
 ];
 const msGet=id=>MINISETS.find(x=>x.id==id)||MINISETS[0];
 
@@ -116,20 +132,25 @@ function statusTxt(b){const m=mood(b);
 /* ---------------- VẼ NHÂN VẬT BÉ (dùng lại drawAv của nhân vật chính) ---------------- */
 function avObj(b,d,mv,a){const m=msGet(b.set);return{d,a:a||0,mv:mv?1:0,sit:0,e:0,acc:-1,setObj:m.set,hairObj:(m.g||b.g)=='f'?m.hf:m.hm}}
 const SPC={};
-function sprite(b,d,mv,f){const key=b.set+b.g+'_'+d+(mv?'w'+f:'i')+(msGet(b.set).hm&&msGet(b.set).hm.k=='bbxm'||msGet(b.set).hf&&msGet(b.set).hf.k=='bbxm'?'t'+Math.floor(performance.now()/300)%3:'');let c=SPC[key];if(c)return c;
+function sprite(b,d,mv,f){const ms=msGet(b.set);
+ if(ms.spr){const key='S'+ms.id+'_'+(d==3?1:0)+(mv?'w'+(f&1):'i');if(SPC[key])return SPC[key];
+  const im=sprImg(ms.spr),c=document.createElement('canvas');c.width=BBSPR.w;c.height=BBSPR.h;if(!im)return c;   // chưa nạp xong: trả khung trống, KHÔNG lưu cache
+  const g=c.getContext('2d');g.imageSmoothingEnabled=false;const w=im.naturalWidth*2,h=im.naturalHeight*2,x=Math.round((BBSPR.w-w)/2),y=BBSPR.h-h-(mv&&(f&1)?4:0)-2;
+  if(d==3){g.translate(BBSPR.w,0);g.scale(-1,1)}g.drawImage(im,x,y,w,h);return SPC[key]=c}
+ const key=b.set+b.g+'_'+d+(mv?'w'+f:'i')+(msGet(b.set).hm&&msGet(b.set).hm.k=='bbxm'||msGet(b.set).hf&&msGet(b.set).hf.k=='bbxm'?'t'+Math.floor(performance.now()/300)%3:'');let c=SPC[key];if(c)return c;
  c=document.createElement('canvas');c.width=48;c.height=72;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.scale(2,2);
  try{drawAv(g,2,2,avObj(b,d,mv,(f+.5)/9))}catch(e){}return SPC[key]=c}
 function drawFollow(){const b=B();if(!b||!b.big||!b.fl||(CVON&&CV.boat)||(HMA&&HMA.hide))return;
- const mv=PET.mv?1:0,f=mv?Math.floor(PET.a*9)%4:0,sp=sprite(b,PET.d|0,mv,f),W=24*BB_SCALE,H=36*BB_SCALE,sm=cx.imageSmoothingEnabled,
+ const mv=PET.mv?1:0,f=mv?Math.floor(PET.a*9)%4:0,sp=sprite(b,PET.d|0,mv,f),isS=!!msGet(b.set).spr,W=(isS?BBSPR.w*.35:24*BB_SCALE),H=(isS?BBSPR.h*.35:36*BB_SCALE),sm=cx.imageSmoothingEnabled,
   tt=performance.now()/1000,bn=mv?0:Math.abs(Math.sin(tt*3.4)),lift=bn*1.3,sy=mv?1:1+.035*(bn-.5);   // đứng yên: nhún nhẹ (nảy lên + co giãn)
  cx.imageSmoothingEnabled=true;try{cx.imageSmoothingQuality='high'}catch(e){}
- const hh=H*sy,fy=PET.y-32*BB_SCALE+H;                                         // chân luôn đứng đúng chỗ
- cx.drawImage(sp,Math.round(PET.x-12*BB_SCALE),Math.round((fy-lift-hh)*10)/10,W,hh);cx.imageSmoothingEnabled=sm;
+ const hh=H*sy,fy=PET.y-32*BB_SCALE+36*BB_SCALE;                                         // chân luôn đứng đúng chỗ
+ cx.drawImage(sp,Math.round(PET.x-W/2),Math.round((fy-lift-hh)*10)/10,W,hh);cx.imageSmoothingEnabled=sm;
  if(BATH&&performance.now()<BATH.until){const R=(c,x,y,w,h)=>{cx.fillStyle=c;cx.fillRect(Math.round(PET.x+x),Math.round(PET.y+y),w,h)};
   bubbleField(R,(performance.now()-BATH.t0)/1000,{cx:0,cy:2,hw:15,rise:36,k:1})}}
 function drawTag(){const b=B();if(!b||!b.big||!b.fl||(CVON&&CV.boat)||(HMA&&HMA.hide))return;
  cx.save();cx.font='400 6px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';cx.lineJoin='round';cx.lineWidth=1.4;
- const x=Math.round(PET.x),y=Math.round(PET.y-23);cx.strokeStyle='rgba(30,20,10,.55)';cx.strokeText(b.n,x,y);cx.fillStyle='#eafff1';cx.fillText(b.n,x,y);
+ const x=Math.round(PET.x),y=Math.round(PET.y-(msGet(b.set).spr?18:23));cx.strokeStyle='rgba(30,20,10,.55)';cx.strokeText(b.n,x,y);cx.fillStyle='#eafff1';cx.fillText(b.n,x,y);
  if(SAY&&SAY.w&&performance.now()<SAY.until){const t=SAY.txt,by=y-12;cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.lineWidth=1;const w=Math.min(150,cx.measureText(t).width)+10;   // bong bóng thoại
   cx.fillStyle='rgba(30,20,10,.45)';cx.fillRect(x-w/2+1,by-9,w,13);cx.fillStyle='#fffdf0';cx.fillRect(x-w/2,by-10,w,13);cx.fillRect(x-2,by+3,4,2);cx.fillStyle='#3a2412';cx.fillText(t,x,by,w-6)}
  cx.restore()}
@@ -236,6 +257,8 @@ window.bbAdopt=()=>{syncSel();const n=cleanName(SEL.n);
  save();toast('💝 Bạn đã nhận nuôi '+n+'!\nBé sẽ gọi bạn là '+(SEL.c=='chi'?'Chị':'Anh'));bbUI()};
 
 function charPaint(cv,b,d,mv,sc,lift){const g=cv.getContext('2d'),t=performance.now()/1000;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);g.imageSmoothingEnabled=false;
+ const ms=msGet(b.set);
+ if(ms.spr){const im=sprImg(ms.spr);if(im){const w=im.naturalWidth*sc,h=im.naturalHeight*sc,x=Math.round((cv.width-w)/2),y=cv.height-h-2-(lift|0)-(mv&&Math.floor(t*9)%2?sc:0);g.save();if(d==3){g.translate(cv.width,0);g.scale(-1,1)}g.drawImage(im,x,y,w,h);g.restore()}return}
  g.save();g.translate(0,-(lift|0));g.scale(sc,sc);drawAv(g,(cv.width/sc-20)/2,cv.height/sc-34,avObj(b,d,mv,t));g.restore()}
 function paintHero(){const cv=$('bbav'),b=B();if(!cv||!b)return;const mv=performance.now()<BBANI;charPaint(cv,b,[0,3,1,2][BBDIR%4],mv,3,mv?0:Math.round(Math.abs(Math.sin(performance.now()/1000*3.4))*3))}   // đứng yên: nhún nhẹ
 let HLOOP=0;function heroLoop(){const cv=$('bbav');if(!cv||!UI){HLOOP=0;return}paintHero();requestAnimationFrame(heroLoop)}
