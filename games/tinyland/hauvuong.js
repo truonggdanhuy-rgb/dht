@@ -1,14 +1,16 @@
 /* ===================================================================================
    HAUVUONG.JS — Mascot MỸ HẦU VƯƠNG (Tôn Ngộ Không) — bán ở Shop kim cương 💎15 (cùng giá set Ma đồng giáng thế / Na Tra)
-   • Tóc cam dựng đứng như lửa, có kim cô vàng uốn (băng đô + hai vòng cuộn ở thái dương + ngọc đỏ giữa trán)
-   • Tóc phủ xuống má thành tóc mai + RÂU QUAI NÓNG ôm hàm. Tai khỉ nhọn. Mắt đỏ cam, mày dựng.
-   • Có sẵn BIỂU CẢM (cười nhếch, lộ răng nanh, chớp mắt). Nếu chọn biểu cảm khác trong Túi thì mặt đổi theo (tóc mai + râu vẫn giữ).
-   • HAI SỢI DÂY dài thật dài buộc trên tóc, tung bay theo gió (đi bộ thì bay mạnh hơn), đầu dây có tua vàng.
-   • Áo giáp đỏ viền vàng, vai giáp vàng có gai cong, ngọc lục bảo ở ngực & đai, váy da hổ, giày vàng.
-   • VẠT ÁO CHOÀNG RỘNG đỏ thẫm viền vàng sau lưng (nhìn sau thấy hoa văn vòng vàng).
-   • LUỒNG VẦN VŨ vàng & xanh dương xoáy quanh người (vòng sau – vòng trước), tia sáng lấp lánh.
+   PHIÊN BẢN VẼ LẠI (v2) — đầu/tóc vẽ bằng BẢN ĐỒ PIXEL thay vì tam giác:
+   • Tóc cam là khối lửa lớn nhiều lọn, 3 tông (ngọn vàng sáng → gốc cam đậm), viền cam sẫm. Không còn "gai vương miện".
+   • Kim cô vàng: băng đô + vòng cuộn ở thái dương + ngọc đỏ giữa trán. Mắt to 3×3 cam đỏ, mày dựng, cười nhếch lộ răng nanh.
+   • Tóc mai ôm má cuộn ra ngoài. Tai khỉ nhọn lộ ra bên dưới tóc.
+   • Có sẵn BIỂU CẢM (faceFx của game vẫn khớp vì vị trí mắt/miệng giữ chuẩn). Chọn biểu cảm khác thì mặt đổi, tóc giữ.
+   • Hiệu ứng GIẢM NHẸ: 2 dải ruy băng mảnh bay sau đầu (không còn dây dài quấn quanh người), luồng vần vũ chỉ còn
+     2 dải mảnh PHÍA SAU người (vàng + xanh) và vài tia sáng nhỏ — không còn che mặt.
+   • Áo giáp đỏ viền vàng, vai giáp vàng gai cong, ngọc lục bảo ngực & đai, váy da hổ, giày vàng, áo choàng đỏ thẫm.
    Khai báo 1 món ở CUỐI mảng SETS (index.html) + thêm 'mhv' vào DSETS. File này chỉ chứa HÀM VẼ.
-   Muốn đổi giá: sửa dia:15 trong index.html.
+   Muốn đổi giá: sửa dia:15 trong index.html.  Muốn chỉnh tóc/đầu: sửa các mảng HF / HB / HS bên dưới
+   (mỗi ký tự = 1 pixel, bảng màu ở PAL). Xem nhanh bằng: window.__hvdbg={noaura:1} (tắt hiệu ứng) trong console.
    =================================================================================== */
 (function(){
 const sin=Math.sin,cos=Math.cos,abs=Math.abs,rnd=Math.round,flr=Math.floor,PI=Math.PI;
@@ -22,7 +24,110 @@ const JD='#35dc8c',JDL='#c2ffe0',JDD='#10925a';                                 
 const EYE='#ff5a1e',EYL='#ffc26a',DK='#2b0d0d',WH='#ffffff';
 const CP='#a3142b',CPL='#cf2c42',CPD='#5c0b1d';                                                  // áo choàng
 const TG='#f28b22',TGL='#ffb14e',TGD='#2f1308';                                                  // da hổ
-const RB='#ff5a28',RBL='#ffae78',RBD='#a82a0c';                                                  // dây tóc
+const RB='#ff7a2e',RBL='#ffb27a',RBD='#b8350f';                                                  // ruy băng
+
+// ký tự trong bản đồ pixel → màu ('.' = trong suốt)
+const PAL={X:HRX,D:HRD,H:HR,L:HRL,W:HRH,O:HRO,B:HRO,
+           s:SKN,S:SKL,t:SKS,u:SKX,
+           G:GD,g:GDL,d:GDD,k:GDX,
+           R:RD,r:RDL,q:RDD};
+
+// ===================================================================================
+//  BẢN ĐỒ PIXEL ĐẦU — mỗi ký tự = 1 pixel, "." = trong suốt. {x,y} = toạ độ góc trên-trái của bản đồ.
+//  Bảng ký tự: X viền tóc · D/H/L/W tóc (đậm → vừa → sáng → ngọn vàng) · s/S/t/u da · G/g/d/k vàng · R/r/q đỏ · B mày.
+//  Muốn sửa tóc: đổi ký tự trong các mảng dưới đây (giữ nguyên số cột của mỗi hàng).
+// NHÌN TRƯỚC (đầy đủ, bất đối xứng; mắt/mũi/miệng vẽ bằng code)
+const HF={x:-6,y:-8,rows:[
+ "...........XXX..................",
+ "..........XWHDX.................",
+ "..........XLWHDXXXXX............",
+ "...........XLHHDDWHDX...........",
+ ".....XXX...XLHHHDLWHDX..........",
+ "....XWHDXXXXLLHHHDHHHDX.XXX.....",
+ "....XLHHDDDDHLHHHDLHHDXXLLWX....",
+ "...XXLLHHHDDHHHHHHDHHHHLLHDX....",
+ "..XWDDLLHHHDHHHHHHDHHHHHHHDX....",
+ "..XLHDDHHHHDHHHHHDDHHDHHHDLWX...",
+ "..XLHHDHHHDHHHHHHDDDHDHHDLHHX...",
+ "...XLHHHHHDHHHHHHDDDDDHDDHHX....",
+ "....XLHHgGHHHHHgGDDDDDGgHHDX....",
+ ".....XHGHDGHHHGGGGDDDGHHGXX.....",
+ "......XGDdGgggGrRGGGGGdDG.......",
+ ".......dDddddddRqddddddXd.......",
+ "......XDHHSSBBssssBBssHDX.......",
+ "......XDSsSsssBssBssstsS........",
+ ".......sstSssssssssssttss.......",
+ "......XHLDssssssssssstLHX.......",
+ "......XHXXssssssssssstDHX.......",
+ "......XWX.ssssssssssstDWX.......",
+ ".......X...tttttttttt.XX........"
+]};
+// NHÌN SAU
+const HB={x:-6,y:-8,rows:[
+ "...........XXX..................",
+ "..........XWHDX.................",
+ "..........XLWHDXXXXX............",
+ "...........XLHHDDWHDX...........",
+ ".....XXX...XLHHHDLWHDX..........",
+ "....XWHDXXXXLLHHHDHHHDX.XXX.....",
+ "....XLHHDDDDHLHHHDLHHDXXLLWX....",
+ "...XXLLHHHDDHHHHHHDHHHHLLHDX....",
+ "..XWDDLLHHHDHHHHHHDHHHHHHHDX....",
+ "..XLHDDHHHHDHHHHHDDHHDHHHDLWX...",
+ "..XLHHDHHHDHHHHHHDDDHDHHDLHHX...",
+ "...XLHHHHHDHHHHHHDDDDDHDDHHX....",
+ "....XLHHgGHHHHHHHDDDDDGgHHDX....",
+ ".....XHGHDGHHHHHHDDDDGHHGXX.....",
+ "......XGHdGgggGGGGGGGGdDG.......",
+ ".......dXddddddGdddddddXd.......",
+ "........XHHDLHDLHDLDDHHX........",
+ "........XHDDLHDLHDLDDHHX........",
+ "........XDDDLHDLHDLHDDHX........",
+ "........XDHDHHDHHDHHDDHX........",
+ "........XDHDHDDHHDHHDDHX........",
+ "........XHHDHHDHHDHHDHHX........",
+ ".......XDHHLXXDHHHDLHHDX........",
+ ".......XDHLLXXDHHXXLLHDX........",
+ ".......XDHLX.XDHLX.XLHDX........",
+ "........XHLX.XDHLX.XLHX.........",
+ "........XHLX.XDHLX.XLHX.........",
+ "........XWLX.XDHLX.XLHX.........",
+ "........XDX...XHLX.XLWX........."
+]};
+// NHÌN NGANG quay sang PHẢI (game tự lật khi quay trái)
+const HS={x:-8,y:-9,rows:[
+ "...........XX..........",
+ "..........XWDXX........",
+ "..........XWHHDX.......",
+ "...........XLHHDXXXX...",
+ "...XXXXXXX.XLHHHDDWDX..",
+ "..XWHHHDDDXXLLHHHDLHHX.",
+ "...XLLHHHHDDDLHHHDDHHDX",
+ "....XLLLHHHHHLLHHHDHHHX",
+ ".XXXXDDLLHHHHHHHHHDDHHX",
+ "XWWHDDDDLLHHHHHHHHHDDDX",
+ ".XLLHHHHDLHHHHHHHHHDDDX",
+ "..XLLHHHHHDHHHHHHHHDDDX",
+ "...XXLLLHHHDHDHHHHHDDDX",
+ ".....XXLLHHGgDHHHHHgGX.",
+ ".......XDHGHHGHHHHHGG..",
+ ".......XDDGggdggGGGrR..",
+ "......XDHHdddddddddRq..",
+ ".....XDHHHLHHHHHHSsBBB.",
+ "....XDHHLLHHHsSHHSssst.",
+ "....XHHLLLXXHssHHsssst.",
+ "...XDLLXXX.XHutHHssssts",
+ "...XWLX....XHDHHHsssstu",
+ "....XX.....XHDHHHsssst.",
+ "............XXXXXttttt."
+]};
+function stamp(U,m){
+ m.rows.forEach((row,ri)=>{
+  for(let c=0;c<row.length;c++){
+   const ch=row[c];if(ch==='.')continue;
+   let e=c;while(e+1<row.length&&row[e+1]===ch)e++;
+   U(PAL[ch],m.x+c,m.y+ri,e-c+1,1);
+   c=e}})}
 
 // ---------- tiện ích vẽ pixel (R = hàm vẽ hình chữ nhật) ----------
 function ell(R,col,cx,cy,rx,ry){
@@ -32,69 +137,46 @@ function line(R,col,x0,y0,x1,y1){
  x0=rnd(x0);y0=rnd(y0);x1=rnd(x1);y1=rnd(y1);
  const n=Math.max(abs(x1-x0),abs(y1-y0),1);
  for(let k=0;k<=n;k++)R(col,rnd(x0+(x1-x0)*k/n),rnd(y0+(y1-y0)*k/n),1,1)}
-function poly(R,pts,col){
- let y0=1e9,y1=-1e9;for(const p of pts){if(p[1]<y0)y0=p[1];if(p[1]>y1)y1=p[1]}
- y0=flr(y0);y1=Math.ceil(y1);
- for(let y=y0;y<y1;y++){const yc=y+.5,xs=[];
-  for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];
-   if((a[1]<=yc&&b[1]>yc)||(b[1]<=yc&&a[1]>yc))xs.push(a[0]+(yc-a[1])*(b[0]-a[0])/(b[1]-a[1]))}
-  xs.sort((p,q)=>p-q);
-  for(let k=0;k+1<xs.length;k+=2){const xa=rnd(xs[k]),xb=rnd(xs[k+1]);if(xb>xa)R(col,xa,y,xb-xa,1)}}}
-// 1 gai tóc: thân cam, mép trái sáng, mép phải tối, một đường gân đậm ở giữa
-function spike(R,a,tip,b){
- poly(R,[a,tip,b],HR);
- poly(R,[[(a[0]+b[0])/2,(a[1]+b[1])/2],tip,b],HRD);
- line(R,HRL,a[0]+1,a[1]-1,tip[0],tip[1]+1);
- line(R,HRX,b[0]-1,b[1]-1,(b[0]+tip[0])/2,(b[1]+tip[1])/2);
- R(HRH,tip[0],tip[1],1,1)}
 function star(R,x,y,a,rgb,big){
  x=rnd(x);y=rnd(y);if(a<=.08)return;
  const c=al=>'rgba('+rgb+','+Math.min(1,al).toFixed(2)+')';
  if(a<.4){R(c(a+.2),x,y,1,1);return}
  R(c(a),x,y,1,1);R(c(a*.8),x-1,y,1,1);R(c(a*.8),x+1,y,1,1);R(c(a*.8),x,y-1,1,1);R(c(a*.8),x,y+1,1,1);
- if(big&&a>.75){R(c(a*.6),x-2,y,1,1);R(c(a*.6),x+2,y,1,1);R(c(a*.6),x,y-2,1,1);R(c(a*.6),x,y+2,1,1);R('rgba(255,255,255,'+a.toFixed(2)+')',x,y,1,1)}}
+ if(big&&a>.75){R('rgba(255,255,255,'+a.toFixed(2)+')',x,y,1,1)}}
 
-// ---------- DÂY TÓC DÀI (2 sợi) — fn(s,ph) trả [x,y] theo s=0..1 ----------
-function cord(R,fn,n,ph,t){
+// ---------- RUY BĂNG MẢNH (1px) — fn(s,ph) trả [x,y] theo s=0..1 ----------
+function ribbon(R,fn,n,ph,t){
  const P=[];for(let i=0;i<=n;i++)P.push(fn(i/n,ph));
- for(let i=0;i<=n;i++){const x=rnd(P[i][0]),y=rnd(P[i][1]);R(RBD,x+1,y,1,1);R(RBD,x,y+1,1,1)}
+ for(let i=0;i<=n;i++){const x=rnd(P[i][0]),y=rnd(P[i][1]);R(RBD,x,y+1,1,1)}
  for(let i=0;i<=n;i++){const x=rnd(P[i][0]),y=rnd(P[i][1]);R(RB,x,y,1,1)}
  for(let i=1;i<=n;i+=3){const x=rnd(P[i][0]),y=rnd(P[i][1]);R(RBL,x,y,1,1)}
- for(let i=7;i<n-4;i+=12){const x=rnd(P[i][0]),y=rnd(P[i][1]);R(GDD,x,y,2,2);R(GD,x,y,2,1);R(GDL,x,y,1,1)}   // hạt vàng đính dọc dây
- const e=P[n],ex=rnd(e[0]),ey=rnd(e[1]),sw=rnd(sin(t*5+ph)*.8);                                                // tua vàng + tua đỏ ở đầu dây
- R(GDD,ex-1,ey,3,2);R(GD,ex-1,ey,3,1);R(GDL,ex-1,ey,1,1);
- R(RD,ex-1+sw,ey+2,1,3);R(RDD,ex+sw,ey+2,1,4);R(RD,ex+1+sw,ey+2,1,3)}
+ const e=P[n],ex=rnd(e[0]),ey=rnd(e[1]);                                                  // tua vàng nhỏ ở đầu
+ R(GDD,ex,ey,2,2);R(GD,ex,ey,2,1);R(GDL,ex,ey,1,1)}
 
-// ---------- LUỒNG VẦN VŨ vàng + xanh dương xoáy quanh người (part 0 = vòng sau, 1 = vòng trước) ----------
-const STR=[{rgb:['255,210,63','255,243,160','232,150,20'],ph:0,dir:1},
-           {rgb:['63,180,255','190,238,255','31,100,224'],ph:PI*.5,dir:1},
-           {rgb:['255,210,63','255,243,160','232,150,20'],ph:PI,dir:1},
-           {rgb:['63,180,255','190,238,255','31,100,224'],ph:PI*1.5,dir:1}];
+// ---------- LUỒNG VẦN VŨ (chỉ vòng PHÍA SAU người, 2 dải mảnh vàng + xanh) ----------
+const STR=[{rgb:['255,210,63','255,243,160','232,150,20'],ph:0},
+           {rgb:['63,180,255','190,238,255','31,100,224'],ph:PI}];
 function aura(u,t,part,mv){
- const N=90,spd=mv?2.4:1.35;
+ if(part)return;
+ const N=70,spd=mv?2.2:1.2;
  STR.forEach((S,si)=>{
   for(let k=0;k<=N;k++){
-   if(part&&k%9>6)continue;                                              // vòng trước: ngắt thành vệt; vòng sau: liền mạch
-   const s=k/N,a=t*spd+S.ph+s*PI*3.3,z=sin(a);
-   if((z>0?1:0)!==part)continue;
-   const R=(part?11.5:10.5+s*3)+2.4*sin(s*PI*1.3+t*1.1+si),x=10+R*cos(a),y=34-s*40+sin(t*2+si+s*6)*.8;
-   if(part&&y<15)continue;                                               // vòng trước không che mặt
-   const env=Math.pow(sin(s*PI),.5),al=(part?.85:.6)*env;if(al<.14)continue;
-   const xi=rnd(x),yi=rnd(y),f=al.toFixed(2),w=part?2:(env>.6?3:2);
-   u('rgba('+S.rgb[2]+','+f+')',xi,yi,w,w);
-   u('rgba('+S.rgb[0]+','+f+')',xi,yi,w-1,w-1);
-   if(k%4==0)u('rgba('+S.rgb[1]+','+(part?'.95':'.6')+')',xi,yi,1,1);
+   const s=k/N,a=t*spd+S.ph+s*PI*3,z=sin(a);
+   if(z>0)continue;
+   const R=10.5+s*2.5+1.6*sin(s*PI*1.3+t*1.1+si),x=10+R*cos(a),y=33-s*38+sin(t*2+si+s*6)*.8;
+   const env=Math.pow(sin(s*PI),.5),al=.5*env;if(al<.14)continue;
+   const xi=rnd(x),yi=rnd(y),f=al.toFixed(2);
+   u('rgba('+S.rgb[0]+','+f+')',xi,yi,1,1);
+   if(k%5==0)u('rgba('+S.rgb[1]+','+(al+.2).toFixed(2)+')',xi,yi,1,1);
   }});
 }
 function sparkles(u,t,mv){
- for(let i=0;i<14;i++){
-  const P=1.7+(i%5)*.45,ph=((t/P)+i*.173)%1,ang=i*2.399+t*.35*(i%2?1:-1);
-  const R=7+((i*37)%9),x=10+R*cos(ang),y=26-ph*36+sin(t*3+i)*1.2;
+ for(let i=0;i<7;i++){
+  const P=1.9+(i%5)*.45,ph=((t/P)+i*.31)%1,ang=i*2.399+t*.35*(i%2?1:-1);
+  const R=8+((i*37)%7),x=10+R*cos(ang),y=26-ph*34+sin(t*3+i)*1.2;
   const a=Math.min(1,ph*5,(1-ph)*2.2);if(a<.12)continue;
-  star(u,x,y,a,i%2?'160,226,255':'255,226,110',i%4==0)}
- // tia chớp xanh nhỏ quanh đầu
- const q=flr(t*7)%9;if(q<3){const bx=[3,15,-1][q],by=[-3,-5,8][q];
-  const pts=[[0,0],[1,1],[0,2],[1,3],[2,4]];pts.forEach(p=>u('rgba(190,238,255,.95)',bx+p[0],by+p[1],1,1));u('rgba(63,180,255,.7)',bx+1,by+1,1,1)}
+  if(x>3&&x<17&&y>5&&y<16)continue;                                   // không che mặt
+  star(u,x,y,a,i%2?'160,226,255':'255,226,110',i%3==0)}
 }
 
 // ===================================================================================
@@ -137,17 +219,20 @@ function drawHauVuong(r,u,o,S,k){
   u(GD,10,22,1,3);u(GD,9,24,3,1);                                                                                    // đuôi mây
  };
 
- // ---- dây tóc dài (đứng yên: rủ & lượn nhẹ; đi: bay ngược ra sau) ----
- const cordF=(sg)=>(s,ph)=>{const w=sin(t*2.4*amp+s*10+ph)*(.6+1.8*s);
-  return[10+sg*(8+15*sin(s*PI*.95)-5*s+(mv?3*s:0)+w),5+27*s-9*sin(s*PI)+sin(t*1.7+s*5+ph)*1.2*s]};
- const cordS=(s,ph)=>[6-32*s-(mv?9*s:0),6+4*s+sin(t*3*amp+s*9+ph)*(.8+3.2*s)+(mv?0:7*s)];
- const cordB=(sg)=>(s,ph)=>{const w=sin(t*2.2*amp+s*9+ph)*(.6+1.6*s);
-  return[10+sg*(7+8*sin(s*PI*.9)-2*s+w),7+26*s+sin(t*1.5+s*4+ph)*1.2*s]};
+
+ // ---- ruy băng mảnh bay sau đầu (đứng yên: lượn nhẹ; đi: bay ngược ra sau) ----
+ const RLx=(c,x,y,w,h)=>u(c,x,y,w,h),RRx=(c,x,y,w,h)=>u(c,20-x-w,y,w,h);
+ const ribF=(s,ph)=>{const w=sin(t*2.4*amp+s*8+ph)*(.4+1.3*s);
+  return[3-11*s-(mv?4*s:0),9+5*s+w]};
+ const ribbonsFB=()=>{};   // nhìn trước/sau: bỏ ruy băng cho gọn, mặt và tóc luôn rõ
+ const ribS=(s,ph)=>[4-17*s-(mv?8*s:0),10+2*s+sin(t*3*amp+s*7+ph)*(.5+1.8*s)];
+ const ribbonsS=()=>{ribbon(M,ribS,24,0,t)};
 
  if(!side){
   // ======================= NHÌN TRƯỚC / SAU =======================
   const RL=(c,x,y,w,h)=>u(c,x,y,w,h),RR=(c,x,y,w,h)=>u(c,20-x-w,y,w,h);
-  if(!back){cord(RL,cordF(-1),64,0,t);cord(RR,cordF(-1),64,1.9,t);capeFront()}
+  if(!back)capeFront();
+  ribbonsFB();
   legs();
   // ---------- thân ----------
   u(RDD,5,15,10,9);u(RD,5,15,9,9);u(RDL,5,16,1,7);u(RDX,13,16,1,7);                  // áo đỏ
@@ -177,15 +262,14 @@ function drawHauVuong(r,u,o,S,k){
   const pauld=(x)=>{ // x = mép ngoài trái; vẽ bên trái, bên phải lật gương
    u(GD,x,15,5,2);u(GD,x+1,14,4,1);u(GDL,x+1,14,3,1);u(GDL,x,15,1,1);u(GDD,x,17,5,1);u(GDD,x+4,15,1,2);
    u(RD,x+2,15,2,1);u(RDL,x+2,15,1,1);                                              // viên đá đỏ
-   u(GD,x-1,13,1,3);u(GDL,x-1,13,1,1);u(GD,x,12,1,2)};                                // gai cong lên
-  pauld(0);u(GD,15,15,5,2);u(GD,15,14,4,1);u(GDL,15,14,3,1);u(GDD,15,17,5,1);u(GDD,15,15,1,2);u(RD,16,15,2,1);u(RDL,16,15,1,1);u(GD,20,13,1,3);u(GD,19,12,1,2);
+   u(GD,x-1,14,1,2);u(GDL,x-1,14,1,1)};                                // gai cong lên
+  pauld(0);u(GD,15,15,5,2);u(GD,15,14,4,1);u(GDL,15,14,3,1);u(GDD,15,17,5,1);u(GDD,15,15,1,2);u(RD,16,15,2,1);u(RDL,16,15,1,1);u(GD,20,14,1,2);
   if(back)capeBack();
   // ---------- đầu ----------
   headFB();
-  if(back){cord(RL,cordB(-1),58,0,t);cord(RR,cordB(-1),58,1.9,t)}
- }else{
+   }else{
   // ======================= NHÌN NGANG =======================
-  cord(M,cordS,64,0,t);cord(M,(s,ph)=>{const p=cordS(s,ph);return[p[0]+1.5,p[1]+3+sin(t*2.6+s*5+ph)*1.3*s]},56,2.1,t);
+  ribbonsS();
   capeSide();
   legs();
   M(RDD,5,15,9,9);M(RD,5,15,8,9);M(RDL,6,16,1,7);M(RDX,12,16,1,7);
@@ -199,109 +283,48 @@ function drawHauVuong(r,u,o,S,k){
   const am=rnd(lg);
   M(RD,8+am,17,3,2);M(RDL,8+am,17,1,2);M(GD,8+am,19,3,2);M(GDL,8+am,19,1,1);M(GDD,8+am,20,3,1);M(SKN,8+am,21,3,2);M(SKL,8+am,21,1,2);
   // vai giáp
-  M(GD,6,15,6,2);M(GD,7,14,5,1);M(GDL,7,14,3,1);M(GDD,6,17,6,1);M(RD,9,15,2,1);M(RDL,9,15,1,1);M(GD,5,13,1,3);M(GD,6,12,1,2);M(GDL,5,13,1,1);
+  M(GD,6,15,6,2);M(GD,7,14,5,1);M(GDL,7,14,3,1);M(GDD,6,17,6,1);M(RD,9,15,2,1);M(RDL,9,15,1,1);M(GD,5,14,1,2);M(GDL,5,14,1,1);
   headS();
  }
 
- if(!DBG.noaura){aura(u,t,1,mv);sparkles(u,t,mv)}                      // vòng luồng sáng PHÍA TRƯỚC người
+ if(!DBG.noaura)sparkles(u,t,mv);                                      // chỉ còn vài tia sáng nhỏ phía trước (không che mặt)
 
  // ===========================================================================
- //  ĐẦU nhìn trước / sau
+ //  ĐẦU — vẽ bằng BẢN ĐỒ PIXEL (mỗi ký tự = 1 pixel, xem bảng PAL). Tóc là các lọn lửa 3 tông (sáng ở ngọn, đậm ở gốc).
+ //  Mắt / mũi / miệng vẽ bằng code (để biểu cảm faceFx của game vẫn khớp vị trí khuôn mặt chuẩn).
  // ===========================================================================
  function headFB(){
-  const sw=rnd(sin(t*2)*.6);
-  // tai khỉ
-  SY(SKN,1,9,3,3);SY(SKS,1,10,1,2);SY(SKL,2,9,1,1);SY(SKX,1,11,1,1);
-  if(!back)SY(SKS,2,10,1,1);
-  // gai tóc dựng (sau → trước)
-  const SPK=[
-   [[3,8],[-2,0],[6,3]],[[14,3],[22,0],[17,8]],                       // gai bay ngang hai bên
-   [[3,6],[1,-6],[9,4]],[[11,4],[19,-6],[17,6]],
-   [[5,5],[6,-9],[11,4]],[[9,4],[14,-9],[15,5]],
-   [[6,5],[10+sw,-14],[14,5]]];
-  SPK.forEach(q=>spike(u,q[0],q[1],q[2]));
-  // khối tóc trên đầu
-  ell(u,HR,10,6,7,3);u(HR,3,5,14,3);u(HRD,3,7,14,1);
-  [[6,4],[9,3],[12,4],[8,5],[14,5]].forEach(p=>u(HRL,p[0],p[1],1,1));[[5,6],[11,6],[15,6]].forEach(p=>u(HRX,p[0],p[1],1,1));
-  if(back){
-   // gáy: tóc phủ kín
-   u(HR,3,7,14,6);u(HRD,3,12,14,1);u(HRL,5,8,2,1);u(HRL,12,9,2,1);u(HRL,9,10,1,2);u(HRX,7,9,1,3);u(HRX,13,8,1,3);
-   for(let x=4;x<16;x+=2)u(HRX,x,13,1,1);
-   // đuôi tóc dài xõa ra sau lưng
-   poly(u,[[5,12],[4,19],[8,13]],HR);poly(u,[[12,13],[16,19],[15,12]],HR);poly(u,[[8,12],[10,17],[12,12]],HRD);
-   line(u,HRL,5,13,4,18);line(u,HRL,15,13,16,18);
-   // kim cô sau gáy
-   u(GDD,3,7,14,1);u(GD,3,6,14,1);u(GDL,5,6,2,1);u(GDL,11,6,3,1);u(GD,9,6,2,2);u(GDL,9,6,1,1);
-  }else{
-   // mặt
-   u(SKN,5,8,10,5);u(SKN,6,13,8,1);u(SKL,5,8,2,3);u(SKS,14,9,1,4);u(SKS,6,13,8,1);u(SKN,8,13,4,1);
-   // tóc mai (sideburn) phủ má + râu quai nón ôm hàm
-   poly(u,[[3,7],[0,12],[3,15],[6,14],[6,8]],HR);poly(u,[[17,7],[20,12],[17,15],[14,14],[14,8]],HR);
-   u(HR,3,7,2,6);u(HR,15,7,2,6);u(HRL,3,8,1,4);u(HRL,16,8,1,4);u(HRD,4,9,1,4);u(HRD,15,9,1,4);
-   u(HR,4,13,2,2);u(HR,14,13,2,2);u(HRD,4,14,2,1);u(HRD,14,14,2,1);
-   u(HRX,2,12,1,2);u(HRX,17,12,1,2);u(HRL,1,11,1,1);u(HRL,18,11,1,1);u(HRL,5,12,1,1);u(HRL,14,12,1,1);
-   // râu cằm
-   const bd=(o.e>0);
-   u(HR,6,14,2,1);u(HR,12,14,2,1);u(HRD,7,15,2,1);u(HRD,11,15,2,1);u(HRL,6,14,1,1);u(HRL,12,14,1,1);
-   if(!bd){u(HRD,8,14,4,1);u(HR,9,14,2,1);u(HRX,9,15,2,1)}else{u(HRD,8,14,4,1)}
-   // chân mày dựng + mắt
+  stamp(u,back?HB:HF);
+  if(!back){
+   // mặt: nền da (nửa mặt đã nằm trong bản đồ) + đặc điểm
    const bl=(performance.now()%4100)<130;
-   u(HRO,6,8,2,1);u(HRO,8,9,1,1);u(HRO,12,8,2,1);u(HRO,11,9,1,1);u(HRX,5,8,1,1);u(HRX,14,8,1,1);
    if(o.e>0)faceFx(u,o.e,0,0);
    else{
     if(bl){u(DK,6,11,3,1);u(DK,11,11,3,1)}
     else{
+     // mắt to 3x3: viền mi trên đậm, lòng cam, đồng tử ở phía mũi, điểm sáng ngoài
      u(DK,6,10,3,1);u(DK,11,10,3,1);
-     u(EYL,6,11,1,1);u(EYE,7,11,2,1);u(DK,8,11,1,1);u(EYE,11,11,2,1);u(DK,11,11,1,1);u(EYL,13,11,1,1);
-     u(WH,6,11,1,1);u(WH,13,11,1,1)}
-    u(SKS,9,12,2,1);u(SKX,9,12,1,1);                                    // mũi
-    u(DK,8,13,4,1);u(WH,8,13,1,1);u(WH,11,13,1,1);u('#e8605a',9,13,2,1);   // cười nhếch lộ răng nanh
-    u('rgba(255,110,90,.5)',6,12,1,1);u('rgba(255,110,90,.5)',13,12,1,1);    // má hồng
+     u(WH,6,11,1,1);u(EYE,7,11,1,1);u(DK,8,11,1,1);
+     u(DK,11,11,1,1);u(EYE,12,11,1,1);u(WH,13,11,1,1);
+     u(EYL,6,12,1,1);u(EYE,7,12,2,1);u(EYE,11,12,2,1);u(EYL,13,12,1,1);
+    }
+    u(SKS,9,12,2,1);u(SKX,9,12,1,1);                                      // mũi
+    u(DK,8,13,4,1);u(WH,8,13,1,1);u(WH,11,13,1,1);u('#e8605a',9,13,2,1);  // cười nhếch lộ răng nanh
+    u('rgba(255,110,90,.55)',5,12,1,1);u('rgba(255,110,90,.55)',14,12,1,1); // má hồng
    }
-  }
-  // kim cô: băng vàng + vòng cuộn ở thái dương + ngọc đỏ giữa trán
-  if(!back){
-   u(GDD,3,7,14,1);u(GD,3,6,14,1);u(GDL,4,6,3,1);u(GDL,10,6,2,1);u(GDD,14,6,2,1);
-   u(GD,9,4,2,4);u(GDL,9,4,1,2);u(RD,9,6,2,2);u(RDL,9,6,1,1);u(RDD,10,7,1,1);u(GDD,8,7,4,1);   // ngọc đỏ giữa trán
-   u(GD,8,5,1,1);u(GD,11,5,1,1);u(GD,7,6,1,1);u(GD,12,6,1,1);
-   // vòng cuộn hai bên
-   const cp=(c,x,y)=>{u(c,x,y,1,1);u(c,19-x,y,1,1)};
-   [[1,7],[1,6],[1,5],[2,4],[3,4],[4,5],[4,6],[3,6]].forEach(p=>cp(GD,p[0],p[1]));cp(GDL,2,4);cp(GDD,4,6);cp(GDD,1,7);
   }
  }
 
- // ===========================================================================
- //  ĐẦU nhìn ngang (hướng phải)
- // ===========================================================================
  function headS(){
-  const sw=rnd(sin(t*2)*.6);
-  const SPK=[
-   [[4,6],[-6,-2],[8,4]],[[3,9],[-7,6],[7,6]],[[3,11],[-5,14],[7,10]],      // tóc xõa dài ra sau
-   [[4,6],[1,-7],[9,4]],[[6,5],[6,-10],[12,4]],[[8,5],[13+sw,-12],[14,6]]];
-  SPK.forEach(q=>spike(M,q[0],q[1],q[2]));
-  // khối đầu
-  M(HR,3,5,10,3);M(HRD,3,7,10,1);
-  // mặt
-  M(SKN,8,8,6,5);M(SKN,9,13,4,1);M(SKL,9,9,2,2);M(SKS,13,10,1,3);M(SKN,14,11,1,2);M(SKS,14,12,1,1);   // mũi nhô ra
-  // tai khỉ
-  M(SKN,6,9,3,3);M(SKS,7,10,1,2);M(SKL,6,9,1,1);M(SKX,6,11,1,1);
-  // tóc sau tai + tóc mai + râu
-  M(HR,3,8,4,6);M(HRD,3,13,4,1);M(HRL,3,9,1,3);M(HRX,5,10,1,3);
-  M(HR,7,8,2,6);M(HRD,8,9,1,5);M(HRL,7,9,1,3);                                    // tóc mai trước tai
-  M(HR,8,13,4,2);M(HRD,8,14,4,1);M(HRL,8,13,1,1);M(HR,12,13,2,1);M(HRX,13,14,1,1);M(HR,11,15,2,1); // râu quai nón + cằm
-  // chân mày + mắt
-  M(HRO,11,8,3,1);M(HRX,13,9,1,1);
+  stamp(M,HS);
+  // mặt (nhìn ngang): mắt, mũi, miệng
   const bl=(performance.now()%4100)<130;
   if(o.e>0)faceFx(u,o.e,1,Rt);
   else{
    if(bl)M(DK,11,11,3,1);
-   else{M(DK,11,10,3,1);M(EYL,11,11,1,1);M(EYE,12,11,2,1);M(DK,13,11,1,1);M(WH,11,11,1,1)}
-   M(DK,12,13,2,1);M(WH,13,13,1,1);M('rgba(255,110,90,.5)',10,12,1,1);
+   else{M(DK,11,10,3,1);M(WH,11,11,1,1);M(EYE,12,11,1,1);M(DK,13,11,1,1);M(EYL,11,12,1,1);M(EYE,12,12,2,1)}
+   M(DK,12,13,2,1);M(WH,13,13,1,1);M('rgba(255,110,90,.55)',10,12,1,1);
   }
-  // kim cô
-  M(GDD,3,7,10,1);M(GD,3,6,10,1);M(GDL,4,6,3,1);M(GDL,9,6,2,1);
-  M(GD,11,4,2,4);M(GDL,11,4,1,2);M(RD,11,6,2,2);M(RDL,11,6,1,1);M(GDD,10,7,3,1);M(GD,10,5,1,1);
-  [[3,7],[2,6],[2,5],[3,4],[4,4],[5,5],[5,6]].forEach(p=>M(GD,p[0],p[1],1,1));M(GDL,3,4,1,1);M(GDD,5,6,1,1);   // vòng cuộn phía sau
  }
 }
 
