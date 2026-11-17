@@ -147,3 +147,145 @@ function drawPJ(r,u,o,S,k){
 window.drawMascotPJ=drawPJ;
 if(typeof MASCOT_DRAW!='undefined')MASCOT_DRAW.pj=drawPJ;
 })();
+
+/* ===================================================================================
+   ĐỒNG PHỤC TIỂU HỌC (Nam / Nữ) + TÓC ĐỒNG PHỤC (mũ vàng viền xanh, cọng cỏ + hoa cúc)
+   • Bán ở Shop Phố xá: mỗi bộ 1000 Xu (tab Set) • Tóc đồng phục 1000 Xu (tab Tóc & mũ)
+   • Dữ liệu được đẩy vào CUỐI mảng SETS / HAIRS và giá vào SHOP.s.pr / SHOP.h.pr ngay tại đây
+     (file này nạp SAU index.html + pho-map.js nên không cần sửa 2 file đó).
+   • Hình vẽ: SETFX.school (áo thủy thủ xanh nhạt, cổ trắng, nơ vàng; Nam = quần đùi xanh, Nữ = váy xếp ly vàng,
+     tất trắng, giày cam) và HAIRFX.school (tóc cam gọn unisex + mũ bucket vàng, viền xanh).
+   • Không có hiệu ứng động — chỉ pixel tĩnh. Không che mặt, biểu cảm & phụ kiện vẫn hiện.
+   =================================================================================== */
+(function(){
+if(typeof SETS==='undefined'||typeof HAIRS==='undefined'||typeof SETFX==='undefined'||typeof HAIRFX==='undefined')return;
+
+// ---------- 1) khai báo dữ liệu (chỉ thêm 1 lần) ----------
+if(!SETS.some(s=>s.k=='schm')){
+ const base={fx:'school',sh:'#8fd2f4',shl:'#bce8fc',shd:'#62b3e2',scarf:'#ffffff',belt:'#ffffff',trim:'#cfeefd',shoe:'#f0a030'};
+ const iM=SETS.push(Object.assign({n:'Đồng phục tiểu học (Nam)',k:'schm',sc:'m',pt:'#3f86d6',rpt:'#3f86d6',
+   ds:'Áo thủy thủ xanh nhạt cổ trắng viền xanh, nơ vàng, quần đùi xanh, tất trắng, giày cam. Hợp với Tóc đồng phục.'},base))-1;
+ const iF=SETS.push(Object.assign({n:'Đồng phục tiểu học (Nữ)',k:'schf',sc:'f',pt:'#e8a216',rpt:'#e8a216',
+   ds:'Áo thủy thủ xanh nhạt cổ trắng viền xanh, nơ vàng, váy xếp ly vàng, tất trắng, giày cam. Hợp với Tóc đồng phục.'},base))-1;
+ if(typeof SHOP!=='undefined'){SHOP.s.pr[iM]=1000;SHOP.s.pr[iF]=1000}
+}
+if(!HAIRS.some(h=>h.k=='school')){
+ const iH=HAIRS.push({n:'Tóc đồng phục',k:'school',c:'#f2922c'})-1;
+ if(typeof SHOP!=='undefined')SHOP.h.pr[iH]=1000;
+}
+
+// ---------- 2) bảng màu ----------
+const W='#ffffff',WS='#dcecf8',SB='#2f9be6',SBL='#74c8f8',                       // trắng / xanh viền
+      YB='#ffc83a',YBL='#ffe680',YBD='#e8a216',YBK='#c47d0c',                    // vàng (nơ, váy, mũ)
+      BD='#1a6bb4',G1='#3d9c3a',G2='#6bcd58',CY='#f4ae0a',                       // xanh đậm / cỏ / nhụy hoa
+      HL='#ffb860',HD='#c4701c';                                                 // tóc cam sáng / tối
+
+// bob (độ nhún khi đi) — để vẽ đè lên chân đúng chỗ (chân vẽ không có bob, thân có bob)
+const bobOf=(o,K)=>o.nobob?0:o.mv?(K.lg?-1:0):((o.acc>=0&&!K.rd&&!K.sit&&typeof ACCS!=='undefined'&&ACCS[o.acc]&&ACCS[o.acc].k=='guitar'&&typeof gtBob=='function')?gtBob():0);
+
+// ---------- 3) BỘ ĐỒNG PHỤC ----------
+SETFX.school=(u,o,S,K)=>{
+ const{side,Rt,back,sit,rd,lg,sx,SK}=K,fem=S.sc=='f',bob=bobOf(o,K);
+ const M=(c,x,y,w,h)=>u(c,Rt?x:20-x-w,y,w,h);          // nhìn ngang (tự lật khi quay trái)
+ const Q=(c,x,y,w,h)=>u(c,x,y-bob,w,h);                 // vẽ đè lên phần chân/váy (không nhún)
+ const S2=(c,a,y,h)=>u(c,a,y,20-2*a,h||1);              // đối xứng 2 bên
+
+ // ----- váy xếp ly (Nữ) -----
+ if(fem&&!rd){
+  const rows=side?[[23,7],[24,6],[25,5],[26,5]]:[[23,6],[24,5],[25,4],[26,4]];
+  rows.forEach(([y,a])=>{for(let x=a;x<20-a;x++){
+   const hem=y==26;
+   u(hem?YBD:(x%3==0?YBD:x%3==1?YBL:YB),x,y,1,1)}});
+  u(YBK,rows[3][1],26,20-2*rows[3][1],1);                // viền gấu tối
+  S2(W,rows[0][1],22,1);                                 // cạp áo trắng
+ }
+ // ----- tất trắng + giày cam (vẽ đè lên chân) -----
+ if(!rd){
+  let L;
+  if(sit){const sw=Math.round(Math.sin(performance.now()/260)*1.5);L=[[6,sw>0?1:0,1],[11,-sw>0?1:0,1]]}
+  else if(!side){L=lg>0?[[11,0],[6,1]]:lg<0?[[6,0],[11,1]]:[[6,0],[11,0]]}
+  else{const x1=8+sx,x2=10-sx;L=lg>0?[[x2,0],[x1,1]]:lg<0?[[x1,0],[x2,1]]:[[x1,0],[x2,0]]}
+  for(const[x,l,st]of L){
+   if(st){                                               // đang ngồi: chân duỗi
+    Q(W,x,28+l,3,2);Q(SBL,x,28+l,3,1);Q(WS,x+2,29+l,1,1);Q(S.shoe,x,30+l,3,1);Q(shade(S.shoe,.3),x,30+l,1,1);continue}
+   if(!fem){Q('#8fc4f4',x,26,3,1);Q('#2f6fb8',x+2,25,1,1)}  // gấu quần đùi
+   Q(W,x,27,3,2-l);Q(SBL,x,27,3,1);Q(WS,x+2,28,1,1-l);      // tất: viền xanh + trắng
+   Q(S.shoe,x,29-l,3,1);Q(shade(S.shoe,.3),x,29-l,1,1);Q(shade(S.shoe,-.25),x+2,29-l,1,1);
+   if(side)Q(S.shoe,Rt?x+3:x-1,29-l,1,1);                // mũi giày nhô ra phía trước
+  }
+ }
+ // ----- cổ áo thủy thủ + nơ vàng -----
+ if(!side){
+  if(!back){
+   u(W,6,15,3,1);u(W,11,15,3,1);                         // cổ trắng 2 cánh
+   u(W,7,16,2,1);u(W,11,16,2,1);u(SB,6,16,1,1);u(SB,13,16,1,1);
+   u(SB,7,17,2,1);u(SB,11,17,2,1);                       // viền xanh dưới cổ
+   u(SK,9,15,2,2);                                       // hở cổ chữ V
+   u(YB,8,17,1,2);u(YB,11,17,1,2);u(YBD,8,18,1,1);u(YBD,11,18,1,1);   // 2 cánh nơ
+   u(YBL,9,17,2,1);u(YBD,9,18,2,1);                      // nút nơ
+  }else{
+   u(W,6,15,8,2);u(WS,6,16,8,1);u(SB,6,16,1,1);u(SB,13,16,1,1);
+   u(SB,7,17,6,1);u(SB,9,18,2,1);                        // cổ vuông sau lưng
+  }
+  // vệt trắng ngang ngực (cả nhìn trước/sau)
+  S2(W,5,20,1);
+  // cổ tay áo: viền xanh + trắng
+  if(!o.aup){
+   const cuff=(x,ay)=>{u(SBL,x,19+ay,3,1);u(W,x,20+ay,3,1)};
+   cuff(2,lg);cuff(15,-lg);
+  }
+ }else{
+  M(W,8,15,5,1);M(W,8,16,4,1);M(SB,8,17,4,1);M(SB,12,16,1,1);
+  M(W,8,20,6,1);                                         // vệt trắng ngang
+  M(YB,12,17,2,2);M(YBD,13,18,1,1);M(YBL,12,17,1,1);      // nơ nhìn nghiêng
+  if(!o.noarm){const ax=9-sx;u(SBL,ax,19,3,1);u(W,ax,20,3,1)}
+ }
+};
+
+// ---------- 4) TÓC ĐỒNG PHỤC + MŨ BUCKET VÀNG ----------
+HAIRFX.school=(u,o,K)=>{
+ const{side,Rt,back,HC}=K,M=(c,x,y,w,h)=>u(c,Rt?x:20-x-w,y,w,h),S2=(c,a,y,h)=>u(c,a,y,20-2*a,h||1);
+
+ // ---- tóc cam gọn (tóc bob ngắn, mái ngang) ----
+ if(!side&&!back){
+  S2(HC,5,9,1);u(HL,7,9,2,1);                            // mái
+  u(HC,5,10,2,1);u(HC,9,10,2,1);u(HC,13,10,2,1);u(HD,6,10,1,1);u(HD,13,10,1,1);
+  u(HC,4,10,2,4);u(HC,14,10,2,4);u(HD,4,10,1,4);u(HD,15,10,1,4);u(HL,5,11,1,2);u(HL,14,11,1,2);
+  u(HC,4,14,3,1);u(HC,13,14,3,1);u(HD,4,14,1,1);u(HD,15,14,1,1);
+ }else if(back){
+  u(HC,5,9,10,5);u(HC,6,14,8,1);S2(HD,5,13,1);u(HD,5,9,1,4);u(HD,14,9,1,4);
+  u(HL,7,10,1,3);u(HL,12,10,1,2);u(HD,6,14,8,1);u(HD,9,10,2,1);
+ }else{
+  M(HC,4,9,5,5);M(HD,4,9,1,5);M(HL,6,10,1,3);M(HC,4,14,4,1);M(HD,4,14,4,1);   // phía sau
+  M(HC,9,9,5,1);M(HL,10,9,2,1);M(HC,12,10,2,1);M(HD,13,10,1,1);                // mái trước
+ }
+
+ // ---- mũ bucket vàng, viền xanh + cọng cỏ & hoa cúc ----
+ if(!side){
+  // hoa cúc (cánh trắng, nhụy vàng) + cọng cỏ xanh
+  u(W,10,0,1,1);u(W,9,1,1,1);u(CY,10,1,1,1);u(W,11,1,1,1);u(W,10,2,1,1);
+  u(WS,9,0,1,1);u(WS,11,0,1,1);u(WS,9,2,1,1);u(WS,11,2,1,1);
+  u(G1,10,3,1,1);u(G2,11,3,1,1);
+  // thân mũ (bucket: đỉnh phẳng, thân hơi loe xuống)
+  u(YB,7,4,6,1);u(YBL,7,4,2,1);u(YBD,11,4,2,1);
+  u(YB,6,5,8,1);u(YBL,6,5,3,1);u(YBD,12,5,2,1);
+  u(YB,6,6,8,1);u(YBL,6,6,3,1);u(YBD,12,6,2,1);
+  // dải viền xanh
+  u(SB,5,7,10,1);u(SBL,5,7,3,1);u(BD,12,7,3,1);
+  // vành mũ
+  u(YB,3,8,14,1);u(YBL,3,8,6,1);u(YBD,13,8,4,1);
+  u(YBD,3,9,2,1);u(YBK,15,9,2,1);
+ }else{
+  // nhìn nghiêng: tâm mũ ở x=9 (khung hướng phải), vành dài hơn về phía trước
+  M(W,9,0,1,1);M(W,8,1,1,1);M(CY,9,1,1,1);M(W,10,1,1,1);M(W,9,2,1,1);
+  M(WS,8,0,1,1);M(WS,10,0,1,1);M(WS,8,2,1,1);M(WS,10,2,1,1);
+  M(G1,9,3,1,1);M(G2,10,3,1,1);
+  M(YB,6,4,7,1);M(YBL,6,4,2,1);M(YBD,11,4,2,1);
+  M(YB,5,5,9,1);M(YBL,5,5,3,1);M(YBD,12,5,2,1);
+  M(YB,5,6,9,1);M(YBL,5,6,3,1);M(YBD,12,6,2,1);
+  M(SB,4,7,11,1);M(SBL,4,7,3,1);M(BD,12,7,3,1);
+  M(YB,3,8,14,1);M(YBL,3,8,5,1);M(YBD,12,8,5,1);
+  M(YBD,3,9,2,1);M(YBK,15,9,2,1);
+ }
+};
+})();
