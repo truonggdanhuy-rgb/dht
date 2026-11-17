@@ -4,7 +4,8 @@
    • Ai là admin: tên đăng nhập nằm trong bảng dht_admins (mặc định huyhuy003333). Quyền kiểm tra ở SERVER.
    • Mỗi bài = 1 ảnh ngang (CHUẨN 1280 × 720 px, tỉ lệ 16:9) + tiêu đề (≤80 ký tự) + nội dung (≤1500 ký tự).
        Ảnh khác tỉ lệ sẽ được tự cắt giữa cho vừa 16:9, rồi nén JPG. Đăng xong KHÔNG sửa được, chỉ XÓA được.
-   • Chỉ giữ 10 bài mới nhất (bài thứ 11 đăng lên thì bài cũ nhất tự mất — server tự làm).
+   • Chỉ giữ 20 bài mới nhất (bài thứ 21 đăng lên thì bài cũ nhất tự mất — server tự làm, xem hướng dẫn sửa ann_post từ 10 → 20).
+   • Danh sách xếp 2 ảnh / hàng. Bấm 1 ảnh → hiện ảnh TO toàn màn hình (bấm ảnh để phóng to thêm, bấm nền / ✕ để đóng).
    • Người chơi đang online: cứ ~60 giây game tự kiểm tra; có bài mới → nút 🔔 T.Báo hiện chấm đỏ + báo "🔔 Thông báo mới".
    • Người chơi: bấm 🔔 → thấy danh sách → bấm 1 bài để đọc. Admin thấy thêm nút ✍️ Đăng bài mới và 🗑️ Xóa bài.
    =================================================================================== */
@@ -26,7 +27,8 @@ let LIST=null,ISADM=null,DET={},DRAFT={t:'',b:'',img:'',note:''},BUSY=0,LASTTOAS
 (function(){const st=document.createElement('style');
  st.textContent='#htb{position:relative}#htb.nw::after{content:"";position:absolute;top:-4px;right:-4px;width:12px;height:12px;border-radius:50%;background:#ff3b3b;border:2px solid #fff;box-shadow:0 0 0 2px #ff3b3b66;animation:tbpulse 1.2s infinite}'+
  '@keyframes tbpulse{50%{transform:scale(1.25)}}'+
- '.tbi{position:relative;display:block;width:100%;padding:0;margin:8px 0;border:0;background:none;cursor:pointer}.tbi:active{transform:translateY(1px)}'+
+ '.tbgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}.tbi{position:relative;display:block;width:100%;padding:0;margin:0;border:0;background:none;cursor:pointer}'+
+ '#tbv{position:fixed;inset:0;z-index:99999;background:rgba(8,12,24,.94);display:flex;flex-direction:column}#tbv .tbvbar{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 10px;flex:none}#tbv .tbvbar button{font:inherit;font-weight:800;font-size:14px;border:2px solid #7da3cc;background:#d6e8fa;color:#3d5a80;border-radius:10px;padding:8px 14px;cursor:pointer}#tbv .tbvbar .del{background:#ffd9d9;border-color:#c96a6a;color:#7a2020}#tbv .tbvbox{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;-webkit-overflow-scrolling:touch}#tbv .tbvbox img{max-width:100%;max-height:100%;object-fit:contain;cursor:zoom-in;display:block}#tbv .tbvbox.zm{align-items:flex-start;justify-content:flex-start}#tbv .tbvbox.zm img{max-width:none;max-height:none;width:250%;cursor:zoom-out}#tbv .tbvhint{color:#cfe0f5;font-size:11px;text-align:center;padding:4px 0 8px;flex:none}.tbi:active{transform:translateY(1px)}'+
  '.tbi .ic{font-size:26px;width:40px;height:40px;border-radius:50%;background:#dff0ff;border:2px solid #b5d2f0;display:flex;align-items:center;justify-content:center;flex:none}'+
  '.tbi b{display:block;font-size:14px}.tbi small{color:#6a86ad;font-size:11px}.tbi .nw{position:absolute;top:8px;right:8px;background:#ff3b3b;color:#fff;border-radius:8px;font-size:11px;font-weight:800;padding:2px 8px;box-shadow:0 1px 4px #0004}'+
  '.tbimg{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:2px solid #9fc4e8;display:block;background:#dfeaf7}'+
@@ -37,7 +39,7 @@ const badge=on=>{const b=document.getElementById('htb');if(b)b.classList.toggle(
 
 /* ---------- tải dữ liệu ---------- */
 async function loadList(){
- try{LIST=await GET('announcements?select=id,img,created_at&order=id.desc&limit=10')}catch(e){LIST=[]}
+ try{LIST=await GET('announcements?select=id,img,created_at&order=id.desc&limit=20')}catch(e){LIST=[]}
  MAXID=LIST.length?LIST[0].id:0;
  // dọn cache ảnh của bài đã bị xóa
  const ids=new Set(LIST.map(x=>x.id));for(const k in DET)if(!ids.has(+k))delete DET[k];LIST.forEach(x=>{DET[x.id]=x});
@@ -62,24 +64,27 @@ function tbaoShowList(){
  let h=head('🔔 Bảng Thông Báo');
  if(ISADM)h+='<button class="b tbbtn" onclick="tbaoNew()" style="font-weight:800;background:#d6f2dc;border-color:#6bb27a;color:#2f6a3c">✍️ Đăng bài mới</button>';
  if(!LIST.length)h+='<div class="sbnote" style="padding:26px 6px;font-size:13px">📭 Chưa có thông báo nào.<br><small>Tin mới sẽ hiện ở đây nha~</small></div>';
- else h+=LIST.map(n=>'<button class="tbi" onclick="tbaoRead('+n.id+')"><img class="tbimg" src="'+esc(n.img)+'" alt="">'+(n.id>seen?'<span class="nw">MỚI</span>':'')+'</button>').join('');
+ else h+='<div class="tbgrid">'+LIST.map(n=>'<button class="tbi" onclick="tbaoRead('+n.id+')"><img class="tbimg" src="'+esc(n.img)+'" alt="">'+(n.id>seen?'<span class="nw">MỚI</span>':'')+'</button>').join('')+'</div>';
  openUI(h+'<div class="pf"><button class="b x" onclick="closeUI()">Đóng</button></div>');$('ui').classList.add('wui');
  if(MAXID>seen){setSeen(MAXID)}badge(false)}
 
 /* ---------- 2) ĐỌC 1 BÀI ---------- */
 window.tbaoRead=async function(id){
- openUI(head('🔔 Thông báo')+'<div class="sbnote" style="padding:26px 6px;font-size:13px">⏳ Đang tải bài…</div>');$('ui').classList.add('wui');
+ tbaoCloseView();
  let n;try{n=await loadDetail(id)}catch(e){toast('📭 Bài này không còn nữa');await loadList();return tbaoShowList()}
  if(!UI)return;
- let h=head('🔔 Thông báo')+
-  '<img class="tbimg" src="'+esc(n.img)+'" alt="">'+
-  '<div class="pf"><button class="b x" onclick="tbaoBack()">← Danh sách</button>'+(ISADM?'<button class="b" onclick="tbaoAskDel('+(+n.id)+')" style="background:#ffd9d9;border-color:#c96a6a;color:#7a2020">🗑️ Xóa bài</button>':'')+'</div>';
- openUI(h);$('ui').classList.add('wui')};
+ const v=document.createElement('div');v.id='tbv';
+ v.innerHTML='<div class="tbvbar"><button onclick="tbaoCloseView()">✕ Đóng</button>'+(ISADM?'<button class="del" onclick="tbaoAskDel('+(+n.id)+')">🗑️ Xóa bài</button>':'')+'</div>'+
+  '<div class="tbvbox" id="tbvbox"><img src="'+esc(n.img)+'" alt="" onclick="document.getElementById(\'tbvbox\').classList.toggle(\'zm\')"></div>'+
+  '<div class="tbvhint">Bấm vào ảnh để phóng to / thu nhỏ</div>';
+ v.addEventListener('click',e=>{if(e.target===v)tbaoCloseView()});
+ document.body.appendChild(v)};
+window.tbaoCloseView=function(){const v=document.getElementById('tbv');if(v)v.remove()};
 window.tbaoBack=async function(){if(!LIST)await loadList();tbaoShowList()};
 
 /* ---------- 3) XÓA BÀI (có xác nhận) ---------- */
 window.tbaoAskDel=function(id){
- const n=DET[id];if(!n)return;
+ const n=DET[id];if(!n)return;tbaoCloseView();
  openUI(head('🗑️ Xóa bài')+'<div style="text-align:center;padding:10px 4px"><div style="font-size:40px">🗑️</div>'+
   '<div style="font-size:15px;margin:8px 0">Xóa bài này?</div>'+
   '<div class="mut" style="font-size:12px">Bài sẽ biến mất với <b>tất cả người chơi</b> và không khôi phục được.</div></div>'+
