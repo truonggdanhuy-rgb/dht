@@ -326,10 +326,59 @@ function orbits(X,Y,tm,front){const t=tm/1000;
  for(let i=0;i<10;i++){const ring=i%2,ang=t*.6*(ring?-1:1)+i*0.6283,z=Math.sin(ang);if((z>=0)!==front)continue;
   const x=Math.round(X+Math.cos(ang)*(ring?19:15)),y=Math.round(Y-(ring?9:19)+z*5+Math.sin(t*1.7+i)*1.5);
   orb(x,y,i%3?2:3,front?.95:.55)}}
+/* ===== CẤP 3 — KHI ĐỨNG YÊN: cá bơi lượn trong vòng tròn + cây thủy sinh trồi lên =====
+   Pixel thường (nguyên pixel), ít khung hình: cá nhích ~5 nhịp/giây, cây đung đưa ~2.5 nhịp/giây, cây mọc theo 4 nấc.
+   Chỉ vẽ cho nhân vật của mình, khi đứng yên. Bắt đầu đi thì cây chìm xuống và cá tan dần.
+   Muốn chỉnh: FISH (cá: bán kính rf, tốc độ sp, màu), PLANTS (cây: góc a, độ xa tâm rf, loại k: 0 lau sậy • 1 rong • 2 sen),
+   POND_GROW_MS (mất bao lâu đứng yên thì cây mọc đủ). */
+const POND_GROW_MS=1500;
+const FISH=[
+ {rf:.74,sp:.55, ph:0,  c:'#ff9a3c',d:'#d9641e',b:'#ffd9a0',big:1,dir:1},
+ {rf:.56,sp:-.7, ph:2.2,c:'#fff4e6',d:'#ff7a45',b:'#ffffff',big:1,dir:1},
+ {rf:.82,sp:.42, ph:4.1,c:'#ffd23c',d:'#d9a21e',b:'#fff0a0',big:1,dir:1},
+ {rf:.48,sp:-.95,ph:5.3,c:'#8fe8ff',d:'#4fb6e8',b:'#e8fbff',big:0,dir:1}];
+const PLANTS=[
+ {a:200,rf:.88,k:0},{a:243,rf:.80,k:1},{a:297,rf:.84,k:2},{a:338,rf:.90,k:0},
+ {a:22, rf:.92,k:1},{a:158,rf:.92,k:2},{a:124,rf:.90,k:0},{a:57, rf:.90,k:1}];
+let pg=0,pgT=0;
+function pondFx(X,Y,tm,ok,front){
+ if(!front){const dt=Math.min(100,pgT?tm-pgT:0);pgT=tm;
+  if(ok&&!Pl.mv)pg=Math.min(1,pg+dt/POND_GROW_MS);else pg=Math.max(0,pg-dt/450)}
+ const gq=Math.floor(pg*4)/4;if(!ok||gq<=0)return;
+ const step=Math.floor(tm/200),sw=Math.floor(tm/400),RX=RING_RX,RY=RING_RY,f0=cx.fillStyle,a0=cx.globalAlpha;
+ const R=(c,x,y,w,h)=>{cx.fillStyle=c;cx.fillRect(x,y,w||1,h||1)};
+ if(!front){
+  // cá: nhích theo nhịp 5 khung/giây, quẹo theo hướng bơi, vẫy đuôi 2 nhịp
+  cx.globalAlpha=gq>=1?1:.55;
+  if(gq>=.5)for(let i=0;i<FISH.length;i++){const F=FISH[i],an=F.ph+step*.2*F.sp,rr=F.rf*(1+.07*Math.sin(step*.07+F.ph));
+   const x=Math.round(X+Math.cos(an)*RX*rr),y=Math.round(Y+Math.sin(an)*RY*rr);
+   const vx=-Math.sin(an)*(F.sp>0?1:-1);if(Math.abs(vx)>.08)F.dir=vx>0?1:-1;
+   const d=F.dir,fl=(step+i)%2,P=(j,k,c)=>R(c,x+(d>0?j:-j),y+k,1,1);
+   if(F.big){P(0,fl?-1:1,F.d);P(0,0,F.d);for(let j=1;j<=5;j++)P(j,0,F.c);for(let j=2;j<=4;j++){P(j,-1,F.d);P(j,1,F.b)}P(4,0,'#12315a');
+    if(i==1){P(3,-1,'#ff7a45');P(2,0,'#ff7a45')}}
+   else{P(0,fl?-1:1,F.d);P(1,0,F.c);P(2,0,F.c);P(2,0,'#12315a');P(1,1,F.b)}}
+  cx.globalAlpha=a0}
+ // cây thủy sinh: nửa sau vẽ trước nhân vật, nửa trước vẽ sau nhân vật
+ for(let i=0;i<PLANTS.length;i++){const Q=PLANTS[i],an=Q.a*Math.PI/180;if((Math.sin(an)>=0)!==!!front)continue;
+  const px=Math.round(X+Math.cos(an)*RX*Q.rf),py=Math.round(Y+Math.sin(an)*RY*Q.rf),o=((sw+i)%2)?1:0;
+  if(Q.k==0){ // lau sậy: 3 thân + bông nâu
+   const h1=Math.round(11*gq),h2=Math.round(8*gq),h3=Math.round(6*gq);
+   for(let k=0;k<h1;k++)R(k%3==0?'#7fe0a0':'#3fae6a',px+(k>h1-4?o:0),py-k);
+   for(let k=0;k<h2;k++)R('#2a8a58',px+2-(k>h2-3?o:0),py-k);
+   for(let k=0;k<h3;k++)R('#3fae6a',px-2+(k>h3-3?o:0),py-k);
+   if(h1>=8){R('#8a5a3a',px+o,py-h1-1,1,3);R('#b58455',px+o,py-h1-1,1,1)}}
+  else if(Q.k==1){ // rong biển: dải xanh uốn lượn
+   const h=Math.round(9*gq),h2=Math.round(6*gq);
+   for(let k=0;k<h;k++)R(k%3==2?'#6fe0b0':'#2fae7a',px+(((k+sw+i)%4<2)?0:1),py-k);
+   for(let k=0;k<h2;k++)R('#1f8f66',px+2+(((k+sw+i+2)%4<2)?0:1),py-k)}
+  else{ // lá sen nổi + hoa hồng nhỏ
+   const w=gq>=.75?3:2;R('#3fc07a',px-w,py,w*2+1,1);R('#7fe8a8',px-w+1,py-1,w*2-1,1);R('#2a9a62',px-w+1,py+1,w*2-1,1);
+   if(gq>=.75){R('#ffb3d1',px-1,py-2,3,1);R('#fff',px,py-3,1,1);R('#ffe066',px,py-2,1,1)}}}
+ cx.fillStyle=f0;cx.globalAlpha=a0}
 const dp0=window.drawPlayer;
 window.drawPlayer=function(){
  let lv=0;try{const A=ST.av;if(A&&A.m<0&&A.a>=0&&!Pl.sit&&!(HMA&&HMA.hide)&&!(CVON&&CV.boat)){lv=A.a==sci('scepter',3)?3:A.a==sci('scepter',2)?2:0}}catch(e){}
- if(!lv){TRL.length=0;tlx=null;return dp0.apply(this,arguments)}
+ if(!lv){TRL.length=0;tlx=null;pg=0;pgT=0;return dp0.apply(this,arguments)}
  const tm=performance.now(),X=Math.round(Pl.x),Y=Math.round(Pl.y);
  // vòng tròn ma thuật dưới chân (phía sau nhân vật), tràn ra ngoài khung nhân vật; không vẽ khi đang làm hành động đặc biệt
  let drew=0;try{if(!(typeof ACT!=='undefined'&&ACT)){const g=cx.fillStyle;ringFx((c,x,y,w,h)=>{cx.fillStyle=c;cx.fillRect(X+x,Y+y,w,h)},tm/1000,0);cx.fillStyle=g;drew=1}}catch(e){}
@@ -345,8 +394,10 @@ window.drawPlayer=function(){
   else if(a<1.5){dome(q.x,q.y-(a>1.3?1:0),3,2,a>1.3?.6:.95)}
   else{const e=(a-1.5)/.3,al=(1-e).toFixed(2);cx.fillStyle='rgba(200,240,255,'+al+')';
    for(const[ox,oy]of[[-1,-1],[1,-1],[-1,1],[1,1]]){cx.fillRect(Math.round(q.x+ox*(2+e*4)),Math.round(q.y+oy*(1+e*3)),1,1)}}}
+ pondFx(X,Y,tm,drew,0);
  orbits(X,Y,tm,false);
  let r0;try{r0=dp0.apply(this,arguments)}finally{RING_SELF=0}
+ pondFx(X,Y,tm,drew,1);
  orbits(X,Y,tm,true);
  return r0};
 
