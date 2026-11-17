@@ -2,7 +2,7 @@
    XE HỀ XIẾC — đỗ ở vỉa hè dưới, cạnh ngõ vào PHỐ XÁ
    • Xe pixel-art: mái lều xiếc, loa phát thanh trên nóc, chú hề lái xe, bóng bay, đèn nhấp nháy
    • Cứ vài giây xe "phát loa": rung loa, sóng âm, nốt nhạc, confetti, bong bóng thoại + âm thanh (nhạc xiếc, còi hề)
-   • Bấm vào xe → các nút: 🎡 Vòng quay may mắn • 🎁 Blind Box Kim Cương • 🎈 Xé túi Hề • 🤡 Tiệm Chú Hề (bán Mascot Hề Quái Đản)
+   • Bấm vào xe → các nút: 🎡 Vòng quay may mắn • 🎁 Blind Box Kim Cương • 🎈 Xé túi Hề • 🤡 Tiệm Chú Hề (bán Mascot Hề Quái Đản + Hanbok)
    • Gắn vào pho-map.js qua: circusBuild({dyn,hit,blk}) và circusUI()
    ============================================================ */
 (()=>{
@@ -184,41 +184,77 @@ window.circusUI=()=>{
   '<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#1fb5a6 0 14px,#fff 14px 28px);margin:8px 0 2px"></div>');
 };
 /* ============================================================
-   TIỆM CHÚ HỀ — bán Mascot Hề Quái Đản (set 'clown', hình vẽ: clown.js)
-   Giá (KHÔNG hiện chữ trên giao diện, người chơi tự biết): 1500 Xu + 500 Xu quái vật + 5 💎 — phải ĐỦ CẢ 3 mới mua được; thiếu gì báo thiếu đó.
-   Muốn đổi giá: sửa CL_PRICE bên dưới.
+   TIỆM CHÚ HỀ — bán Mascot: Hề Quái Đản (clown.js) + Hanbok Nam / Hanbok Nữ (hanbok.js)
+   • Giao diện: lưới 3 cột như các shop thường — mỗi món có hình động, tên, GIÁ nằm dưới.
+   • Mỗi món cần ĐỦ CẢ 3 thứ (Xu + Xu quái vật + Kim cương) mới mua được; thiếu thứ nào thì nút Mua bị khóa
+     và thứ đó hiện màu đỏ ✗.
+   • Muốn đổi giá / thêm món: sửa mảng CL_ITEMS bên dưới (k = khóa của set trong SETS, pr = giá).
    ============================================================ */
-const CL_PRICE={xu:1500,qv:500,dia:5};
-const clIdx=()=>SETS.findIndex(x=>x.k=='clown');
-let CLRAF=0;
-function clPrev(c,t){const g=c.getContext('2d'),i=clIdx();if(i<0)return;g.clearRect(0,0,c.width,c.height);g.imageSmoothingEnabled=false;
- const K=3,A=ST.av||{};g.save();g.scale(K,K);const W=c.width/K,H=c.height/K;
+const CL_ITEMS=[
+ {k:'clown',  n:'Hề Quái Đản',  d:'Nón hề cao 2 màu • Không che mặt',               pr:{xu:1500,qv:500,dia:5}},
+ {k:'hanbokm',n:'Hanbok (Nam)', d:'Nón gat cao viền đỏ, áo đỏ thêu rắn • Không che mặt', pr:{xu:5000,qv:500,dia:2}},
+ {k:'hanbokf',n:'Hanbok (Nữ)',  d:'Búi củ hành cài trâm, áo đỏ thêu rắn • Không che mặt', pr:{xu:5000,qv:500,dia:2}}];
+const clIdx=k=>SETS.findIndex(x=>x.k==k);
+const clOwn=k=>{const i=clIdx(k);return i>=0&&!!(ST.own&&ST.own.s&&ST.own.s.includes(i))};
+const clHave=()=>({xu:ST.xu|0,qv:ST.qv|0,dia:ST.dia|0});
+const clMiss=it=>{const h=clHave(),m=[];if(h.xu<it.pr.xu)m.push('🪙 Xu');if(h.qv<it.pr.qv)m.push('Xu quái vật');if(h.dia<it.pr.dia)m.push('💎 Kim cương');return m};
+const clQv=()=>window.qvImg?qvImg():'🐙';
+const clFmt=n=>n.toLocaleString('vi-VN');
+// 3 dòng giá (mỗi dòng đỏ nếu đang thiếu)
+function clPriceRows(it,big){const h=clHave(),sz=big?'13px':'10.5px',
+ row=(ok,ico,v)=>'<span style="display:block;white-space:nowrap;font-size:'+sz+';font-weight:800;color:'+(ok?'#3a6a2c':'#c0392b')+'">'+ico+' '+v+(big?(ok?' ✓':' ✗'):'')+'</span>';
+ return row(h.xu>=it.pr.xu,'🪙',clFmt(it.pr.xu))+row(h.qv>=it.pr.qv,clQv(),clFmt(it.pr.qv))+row(h.dia>=it.pr.dia,'💎',clFmt(it.pr.dia))}
+let CLRAF=0,CLV=null,CLD=0;
+// vẽ 1 canvas xem trước (K = hệ số phóng)
+function clPrev(c,t){const it=CL_ITEMS.find(x=>x.k==c.dataset.k);if(!it)return;const i=clIdx(it.k);if(i<0)return;
+ const g=c.getContext('2d'),K=+c.dataset.z||2,A=ST.av||{};g.clearRect(0,0,c.width,c.height);g.imageSmoothingEnabled=false;
+ g.save();g.scale(K,K);const W=c.width/K,H=c.height/K;
  drawAv(g,Math.round(W/2)-10,H-33,{d:[0,3,1,2][Math.floor(t/1.8)%4],a:t,mv:0,sit:0,hair:A.h|0,set:i,e:A.e|0,acc:-1});g.restore()}
-function clAnim(){const c=$('clc');if(!c||!UI){CLRAF=0;return}clPrev(c,performance.now()/1000);CLRAF=requestAnimationFrame(clAnim)}
-window.clownShopUI=()=>{const i=clIdx(),own=i>=0&&ST.own&&ST.own.s&&ST.own.s.includes(i);
- openUI(head('🤡 Tiệm Chú Hề')+
-  '<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#3b32d6 0 14px,#fff 14px 28px);margin:2px 0 8px"></div>'+
-  '<div style="text-align:center;font-weight:800;color:#4a1d82;font-size:14px;margin-bottom:6px">“Hề hề! Bộ đồ này chỉ có ở tiệm của Chú Hề thôi nha!” 🎪</div>'+
-  '<div style="border-radius:14px;padding:8px;background:linear-gradient(180deg,#efe6ff,#ffe3f3);border:3px solid #4a1d82;text-align:center">'+
-  '<canvas id="clc" width="150" height="231" style="width:150px;height:231px;image-rendering:pixelated;border-radius:10px;background:linear-gradient(#cdbdf5,#efe6ff 70%,#d9c8f0 70%)"></canvas>'+
-  '<div style="font-weight:900;font-size:17px;color:#3b32d6;margin:4px 0 2px">🤡 Mascot Hề Quái Đản</div>'+
-  '<div class="mut" style="margin-bottom:6px">Nón hề cao 2 màu • Không che mặt</div>'+
-  (own?'<button class="b w z" disabled style="font-weight:800">✓ Đã có — mở 🎒 Túi › Set để mặc</button>'
-       :'<button class="b w" onclick="clownBuy()" style="font-weight:800;color:#fff;border:3px solid #4a1d82;border-radius:12px;background:linear-gradient(135deg,#9b5de5,#3a86ff);text-shadow:0 1px 0 #4a1d82">🛒 Mua</button>')+
-  '</div>'+
-  '<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#1fb5a6 0 14px,#fff 14px 28px);margin:8px 0 4px"></div>'+
-  '<button class="b" onclick="circusUI()" style="display:block;width:100%;margin-top:4px">← Quay lại Xe Hề</button>');
+function clAnim(){const cs=document.querySelectorAll('canvas.clv');if(!cs.length||!UI){CLRAF=0;return}const t=performance.now()/1000;cs.forEach(c=>clPrev(c,t));CLRAF=requestAnimationFrame(clAnim)}
+const CL_TOP=()=>'<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#3b32d6 0 14px,#fff 14px 28px);margin:2px 0 8px"></div>';
+const CL_BOT=()=>'<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#1fb5a6 0 14px,#fff 14px 28px);margin:8px 0 4px"></div>';
+
+/* ---- danh sách: lưới 3 cột ---- */
+window.clownShopUI=()=>{CLV='list';
+ let h=head('🤡 Tiệm Chú Hề')+CL_TOP()+
+  '<div style="text-align:center;font-weight:800;color:#4a1d82;font-size:14px;margin-bottom:6px">“Hề hề! Đồ xịn chỉ có ở tiệm của Chú Hề thôi nha!” 🎪</div>'+
+  '<div class="mut" style="text-align:center;margin-bottom:6px">Mỗi món cần <b>đủ cả 3 loại</b>: 🪙 Xu • '+clQv()+' Xu quái vật • 💎 Kim cương</div>'+
+  '<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+
+  CL_ITEMS.map(it=>{const own=clOwn(it.k);
+   return '<button class="sq'+(own?' z':'')+'" onclick="clownItem(\''+it.k+'\')" style="padding:6px 3px;gap:3px">'+
+    '<canvas class="clv" data-k="'+it.k+'" data-z="2" width="52" height="66" style="width:78px;height:99px;max-width:100%;image-rendering:pixelated;border-radius:8px;background:linear-gradient(#e4dcfa,#f6eefc 70%,#dcccf0 70%)"></canvas>'+
+    '<b>'+it.n+'</b>'+
+    (own?'<small>✓ Đã có</small>':'<span style="display:flex;flex-direction:column;align-items:center;gap:1px;margin-top:1px">'+clPriceRows(it)+'</span>')+
+    '</button>'}).join('')+'</div>'+
+  '<div class="mut" style="margin-top:6px">Chạm vào món để xem rõ & mua. Đồ đã mua nằm ở 🎒 Túi › Set.</div>'+CL_BOT()+
+  '<button class="b" onclick="circusUI()" style="display:block;width:100%;margin-top:4px">← Quay lại Xe Hề</button>';
+ openUI(h);document.querySelectorAll('canvas.clv').forEach(c=>clPrev(c,performance.now()/1000));
  if(!CLRAF)CLRAF=requestAnimationFrame(clAnim)};
-window.clownBuy=()=>{const i=clIdx();if(i<0)return;ST.own=ST.own||{};ST.own.s=ST.own.s||[];
- if(ST.own.s.includes(i))return toast('✓ Bạn đã có Hề Quái Đản rồi, mở 🎒 Túi để mặc');
- const miss=[];
- if((ST.xu|0)<CL_PRICE.xu)miss.push('🪙 Xu');
- if((ST.qv|0)<CL_PRICE.qv)miss.push('Xu quái vật');
- if((ST.dia|0)<CL_PRICE.dia)miss.push('💎 Kim cương');
+
+/* ---- chi tiết 1 món: hình lớn xoay + giá + nút Mua ---- */
+window.clownItem=k=>{const it=CL_ITEMS.find(x=>x.k==k);if(!it)return clownShopUI();CLV='item';
+ const own=clOwn(k),miss=own?[]:clMiss(it),can=!own&&!miss.length;
+ openUI(head('🤡 '+it.n)+CL_TOP()+
+  '<div style="border-radius:14px;padding:8px;background:linear-gradient(180deg,#efe6ff,#ffe3f3);border:3px solid #4a1d82;text-align:center">'+
+  '<canvas class="clv" data-k="'+k+'" data-z="3" width="150" height="231" style="width:150px;height:231px;image-rendering:pixelated;border-radius:10px;background:linear-gradient(#cdbdf5,#efe6ff 70%,#d9c8f0 70%)"></canvas>'+
+  '<div style="font-weight:900;font-size:17px;color:#3b32d6;margin:4px 0 2px">'+it.n+'</div>'+
+  '<div class="mut" style="margin-bottom:6px">'+it.d+'</div>'+
+  (own?'<button class="b w z" disabled style="font-weight:800">✓ Đã có — mở 🎒 Túi › Set để mặc</button>'
+   :'<div style="display:inline-flex;flex-direction:column;gap:2px;align-items:flex-start;background:#fff8;border-radius:10px;padding:6px 14px;margin-bottom:8px">'+clPriceRows(it,1)+'</div><br>'+
+    (can?'<button class="b w" onclick="clownBuy(\''+k+'\')" style="font-weight:800;color:#fff;border:3px solid #4a1d82;border-radius:12px;background:linear-gradient(135deg,#9b5de5,#3a86ff);text-shadow:0 1px 0 #4a1d82">🛒 Mua</button>'
+        :'<button class="b w z" disabled style="font-weight:800">🔒 Chưa đủ để mua</button><div class="mut" style="margin-top:4px;color:#c0392b">Còn thiếu: '+miss.join(', ')+'</div>'))+
+  '</div>'+CL_BOT()+
+  '<button class="b" onclick="clownShopUI()" style="display:block;width:100%;margin-top:4px">← Quay lại Tiệm</button>');
+ document.querySelectorAll('canvas.clv').forEach(c=>clPrev(c,performance.now()/1000));
+ if(!CLRAF)CLRAF=requestAnimationFrame(clAnim)};
+
+window.clownBuy=k=>{const it=CL_ITEMS.find(x=>x.k==k),i=clIdx(k);if(!it||i<0)return;ST.own=ST.own||{};ST.own.s=ST.own.s||[];
+ if(ST.own.s.includes(i))return toast('✓ Bạn đã có '+it.n+' rồi, mở 🎒 Túi để mặc');
+ const miss=clMiss(it);                                       // phải ĐỦ CẢ 3 loại, thiếu 1 loại là không mua được
  if(miss.length)return toast('🤡 Chú Hề: “Bạn còn thiếu: '+miss.join(', ')+'”');
- ST.xu-=CL_PRICE.xu;ST.qv=(ST.qv|0)-CL_PRICE.qv;ST.dia=(ST.dia|0)-CL_PRICE.dia;ST.own.s.push(i);
+ ST.xu-=it.pr.xu;ST.qv=(ST.qv|0)-it.pr.qv;ST.dia=(ST.dia|0)-it.pr.dia;ST.own.s.push(i);
  try{xuUp()}catch(e){}save();
- toast('🎉 Chú Hề: “Hề hề! Chúc mừng bạn nhận được Hề Quái Đản!”\nMở 🎒 Túi → Set để mặc');clownShopUI()};
+ toast('🎉 Chú Hề: “Hề hề! Chúc mừng bạn nhận được '+it.n+'!”\nMở 🎒 Túi → Set để mặc');clownItem(k)};
 
 window.circusGo=w=>{
  if(w=='wheel')return wheelUI();

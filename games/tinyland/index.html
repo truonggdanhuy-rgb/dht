@@ -820,7 +820,10 @@ const SETS=[
   {n:'Chú bé mùa đông',k:'wintm',mascot:'wint',wn:'m',wide:1,ach:1,bd:3,ds:'Bộ yêu tinh Noel: mũ xanh đỏ chuông vàng, áo xanh đai đen, tất sọc đỏ trắng. Tóc đen. Không che mặt.',sh:'#2fa04a',pt:'#e23a3a',rpt:'#e23a3a',shoe:'#3fae4e',scarf:'#d8232a'},
   {n:'Cô bé mùa đông',k:'wintf',mascot:'wint',wn:'f',wide:1,ach:1,bd:3,ds:'Bộ yêu tinh Noel: mũ xanh đỏ chuông vàng, áo xanh đai đen, tất sọc đỏ trắng. Tóc hồng nhạt dài ngang cổ. Không che mặt.',sh:'#2fa04a',pt:'#e23a3a',rpt:'#e23a3a',shoe:'#3fae4e',scarf:'#d8232a'},
   // ---- Mascot Hề Quái Đản (1 set chung) — bán ở Tiệm Chú Hề (Xe Hề, Phố xá): cần ĐỦ 1500 Xu + 500 Xu quái vật + 5 💎 (xem circus.js). Hình vẽ: clown.js (mascot:'clown'). Không che mặt. LUÔN để ở CUỐI mảng SETS ----
-  {n:'Hề Quái Đản',k:'clown',mascot:'clown',wide:1,ach:1,ds:'Nón hề cao 2 màu xanh – trắng, tóc xanh đậm, mặt trắng má hồng, áo xanh tay phồng, ngực caro, tất sọc. Không che mặt.',sh:'#3b32d6',pt:'#3b32d6',rpt:'#3b32d6',shoe:'#2c24b0',scarf:'#ffffff'}];
+  {n:'Hề Quái Đản',k:'clown',mascot:'clown',wide:1,ach:1,ds:'Nón hề cao 2 màu xanh – trắng, tóc xanh đậm, mặt trắng má hồng, áo xanh tay phồng, ngực caro, tất sọc. Không che mặt.',sh:'#3b32d6',pt:'#3b32d6',rpt:'#3b32d6',shoe:'#2c24b0',scarf:'#ffffff'},
+  // ---- Mascot Hanbok Tết Rắn (Nam / Nữ) — bán ở Tiệm Chú Hề: cần ĐỦ 5000 Xu + 500 Xu quái vật + 2 💎 mỗi set (xem circus.js). Thân giống nhau, chỉ khác đầu. Hình vẽ: hanbok.js (mascot:'hanbok', hb:'m'|'f'). Không che mặt. Luôn thêm MỚI vào CUỐI mảng SETS ----
+  {n:'Hanbok (Nam)',k:'hanbokm',mascot:'hanbok',hb:'m',wide:1,ach:1,ds:'Nón gat đen cao viền đỏ, dây nón tua ngũ sắc, áo hanbok đỏ thêu rắn vàng, tay áo trắng viền ngũ sắc. Không che mặt.',sh:'#d92a31',pt:'#d92a31',rpt:'#d92a31',shoe:'#a3171f',scarf:'#ffd23a'},
+  {n:'Hanbok (Nữ)',k:'hanbokf',mascot:'hanbok',hb:'f',wide:1,ach:1,ds:'Tóc đen búi củ hành cài trâm vàng, băng đô đỏ nút thắt ngũ sắc, áo hanbok đỏ thêu rắn vàng, tay áo trắng viền ngũ sắc. Không che mặt.',sh:'#d92a31',pt:'#d92a31',rpt:'#d92a31',shoe:'#a3171f',scarf:'#ffd23a'}];
 const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'},{n:'Tóc nâu buộc',k:'tail',c:'#6a3e1e'},{n:'Tóc vàng',k:'short',c:'#e0b84a'},{n:'Mũ len đỏ',k:'beanie',c:'#c0392b',hr:'#2b1d12'},{n:'Mũ len xanh',k:'beanie',c:'#2f6fe0',hr:'#6a3e1e'},
  {n:'Tóc Sailor Moon',k:'sailor',c:'#f6d96b'},{n:'Tóc 2 chùm',k:'bun2',c:'#2a2224'},{n:'Tóc nữ yêu kiều',k:'longf',c:'#201a24'},{n:'Tóc xinh yêu',k:'bobf',c:'#17151c'},
  {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'},
@@ -5825,6 +5828,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="alo.js?v=20261119"></script>
 <script src="winter.js?v=20261120"></script>
 <script src="clown.js?v=20261201"></script>
+<script src="hanbok.js?v=20261202"></script>
 <script src="gianhang.js?v=20261116"></script>
 <script src="perso.js?v=20261116b"></script>
 </body></html>
