@@ -197,6 +197,80 @@ function up(id){const p=P(),u=rowsOf(id).find(x=>x.lv==lvOf(id)+1);if(!u||u.lock
  p.st-=u.star;p.sn-=u.snow;ST.xu-=u.xu;ST.dia-=u.dia;setLv(id,u.lv);xuUp();save();
  toast(u.lv==1?'🔱 Nhận '+u.name+'!\nMở 🎒 Túi › Phụ kiện để trang bị':'✨ '+u.name+' lên cấp '+u.lv+'!');prince()}
 
+/* ===== HIỆU ỨNG CẤP 2+ (vẽ ở độ mịn 0.5 pixel game, được phép tràn khung nhân vật) =====
+   Muốn chỉnh to/nhỏ vòng tròn: đổi RING_RX / RING_RY ngay dưới đây. */
+const RING_RX=28,RING_RY=10;            // bán kính vòng ngoài (pixel game): chiều ngang / chiều dọc (góc nhìn xiên)
+let RING_SELF=0;                        // =1 khi đang vẽ nhân vật của mình (vòng đã vẽ phía sau chân rồi)
+const q5=v=>Math.round(v*2)/2;          // làm tròn tới 0.5 pixel => nét mịn gấp đôi
+const TAU=6.283185;
+/* px(màu,x,y,w,h) = hàm tô tương đối so với tâm chân. front=1: chỉ vẽ nửa phía trước (y>=0). */
+function ringFx(px,t,front){
+ const RX=RING_RX,RY=RING_RY;
+ const P2=(c,x,y,s)=>{if(front&&y<-.4)return;px(c,q5(x),q5(y),s||.5,s||.5)};
+ // 1) mặt nước: các dải sóng đậm nhạt chạy theo thời gian
+ for(let dy=-RY;dy<=RY;dy+=.5){if(front&&dy<0)continue;
+  const f=dy/RY,w=RX*Math.sqrt(Math.max(0,1-f*f)),a=.11+.07*Math.sin(dy*1.7-t*3.4);
+  px('rgba(30,120,235,'+a.toFixed(3)+')',q5(-w),dy,q5(w*2),.5);
+  const w2=w*.72;px('rgba(110,205,255,'+(a*.9).toFixed(3)+')',q5(-w2),dy,q5(w2*2),.5)}
+ // 2) sóng nước lan từ giữa ra, vượt qua cả vòng ngoài rồi tan dần
+ for(let i=0;i<3;i++){const u=(t*.42+i/3)%1,rr=.2+1.12*u,al=(.85*(1-u)*(1-u)).toFixed(3),n=Math.max(36,Math.round(rr*RX*5));
+  for(let k=0;k<n;k++){const an=k/n*TAU,m=1+.03*Math.sin(an*7+t*3+i);
+   P2('rgba(190,240,255,'+al+')',Math.cos(an)*RX*rr*m,Math.sin(an)*RY*rr*m)}}
+ // 3) hai vòng ngoài (dày 1 pixel, gợn sóng nhẹ) + vòng trong nét đứt chạy quanh
+ const ring=(sc,th,col,colBack,dash,rot)=>{const n=Math.round(sc*RX*13);
+  for(let k=0;k<n;k++){const an=k/n*TAU,m=1+.016*Math.sin(an*9+t*2.6)+.008*Math.sin(an*5-t*1.7);
+   if(dash&&Math.sin(an*dash+rot)<-.15)continue;
+   const x=Math.cos(an)*RX*sc*m,y=Math.sin(an)*RY*sc*m,fr=y>=0;
+   for(let j=0;j<th;j++)P2(fr?col:colBack,x,y+(j?.5:0)*(fr?1:-1))}};
+ ring(1,2,'rgba(120,215,255,.98)','rgba(90,185,250,.55)',0,0);
+ ring(.9,1,'rgba(70,160,245,.85)','rgba(60,140,235,.4)',0,0);
+ ring(.64,1,'rgba(210,245,255,.95)','rgba(150,220,255,.5)',9,-t*1.6);
+ // 4) ngôi sao 6 cánh (2 tam giác) xoay chậm trong vòng
+ const rot=t*.28;
+ for(let tri=0;tri<2;tri++){const V=[];for(let v=0;v<3;v++){const an=rot+tri*Math.PI/3+v*TAU/3;V.push([Math.cos(an)*RX*.64,Math.sin(an)*RY*.64])}
+  for(let e=0;e<3;e++){const A=V[e],B=V[(e+1)%3],n=Math.round(Math.hypot(B[0]-A[0],(B[1]-A[1])*RX/RY)*2.2);
+   for(let k=0;k<=n;k++){const u=k/n,x=A[0]+(B[0]-A[0])*u,y=A[1]+(B[1]-A[1])*u;P2(y>=0?'rgba(170,230,255,.8)':'rgba(120,200,255,.4)',x,y)}}}
+ // 5) ký tự ma thuật xoay trên vành giữa hai vòng: gạch + hình thoi phát sáng
+ for(let i=0;i<12;i++){const an=-t*.34+i*TAU/12,c=Math.cos(an),s=Math.sin(an),fr=s>=0,g=.5+.5*Math.sin(t*3+i*1.7);
+  const col=fr?'rgba(225,248,255,'+(.5+.5*g).toFixed(2)+')':'rgba(150,215,255,.42)';
+  if(i%3==0){const x=c*RX*.8,y=s*RY*.8;P2(col,x,y-1);P2(col,x-1,y);P2(col,x+1,y);P2(col,x,y+1);P2(col,x,y)}
+  else{for(let k=0;k<4;k++){const r=.73+k*.045;P2(col,c*RX*r,s*RY*r)}}}
+ // 6) hạt sáng sao chổi chạy vòng quanh vành ngoài (có đuôi)
+ for(let c=0;c<2;c++)for(let k=0;k<9;k++){const an=t*1.5*(c?-1:1)+c*3.14-k*.09,al=(1-k/9),x=Math.cos(an)*RX,y=Math.sin(an)*RY;
+  P2('rgba(255,255,255,'+(al*(y>=0?1:.5)).toFixed(2)+')',x,y,k<2?1:.5)}
+ // 7) bong bóng nước nổi lên từ vòng rồi tan
+ for(let i=0;i<7;i++){const p=(t*.38+i*.143)%1,an=i*2.4+Math.floor(t*.38+i*.143)*1.3,rf=.55+.4*((i*37)%10)/10,x=Math.cos(an)*RX*rf,y0=Math.sin(an)*RY*rf,y=y0-p*13,al=(1-p).toFixed(2);
+  if(front&&y0<0)continue;
+  px('rgba(190,240,255,'+al+')',q5(x+Math.sin(p*9+i)),q5(y),1,1);px('rgba(255,255,255,'+al+')',q5(x+Math.sin(p*9+i)),q5(y),.5,.5)}}
+
+/* Đầu gậy cấp 2+: quả cầu to (bán kính 5.5) vẽ mịn nửa pixel + giá đỡ sóng + vầng nước bao quanh */
+function orbHead(R,tx,ty,sn,cs,t,lv){
+ const OR=5.5,ox=tx+sn*OR,oy=ty-cs*OR-1;
+ const D=(c,x,y,w,h)=>R(c,q5(x),q5(y),w==null?.5:w,h==null?.5:h);
+ const halo=(front)=>{const n=90;for(let k=0;k<n;k++){const an=k/n*TAU,s=Math.sin(an);if((s>=0)!==front)continue;
+   const m=1+.05*Math.sin(an*6+t*3.2),x=Math.cos(an)*(OR+4.3)*m,y=s*2.1*m-Math.cos(an)*1.1;
+   D(front?'rgba(170,232,255,.95)':'rgba(110,200,255,.5)',ox+x,oy+y)}};
+ halo(false);
+ // giá đỡ hình sóng nước + đầu nhọn vàng ôm quả cầu
+ for(let k=0;k<=26;k++){const an=(.18+k/26*.64)*Math.PI,x=Math.cos(an)*(OR+1.3),y=Math.sin(an)*(OR+1.3)-.5;
+  D('#5ab4e8',ox+x,oy+y);D('#5ab4e8',ox-x,oy+y);D('#bfeaff',ox+x,oy+y-.5);D('#bfeaff',ox-x,oy+y-.5)}
+ D('#f0c850',ox-OR-1.8,oy+1,1,1);D('#f0c850',ox+OR+.8,oy+1,1,1);D('#fff3b0',ox-OR-1.8,oy+1);D('#fff3b0',ox+OR+.8,oy+1);
+ // thân quả cầu: nước (dưới mặt sóng) + kính (trên)
+ for(let dx=-OR;dx<=OR;dx+=.5){const h=Math.sqrt(Math.max(0,OR*OR-dx*dx)),sf=.9+.7*Math.sin(t*3.1+dx*1.3)-dx*.05;
+  D('rgba(190,238,255,.34)',ox+dx,oy-h,.5,Math.max(0,h+sf));
+  D('rgba(55,150,240,.62)',ox+dx,oy+sf,.5,Math.max(0,h-sf));
+  D('rgba(225,250,255,.9)',ox+dx,oy+sf-.5)}
+ // viền
+ const n=64;for(let k=0;k<n;k++){const an=k/n*TAU,x=Math.cos(an)*OR,y=Math.sin(an)*OR,lit=Math.cos(an+2.4);
+  D(lit>.35?'rgba(235,252,255,1)':'rgba(95,195,255,.98)',ox+x,oy+y)}
+ // lõi sáng xoáy + phản chiếu
+ for(let k=0;k<10;k++){const an=t*2.2+k*.5,rr=1+k*.28;D('rgba(255,255,255,'+(.8-k*.07).toFixed(2)+')',ox+Math.cos(an)*rr*.9,oy+1.6+Math.sin(an)*rr*.45)}
+ D('#ffffff',ox-3,oy-3,1,1);D('rgba(255,255,255,.85)',ox-1.5,oy-3.8,1,.5);D('rgba(255,255,255,.7)',ox+2.5,oy+2.5);
+ // giọt nước nhỏ bay quanh quả cầu
+ for(let i=0;i<4;i++){const an=t*1.1+i*1.5708,x=Math.cos(an)*(OR+6),y=Math.sin(an)*3.2-1.5;if(Math.sin(an)<0)continue;
+  D('rgba(190,240,255,.9)',ox+x,oy+y,1,1);D('#fff',ox+x,oy+y)}
+ halo(true)}
+
 /* ===== QUYỀN TRƯỢNG: hình vẽ (art của ACCS, t:'hold') ===== */
 function art(Pa,lv){
  const R=Pa.side?(c,x,y,w,h)=>Pa.R(c,x+2,y,w,h):Pa.R,t=Pa.t,hy=Pa.hy;
@@ -209,13 +283,18 @@ function art(Pa,lv){
  ln('#7fc4e8',bx,by,tx,ty);ln('#d8f6ff',bx+(sn>.3?0:1),by,tx+(sn>.3?0:1),ty);
  R('#f0c850',Math.round(sn*8),Math.round(hy-cs*8),2,1);                          // vòng vàng ở tay
  R('#f0c850',tx-1,ty+1,3,1);R('#5ab4e8',tx-3,ty,1,2);R('#5ab4e8',tx+3,ty,1,2);R('#8fd6ff',tx-2,ty-1,1,1);R('#8fd6ff',tx+2,ty-1,1,1); // vây nước
- // quả cầu bóng nước
- const ox=tx+Math.round(sn*4),oy=ty-Math.round(cs*4)-1;
+  // quả cầu bóng nước (cấp 1: như cũ • cấp 2+: to hơn, mịn nửa-pixel, có vầng nước + giá đỡ sóng)
+ let ox,oy;
+ if(lv<2){ox=tx+Math.round(sn*4);oy=ty-Math.round(cs*4)-1;
  for(let dy=-4;dy<=4;dy++)for(let dx=-4;dx<=4;dx++){const d=Math.hypot(dx,dy);if(d>4.3)continue;
   if(d>3.2)R('rgba(90,190,255,.95)',ox+dx,oy+dy,1,1);
   else if(dy>1+Math.round(Math.sin(t*3+dx)*.6))R('rgba(60,160,240,.55)',ox+dx,oy+dy,1,1);
   else R('rgba(190,235,255,.38)',ox+dx,oy+dy,1,1)}
  R('#ffffff',ox-2,oy-2,1,1);R('rgba(255,255,255,.8)',ox-1,oy-3,1,1);R('rgba(255,255,255,.6)',ox+2,oy+2,1,1);
+ }else{orbHead(R,tx,ty,sn,cs,t,lv);const OR=5.5;ox=tx+Math.round(sn*OR);oy=ty-Math.round(cs*OR)-1;
+  // sóng nước xoắn quanh cán gậy (vầng nước mỏng)
+  const nL=Math.hypot(tx-bx,ty-by);for(let k=0;k<=nL*2;k++){const u=k/(nL*2),ph=u*16-t*4.2,off=Math.sin(ph)*1.9*(.35+.65*u),al=(.25+.5*Math.max(0,Math.cos(ph))).toFixed(2);
+   R('rgba(150,225,255,'+al+')',q5(bx+(tx-bx)*u+cs*off),q5(by+(ty-by)*u+sn*off),.5,.5)}}
  // bóng nước nhỏ bay lên
  for(let i=0;i<3;i++){const p=((t*.45)+i/3)%1,bxx=ox+Math.round(Math.sin(t*2.5+i*2.1)*2)+(i-1)*2,byy=oy-5-Math.round(p*14),a=(1-p).toFixed(2);
   R('rgba(190,235,255,'+a+')',bxx,byy,2,2);R('rgba(255,255,255,'+a+')',bxx,byy,1,1)}
@@ -227,13 +306,9 @@ function art(Pa,lv){
    else{x=Math.round(sx+e*(12+k*5));y=Math.round(sy-e*(7-k*2)+e*e*9+Math.sin(e*5+k)*1)}
    if(e<1.3){R('rgba(90,190,255,.9)',x+1,y,1,1);R('rgba(90,190,255,.9)',x,y+1,1,1);R('rgba(90,190,255,.9)',x+2,y+1,1,1);R('rgba(90,190,255,.9)',x+1,y+2,1,1);R('rgba(200,240,255,.5)',x+1,y+1,1,1);R('#fff',x+1,y,1,1)}
    else{R('rgba(220,245,255,.8)',x-1,y,1,1);R('rgba(220,245,255,.8)',x+3,y,1,1);R('rgba(220,245,255,.8)',x+1,y-1,1,1);R('rgba(220,245,255,.8)',x+1,y+3,1,1)}}}
- // cấp 2: vòng sáng nước dưới chân (ít pixel, ít khung hình)
- if(lv>=2){const q=Math.floor(t*3)%3,c0=Pa.side?0:-6,rx=8+q*1.5,ry=2.4;
-  for(let a=0;a<28;a++){const an=a/28*6.283,cx0=Math.round(Math.cos(an)*rx),cy0=Math.round(Math.sin(an)*ry);
-   if(cy0<0&&Math.abs(cx0)<6)continue;                                       // phía sau bị chân che
-   R(cy0>=0?'rgba(120,205,255,'+(.75-q*.15).toFixed(2)+')':'rgba(120,205,255,.35)',c0+cx0,29+cy0,1,1)}
-  R('rgba(60,160,240,.3)',c0-6,30,12,1);
-  const bs=[[-7,0],[6,1],[-3,2],[3,0]][q];R('rgba(230,250,255,.95)',c0+bs[0],27-bs[1],1,1);R('rgba(230,250,255,.8)',c0-bs[0],26+bs[1],1,1)}}
+  // cấp 2+: vòng tròn ma thuật nước dưới chân. Nhân vật của mình: vẽ phía sau chân ở drawPlayer (bên dưới).
+  // Người chơi khác: chỉ vẽ nửa phía trước (không đè lên thân) để khỏi che nhân vật.
+ if(lv>=2&&!RING_SELF){const c0=Pa.side?0:-6;ringFx((c,x,y,w,h)=>R(c,c0+x,29.5+y,w,h),t,1)}}
 
 
 /* ===== CẤP 3: bóng nước nhỏ bay chậm vây quanh người + dấu chân là bóng nước trồi lên từ mặt đất =====
@@ -253,21 +328,25 @@ function orbits(X,Y,tm,front){const t=tm/1000;
   orb(x,y,i%3?2:3,front?.95:.55)}}
 const dp0=window.drawPlayer;
 window.drawPlayer=function(){
- let on=0;try{const A=ST.av;on=A&&A.m<0&&A.a>=0&&A.a==sci('scepter',3)&&!Pl.sit&&!(HMA&&HMA.hide)&&!(CVON&&CV.boat)}catch(e){}
- if(!on){TRL.length=0;tlx=null;return dp0.apply(this,arguments)}
+ let lv=0;try{const A=ST.av;if(A&&A.m<0&&A.a>=0&&!Pl.sit&&!(HMA&&HMA.hide)&&!(CVON&&CV.boat)){lv=A.a==sci('scepter',3)?3:A.a==sci('scepter',2)?2:0}}catch(e){}
+ if(!lv){TRL.length=0;tlx=null;return dp0.apply(this,arguments)}
  const tm=performance.now(),X=Math.round(Pl.x),Y=Math.round(Pl.y);
+ // vòng tròn ma thuật dưới chân (phía sau nhân vật), tràn ra ngoài khung nhân vật; không vẽ khi đang làm hành động đặc biệt
+ let drew=0;try{if(!(typeof ACT!=='undefined'&&ACT)){const g=cx.fillStyle;ringFx((c,x,y,w,h)=>{cx.fillStyle=c;cx.fillRect(X+x,Y+y,w,h)},tm/1000,0);cx.fillStyle=g;drew=1}}catch(e){}
+ RING_SELF=drew;
+ if(lv<3){try{return dp0.apply(this,arguments)}finally{RING_SELF=0}}
  if(tlx==null){tlx=X;tly=Y}
  if(Pl.mv&&Math.hypot(X-tlx,Y-tly)>=9){tls=-tls;const d=Pl.d,hz=d>1;
   TRL.push({x:X+(hz?(d==3?-4:4):tls*3),y:Y+(hz?tls*2:(d==1?2:-1)),t:tm});tlx=X;tly=Y;if(TRL.length>16)TRL.shift()}
  else if(!Pl.mv){tlx=X;tly=Y}
  for(let i=TRL.length-1;i>=0;i--){const q=TRL[i],a=(tm-q.t)/1000;
   if(a>1.8){TRL.splice(i,1);continue}
-  if(a<.3){dome(q.x,q.y,1+Math.round(a/.3*2),1+Math.round(a/.3),.9)}                     // trồi lên
-  else if(a<1.5){dome(q.x,q.y-(a>1.3?1:0),3,2,a>1.3?.6:.95)}                                 // đứng yên, sắp vỡ
-  else{const e=(a-1.5)/.3,al=(1-e).toFixed(2);cx.fillStyle='rgba(200,240,255,'+al+')';       // vỡ tung bọt
+  if(a<.3){dome(q.x,q.y,1+Math.round(a/.3*2),1+Math.round(a/.3),.9)}
+  else if(a<1.5){dome(q.x,q.y-(a>1.3?1:0),3,2,a>1.3?.6:.95)}
+  else{const e=(a-1.5)/.3,al=(1-e).toFixed(2);cx.fillStyle='rgba(200,240,255,'+al+')';
    for(const[ox,oy]of[[-1,-1],[1,-1],[-1,1],[1,1]]){cx.fillRect(Math.round(q.x+ox*(2+e*4)),Math.round(q.y+oy*(1+e*3)),1,1)}}}
  orbits(X,Y,tm,false);
- const r0=dp0.apply(this,arguments);
+ let r0;try{r0=dp0.apply(this,arguments)}finally{RING_SELF=0}
  orbits(X,Y,tm,true);
  return r0};
 
