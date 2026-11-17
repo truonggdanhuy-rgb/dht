@@ -261,3 +261,90 @@ function santaPanel(){const n=ST.sb|0;
  +'<div class="sbnote">Mỗi ngày bấm ông Noel 1 lần để nhận 1 huy hiệu tuyết. Đồ đổi được nằm trong 🎒 Túi.</div></div>');
  $('ui').classList.add('wui');if(!SBRAF)SBRAF=requestAnimationFrame(sbAnim);if(typeof actAnimGo=='function')actAnimGo()}
 (function(){const css=document.createElement('style');css.textContent='.sbt.on{border:2px solid #b9d0ea;background:linear-gradient(#f4f9ff,#e6f0fc);color:#3d5f8f}.sbt.on b{font-size:12px;line-height:1.15;text-align:center}.sbt.on small{font-size:10px;color:#7d97b8}canvas.actc.sbx{width:88px;height:122px;margin:0;border-radius:8px;border:0}canvas.sbc{width:88px;height:96px;image-rendering:pixelated;background:linear-gradient(#cfe6ff,#eaf4ff 66%,#d6e8c4 66%);border-radius:8px}.sbb{margin-top:2px;font:inherit;font-weight:800;font-size:12px;padding:4px 8px;border-radius:14px;border:2px solid #7da3cc;background:linear-gradient(#ffffff,#cfe3fa);color:#2f5a96;cursor:pointer}.sbb.lack{opacity:.6}.sbb.own{background:#e5f4e0;border-color:#9ccc90;color:#3a7a35;cursor:default}';document.head.appendChild(css)})();
+
+/* ============================================================
+   🦌 XƯỞNG NOEL — 4 TUẦN LỘC CON bên trái nhà + panel đổi quà (coming soon)
+   • Bấm từng chú tuần lộc: cho ăn 20 Xu, mỗi chú 1 lần/ngày, mỗi lần được 1 🗝️ Chìa khóa Giáng sinh (ST.ck).
+   • Bấm nhà Xưởng Noel: mở panel (xem số chìa khóa, cho ăn nhanh, gian hàng quà = SẮP RA MẮT).
+   • Lưu: ST.ck (số chìa khóa), ST.rdD (ngày), ST.rdF (4 chú đã ăn hôm nay hay chưa).
+   • Đổi giá cho ăn: sửa NXPRICE. Đổi tên/màu: sửa mảng NXD.
+   ============================================================ */
+const NXPRICE=20;
+const NXD=[ /* x, y(chân), tên, lông, lông sáng, mũi, khăn */
+ {x:204,y:114,n:'Bông', c:'#a9794a',l:'#c9985f',nz:'#222',   sc:'#2f6fe0'},
+ {x:230,y:127,n:'Kẹo',  c:'#8b5a2b',l:'#a8723a',nz:'#ff2020',sc:'#d9302a'},
+ {x:256,y:114,n:'Gừng', c:'#c49a6c',l:'#dcb88a',nz:'#222',   sc:'#3f9a4a'},
+ {x:276,y:128,n:'Sao',  c:'#7a5a40',l:'#9a7656',nz:'#222',   sc:'#a040d0'}];
+const NXT0=[-99999,-99999,-99999,-99999];
+function nxDay(){const d=new Date().toDateString();if(ST.rdD!==d||!Array.isArray(ST.rdF)){ST.rdD=d;ST.rdF=[0,0,0,0]}return ST.rdF}
+function nxFeed(i,fromPanel){
+ const f=nxDay(),D=NXD[i];if(!D)return;
+ if(f[i]){toast('🦌 '+D.n+' đã ăn no rồi, mai quay lại nhé!');return}
+ if((ST.xu|0)<NXPRICE){toast('🦌 Cần '+NXPRICE+' Xu để cho '+D.n+' ăn');return}
+ ST.xu-=NXPRICE;f[i]=1;ST.ck=(ST.ck|0)+1;NXT0[i]=performance.now();try{xuUp()}catch(e){}save();
+ toast('🦌 '+D.n+' ăn no rồi! (-'+NXPRICE+' Xu)\n🗝️ +1 Chìa khóa Giáng sinh (đang có '+ST.ck+')');
+ if(fromPanel)nxHouse()}
+function nxFeedAct(i){nxFeed(i,0)}
+const NXKEY='<svg width="46" height="46" viewBox="0 0 40 40" style="flex:none"><g stroke="#a8741c" stroke-width="2" stroke-linejoin="round"><circle cx="13" cy="13" r="9" fill="#ffd23f"/><path d="M19 19L35 35M29 29l4-4M32 32l4-4" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M19 19L35 35M29 29l4-4M32 32l4-4" fill="none" stroke="#ffd23f" stroke-width="3" stroke-linecap="round"/></g><circle cx="13" cy="13" r="3.4" fill="#8f1a1a"/><circle cx="9" cy="8" r="2" fill="#fff6c0"/></svg>';
+function nxHouse(){
+ const f=nxDay(),k=ST.ck|0,n=f.filter(Boolean).length;
+ const lights=[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>'<i style="animation-delay:'+(i*.18).toFixed(2)+'s;background:'+['#ff4040','#ffd23f','#40a0ff','#50e070','#ff80d0'][i%5]+'"></i>').join('');
+ const tiles=NXD.map((D,i)=>'<div class="nxd'+(f[i]?' ok':'')+'"><div class="nxe" style="background:'+D.c+'">🦌</div><b>'+D.n+'</b>'
+  +(f[i]?'<span class="nxs">✓ Đã ăn</span>':'<button class="nxb'+((ST.xu|0)<NXPRICE?' lack':'')+'" onclick="nxFeed('+i+',1)">🥕 '+NXPRICE+' Xu</button>')+'</div>').join('');
+ const gifts=['🎁','🧦','🔔','⛄','🎄','⭐'].map(e=>'<div class="nxg"><span>'+e+'</span><i>🔒</i></div>').join('');
+ openUI(head('🎄 Xưởng Noel')
+ +'<div class="nxcane"></div><div class="nxlights">'+lights+'</div>'
+ +'<div class="nxkey">'+NXKEY+'<div><div class="nxl">Chìa khóa Giáng sinh</div><div class="nxn">'+k+'</div></div></div>'
+ +'<div class="nxsec"><div class="nxh"><span>🦌 Tuần lộc con hôm nay</span><span class="nxc">'+n+'/4</span></div><div class="nxdg">'+tiles+'</div>'
+ +'<div class="nxnote">Mỗi chú ăn 1 lần/ngày, cho ăn '+NXPRICE+' Xu được 1 chìa khóa. Bấm trực tiếp tuần lộc bên trái xưởng cũng được.</div></div>'
+ +'<div class="nxsec"><div class="nxh"><span>🎁 Gian hàng quà Giáng sinh</span><span class="nxc soon">SẮP RA MẮT</span></div><div class="nxgg">'+gifts+'</div>'
+ +'<div class="nxnote">Dùng chìa khóa để đổi quà — Coming soon!</div></div>'
+ +'<div class="pf"><button class="b x" onclick="closeUI()">Đóng</button></div>');
+ $('ui').classList.add('nxui')}
+(function(){
+ /* ---- hình tuần lộc con ---- */
+ const baby=(i,t)=>{const D=NXD[i],x=D.x,y=D.y,fed=(ST.rdD===new Date().toDateString()&&ST.rdF&&ST.rdF[i]);
+  const u=(performance.now()-NXT0[i])/1000,hop=(u>=0&&u<1.2)?-Math.round(Math.abs(Math.sin(u*9))*4):0,
+   bob=hop+(fed?0:Math.round(Math.sin(t*1.8+i*1.7)*.6)),hb=fed?0:Math.round(Math.sin(t*2.2+i)),a=[],z=ZZ(a);
+  r('rgba(60,90,140,.3)',x-9,y+1,18,3);
+  for(const dx of[-7,-4,2,5]){z(D.c,x+dx,y-6+hop,2,5-hop);z('#3a2a22',x+dx,y-1,2,1)}
+  z(D.c,x-8,y-13+bob,16,8);z(D.l,x-8,y-13+bob,16,1);z('#e8d0a8',x-6,y-7+bob,12,2);
+  z('#fff8ee',x-5,y-11+bob,1,1);z('#fff8ee',x-1,y-12+bob,1,1);z('#fff8ee',x+2,y-10+bob,1,1);
+  z('#fff8ee',x-11,y-12+bob,3,3);                                   // đuôi
+  z(D.c,x+5,y-19+bob+hb,5,8);                                       // cổ
+  z(D.sc,x+4,y-13+bob,7,2);z(D.sc,x+4,y-11+bob,2,4);                // khăn
+  z(D.c,x+5,y-25+bob+hb,10,8);z(D.l,x+5,y-25+bob+hb,10,1);          // đầu to
+  z('#e8d0a8',x+12,y-20+bob+hb,4,3);z(D.nz,x+14,y-21+bob+hb,2,2);   // mõm + mũi
+  z(D.c,x+4,y-27+bob+hb,2,3);z(D.c,x+13,y-27+bob+hb,2,3);           // tai
+  z('#e8d8b0',x+7,y-30+bob+hb,1,4);z('#e8d8b0',x+6,y-31+bob+hb,3,1);z('#e8d8b0',x+11,y-30+bob+hb,1,4);z('#e8d8b0',x+10,y-31+bob+hb,3,1);
+  if(fed)z('#111',x+9,y-21+bob+hb,3,1);else z('#111',x+9,y-22+bob+hb,2,2);   // mắt: no = nhắm cười
+  OL(a);
+  if(!fed)r('#fff',x+9,y-22+bob+hb,1,1);
+  r('rgba(255,140,150,.7)',x+7,y-19+bob+hb,2,1);
+  if(D.nz=='#ff2020')E(r,'rgba(255,60,60,.28)',x+15,y-20+bob+hb,5,5);
+  if(!fed){ // bong bóng cà rốt: đang đói
+   const by=y-49+Math.round(Math.sin(t*3+i)*2),bx=x+1;r('#8fb8e8',bx-1,by-1,13,13);r('#fff',bx,by,11,11);r('#fff',bx+4,by+11,3,3);r('#8fb8e8',bx+4,by+13,3,1);
+   r('#ff8a1f',bx+2,by+4,6,3);r('#ff8a1f',bx+3,by+3,4,5);r('#e06a00',bx+4,by+5,1,1);r('#e06a00',bx+6,by+4,1,1);r('#3f9a4a',bx+7,by+2,2,2);r('#3f9a4a',bx+8,by+5,2,1)}
+  else if(u>=0&&u<2.2){for(let k=0;k<3;k++){const p=Math.min(1,u/2.2),hx=x+3+k*5+Math.round(Math.sin(u*5+k)*2),hy=y-36-Math.round(p*18)-k*3;
+   r('rgba(255,70,110,'+(1-p).toFixed(2)+')',hx,hy,2,2);r('rgba(255,70,110,'+(1-p).toFixed(2)+')',hx+3,hy,2,2);r('rgba(255,70,110,'+(1-p).toFixed(2)+')',hx,hy+1,5,2);r('rgba(255,70,110,'+(1-p).toFixed(2)+')',hx+1,hy+3,3,1)}}
+ };
+ NXD.forEach((D,i)=>{
+  WT.sp.push({by:D.y,d:()=>baby(i,performance.now()/1000)});
+  WT.hits.push([D.x-10,D.y-34,28,38,'🦌 '+D.n+' — bấm để cho ăn ('+NXPRICE+' Xu = 1 chìa khóa)','nxd:'+i,[D.x+6,D.y+16]])});
+ WT.lb.push(['TUẦN LỘC CON',240,146]);
+ /* ---- giao diện panel Xưởng Noel (kiểu Giáng sinh) ---- */
+ const css=document.createElement('style');
+ css.textContent='#ui.nxui{background:linear-gradient(170deg,#b3241f 0%,#8f1a1a 42%,#1f5a34 100%);border-color:#ffd23f;box-shadow:0 3px 0 #7a4a14,0 0 18px rgba(255,210,63,.35);color:#fff6e0}'+
+ '#ui.nxui .uh{color:#ffe9a8;text-shadow:0 2px 0 #5a0f0f;font-weight:900;font-size:16px}#ui.nxui .b.x{background:#fff3d6;border-color:#d9a23a;box-shadow:0 2px 0 #a8741c;color:#8f1a1a}'+
+ '.nxcane{height:8px;border-radius:4px;margin:4px 0 2px;background:repeating-linear-gradient(45deg,#d9302a 0 8px,#fff 8px 16px);border:1.5px solid #fff6e0}'+
+ '.nxlights{display:flex;justify-content:space-between;padding:0 6px;margin-bottom:6px}.nxlights i{width:9px;height:12px;border-radius:50% 50% 55% 55%;box-shadow:0 0 6px currentColor;animation:nxtw 1.6s infinite}@keyframes nxtw{50%{opacity:.35;transform:scale(.85)}}'+
+ '.nxkey{display:flex;gap:12px;align-items:center;margin:6px 0 8px;background:linear-gradient(90deg,#fff3d6,#ffe2a0);border:2px solid #d9a23a;border-radius:14px;padding:10px 12px;color:#6b2a1a}'+
+ '.nxl{font-size:12px;font-weight:700;color:#9a4a2a}.nxn{font-size:28px;font-weight:900;color:#b3241f;line-height:1.1}'+
+ '.nxsec{background:rgba(255,246,224,.94);border:2px solid #d9a23a;border-radius:14px;padding:8px;margin:8px 0;color:#6b2a1a}'+
+ '.nxh{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:13px}.nxc{font-size:10px;letter-spacing:1px;background:#d9302a;color:#fff;border-radius:20px;padding:2px 9px}.nxc.soon{background:#2a7a34}'+
+ '.nxdg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}.nxd{display:flex;flex-direction:column;align-items:center;gap:3px;background:#fff;border:2px dashed #e0b070;border-radius:10px;padding:6px 2px}.nxd.ok{border:2px solid #7fc088;background:#eef9ea}'+
+ '.nxe{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid #fff;box-shadow:0 1px 3px #0003}.nxd b{font-size:12px}.nxs{font-size:11px;font-weight:800;color:#2a7a34}'+
+ '.nxb{font:inherit;font-weight:800;font-size:11px;padding:4px 6px;border-radius:12px;border:2px solid #1b5a26;background:linear-gradient(#5cbf6a,#2a7a34);color:#fff;cursor:pointer}.nxb.lack{opacity:.55}'+
+ '.nxgg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}.nxg{position:relative;height:54px;border-radius:10px;background:repeating-linear-gradient(45deg,#fbe3e3 0 8px,#fff 8px 16px);border:2px dashed #d9302a;display:flex;align-items:center;justify-content:center}.nxg span{font-size:26px;filter:grayscale(.6) blur(1.5px);opacity:.7}.nxg i{position:absolute;right:4px;bottom:2px;font-style:normal;font-size:13px}'+
+ '.nxnote{font-size:11px;color:#9a4a2a;text-align:center;margin-top:2px}';
+ document.head.appendChild(css)})();
