@@ -142,7 +142,7 @@ const mkG=()=>[...Array(H)].map(()=>Array(W).fill(0)),solid=mkG(),occ=mkG();
 const blk=(x0,y0,x1,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)solid[y][x]=occ[y][x]=1};
 const mark=(x0,y0,x1,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)occ[y][x]=1};
 var CVON=0,CW=1440,CH=1008,CVLOCK=0;/* cong vien: co + kich thuoc map */
-const isSolid=(x,y)=>{if(CVON)return CV.boat?cvBoatSolid(x,y):cvSolid(x,y);if(MAP=='wt'&&window.WTRK){if(x<-WEXT||x>=WW+WEXT||y<64||y>=WH)return true;for(const b of WTRK)if(x>=b[0]&&x<b[2]&&y>=b[1]&&y<b[3])return true;return false}const tx=Math.floor(x/T),ty=Math.floor(y/T);if(tx<0||ty<0||tx>=W||ty>=H||solid[ty][tx])return true;for(const b of RB)if(x>=b[0]&&x<b[0]+b[2]&&y>=b[1]&&y<b[1]+b[3])return true;return false};
+const isSolid=(x,y)=>{if(CVON)return CV.boat?cvBoatSolid(x,y):cvSolid(x,y);if(WTM&&window.WTRK){if(x<-WEXT||x>=WW+WEXT||y<64||y>=WH)return true;for(const b of WTRK)if(x>=b[0]&&x<b[2]&&y>=b[1]&&y<b[3])return true;return false}const tx=Math.floor(x/T),ty=Math.floor(y/T);if(tx<0||ty<0||tx>=W||ty>=H||solid[ty][tx])return true;for(const b of RB)if(x>=b[0]&&x<b[0]+b[2]&&y>=b[1]&&y<b[1]+b[3])return true;return false};
 const hits=[],LB=[],RB=[];
 // ---------- layout / collisions (goc) ----------
 blk(0,0,W-1,7);blk(0,8,0,H-1);blk(W-1,8,W-1,H-1);blk(0,42,W-1,H-1);
