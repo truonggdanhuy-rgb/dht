@@ -168,6 +168,7 @@ if(typeof _nx=='function')window.nxHouse=function(){_nx.apply(this,arguments);
   return '<div class="nxd nxbox" style="grid-column:span 1"><canvas class="xdc" data-q="'+n+'" width="96" height="120" style="width:64px;height:80px;image-rendering:pixelated"></canvas><b>'+it.n+'</b>'
    +(has?'<span class="nxs">✓ Đã có</span>':'<button class="nxb'+(ok?'':' lack')+'" onclick="xdBuy('+n+')">🗝️ '+XD_PRICE+' • Đổi</button>')+'</div>'}).join('');
  gg.insertAdjacentHTML('beforeend',h);
- const c=document.querySelector('#ui .nxsec:last-of-type .nxc.soon');if(c)c.textContent='3 MÓN';
+ gg.querySelectorAll('.nxg').forEach(e=>e.remove());   // bỏ 5 ô khóa mờ
+ const c=document.querySelector('#ui .nxc.soon');if(c)c.textContent='3 MÓN';
  if(!XRAF)XRAF=requestAnimationFrame(xdAnim)};
 })();
