@@ -130,7 +130,7 @@ function drawFollow(){const b=B();if(!b||!b.big||!b.fl||(CVON&&CV.boat)||(HMA&&H
 function drawTag(){const b=B();if(!b||!b.big||!b.fl||(CVON&&CV.boat)||(HMA&&HMA.hide))return;
  cx.save();cx.font='400 6px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';cx.lineJoin='round';cx.lineWidth=1.4;
  const x=Math.round(PET.x),y=Math.round(PET.y-23);cx.strokeStyle='rgba(30,20,10,.55)';cx.strokeText(b.n,x,y);cx.fillStyle='#eafff1';cx.fillText(b.n,x,y);
- if(SAY&&performance.now()<SAY.until){const t=SAY.txt,by=y-12;cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.lineWidth=1;const w=Math.min(150,cx.measureText(t).width)+10;   // bong bóng thoại
+ if(SAY&&SAY.w&&performance.now()<SAY.until){const t=SAY.txt,by=y-12;cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.lineWidth=1;const w=Math.min(150,cx.measureText(t).width)+10;   // bong bóng thoại
   cx.fillStyle='rgba(30,20,10,.45)';cx.fillRect(x-w/2+1,by-9,w,13);cx.fillStyle='#fffdf0';cx.fillRect(x-w/2,by-10,w,13);cx.fillRect(x-2,by+3,4,2);cx.fillStyle='#3a2412';cx.fillText(t,x,by,w-6)}
  cx.restore()}
 /* móc vào vòng vẽ của game (tên vẽ sau cùng để không bị che) */
@@ -348,7 +348,7 @@ window.bbShopBuy=i=>{const b=B(),m=MINISETS[i];if(!b||!m||!m.shop)return;
 
 
 /* ---------------- 🛁 TẮM + BÓNG NƯỚC ---------------- */
-let BATH=null,SAY=null,NEXTSAY=0,LASTM='';
+let BATH=null,SAY=null,NEXTSAY=0,NEXTWORLD=0,LASTM='';
 const hs=i=>{const v=Math.sin(i*127.1+311.7)*43758.5453;return v-Math.floor(v)};
 /* Bóng nước: cùng kiểu pixel với bóng nước của Cánh Đại dương (viền xanh nhạt + chấm sáng). t = giây từ lúc bắt đầu (0..3).
    o={cx,cy,hw,rise,k}: tâm, nửa bề rộng, độ cao bay lên, k = kích thước 1 "pixel". Mỗi bóng sinh ra ở 0–1.2s, sống 1.3–1.8s → hết trước 3s. */
@@ -396,17 +396,20 @@ function pickLine(b,ctx){const A=b.c=='chi'?'Chị':'Anh',a=A.toLowerCase(),c=ba
  if(h>=18&&h<22)return pk([A+' ơi, tối rồi, trời đẹp ghê!','Em thích đi chơi buổi tối với '+a+'!']);
  return pk([A+' ơi, hôm nay vui ghê!','Em thương '+a+' nhất trên đời!',A+' ơi, mình đi đâu nữa nè?','Em theo '+a+' hoài luôn nha!',A+' ơi, em khỏe re à!','Hihi, em ở đây với '+a+' nè'])}
 function paintSay(){const e=document.getElementById('bbsay');if(!e)return;const on=SAY&&performance.now()<SAY.until;e.textContent=on?SAY.txt:'';e.classList.toggle('on',!!on)}
-function sayNow(ctx){const b=B();if(!b)return;SAY={txt:pickLine(b,ctx),until:performance.now()+4500};NEXTSAY=performance.now()+9000+Math.random()*7000;paintSay()}
+function sayNow(ctx){const b=B();if(!b)return;SAY={txt:pickLine(b,ctx),until:performance.now()+4500,w:0};NEXTSAY=performance.now()+9000+Math.random()*7000;paintSay()}
 
 /* ---------------- NHỊP CẬP NHẬT (gọi mỗi khung hình từ update() của game) ---------------- */
 let acc=0;
 window.bbTick=dt=>{acc+=dt;if(acc<1)return;acc=0;const b=B();if(!b)return;
- // thoại: chỉ khi bé đang đi theo ngoài map, hoặc đang mở panel Bé bỏng
+ // thoại: trong panel Bé bỏng thì nói bình thường; ngoài map CHỈ nói khi thanh đói/chơi/tắm thấp (<30%)
  const flw=!!(b.big&&b.fl),open=isOpen()&&VIEW=='main',now=performance.now();
- if(flw||open){const md=mood(b);
-  if(md!=LASTM){const was=LASTM;LASTM=md;if(was&&md!='ok'&&(!SAY||now>=SAY.until)){SAY={txt:pickLine(b),until:now+4500};NEXTSAY=now+9000+Math.random()*7000}}   // vừa đói/bẩn/buồn → nói ngay
-  else if(now>=NEXTSAY){const far=flw&&typeof Pl!='undefined'&&Math.hypot(Pl.x-PET.x,Pl.y-PET.y)>70;SAY={txt:pickLine(b,far?'far':''),until:now+4500};NEXTSAY=now+9000+Math.random()*7000}
+ if(open){const md=mood(b);
+  if(md!=LASTM){const was=LASTM;LASTM=md;if(was&&md!='ok'&&(!SAY||now>=SAY.until)){SAY={txt:pickLine(b),until:now+4500,w:0};NEXTSAY=now+9000+Math.random()*7000}}
+  else if(now>=NEXTSAY){SAY={txt:pickLine(b),until:now+4500,w:0};NEXTSAY=now+9000+Math.random()*7000}
   paintSay()}
+ else if(flw){const c=bars(b);
+  if(c.f<30||c.s<30||c.h<30){if(now>=NEXTWORLD){SAY={txt:pickLine(b),until:now+4500,w:1};NEXTWORLD=now+30000+Math.random()*15000}}
+  else NEXTWORLD=0}
  // đang dẫn pet đi theo thì Bé bỏng tự về nhà (chỉ 1 pet HOẶC 1 bé)
  if(b.fl&&ST.av.p>=0){b.fl=0;b.pp=-1;save();toast('🏠 '+b.n+' về nhà vì bạn dẫn pet đi theo')}
  const ready=tNow()>=b.gt,hb=$('hbb');if(hb)hb.classList.toggle('rdy',ready);
