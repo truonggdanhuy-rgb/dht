@@ -131,104 +131,238 @@ window.drawMascotBunny=drawBunny;
 if(typeof MASCOT_DRAW!='undefined')MASCOT_DRAW.bunny=drawBunny;
 
 // ===================================================================================
-//  🔥 MASCOT MA ĐỒNG GIÁNG THẾ (ý tưởng Na Tra) — tóc đen dựng gai cao, vằn đỏ trên mặt, ngực trần, váy nâu viền lửa,
-//  dải lụa đỏ bay phấp phới rộng quanh người. Vượt khung 20x31 (tóc/lụa) nên khai báo wide:1 trong SETS.
-//  Cầm tay: Thương ma đồng (ACCS) • Thú cưỡi: Phong hỏa luân (MOUNTS).
+//  🔥 MASCOT MA ĐỒNG GIÁNG THẾ (ý tưởng Na Tra) — PHIÊN BẢN VẼ LẠI (v2), theo QUY-TAC-VE-SET.md
+//  • Đầu/tóc vẽ bằng BẢN ĐỒ PIXEL (HF trước · HB sau · HS ngang) — tóc đen là các lọn cong, bất đối xứng, cùng nghiêng một hướng gió,
+//    3 tông (ngọn tím sáng → gốc đen), viền đậm. Không còn gai tam giác.
+//  • Mặt: mắt đỏ viền khói đen, mày dựng, ngọn lửa đỏ giữa trán, tai nhọn, vằn đỏ hai bên mắt. Mắt/mũi/miệng vẽ bằng code
+//    và giữ đúng toạ độ chuẩn nên biểu cảm faceFx của game vẫn khớp.
+//  • Thân trần có cơ, vòng cổ vàng + ngọc đỏ, vòng tay vàng, đai đỏ, váy nâu viền lửa, chân trần buộc vòng vàng + dép.
+//  • Dải lụa đỏ: CHỈ 2 sợi mảnh 1px bay PHÍA SAU người (không còn quấn quanh người / che mặt).
+//  Muốn chỉnh tóc/đầu: sửa các mảng HF / HB / HS (mỗi ký tự = 1 pixel, bảng màu ở MD_PAL; giữ nguyên số cột mỗi hàng).
+//  Khai báo trong SETS (index.html) giữ nguyên: mascot:'madong', wide:1. Cầm tay: Thương ma đồng (ACCS) • Thú cưỡi: Phong hỏa luân (MOUNTS).
+// ===================================================================================
+const MD_SKN='#f3bd92',MD_SKL='#ffd9b8',MD_SKS='#d1926a',MD_SKX='#a8664a',
+ MD_RD='#d8263a',MD_RDL='#ff5a70',MD_RDD='#8f1228',MD_RDX='#4e0914',
+ MD_GD='#f6c84a',MD_GDL='#fff1a8',MD_GDD='#b8861c',MD_GDX='#6e4a10',
+ MD_BRN='#4a2a2a',MD_BRL='#704034',MD_BRD='#2e1818',
+ MD_FL1='#e2452a',MD_FL2='#ff9a2e',MD_FL3='#ffd34d',
+ MD_RB='#d81f4a',MD_RBL='#ff6a88',MD_RBD='#9a1236',
+ MD_EYE='#e8283e',MD_EYL='#ff8a8a',MD_DK='#1a1624',MD_WH='#ffffff';
+// ký tự trong bản đồ → màu ('.' = trong suốt)
+const MD_PAL={X:'#0a0810',D:'#1a1624',H:'#2e2840',L:'#4f4a72',W:'#9a94c8',
+ s:MD_SKN,S:MD_SKL,t:MD_SKS,u:MD_SKX,R:MD_RD,r:MD_RDL,q:MD_RDD,G:MD_GD,g:MD_GDL,d:MD_GDD,k:MD_GDX};
+// ===================================================================================
+//  BẢN ĐỒ PIXEL ĐẦU — {x,y} = góc trên-trái. X viền · D/H/L/W tóc (đậm → vừa → sáng → ngọn) · s/S/t/u da · R/r/q đỏ.
+const HF={x:-3,y:-9,rows:[
+ "............................",
+ ".................X..........",
+ "...............XXWX.........",
+ "..............XLWDX.........",
+ "..........X..XLLHX..........",
+ ".........XWX.XLHDX..........",
+ ".......XXLHXXLHHX....X......",
+ "......XWLHDXLLHDX...XWX.....",
+ ".....XLDLHDXLHHDX..XLDX.....",
+ "....XLHXLHDXLHHDX.XLHX......",
+ "....XLHXLHDLLHHDXXLHDX......",
+ "....XHDLLHDHHHHDXLHHDX.X....",
+ "...XLHDLHHDHHHHDHHHDX.XWX...",
+ "...XLHHHHHHHHHHDDHHDXXXHX...",
+ "...XLHHDHHHHHHHDDHDXXLLHX...",
+ "....XDHHHHLLsrLLHHHDDLHX....",
+ "....XHDHLLSSRqssLHHDHHDX....",
+ "....XsLHSSssssssssHDtDX.....",
+ "....XssHsSssssssstDssX......",
+ ".....XsDssssssssstDtX.......",
+ "......XDssssssssstDX........",
+ "......XDssssssssstDX........",
+ ".......XXstsssstsXX.........",
+ ".........XttttttX..........."
+]};
+const HB={x:-3,y:-9,rows:[
+ "............................",
+ ".................X..........",
+ "...............XXWX.........",
+ "..............XLWDX.........",
+ "..........X..XLLHX..........",
+ ".........XWX.XLHDX..........",
+ ".......XXLHXXLHHX....X......",
+ "......XWLHDXLLHDX...XWX.....",
+ ".....XLDLHDXLHHDX..XLDX.....",
+ "....XLHXLHDXLHHDX.XLHX......",
+ "....XLHXLHDLLHHDXXLHDX......",
+ "....XHDLLHDHHHHDXLHHDX.X....",
+ "...XLHDLHHDHHHHDHHHDX.XWX...",
+ "...XLHHHHHHHHHHDDHHDXXXHX...",
+ "...XLHHDHHHHHHHDDHDXXLLHX...",
+ "....XHHHHHHHHHHHDHDHLLHX....",
+ "....XHHHHLHHHHHLHDDHHHDX....",
+ "....XsHHHHHDHHHHHHHHtDX.....",
+ "....XssHHHHDHHDHDHDssX......",
+ ".....XtHHHLHDHDHDHHtX.......",
+ "......XHHHHHDHHHHHHX........",
+ ".......XHDHHDHHDHHX.........",
+ "........XDDDDDDDDX..........",
+ ".........XDDXXDDX..........."
+]};
+const HS={x:-6,y:-9,rows:[
+ "..........................",
+ "........XXX...............",
+ ".......XWWDXX.............",
+ "........XWWHDX............",
+ ".........XLWHDX...........",
+ "..........XLDHDX..........",
+ "..........XLHHHDX.........",
+ "..........XLHDHHDX........",
+ "...........XLHHHHDX.......",
+ ".XXXX......XLHDHHDX.......",
+ "XWWHDXXX...XLHDHHDX.......",
+ ".XLLHHDDXXXXHHHHHHDX......",
+ "..XXLLHHHDDXHHHDHHDX......",
+ "....XLLHHHHDHHHDHHDXXX....",
+ ".....XLLLHHHDHHHLLHHDDX...",
+ "......XLHHHHHHHHLHHHHDDX..",
+ ".......XLHHHHHHHHLHHRDDDX.",
+ ".....XXXDHHHHHstHSSsssXX..",
+ "..XXXDDDHHHHHHssDSssstX...",
+ ".XDHHHHHHHHHHHttDsssstsX..",
+ ".XLLLLLLHHHHHHHHDsssstsX..",
+ "..XXXXXXXXXHHHHHDsssstX...",
+ "...........XHHHHHsssssX...",
+ "............XXXXXttttX...."
+]};
+
+function mdStamp(U,m){
+ m.rows.forEach((row,ri)=>{
+  for(let c=0;c<row.length;c++){
+   const ch=row[c];if(ch==='.')continue;
+   let e=c;while(e+1<row.length&&row[e+1]===ch)e++;
+   U(MD_PAL[ch],m.x+c,m.y+ri,e-c+1,1);
+   c=e}})}
+
+// ---------- tiện ích vẽ pixel ----------
+// ---------- DẢI LỤA MẢNH 1px (fn(s,ph) → [x,y], s=0..1) — vẽ PHÍA SAU người ----------
+function mdRibbon(R,fn,n,ph){
+ const P=[];for(let i=0;i<=n;i++)P.push(fn(i/n,ph));
+ for(let i=0;i<=n;i++){const x=rnd(P[i][0]),y=rnd(P[i][1]);R(MD_RBD,x,y+1,1,1)}
+ for(let i=0;i<=n;i++){const x=rnd(P[i][0]),y=rnd(P[i][1]);R(MD_RB,x,y,1,1)}
+ for(let i=1;i<=n;i+=3){const x=rnd(P[i][0]),y=rnd(P[i][1]);R(MD_RBL,x,y,1,1)}
+ const e=P[n],ex=rnd(e[0]),ey=rnd(e[1]);                                   // tua vàng nhỏ ở đầu dải
+ R(MD_GDD,ex,ey,2,2);R(MD_GD,ex,ey,2,1);R(MD_GDL,ex,ey,1,1)}
+// bling ĐỎ RƯỢU nhẹ: vài tia sáng nhỏ lấp lánh quanh người (không che mặt)
+function mdBling(R,t,mv){
+ for(let i=0;i<8;i++){
+  const P=1.9+(i%5)*.45,ph=((t/P)+i*.31)%1,ang=i*2.399+t*.35*(i%2?1:-1);
+  const Rr=8+((i*37)%7),x=10+Rr*cos(ang),y=26-ph*34+sin(t*3+i)*1.2;
+  const a=Math.min(1,ph*5,(1-ph)*2.2);if(a<.12)continue;
+  if(x>2&&x<18&&y>4&&y<17)continue;
+  star(R,x,y,a,i%2?'214,56,92':'150,20,48',i%3==0)}}
+
 // ===================================================================================
 function drawMaDong(r,u,o,S,k){
- const {side,Rt,back,sit,rd,lg}=k,t=performance.now()/1000,mv=!!o.mv;
- const HAIR='#17141c',HL='#383350',HL2='#5e5880',SKN='#f3bd92',SKL='#ffd9b8',SKS='#d1926a',
-  RD='#d8263a',RDL='#ff5a70',RDD='#8f1228',EYE='#e8283e',BRN='#4a2a2a',BRL='#704034',
-  FL1='#e2452a',FL2='#ff9a2e',FL3='#ffd34d',GD='#f6c84a',GDD='#b8861c',GDL='#fff1a8',
-  RB='#d81f4a',RBL='#ff6a88',RBD='#9a1236';
+ const {side,Rt,back,sit,rd,lg}=k,t=performance.now()/1000,mv=!!o.mv,amp=mv?1.6:1;
  const M=(c,x,y,w,h)=>u(c,Rt?x:20-x-w,y,w,h);
  const SY=(c,x,y,w,h)=>{u(c,x,y,w,h);u(c,20-x-w,y,w,h)};
- const fill=(c,L,m)=>L.forEach(q=>{const h=q[3]||1;m?M(c,q[1],q[0],q[2]-q[1],h):u(c,q[1],q[0],q[2]-q[1],h)});
- const amp=mv?1.5:1;
  if(!sit&&!rd)E(r,'rgba(0,0,0,.2)',10,30,8,2);
- // ---- chân trần + sandal ----
- const leg=(x,lift)=>{r(SKN,x,24,4,5-lift);r(SKL,x,24,1,5-lift);r(SKS,x+3,24,1,5-lift);r(GD,x,27-lift,4,1);r(S.shoe,x,29-lift,4,1)};
+
+ // ---- 2 sợi lụa đỏ mảnh PHÍA SAU người (đứng yên: lượn nhẹ; đi: bay ngược ra sau) ----
+ const RLx=(c,x,y,w,h)=>u(c,x,y,w,h),RRx=(c,x,y,w,h)=>u(c,20-x-w,y,w,h);
+ const ribA=(s,ph)=>[4-20*s-(mv?4*s:0)+sin(t*2.4*amp+s*7+ph)*2*s,17-13*s+cos(t*2+s*5+ph)*1.8*s];        // sợi trái: bay lên ngoài vai
+ const ribB=(s,ph)=>[4-18*s-(mv?4*s:0)+sin(t*2.7*amp+s*6+ph)*2*s,19+9*s+cos(t*2.2+s*4+ph)*1.6*s];   // sợi phải: buông xuống ngoài hông
+ const ribS1=(s,ph)=>[5-26*s-(mv?10*s:0),16+2*s+sin(t*2.8*amp+s*6+ph)*(.5+2.2*s)];
+ const ribS2=(s,ph)=>[5-22*s-(mv?9*s:0),21+4*sin(s*PI*.8)+sin(t*2.5*amp+s*5+ph+1.7)*(.4+2*s)];
+ if(!side){mdRibbon(RLx,ribA,40,0);mdRibbon(RRx,ribB,36,1.9)}
+ else{mdRibbon(M,ribS1,46,0);mdRibbon(M,ribS2,40,2.2)}
+
+ // ---- chân trần + vòng chân vàng + dép ----
+ const leg=(x,lift)=>{r(MD_SKN,x,24,4,5-lift);r(MD_SKL,x,24,1,5-lift);r(MD_SKS,x+3,24,1,5-lift);r(MD_GD,x,27-lift,4,1);r(MD_GDL,x,27-lift,1,1);r(MD_GDD,x+3,27-lift,1,1);r(S.shoe,x,29-lift,4,1);r(MD_GD,x,29-lift,1,1)};
  if(rd){}
  else if(sit)leg(5,0),leg(11,0);
  else if(!side){if(lg>0){leg(11,0);leg(5,1)}else if(lg<0){leg(5,0);leg(11,1)}else{leg(5,0);leg(11,0)}}
  else{const sx=lg*(Rt?2:-2),a=7+sx,b=9-sx;if(lg>0){leg(b,0);leg(a,1)}else if(lg<0){leg(a,0);leg(b,1)}else{leg(a,0);leg(b,0)}}
- // ---- dải lụa đỏ (vẽ 1 sợi: các khối 2x2 nối nhau, đổi sáng/tối dọc sợi) ----
- const rib=(Rf,fn,n,ph)=>{for(let i=0;i<=n;i++){const s2=i/n,p=fn(s2,ph),x=rnd(p[0]),y=rnd(p[1]),wd=s2<.12||s2>.9?2:3;Rf(RBD,x,y+1,wd,2);Rf(RB,x,y,wd,2);Rf(RBL,x,y,wd,1)}};
- // sợi lụa nhìn thẳng: bên trái; bên phải = lật gương
- const ribL=(s2,ph)=>{ // vòng lớn lên cao bên cạnh đầu
-  const a=s2*PI*.95;return[5-10*sin(a)+sin(t*2.2*amp+s2*5+ph)*1.8*s2,19-14*s2+cos(t*1.9+s2*4+ph)*1*s2]};
- const ribLo=(s2,ph)=>{ // vòng thấp buông bên hông
-  const a=s2*PI*.85;return[5-11*sin(a)+sin(t*2.6*amp+s2*5+ph)*1.5*s2,21+6*sin(s2*PI)+cos(t*2+s2*3+ph)*.8*s2]};
+
  if(!side){
-  const RL=(c,x,y,w,h)=>u(c,x,y,w,h),RR=(c,x,y,w,h)=>u(c,20-x-w,y,w,h);
-  rib(RL,ribL,44,0);rib(RR,ribL,44,1.9);rib(RL,ribLo,36,2.4);rib(RR,ribLo,36,.7);
-  // thân trần
-  fill(SKN,MSTD.BF);u(SKL,5,15,2,9);u(SKS,14,15,2,10);
+  // ======================= NHÌN TRƯỚC / SAU =======================
+  // thân trần: nền da + ánh sáng bên trái, bóng bên phải
+  u(MD_SKN,6,14,8,1);u(MD_SKN,4,15,12,9);
+  u(MD_SKL,4,15,1,8);u(MD_SKL,5,16,1,5);u(MD_SKS,14,15,2,9);u(MD_SKX,15,16,1,7);
   if(!back){
-   u(SKS,6,18,4,1);u(SKS,10,18,4,1);u(SKS,9,15,2,4);u(SKS,9,19,2,5);          // cơ ngực + đường giữa
-   u(SKL,7,16,2,2);u(SKL,11,16,2,2);u('#c97a60',7,18,1,1);u('#c97a60',12,18,1,1);
-   u(SKS,8,20,4,1);u(SKS,8,22,4,1);                                           // múi bụng
-   u(RD,5,16,2,1);u(RD,13,16,2,1);u(RD,6,17,1,1);u(RD,13,17,1,1);            // vằn đỏ trên vai
-   u(GD,6,14,8,1);u(GDD,7,15,6,1);u(GD,9,15,2,2);u(RD,9,16,2,1)               // vòng cổ vàng + mặt đá đỏ
-  }else{u(SKS,9,15,2,9);u(SKL,7,16,2,6);u(SKS,5,19,10,1);u(GD,6,14,8,1);u(RD,5,16,2,1);u(RD,13,16,2,1)}
-  // thắt lưng đỏ + váy lửa
-  u(RD,4,22,12,2);u(RDL,4,22,12,1);u(RDD,4,23,12,1);u(GD,9,22,2,2);u(GDL,9,22,1,1);
-  u(BRN,4,24,12,3);u(BRL,5,24,2,3);u(BRL,9,24,2,2);u(BRL,13,24,1,3);u('#2e1818',14,24,2,3);
-  for(let x=4;x<16;x++){u(x%2?FL1:FL2,x,27,1,1);if(x%2==0){u(FL3,x,26,1,1);u(FL1,x,28,1,1)}}
-  // tay: vòng vàng
-  const arm=(x,ay)=>{u(SKN,x,16+ay,3,6);u(SKL,x,16+ay,1,6);u(SKS,x+2,16+ay,1,6);u(GD,x,19+ay,3,1);u(GDD,x,20+ay,3,1);u(SKN,x,22+ay,3,1)};
+   u(MD_SKL,6,16,3,1);u(MD_SKL,10,16,3,1);                                   // đỉnh ngực sáng
+   u(MD_SKS,6,19,4,1);u(MD_SKS,10,19,4,1);u(MD_SKS,9,17,2,1);u(MD_SKS,9,18,1,5);   // dưới ngực + rãnh giữa
+   u('#c97a60',7,18,1,1);u('#c97a60',12,18,1,1);
+   u(MD_SKS,7,21,2,1);u(MD_SKS,11,21,2,1);u(MD_SKL,7,20,1,1);u(MD_SKL,11,20,1,1);u(MD_SKS,8,23,4,1);   // múi bụng
+   u(MD_RD,4,16,2,1);u(MD_RDD,5,17,1,1);u(MD_RD,14,16,2,1);u(MD_RDD,14,17,1,1);u(MD_RD,6,15,1,1);u(MD_RD,13,15,1,1);   // vằn đỏ trên vai
+   // vòng cổ vàng + ngọc đỏ
+   u(MD_GD,6,14,8,1);u(MD_GDL,6,14,2,1);u(MD_GDD,12,14,2,1);
+   u(MD_GDD,7,15,6,1);u(MD_GD,8,15,1,1);u(MD_GD,11,15,1,1);u(MD_GD,9,15,2,1);
+   u(MD_RD,9,16,2,2);u(MD_RDL,9,16,1,1);u(MD_RDD,10,17,1,1);u(MD_GDD,9,18,2,1);
+  }else{
+   u(MD_SKS,9,15,2,8);u(MD_SKL,6,16,2,3);u(MD_SKL,12,16,2,3);u(MD_SKS,6,19,3,1);u(MD_SKS,11,19,3,1);   // xương sống + bả vai
+   u(MD_SKS,7,21,2,1);u(MD_SKS,11,21,2,1);
+   u(MD_GD,6,14,8,1);u(MD_GDD,7,15,6,1);
+   u(MD_RD,4,16,2,1);u(MD_RD,14,16,2,1);
+  }
+  // đai đỏ + khóa vàng
+  u(MD_RD,4,22,12,2);u(MD_RDL,4,22,12,1);u(MD_RDD,4,23,12,1);u(MD_RDX,14,22,2,2);
+  if(!back){u(MD_GD,9,22,2,2);u(MD_GDL,9,22,1,1);u(MD_GDD,10,23,1,1)}
+  else{u(MD_RDD,8,22,4,1);u(MD_RDX,9,23,2,1)}
+  // váy nâu viền lửa
+  u(MD_BRN,4,24,12,3);u(MD_BRL,5,24,2,3);u(MD_BRL,9,24,2,2);u(MD_BRD,14,24,2,3);u(MD_BRD,8,25,1,2);u(MD_BRD,12,25,1,2);
+  for(let x=4;x<16;x++){u(x%2?MD_FL1:MD_FL2,x,27,1,1);if(x%2==0)u(MD_FL3,x,26,1,1);if(x%4==1)u(MD_FL1,x,28,1,1)}
+  // tay: vòng tay vàng + cổ tay vàng
+  const arm=(x,ay)=>{
+   u(MD_SKN,x,16+ay,3,6);u(MD_SKL,x,16+ay,1,6);u(MD_SKS,x+2,16+ay,1,6);
+   u(MD_GD,x,17+ay,3,2);u(MD_GDL,x,17+ay,1,1);u(MD_GDD,x,18+ay,3,1);
+   u(MD_GDD,x,21+ay,3,1);
+   u(MD_SKN,x,22+ay,3,1);u(MD_SKL,x,22+ay,1,1)};
   arm(1,lg);arm(16,-lg);
-  // ---- tóc dựng: các gai (đỉnh, trái->phải) ----
-  ell(u,HAIR,10,6,8,5);
-  const SPK=[[[6,5],[10,-5],[14,5]],[[3,6],[4,-3],[9,5]],[[11,5],[16,-3],[17,6]],[[7,4],[7,-1],[11,4]],
-   [[3,4],[-2,2],[5,9]],[[3,8],[0,12],[6,10]],[[16,4],[22,2],[15,9]],[[16,8],[19,12],[13,10]]];
-  SPK.forEach(q=>poly(u,q,HAIR));
-  line(u,HL,8,2,9,-3);line(u,HL,11,2,12,-4);line(u,HL2,10,-1,10,-3);line(u,HL,5,3,5,-1);line(u,HL,15,3,15,-1);line(u,HL,4,5,0,3);line(u,HL,16,5,20,3);
   // đầu
-  fill(HAIR,MSTD.HF);
-  if(back){u(HL,6,6,2,3);u(HL,12,5,2,4);u(HL,9,8,2,4);u(HAIR,4,12,12,1);u(HL2,7,6,1,2);u(SKS,7,13,6,1);u(SKN,8,13,4,1)}
-  else{
-   // tai nhọn
-   SY(SKN,3,9,2,2);SY(SKN,2,8,1,1);SY(SKS,3,10,1,1);
-   // mặt
-   u(SKN,6,8,8,1);u(SKN,5,9,10,4);u(SKN,6,13,8,1);u(SKL,6,9,2,2);u(SKS,13,9,1,4);u(SKS,7,13,6,1);
-   // tóc mái rẽ giữa
-   u(HAIR,3,5,14,1);u(HAIR,3,6,6,1);u(HAIR,11,6,6,1);u(HAIR,3,7,5,1);u(HAIR,12,7,5,1);u(HAIR,3,8,3,1);u(HAIR,14,8,3,1);u(HAIR,5,8,1,1);u(HAIR,14,8,1,1);
-   u(HL,5,6,2,1);u(HL,13,6,2,1);u(HL2,4,7,1,1);u(HL2,15,7,1,1);
-   // chấm đỏ giữa trán + mày dựng
-   u(RD,9,6,2,2);u(RDL,9,6,1,1);
-   u(HAIR,5,9,3,1);u(HAIR,12,9,3,1);u(HAIR,8,10,1,1);u(HAIR,11,10,1,1);
-   // mắt đỏ (viền mi đen, tròng đỏ, đốm sáng) + vằn đỏ vẽ ngoài mắt
-   SY(HAIR,6,10,3,1);SY(EYE,6,11,3,2);u('#2a0a10',8,11,1,2);u('#2a0a10',11,11,1,2);u('#ffe9e4',6,11,1,1);u('#ffe9e4',13,11,1,1);
-   u(RD,5,11,1,2);u(RD,14,11,1,2);u(RD,4,10,1,1);u(RD,15,10,1,1);u(RDL,6,13,2,1);u(RDL,12,13,2,1);
-   u('#a8523f',9,13,2,1);u(SKS,9,11,1,1)
+  mdStamp(u,back?HB:HF);
+  if(!back){
+   const bl=(performance.now()%4100)<130;
+   if(o.e>0)faceFx(u,o.e,0,0);
+   else{
+    // mày dựng, mắt đỏ viền khói đen, vằn đỏ hai bên mắt
+    u(MD_DK,5,9,3,1);u(MD_DK,12,9,3,1);u(MD_DK,8,10,1,1);u(MD_DK,11,10,1,1);
+    if(bl){u(MD_DK,6,11,3,1);u(MD_DK,11,11,3,1)}
+    else{
+     u(MD_DK,6,10,2,1);u(MD_DK,12,10,2,1);
+     u(MD_WH,6,11,1,1);u(MD_EYE,7,11,1,1);u(MD_DK,8,11,1,1);
+     u(MD_DK,11,11,1,1);u(MD_EYE,12,11,1,1);u(MD_WH,13,11,1,1);
+     u(MD_RDD,6,12,1,1);u(MD_EYE,7,12,2,1);u(MD_EYE,11,12,2,1);u(MD_RDD,13,12,1,1);
+    }
+    u(MD_RD,5,11,1,2);u(MD_RD,14,11,1,2);   // vằn đỏ
+    u(MD_SKS,9,12,2,1);u(MD_SKX,9,12,1,1);                                        // mũi
+    u('#a8523f',8,13,4,1);u(MD_WH,11,13,1,1);                                     // miệng nhếch lộ nanh
+   }
   }
  }else{
-  // ---- nhìn ngang (hướng phải) ----
-  const RM=(c,x,y,w,h)=>M(c,x,y,w,h);
-  // lụa bay ra phía sau (trái) — dài, cuốn theo gió
-  const ribS=(s2,ph)=>[7-15*s2-(mv?5*s2:0)+sin(t*3*amp+s2*6+ph)*1.6*s2,15-3*sin(s2*PI)*1.2+4*sin(s2*7+ph+t*2.4)*s2];
-  const ribS2=(s2,ph)=>[7-13*s2-(mv?4*s2:0)+sin(t*2.6*amp+s2*5+ph)*1.5*s2,22+5*sin(s2*PI*.8)+cos(s2*5+ph+t*2.2)*1.5*s2];
-  rib(RM,ribS,40,0);rib(RM,ribS2,34,2.2);
-  fill(SKN,MSTD.BS,1);M(SKL,6,16,2,8);M(SKS,13,15,2,9);
-  M(SKS,11,17,3,1);M(SKL,10,16,2,2);M('#c97a60',13,18,1,1);M(SKS,12,20,2,1);M(RD,5,16,2,1);
-  M(GD,6,14,7,1);M(GD,12,15,2,2);M(RD,12,16,1,1);
-  M(RD,5,22,10,2);M(RDL,5,22,10,1);M(RDD,5,23,10,1);M(GD,11,22,2,2);
-  M(BRN,5,24,10,3);M(BRL,6,24,2,3);M(BRL,10,24,2,2);
-  for(let x=5;x<15;x++){M(x%2?FL1:FL2,x,27,1,1);if(x%2==0){M(FL3,x,26,1,1);M(FL1,x,28,1,1)}}
-  // tóc: khối tóc + gai quét về phía sau
-  ell(RM,HAIR,8,6,7,5);
-  [[[5,6],[8,-5],[13,5]],[[3,6],[-3,-1],[9,5]],[[3,8],[-5,6],[7,8]],[[3,11],[-4,13],[6,9]],[[8,5],[12,-4],[14,5]],[[5,5],[2,-4],[10,4]]].forEach(q=>poly(RM,q,HAIR));
-  line(RM,HL,8,3,9,-3);line(RM,HL,5,4,0,0);line(RM,HL,4,7,-3,6);line(RM,HL2,10,2,12,-3);
-  fill(HAIR,MSTD.HS,1);
-  M(SKN,9,8,6,1);M(SKN,9,9,6,4);M(SKN,10,13,4,1);M(SKL,10,9,2,2);M(SKS,13,9,1,4);M(SKS,10,13,4,1);
-  M(HAIR,3,5,12,1);M(HAIR,3,6,9,1);M(HAIR,3,7,8,1);M(HAIR,3,8,6,1);M(HAIR,12,6,3,1);M(HAIR,13,7,2,1);M(HAIR,14,8,1,1);M(HL,5,6,3,1);
-  M(SKN,8,9,2,2);M(SKS,8,10,2,1);M(SKN,9,8,1,1);                    // tai nhọn
-  M(RD,13,6,1,2);M(HAIR,11,9,3,1);
-  M('#fff0ee',11,10,1,1);M(EYE,12,10,2,1);M(EYE,11,11,3,1);M('#2a0a10',13,10,1,2);M('#fff',12,10,1,1);
-  M(RD,10,11,1,1);M(RDL,10,12,2,1);M('#a8523f',14,12,1,1);
-  const am=rnd(lg);M(SKN,8+am,16,3,6);M(SKL,8+am,16,1,6);M(SKS,10+am,16,1,6);M(GD,8+am,19,3,1);M(GDD,8+am,20,3,1);M(SKN,8+am,22,3,1);
+  // ======================= NHÌN NGANG (hướng phải) =======================
+  M(MD_SKN,6,14,7,1);M(MD_SKN,5,15,9,9);
+  M(MD_SKL,5,15,1,8);M(MD_SKL,6,16,1,5);M(MD_SKS,13,15,1,9);M(MD_SKX,13,17,1,6);
+  M(MD_SKL,10,16,2,1);M(MD_SKS,10,19,3,1);M('#c97a60',12,18,1,1);M(MD_SKS,11,21,2,1);M(MD_SKL,11,20,1,1);M(MD_SKS,10,23,3,1);
+  M(MD_RD,5,16,2,1);M(MD_RDD,6,17,1,1);
+  M(MD_GD,6,14,7,1);M(MD_GDL,6,14,2,1);M(MD_GDD,11,14,2,1);M(MD_GDD,8,15,4,1);M(MD_GD,12,15,1,1);
+  M(MD_RD,12,16,1,2);M(MD_RDL,12,16,1,1);M(MD_GDD,12,18,1,1);
+  M(MD_RD,4,22,10,2);M(MD_RDL,4,22,10,1);M(MD_RDD,4,23,10,1);M(MD_GD,11,22,2,2);M(MD_GDL,11,22,1,1);
+  M(MD_BRN,5,24,9,3);M(MD_BRL,6,24,2,3);M(MD_BRL,10,24,2,2);M(MD_BRD,12,24,2,3);
+  for(let x=5;x<14;x++){M(x%2?MD_FL1:MD_FL2,x,27,1,1);if(x%2==0)M(MD_FL3,x,26,1,1);if(x%4==1)M(MD_FL1,x,28,1,1)}
+  const am=rnd(lg);
+  M(MD_SKN,8+am,16,3,6);M(MD_SKL,8+am,16,1,6);M(MD_SKS,10+am,16,1,6);
+  M(MD_GD,8+am,17,3,2);M(MD_GDL,8+am,17,1,1);M(MD_GDD,8+am,18,3,1);M(MD_GDD,8+am,21,3,1);
+  M(MD_SKN,8+am,22,3,1);M(MD_SKL,8+am,22,1,1);
+  mdStamp(M,HS);
+  const bl=(performance.now()%4100)<130;
+  if(o.e>0)faceFx(u,o.e,1,Rt);
+  else{
+   M(MD_DK,10,9,4,1);M(MD_DK,10,10,1,1);                                           // mày dựng
+   if(bl)M(MD_DK,11,11,3,1);
+   else{M(MD_DK,11,10,3,1);M(MD_WH,11,11,1,1);M(MD_EYE,12,11,1,1);M(MD_DK,13,11,1,1);M(MD_RDD,11,12,3,1);M(MD_EYE,12,12,1,1)}
+   M(MD_RD,10,11,1,2);M(MD_RD,14,10,1,1);                                          // vằn đỏ
+   M('#a8523f',12,13,2,1);M(MD_WH,13,13,1,1);                                      // miệng
+  }
  }
+ mdBling(u,t,mv);
 }
 window.drawMascotMaDong=drawMaDong;
 if(typeof MASCOT_DRAW!='undefined')MASCOT_DRAW.madong=drawMaDong;
