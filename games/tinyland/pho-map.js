@@ -10,7 +10,7 @@
    ============================================================ */
 (()=>{
 'use strict';
-const PW=960,PH=640,TS=16,GC=PW/TS,GR=PH/TS,CV=window.CV;
+const PW=1440,PH=640,TS=16,GC=PW/TS,GR=PH/TS,CV=window.CV;
 const SOL=new Uint8Array(GC*GR);
 const blk=(x0,y0,x1,y1)=>{for(let ty=Math.floor(y0/TS);ty<=Math.floor((y1-1)/TS);ty++)for(let tx=Math.floor(x0/TS);tx<=Math.floor((x1-1)/TS);tx++)if(tx>=0&&ty>=0&&tx<GC&&ty<GR)SOL[ty*GC+tx]=1};
 const psSolid=(x,y)=>{const tx=Math.floor(x/TS),ty=Math.floor(y/TS);return tx<0||ty<0||tx>=GC||ty>=GR||SOL[ty*GC+tx]===1};
@@ -71,8 +71,8 @@ const mkHouse=(w,h,o)=>o.gold?mkGoldShop(w,h):mk(w,h,(g,r)=>{
   r('#6d5c4e',Math.round(w/2)-8,fy+2,16,fhh-2);r('#4f4036',Math.round(w/2)-6,fy+4,12,fhh-4);r('#f0dcb0',Math.round(w/2)-5,fy+5,4,fhh-6);
   r('#dcecf3',8,fy+2,2,fhh-3)}
  // biển hiệu: khung vàng + nền tối (chữ neon chạy + dải đèn LED được vẽ động ở drawSign)
- r('#2c1c0e',3,y0-24,w-6,24);r('#e2b93b',4,y0-23,w-8,22);r('#ffe27a',4,y0-23,w-8,1);r('#9a7414',4,y0-2,w-8,1);
- r('#140c26',5,y0-22,w-10,20);r('#241640',5,y0-22,w-10,1);if(o.sign.m){r('#0a0618',6,y0-10,w-12,8);r('#3a2a5a',6,y0-10,w-12,1)}
+ if(!o.plain){ r('#2c1c0e',3,y0-24,w-6,24);r('#e2b93b',4,y0-23,w-8,22);r('#ffe27a',4,y0-23,w-8,1);r('#9a7414',4,y0-2,w-8,1);
+ r('#140c26',5,y0-22,w-10,20);r('#241640',5,y0-22,w-10,1);if(o.sign.m){r('#0a0618',6,y0-10,w-12,8);r('#3a2a5a',6,y0-10,w-12,1)}}
  // chậu cây hai bên cửa
  for(const px of[0,w-6]){r('#b9805e',px,h-8,6,8);r('#d49a74',px,h-8,6,2);r('#6fae78',px,h-14,6,6);r('#8fcf98',px+1,h-14,2,2);r('#e59ab3',px+3,h-13,2,2)}
  r('rgba(0,0,0,.1)',0,h-2,w,2)});
@@ -238,6 +238,7 @@ function buildBG(){return mk(PW,PH,(g,r)=>{
  for(let i=0;i<900;i++)r(pk(['#c0c4be','#d2d5cf','#bcc0ba']),Math.floor(rn()*PW),272+Math.floor(rn()*116),2,1);
  for(let x=10;x<PW;x+=44)r('#f0ead7',x,329,24,3);
  for(let i=0;i<9;i++)r('#f0ead7',150+i*9,278,5,46),r('#f0ead7',150+i*9,338,5,46);
+ for(let i=0;i<9;i++)r('#f0ead7',1130+i*9,278,5,46),r('#f0ead7',1130+i*9,338,5,46);
  r('#f0eadf',0,388,PW,3);r('#bfb5a3',0,391,PW,3);
  pave(r,0,394,PW,500,['#dcd3c4','#d6ccbb','#e1d9cb'],'#c8bead');
  // tường thấp + mái nhà phía sau
@@ -479,9 +480,15 @@ function build(){
   [612,98,116,{wall:PAL.peach,aw:['#d9c4e6','#f8f0ea'],balc:1,tile:1,shelf:['#e8c06a','#e0a099','#c9b0dc'],sign:SN('TIỆM THÚ CƯNG','#e3d0ee','#6a4a86','#c79bff',''),shut:'#c9dbe8'}],
   [710,80,118,{gold:1,sign:SN('TIỆM VÀNG','#f0dc96','#8a6a1c','#ffd84d','★ VÀNG 9999 ★')}],
   [790,84,106,{wall:PAL.sky,aw:['#e2b89a','#f8efe2'],balc:1,laundry:1,shelf:['#c99a6a','#f2e0b8'],sign:SN('CÀ PHÊ SÁNG','#e8cfb4','#7a5236','#ffb066','')}],
-  [874,86,118,{wall:PAL.mauve,aw:['#a9c9d6','#f4f0e4'],tank:1,door:'shutter',sign:SN('CẮT TÓC','#d6e8ee','#4a6f80','#6ee7ff','')}]];
+  [874,86,118,{wall:PAL.mauve,aw:['#a9c9d6','#f4f0e4'],tank:1,door:'shutter',sign:SN('CẮT TÓC','#d6e8ee','#4a6f80','#6ee7ff','')}],
+  // ----- KHU MỚI nới sang phải (x960–1440): nhà dân đơn giản, không biển hiệu (plain:1) -----
+  [960,92,114,{plain:1,wall:PAL.sage,aw:['#e2b89a','#f8efe2'],balc:1,tile:1,shelf:['#e0a099','#8fb8e0','#f2d79a'],shut:'#e8c6b0'}],
+  [1052,86,108,{plain:1,wall:PAL.pink,aw:['#b9d6bf','#f6f2e2'],laundry:1,shelf:['#f4f0e4','#9ccaa6']}],
+  [1138,98,118,{plain:1,wall:PAL.cream,aw:['#a9c4dc','#f4f0e4'],tank:1,door:'shutter'}],
+  [1236,90,112,{plain:1,wall:PAL.sky,aw:['#e7b4ae','#f8ece6'],balc:1,tile:1,shelf:['#c99a6a','#8fb8e0','#f2e0b8'],shut:'#cfe0cf'}],
+  [1326,114,116,{plain:1,wall:PAL.lemon,aw:['#d9c4e6','#f8f0ea'],tank:1,shelf:['#e8c06a','#e0a099','#c9b0dc']}]];
  SIGNS.length=0;
- for(const[x,w,h,o]of H){put(mkHouse(w,h,o),x+w/2,156,[x,0,x+w,158]);const g=o.sign;SIGNS.push({x0:x+4,w:w-8,Y:87,t:g.t,m:g.m,col:g.n,ph:x*.37,lights:1})}
+ for(const[x,w,h,o]of H){put(mkHouse(w,h,o),x+w/2,156,[x,0,x+w,158]);if(o.plain)continue;const g=o.sign;SIGNS.push({x0:x+4,w:w-8,Y:87,t:g.t,m:g.m,col:g.n,ph:x*.37,lights:1})}
  // NGÂN HÀNG (thay quán Phở bò cũ)
  put(mkBank(),396,156,[356,0,436,158]);
  SIGNS.push({x0:360,w:72,Y:67,t:'NGÂN HÀNG',m:'★ GỬI TIẾT KIỆM • LÃI MỖI NGÀY • AN TOÀN ★',col:'#ffd23f',ph:1.9,lights:0});
@@ -499,16 +506,17 @@ function build(){
  hit(712,100,76,56,'🥇 Tiệm vàng — vàng 9999, canh giá mua rẻ bán đắt','cv:ps:gold',[750,178]);
  hit(792,100,80,56,'☕ Cà phê sáng — mùi cà phê phin ngào ngạt');
  hit(876,100,82,56,'✂️ Tiệm cắt tóc — chú thợ đi ăn sáng rồi');
+ hit(964,100,84,56,'🏠 Nhà dân — cửa đã đóng then cài');hit(1056,100,78,56,'🏠 Nhà dân — quần áo phơi thơm mùi nắng');hit(1142,100,90,56,'🏠 Nhà dân — cửa cuốn đã kéo xuống');hit(1240,100,82,56,'🏠 Nhà dân — chắc cả nhà đi chợ rồi');hit(1330,100,106,56,'🏠 Nhà dân — chó nhà nào sủa gâu gâu đâu đó');
  // ===== VỈA HÈ TRÊN (y156–268): hàng quán, bàn ghế, xe bánh mì, trà đá, người đi dạo / tập thể dục =====
- for(const x of[262,632,862])put(mkPole(),x,268,[x-3,258,x+3,268]);
- for(const x of[160,440,726])put(mkLamp(),x,266,[x-2,260,x+2,266]);
+ for(const x of[262,632,862,1150,1400])put(mkPole(),x,268,[x-3,258,x+3,268]);
+ for(const x of[160,440,726,1010,1290])put(mkLamp(),x,266,[x-2,260,x+2,266]);
  put(T_BOU,50,232,[36,218,66,232]);hit(26,166,48,66,'🌸 Giàn hoa giấy rực rỡ');
  put(mkBurner(),96,214,[82,204,110,214]);
  hit(80,184,32,32,'🪔 Lư hương trước miếu — vào miếu để thắp nhang nhé','cv:ps:mieu',[96,226]);
  // bàn ghế nhựa (người chơi ngồi được) — dời hết lên vỉa hè
  const ptab=(x,by,ci,sc)=>{put(TBL[ci],x,by,[x-12,by-8,x+12,by]);for(const dx of[-24,24]){const i=seats.length;put(STL[sc[dx<0?0:1]],x+dx,by+3);
    seats.push({x:x+dx,y:by-1,by:by+3,sy:by+16,kind:'stool'});hit(x+dx-8,by-12,16,15,'🪑 Ghế nhựa vỉa hè — bấm E để ngồi','cv:seat:'+i,[x+dx,by+16])}};
- ptab(216,244,1,[2,0]);ptab(402,244,0,[0,1]);ptab(580,246,0,[2,1]);ptab(910,246,1,[0,2]);
+ ptab(216,244,1,[2,0]);ptab(402,244,0,[0,1]);ptab(580,246,0,[2,1]);ptab(910,246,1,[0,2]);ptab(1096,246,2,[1,0]);ptab(1290,246,0,[2,1]);
  hit(368,222,70,34,'🪑 Bàn ghế nhựa vỉa hè');
  // xe bánh mì
  put(mkBmCart(),500,258,[464,242,536,258]);
@@ -527,14 +535,24 @@ function build(){
  hit(640,214,80,40,'🧋 Quán trà đá — khách đang ngồi đọc báo');
  mkNpc({id:'cat',cat:1,x:300,y:214,d:0,set:0,hair:0,lines:[]});
  put(mkCat(),300,216);hit(290,200,22,18,'🐈 Chú mèo đang ngủ gật... khò khò');
+ // ----- KHU MỚI x960–1440: vỉa hè trên -----
+ put(T_GRN,1010,236,[996,222,1024,236]);hit(990,176,44,62,'🌳 Cây xanh bên đường');
+ put(T_BOU,1190,234,[1176,220,1204,234]);hit(1160,170,64,66,'🌸 Giàn hoa giấy rực rỡ');
+ put(T_GRN,1400,236,[1386,222,1414,236]);hit(1380,176,44,62,'🌳 Cây xanh bên đường');
+ put(mkTea(),1352,254,[1330,242,1374,254]);hit(1326,214,52,42,'🧋 Quán trà đá nhỏ');
+ mkNpc({id:'tra2',x:1390,y:250,d:2,set:1,hair:2,prop:'',lines:['Trà đá mát lạnh đây!','Ngồi nghỉ chút cho khỏe nè.','Trà chanh nữa nha, 5 nghìn!']});
+ put(mkNewsBoard(),1050,254,[1038,244,1062,254]);hit(1034,216,32,40,'📰 Bảng báo: "Khu phố mới mở rộng — mời bà con ghé chơi"');
  // người đi dạo (không bấm được): dắt chó, chạy bộ, tập thể dục
  walker({k:'dog',y:192,x0:130,x1:340,sp:17,rest:6,ph:3,set:2,hair:1});
  walker({k:'jog',y:190,x0:600,x1:930,sp:34,rest:0,ph:0,set:3,hair:2});
  walker({k:'jog',y:262,x0:20,x1:170,sp:30,rest:0,ph:5,set:5,hair:0});
  walker({k:'gym',y:258,x:350,ph:0,set:4,hair:3});
+ walker({k:'dog',y:190,x0:1040,x1:1300,sp:17,rest:6,ph:8,set:1,hair:2});
+ walker({k:'jog',y:262,x0:960,x1:1420,sp:32,rest:0,ph:11,set:2,hair:1});
+ walker({k:'gym',y:256,x:1240,ph:3,set:5,hair:2});
  // ===== ĐƯỜNG (y274–388): xe máy, xe đạp, ô tô chạy qua lại =====
  const VL=PW+200;
- [[1,344,44,[['c','#e9d27a']]],[-1,384,52,[['c','#8fb8e0']]]].forEach(([dir,by,sp,L])=>L.forEach((q,i)=>{
+ [[1,344,44,[['c','#e9d27a'],['c','#e0a099']]],[-1,384,52,[['c','#8fb8e0'],['c','#9ccaa6']]]].forEach(([dir,by,sp,L])=>L.forEach((q,i)=>{
    const im=q[0]=='m'?mkMoto(q[1]):q[0]=='c'?mkCar(q[1]):mkBike(),v={dir,by,sp,ph:i*VL/L.length,im,o:outl(im)};dyn(by,()=>drawVeh(v,tmNow()))}));
  // NPC trang trí mới: người đạp xe (chạy → qua phải) & người đẩy xe trái cây (đi sát lề trên, ← qua trái); không thoại, không chạm được
  {const CY={by:316,sp:34,m:60,pause:11,ph:3,set:3,hair:2},FC={by:298,sp:14,m:80,pause:9,ph:30,set:1,hair:0};
@@ -551,6 +569,13 @@ function build(){
  hit(766,430,48,56,'🎰 Vòng quay số — bấm để xem vé của bạn','cv:ps:lot',[790,496]);
  // 2 cô bán hàng rong gánh hàng đã dời sang VỈA HÈ TRÊN ("bên kia đường") để không đụng Xe Hề; đi qua đi lại chậm rãi, không ngồi nghỉ nên không cần ghế
  for(const v of[{y:224,x0:140,x1:252,sp:13,rest:0,ph:0,set:5,hair:2,goods:['#e0584a','#f4d38a','#a8d8b0']},{y:204,x0:400,x1:570,sp:11,rest:0,ph:9,set:3,hair:3,goods:['#a8d8b0','#f6f2e2','#f0a7a0']}])walker(Object.assign({k:'vend'},v))
+ // ----- KHU MỚI x960–1440: vỉa hè dưới (y394–500) -----
+ for(const x of[1010,1180,1400]){put(T_GRN,x,488,[x-12,474,x+12,488]);hit(x-24,430,48,60,'🌳 Cây xanh bên đường')}
+ for(const x of[1090,1340])put(mkLamp(),x,490,[x-2,484,x+2,490]);
+ put(mkBin(),1120,488,[1112,480,1128,488]);put(mkBin(),1270,488,[1262,480,1278,488]);
+ ptab(1230,452,1,[0,2]);ptab(1060,456,2,[1,0]);
+ put(mkBmCart(),1190,486,[1154,470,1226,486]);hit(1152,436,76,50,'🥖 Xe bánh mì — "Bánh mì nóng giòn đây!"','cv:ps:bm');
+ mkNpc({id:'bm2',x:1242,y:484,d:2,set:2,hair:1,prop:'',lines:['Bánh mì nóng giòn đây!','Mới ra lò nè bà con ơi!','Ổ này nhiều pate lắm nha.']});
 
  // ----- TRÙM KIM CƯƠNG: cửa hiệu pastel nhỏ gọn (chỉ chắn 1 hàng ô sát tường) + ông đứng trước cửa -----
  // (hòm kho báu + đống kim cương đã chuyển sang Tiệm nội thất, 500 Xu/món)
@@ -566,7 +591,7 @@ function build(){
  // ----- nhãn -----
   hit(40,478,64,30,'🚪 Ngõ ra — bấm để về Nông Trại','gate',[72,490]);
  // thùng nước, bồn trên mái phía sau
- for(const x of[120,360,640,860])put(mkTank(),x,606);
+ for(const x of[120,360,640,860,1100,1340])put(mkTank(),x,606);
  }
 const tmNow=()=>performance.now()/1000;
 
@@ -585,9 +610,9 @@ function drawCage(g,x,y,R,ang,k){const rr=(c,a,b,w,h)=>{g.fillStyle=c;g.fillRect
  for(let s=0;s<4;s++){const q=ang+s*Math.PI/4;for(let m=2;m<R;m+=2){rr('#a0a7ad',x+Math.cos(q)*m,y+Math.sin(q)*m*.9,1,1);rr('#a0a7ad',x-Math.cos(q)*m,y-Math.sin(q)*m*.9,1,1)}}
  rr('#6a7076',x-2,y-2,4,4);rr('#8d6b3f',x+R+1,y-2,6,3);const hx=x+R+7+Math.cos(ang*2)*3,hy=y+Math.sin(ang*2)*3;rr('#d9b36a',hx-1,hy-1,3,3)}
 function wires(){cx.lineWidth=1;cx.strokeStyle='rgba(76,68,64,.55)';
- const P=[[262,192],[632,192],[862,192]];
+ const P=[[262,192],[632,192],[862,192],[1150,192],[1400,192]];
  for(let i=0;i<P.length-1;i++)for(const dy of[0,5,10]){cx.beginPath();cx.moveTo(P[i][0],P[i][1]+dy);cx.quadraticCurveTo((P[i][0]+P[i+1][0])/2,P[i][1]+dy+16,P[i+1][0],P[i+1][1]+dy);cx.stroke()}
- for(const dy of[0,5]){cx.beginPath();cx.moveTo(262,192+dy);cx.quadraticCurveTo(110,206+dy,0,196+dy);cx.stroke();cx.beginPath();cx.moveTo(862,192+dy);cx.quadraticCurveTo(920,206+dy,960,196+dy);cx.stroke()}}
+ for(const dy of[0,5]){cx.beginPath();cx.moveTo(262,192+dy);cx.quadraticCurveTo(110,206+dy,0,196+dy);cx.stroke();cx.beginPath();cx.moveTo(1400,192+dy);cx.quadraticCurveTo(1422,204+dy,1440,196+dy);cx.stroke()}}
 PS.fx=psFx;
 function psFx(tm,dt){
  if(CV.cur!='ps')return;
