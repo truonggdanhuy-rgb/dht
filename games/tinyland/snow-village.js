@@ -270,6 +270,7 @@ function santaPanel(){const n=ST.sb|0;
    • Đổi giá cho ăn: sửa NXPRICE. Đổi tên/màu: sửa mảng NXD.
    ============================================================ */
 const NXPRICE=20;
+const NXBOXKEY=4,NXBOXMIN=400,NXBOXMAX=900; /* Hộp quà xu Noel: giá (chìa khóa) + khoảng xu ngẫu nhiên (KHÔNG ghi ra giao diện) */
 const NXD=[ /* x, y(chân), tên, lông, lông sáng, mũi, khăn */
  {x:204,y:114,n:'Bông', c:'#a9794a',l:'#c9985f',nz:'#222',   sc:'#2f6fe0'},
  {x:230,y:127,n:'Kẹo',  c:'#8b5a2b',l:'#a8723a',nz:'#ff2020',sc:'#d9302a'},
@@ -285,20 +286,25 @@ function nxFeed(i,fromPanel){
  toast('🦌 '+D.n+' ăn no rồi! (-'+NXPRICE+' Xu)\n🗝️ +1 Chìa khóa Giáng sinh (đang có '+ST.ck+')');
  if(fromPanel)nxHouse()}
 function nxFeedAct(i){nxFeed(i,0)}
+function nxBuy(){
+ const k=ST.ck|0;if(k<NXBOXKEY)return toast('🗝️ Chưa đủ chìa khóa — cần '+NXBOXKEY+', bạn có '+k);
+ ST.ck=k-NXBOXKEY;const xu=NXBOXMIN+Math.floor(Math.random()*(NXBOXMAX-NXBOXMIN+1));ST.xu+=xu;try{xuUp()}catch(e){}save();
+ toast('🎁 Mở hộp quà Noel: +'+xu+' Xu! 🎄');nxHouse()}
 const NXKEY='<svg width="46" height="46" viewBox="0 0 40 40" style="flex:none"><g stroke="#a8741c" stroke-width="2" stroke-linejoin="round"><circle cx="13" cy="13" r="9" fill="#ffd23f"/><path d="M19 19L35 35M29 29l4-4M32 32l4-4" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M19 19L35 35M29 29l4-4M32 32l4-4" fill="none" stroke="#ffd23f" stroke-width="3" stroke-linecap="round"/></g><circle cx="13" cy="13" r="3.4" fill="#8f1a1a"/><circle cx="9" cy="8" r="2" fill="#fff6c0"/></svg>';
 function nxHouse(){
  const f=nxDay(),k=ST.ck|0,n=f.filter(Boolean).length;
  const lights=[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>'<i style="animation-delay:'+(i*.18).toFixed(2)+'s;background:'+['#ff4040','#ffd23f','#40a0ff','#50e070','#ff80d0'][i%5]+'"></i>').join('');
  const tiles=NXD.map((D,i)=>'<div class="nxd'+(f[i]?' ok':'')+'"><div class="nxe" style="background:'+D.c+'">🦌</div><b>'+D.n+'</b>'
   +(f[i]?'<span class="nxs">✓ Đã ăn</span>':'<button class="nxb'+((ST.xu|0)<NXPRICE?' lack':'')+'" onclick="nxFeed('+i+',1)">🥕 '+NXPRICE+' Xu</button>')+'</div>').join('');
- const gifts=['🎁','🧦','🔔','⛄','🎄','⭐'].map(e=>'<div class="nxg"><span>'+e+'</span><i>🔒</i></div>').join('');
+ const ck=ST.ck|0,gifts='<div class="nxd nxbox"><div class="nxe nxeb">🎁</div><b>Hộp quà xu Noel</b><button class="nxb'+(ck<NXBOXKEY?' lack':'')+'" onclick="nxBuy()">🗝️ '+NXBOXKEY+' • Đổi</button></div>'
+  +['🧦','🔔','⛄','🎄','⭐'].map(e=>'<div class="nxg"><span>'+e+'</span><i>🔒</i></div>').join('');
  openUI(head('🎄 Xưởng Noel')
  +'<div class="nxcane"></div><div class="nxlights">'+lights+'</div>'
  +'<div class="nxkey">'+NXKEY+'<div><div class="nxl">Chìa khóa Giáng sinh</div><div class="nxn">'+k+'</div></div></div>'
  +'<div class="nxsec"><div class="nxh"><span>🦌 Tuần lộc con hôm nay</span><span class="nxc">'+n+'/4</span></div><div class="nxdg">'+tiles+'</div>'
  +'<div class="nxnote">Mỗi chú ăn 1 lần/ngày, cho ăn '+NXPRICE+' Xu được 1 chìa khóa. Bấm trực tiếp tuần lộc bên trái xưởng cũng được.</div></div>'
- +'<div class="nxsec"><div class="nxh"><span>🎁 Gian hàng quà Giáng sinh</span><span class="nxc soon">SẮP RA MẮT</span></div><div class="nxgg">'+gifts+'</div>'
- +'<div class="nxnote">Dùng chìa khóa để đổi quà — Coming soon!</div></div>'
+ +'<div class="nxsec"><div class="nxh"><span>🎁 Gian hàng quà Giáng sinh</span><span class="nxc soon">1 MÓN</span></div><div class="nxgg">'+gifts+'</div>'
+ +'<div class="nxnote">Quà mới sắp ra mắt — hãy gom chìa khóa nhé!</div></div>'
  +'<div class="pf"><button class="b x" onclick="closeUI()">Đóng</button></div>');
  $('ui').classList.add('nxui')}
 (function(){
@@ -345,6 +351,6 @@ function nxHouse(){
  '.nxdg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}.nxd{display:flex;flex-direction:column;align-items:center;gap:3px;background:#fff;border:2px dashed #e0b070;border-radius:10px;padding:6px 2px}.nxd.ok{border:2px solid #7fc088;background:#eef9ea}'+
  '.nxe{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid #fff;box-shadow:0 1px 3px #0003}.nxd b{font-size:12px}.nxs{font-size:11px;font-weight:800;color:#2a7a34}'+
  '.nxb{font:inherit;font-weight:800;font-size:11px;padding:4px 6px;border-radius:12px;border:2px solid #1b5a26;background:linear-gradient(#5cbf6a,#2a7a34);color:#fff;cursor:pointer}.nxb.lack{opacity:.55}'+
- '.nxgg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}.nxg{position:relative;height:54px;border-radius:10px;background:repeating-linear-gradient(45deg,#fbe3e3 0 8px,#fff 8px 16px);border:2px dashed #d9302a;display:flex;align-items:center;justify-content:center}.nxg span{font-size:26px;filter:grayscale(.6) blur(1.5px);opacity:.7}.nxg i{position:absolute;right:4px;bottom:2px;font-style:normal;font-size:13px}'+
+ '.nxeb{width:46px;height:46px;font-size:28px;background:linear-gradient(#ff6a5a,#c0281e)!important;border-color:#ffd23f}.nxbox{border:2px solid #e0b070}.nxgg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}.nxg{position:relative;height:54px;border-radius:10px;background:repeating-linear-gradient(45deg,#fbe3e3 0 8px,#fff 8px 16px);border:2px dashed #d9302a;display:flex;align-items:center;justify-content:center}.nxg span{font-size:26px;filter:grayscale(.6) blur(1.5px);opacity:.7}.nxg i{position:absolute;right:4px;bottom:2px;font-style:normal;font-size:13px}'+
  '.nxnote{font-size:11px;color:#9a4a2a;text-align:center;margin-top:2px}';
  document.head.appendChild(css)})();
