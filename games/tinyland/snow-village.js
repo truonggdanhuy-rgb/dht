@@ -277,6 +277,8 @@ const NXD=[ /* x, y(chân), tên, lông, lông sáng, mũi, khăn */
  {x:256,y:114,n:'Gừng', c:'#c49a6c',l:'#dcb88a',nz:'#222',   sc:'#3f9a4a'},
  {x:276,y:128,n:'Sao',  c:'#7a5a40',l:'#9a7656',nz:'#222',   sc:'#a040d0'}];
 const NXT0=[-99999,-99999,-99999,-99999];
+const NXZ={x0:192,x1:266,y0:100,y1:150}; /* vùng tuần lộc đi lại (tọa độ bản đồ): sửa số để rộng/hẹp hơn */
+NXD.forEach((D,i)=>{D.tx=D.x;D.ty=D.y;D.w=Math.random()*2;D.f=1;D.mv=0});
 function nxDay(){const d=new Date().toDateString();if(ST.rdD!==d||!Array.isArray(ST.rdF)){ST.rdD=d;ST.rdF=[0,0,0,0]}return ST.rdF}
 function nxFeed(i,fromPanel){
  const f=nxDay(),D=NXD[i];if(!D)return;
@@ -309,11 +311,18 @@ function nxHouse(){
  $('ui').classList.add('nxui')}
 (function(){
  /* ---- hình tuần lộc con ---- */
- const baby=(i,t)=>{const D=NXD[i],x=D.x,y=D.y,fed=(ST.rdD===new Date().toDateString()&&ST.rdF&&ST.rdF[i]);
+ const nxMove=(D,dt)=>{
+  if(D.w>0){D.w-=dt;D.mv=0;return}
+  const dx=D.tx-D.x,dy=D.ty-D.y,d=Math.hypot(dx,dy);
+  if(d<1.5){D.mv=0;D.w=1.5+Math.random()*3.5;D.tx=NXZ.x0+Math.random()*(NXZ.x1-NXZ.x0);D.ty=NXZ.y0+Math.random()*(NXZ.y1-NXZ.y0);return}
+  const sp=13*dt;D.x+=dx/d*Math.min(sp,d);D.y+=dy/d*Math.min(sp,d);D.mv=1;if(Math.abs(dx)>.5)D.f=dx>0?1:-1};
+ const baby=(i,t)=>{const D=NXD[i],now=performance.now();nxMove(D,Math.min(.1,(now-(D.lt||now))/1000));D.lt=now;D.o.by=D.y;D.h[0]=D.x-10;D.h[1]=D.y-34;D.h[6]=[D.x+6,D.y+16];
+  const x=Math.round(D.x),y=Math.round(D.y),fed=(ST.rdD===new Date().toDateString()&&ST.rdF&&ST.rdF[i]);
   const u=(performance.now()-NXT0[i])/1000,hop=(u>=0&&u<1.2)?-Math.round(Math.abs(Math.sin(u*9))*4):0,
-   bob=hop+(fed?0:Math.round(Math.sin(t*1.8+i*1.7)*.6)),hb=fed?0:Math.round(Math.sin(t*2.2+i)),a=[],z=ZZ(a);
+   gp=Math.sin(t*9+i*2),bob=hop+(D.mv?-Math.round(Math.abs(gp)):fed?0:Math.round(Math.sin(t*1.8+i*1.7)*.6)),hb=(fed||D.mv)?0:Math.round(Math.sin(t*2.2+i)),a=[],z=ZZ(a);
   r('rgba(60,90,140,.3)',x-9,y+1,18,3);
-  for(const dx of[-7,-4,2,5]){z(D.c,x+dx,y-6+hop,2,5-hop);z('#3a2a22',x+dx,y-1,2,1)}
+  cx.save();if(D.f<0){cx.translate(2*x,0);cx.scale(-1,1)}
+  [-7,-4,2,5].forEach((dx,j)=>{const sg=D.mv?(j%2?-gp:gp):0,o=Math.round(sg*2),l=Math.round(Math.max(0,-sg)*2);z(D.c,x+dx+o,y-6+hop,2,5-hop-l);z('#3a2a22',x+dx+o,y-1-l,2,1)});
   z(D.c,x-8,y-13+bob,16,8);z(D.l,x-8,y-13+bob,16,1);z('#e8d0a8',x-6,y-7+bob,12,2);
   z('#fff8ee',x-5,y-11+bob,1,1);z('#fff8ee',x-1,y-12+bob,1,1);z('#fff8ee',x+2,y-10+bob,1,1);
   z('#fff8ee',x-11,y-12+bob,3,3);                                   // đuôi
@@ -328,6 +337,7 @@ function nxHouse(){
   if(!fed)r('#fff',x+9,y-22+bob+hb,1,1);
   r('rgba(255,140,150,.7)',x+7,y-19+bob+hb,2,1);
   if(D.nz=='#ff2020')E(r,'rgba(255,60,60,.28)',x+15,y-20+bob+hb,5,5);
+  cx.restore();
   if(!fed){ // bong bóng cà rốt: đang đói
    const by=y-49+Math.round(Math.sin(t*3+i)*2),bx=x+1;r('#8fb8e8',bx-1,by-1,13,13);r('#fff',bx,by,11,11);r('#fff',bx+4,by+11,3,3);r('#8fb8e8',bx+4,by+13,3,1);
    r('#ff8a1f',bx+2,by+4,6,3);r('#ff8a1f',bx+3,by+3,4,5);r('#e06a00',bx+4,by+5,1,1);r('#e06a00',bx+6,by+4,1,1);r('#3f9a4a',bx+7,by+2,2,2);r('#3f9a4a',bx+8,by+5,2,1)}
@@ -335,9 +345,8 @@ function nxHouse(){
    r('rgba(255,70,110,'+(1-p).toFixed(2)+')',hx,hy,2,2);r('rgba(255,70,110,'+(1-p).toFixed(2)+')',hx+3,hy,2,2);r('rgba(255,70,110,'+(1-p).toFixed(2)+')',hx,hy+1,5,2);r('rgba(255,70,110,'+(1-p).toFixed(2)+')',hx+1,hy+3,3,1)}}
  };
  NXD.forEach((D,i)=>{
-  WT.sp.push({by:D.y,d:()=>baby(i,performance.now()/1000)});
-  WT.hits.push([D.x-10,D.y-34,28,38,'🦌 '+D.n+' — bấm để cho ăn ('+NXPRICE+' Xu = 1 chìa khóa)','nxd:'+i,[D.x+6,D.y+16]])});
- WT.lb.push(['TUẦN LỘC CON',240,146]);
+  const o={by:D.y,d:()=>baby(i,performance.now()/1000)};WT.sp.push(o);
+  const h=[D.x-10,D.y-34,28,38,'🦌 '+D.n+' — bấm để cho ăn ('+NXPRICE+' Xu = 1 chìa khóa)','nxd:'+i,[D.x+6,D.y+16]];WT.hits.push(h);D.o=o;D.h=h});
  /* ---- giao diện panel Xưởng Noel (kiểu Giáng sinh) ---- */
  const css=document.createElement('style');
  css.textContent='#ui.nxui{background:linear-gradient(170deg,#b3241f 0%,#8f1a1a 42%,#1f5a34 100%);border-color:#ffd23f;box-shadow:0 3px 0 #7a4a14,0 0 18px rgba(255,210,63,.35);color:#fff6e0}'+
