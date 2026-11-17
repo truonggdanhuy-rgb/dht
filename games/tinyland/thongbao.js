@@ -62,8 +62,7 @@ function tbaoShowList(){
  let h=head('🔔 Bảng Thông Báo');
  if(ISADM)h+='<button class="b tbbtn" onclick="tbaoNew()" style="font-weight:800;background:#d6f2dc;border-color:#6bb27a;color:#2f6a3c">✍️ Đăng bài mới</button>';
  if(!LIST.length)h+='<div class="sbnote" style="padding:26px 6px;font-size:13px">📭 Chưa có thông báo nào.<br><small>Tin mới sẽ hiện ở đây nha~</small></div>';
- else h+=LIST.map(n=>'<button class="tbi" onclick="tbaoRead('+n.id+')"><img class="tbimg" src="'+esc(n.img)+'" alt="">'+(n.id>seen?'<span class="nw">MỚI</span>':'')+'</button>').join('')+
-  '<div class="mut" style="font-size:11px;text-align:center;margin-top:4px">Chỉ lưu '+10+' tin mới nhất</div>';
+ else h+=LIST.map(n=>'<button class="tbi" onclick="tbaoRead('+n.id+')"><img class="tbimg" src="'+esc(n.img)+'" alt="">'+(n.id>seen?'<span class="nw">MỚI</span>':'')+'</button>').join('');
  openUI(h+'<div class="pf"><button class="b x" onclick="closeUI()">Đóng</button></div>');$('ui').classList.add('wui');
  if(MAXID>seen){setSeen(MAXID)}badge(false)}
 
