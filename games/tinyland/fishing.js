@@ -21,12 +21,17 @@ const RAR=[
  {k:'hi',n:'Quái hiếm',     w:.200,zone:.28,spd:.95,nib:3,col:'#ffd23f'},
  {k:'cc',n:'Quái cao cấp',  w:.003,zone:.22,spd:1.2,nib:4,col:'#ff8ad8'}];
 const MON=[
- {id:'chuot',n:'Chuột nước',        r:0,p:20},
- {id:'nhen', n:'Nhện nước',         r:0,p:20},
- {id:'heo',  n:'Cá heo hồng',       r:0,p:20},
- {id:'chim', n:'Cá chim đỏ',        r:1,p:50},
- {id:'tuoc', n:'Bạch tuộc hoàng kim',r:1,p:50},
- {id:'kq',   n:'Kim Quy',           r:2,p:1500}];
+ {id:'qv_chuot',n:'Chuột nước',        r:0,p:20},
+ {id:'qv_nhen', n:'Nhện nước',         r:0,p:20},
+ {id:'qv_heo',  n:'Cá heo quái vật',   r:0,p:20},
+ {id:'qv_chim', n:'Cá chim đỏ',        r:1,p:50},
+ {id:'qv_tuoc', n:'Bạch tuộc hoàng kim',r:1,p:50},
+ {id:'qv_kq',   n:'Kim Quy',           r:2,p:1500}];
+// QUY ƯỚC ĐẶT TÊN: id quái vật luôn bắt đầu bằng 'qv_' (ví dụ qv_heo) để KHÔNG BAO GIỜ trùng với id nguyên liệu/chuồng/vật phẩm (heo, chim, ...).
+// Thêm quái mới: đặt id dạng 'qv_xxx' ở đây + thêm hình cùng tên 'qv_xxx' trong ART bên dưới.
+const KQ_ID='qv_kq';
+// id cũ (trước khi có tiền tố qv_) -> id mới, dùng để chuyển dữ liệu túi của người chơi đã lưu
+const OLD_ID={chuot:'qv_chuot',nhen:'qv_nhen',heo:'qv_heo',chim:'qv_chim',tuoc:'qv_tuoc',kq:'qv_kq'};
 const SHN=['bóng nhỏ','bóng vừa','bóng to'];
 // ---------- QUÀ VÙNG NƯỚC TỐI ----------
 const ZB=.15;   // tỉ lệ nhận thêm quà khi câu trúng quái ở vùng nước tối (muốn 10–20% thì sửa số này)
@@ -45,51 +50,106 @@ const mkS=(w,h,fn)=>{const c=document.createElement('canvas');c.width=w;c.height
  const L=(col,x0,y0,x1,y1,t)=>{const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0),1);for(let i=0;i<=n;i++)r(col,x0+(x1-x0)*i/n,y0+(y1-y0)*i/n,t||1,t||1)};
  fn(r,E,L,g);return c};
 const ART={
- chuot:()=>mkS(30,20,(r,E,L)=>{
-  L('#e8a9b6',4,15,1,12);L('#e8a9b6',1,12,2,7);
-  E('#6f86a3',13,13,9,5);E('#9fb4cc',12,11,7,3);E('#d6e2ee',14,16,6,2);
-  E('#6f86a3',21,10,5,4);E('#9fb4cc',21,8,4,2);r('#f08aa0',26,11,2,2);
-  E('#6f86a3',19,5,2,2);r('#f2a6b8',19,5,2,2);E('#6f86a3',24,5,2,2);r('#f2a6b8',24,5,2,2);
-  r('#1a1a2e',22,9,2,2);r('#fff',22,9,1,1);
-  L('#dbe6f0',26,12,29,11);L('#dbe6f0',26,13,29,15);
-  r('#e8a9b6',8,18,3,2);r('#e8a9b6',17,18,3,2);
-  r('#8fd4ff',5,4,2,2);r('#e0f6ff',5,4,1,1);r('#8fd4ff',13,2,2,2);r('#8fd4ff',27,16,2,2)}),
- nhen:()=>mkS(28,22,(r,E,L)=>{
-  const lg='#2b3f7a';
-  for(const[y0,x1,y1]of[[9,2,3],[11,0,9],[13,0,15],[15,2,21]]){L(lg,10,y0+1,x1+2,y1,1);L(lg,17,y0+1,25-x1,y1,1)}
-  E('#4f7fd8',14,13,6,5);E('#86aef5',12,11,3,2);r('#3a5fb0',14,9,1,8);
-  E('#4f7fd8',14,7,4,3);
-  r('#fff',11,5,3,3);r('#fff',15,5,3,3);r('#1a1a2e',12,6,2,2);r('#1a1a2e',16,6,2,2);
-  r('#ffd0d8',13,10,1,1);r('#ffd0d8',15,10,1,1);
-  r('rgba(210,245,255,.55)',11,12,6,1);r('rgba(210,245,255,.55)',10,13,1,3);r('rgba(210,245,255,.55)',17,13,1,3);r('rgba(210,245,255,.55)',11,16,6,1)}),
- heo:()=>mkS(32,22,(r,E,L)=>{
-  r('#e66a9c',1,6,3,2);r('#e66a9c',2,8,3,2);r('#e66a9c',1,15,3,2);r('#e66a9c',2,13,3,2);E('#f58fb8',7,12,4,2);
-  E('#f58fb8',15,12,10,5);E('#ffd6e6',15,15,9,2);E('#f58fb8',24,12,4,4);r('#f58fb8',27,13,4,2);r('#ffd6e6',29,14,2,1);
-  r('#e66a9c',11,2,1,1);r('#e66a9c',11,3,2,1);r('#e66a9c',12,4,3,1);r('#e66a9c',12,5,4,1);r('#e66a9c',13,6,5,1);r('#e66a9c',13,7,6,1);
-  r('#e66a9c',18,16,4,2);r('#e66a9c',17,18,3,1);
-  r('#ffb3d0',10,9,8,1);r('#1a1a2e',24,10,2,2);r('#fff',24,10,1,1);r('#c94a7a',26,14,2,1);r('#ff6f9c',22,13,2,1);
-  r('#bfe8ff',20,3,1,2);r('#bfe8ff',23,1,1,2)}),
- chim:()=>mkS(30,24,(r,E,L)=>{
-  L('#e8372a',9,11,1,3,3);L('#e8372a',9,13,1,21,3);L('#ff6a50',9,11,2,5,1);L('#ff6a50',9,13,2,19,1);
-  E('#a8c4e0',17,12,10,9);E('#d9e8f5',17,13,9,7);E('#f4faff',16,16,6,3);r('#fff',13,6,8,1);
-  r('#e8372a',12,5,11,2);r('#ff6a50',13,4,8,1);r('#e8372a',14,3,5,1);
-  r('#e8372a',13,20,9,2);r('#ff6a50',14,21,6,1);
-  r('#e8a09a',22,9,1,7);E('#ffd23f',24,10,2,2);r('#1a1a2e',24,10,2,2);r('#fff',24,10,1,1);r('#c94a3a',27,13,2,1);
-  r('#ff8a7a',15,11,1,1);r('#ff8a7a',18,14,1,1);r('#ff8a7a',16,17,1,1)}),
- tuoc:()=>mkS(30,28,(r,E,L)=>{
-  for(let k=0;k<6;k++){const x0=5+k*4;for(let y=17;y<27;y++){const x=x0+Math.round(Math.sin(y/2+k)*2);r('#f2b01e',x,y,3,1);if(y%3==0)r('#fff0a0',x+1,y,1,1)}}
-  E('#f2b01e',15,9,9,8);E('#ffcf3a',15,8,8,7);r('#fff0a0',10,3,4,2);r('#d98a0a',18,3,2,2);r('#d98a0a',12,8,2,2);r('#d98a0a',20,8,1,1);
-  E('#fff',11,12,3,3);E('#fff',19,12,3,3);r('#1a1a2e',12,12,2,3);r('#1a1a2e',20,12,2,3);r('#fff',12,12,1,1);r('#fff',20,12,1,1);
-  r('#b5650a',14,17,3,1);r('#b5650a',13,16,1,1);r('#b5650a',17,16,1,1);
-  r('#fff',2,3,1,3);r('#fff',1,4,3,1);r('#fff',27,7,1,3);r('#fff',26,8,3,1)}),
- kq:()=>mkS(46,34,(r,E,L)=>{
-  r('#e8b72e',1,22,6,2);E('#e8b72e',9,28,5,3);r('#c98a0a',5,29,2,1);E('#f2c94a',34,28,5,3);r('#c98a0a',38,29,2,1);
-  E('#c98a0a',21,20,17,12);E('#ffcf3a',21,19,16,11);E('#ffe27a',18,14,11,5);
+ qv_chuot:()=>mkS(30,20,(r,E,L)=>{
+  // đuôi gai tím sẫm + gai xương
+  L('#4a3a6a',4,15,1,12);L('#4a3a6a',1,12,2,7);r('#e8e0c8',0,11,1,1);r('#e8e0c8',3,12,1,1);r('#e8e0c8',3,9,1,1);r('#e8e0c8',1,7,1,1);
+  // thân đen tím + bụng tím
+  E('#23253f',13,13,9,5);E('#3b4170',12,11,7,3);E('#6a3f8f',14,16,6,2);
+  // gai xương trên lưng
+  for(const x of[7,10,13,16]){r('#e8e0c8',x,6,1,3);r('#fff8e0',x,5,1,1)}
+  // đầu
+  E('#23253f',21,10,5,4);E('#3b4170',21,8,4,2);r('#ff3d6e',26,11,2,2);
+  // tai nhọn viền đỏ
+  E('#23253f',19,5,2,2);r('#b0204a',19,5,2,2);E('#23253f',24,5,2,2);r('#b0204a',24,5,2,2);
+  // mắt đỏ rực + lông mày dữ
+  r('#ff1e1e',22,9,2,2);r('#ffd9a0',22,9,1,1);r('#0e0e1c',21,8,2,1);r('#0e0e1c',23,7,2,1);
+  // nanh + ria
+  r('#fff',25,13,1,2);r('#fff',27,13,1,2);L('#dbe6f0',26,12,29,10);L('#dbe6f0',26,12,29,15);
+  // chân vuốt xương
+  r('#23253f',8,18,3,2);r('#e8e0c8',10,19,2,1);r('#23253f',17,18,3,2);r('#e8e0c8',19,19,2,1);
+  // giọt độc xanh lá
+  r('#6bffb0',5,4,2,2);r('#e0ffee',5,4,1,1);r('#6bffb0',13,2,2,2);r('#6bffb0',27,16,2,2)}),
+ qv_nhen:()=>mkS(28,22,(r,E,L)=>{
+  const lg='#2a1850';
+  // 8 chân dày có khớp gai
+  for(const[y0,x1,y1]of[[9,2,3],[11,0,9],[13,0,15],[15,2,21]]){L(lg,10,y0+1,x1+2,y1,2);L(lg,17,y0+1,25-x1,y1,2);r('#8a5ad8',x1+2,y1,1,1);r('#8a5ad8',25-x1,y1,1,1)}
+  // thân đen tím
+  E('#2a1850',14,13,6,5);E('#4a2f88',12,11,3,2);
+  // dấu đồng hồ cát hồng-tím trên bụng
+  r('#e02a9a',13,10,3,1);r('#e02a9a',14,11,1,5);r('#e02a9a',13,16,3,1);
+  // đầu
+  E('#2a1850',14,7,4,3);
+  // 4 mắt phát sáng: 2 lớn đỏ + 2 nhỏ xanh lá
+  r('#ff2a2a',11,5,3,3);r('#ff2a2a',15,5,3,3);r('#ffe0a0',11,5,1,1);r('#ffe0a0',15,5,1,1);r('#12081f',12,6,1,2);r('#12081f',16,6,1,2);
+  r('#6bffb0',13,4,1,1);r('#6bffb0',15,4,1,1);
+  // răng nanh
+  r('#fff',12,9,1,2);r('#fff',16,9,1,2);
+  // tơ độc
+  r('rgba(150,255,190,.55)',11,17,6,1);r('rgba(150,255,190,.55)',10,18,1,3);r('rgba(150,255,190,.55)',17,18,1,3)}),
+ qv_heo:()=>mkS(32,22,(r,E,L)=>{
+  // đuôi tím đen xẻ gai
+  r('#2a1a52',1,6,3,2);r('#2a1a52',2,8,3,2);r('#2a1a52',1,15,3,2);r('#2a1a52',2,13,3,2);r('#e0245e',0,5,1,1);r('#e0245e',0,17,1,1);E('#3b2a7a',7,12,4,2);
+  // thân chàm + bụng nhạt
+  E('#3b2a7a',15,12,10,5);E('#c2b4ee',15,15,9,2);E('#3b2a7a',24,12,4,4);r('#3b2a7a',27,13,4,2);
+  // vây lưng gai đỏ thẫm
+  r('#e0245e',11,2,1,1);r('#e0245e',11,3,2,1);r('#e0245e',12,4,3,1);r('#a8143e',12,5,4,1);r('#a8143e',13,6,5,1);r('#a8143e',13,7,6,1);
+  r('#ffb0c8',14,3,1,1);r('#ffb0c8',16,5,1,1);
+  // vây bụng
+  r('#2a1a52',18,16,4,2);r('#2a1a52',17,18,3,1);
+  // vằn sẹo
+  r('#5a48b0',10,9,8,1);r('#e0245e',13,10,1,2);r('#e0245e',17,11,1,2);
+  // mắt đỏ rực + lông mày
+  r('#ff1e1e',24,10,2,2);r('#ffe0a0',24,10,1,1);r('#12081f',23,9,3,1);
+  // miệng răng cưa
+  r('#12081f',26,14,5,1);for(const x of[26,28,30])r('#fff',x,15,1,1);for(const x of[27,29])r('#fff',x,13,1,1);
+  // bong bóng độc
+  r('#6bffb0',20,3,1,2);r('#6bffb0',23,1,1,2)}),
+ qv_chim:()=>mkS(30,24,(r,E,L)=>{
+  // vây đuôi rách đỏ máu
+  L('#9c1020',9,11,1,3,3);L('#9c1020',9,13,1,21,3);L('#ff3a3a',9,11,2,5,1);L('#ff3a3a',9,13,2,19,1);
+  // thân đỏ thẫm
+  E('#6a0f1e',17,12,10,9);E('#a01a2c',17,13,9,7);E('#e8a8a0',16,16,6,3);
+  // gai lưng
+  r('#9c1020',12,5,11,2);r('#e0262e',13,4,8,1);
+  for(const x of[13,15,17,19,21]){r('#ffe08a',x,2+(x==17?-1:0),1,3)}
+  // vây bụng
+  r('#9c1020',13,20,9,2);r('#ff3a3a',14,21,6,1);
+  // mắt vàng rực khe đứng + lông mày
+  r('#12040a',21,8,5,1);E('#ffd23f',24,10,2,2);r('#12040a',24,9,1,3);r('#fff8c0',25,10,1,1);
+  // miệng nanh dài
+  r('#12040a',22,14,6,1);r('#fff',23,15,1,3);r('#fff',26,15,1,3);r('#fff',25,13,1,1);r('#fff',28,13,1,1);
+  // vết thương/vảy sáng
+  r('#ff6a50',15,11,1,1);r('#ff6a50',18,14,1,1);r('#3a0810',16,17,1,1)}),
+ qv_tuoc:()=>mkS(30,28,(r,E,L)=>{
+  // xúc tu vàng đồng sẫm + gai
+  for(let k=0;k<6;k++){const x0=5+k*4;for(let y=17;y<27;y++){const x=x0+Math.round(Math.sin(y/2+k)*2);r('#a8700a',x,y,3,1);if(y%3==0)r('#e8a830',x+1,y,1,1);if(y%4==1)r('#8a2be2',x+2,y,1,1)}}
+  // đầu vàng hoàng kim sẫm
+  E('#b8800a',15,9,9,8);E('#f2b01e',15,8,8,7);r('#ffe27a',10,3,4,2);
+  // đốm tím độc
+  r('#8a2be2',18,3,2,2);r('#8a2be2',12,8,2,2);r('#8a2be2',20,8,1,1);r('#c77dff',19,3,1,1);
+  // 2 mắt đỏ rực khe đứng
+  E('#ff2a2a',11,12,3,3);E('#ff2a2a',19,12,3,3);r('#ffe0a0',10,11,1,1);r('#ffe0a0',18,11,1,1);r('#12081f',12,11,1,4);r('#12081f',20,11,1,4);
+  r('#12081f',9,9,5,1);r('#12081f',17,9,5,1);
+  // mỏ nanh
+  r('#5a2a04',14,17,3,1);r('#fff',13,18,1,2);r('#fff',17,18,1,2);r('#fff',15,18,1,1);
+  // tia sáng tím
+  r('#c77dff',2,3,1,3);r('#c77dff',1,4,3,1);r('#c77dff',27,7,1,3);r('#c77dff',26,8,3,1)}),
+ qv_kq:()=>mkS(46,34,(r,E,L)=>{
+  // chân vuốt
+  r('#e8b72e',1,22,6,2);E('#e8b72e',9,28,5,3);r('#fff',5,29,2,1);E('#f2c94a',34,28,5,3);r('#fff',38,29,2,1);
+  // mai vàng
+  E('#a8700a',21,20,17,12);E('#ffcf3a',21,19,16,11);E('#ffe27a',18,14,11,5);
   for(const x of[13,21,29])L('#d9951a',x,10,x+(x<21?-3:x>21?3:0),27,1);
   L('#d9951a',7,17,35,17,1);L('#d9951a',6,23,36,23,1);
+  // gai mai nhọn
+  for(const x of[9,13,17,21,25,29,33]){const yt=Math.round(19-11*Math.sqrt(Math.max(0,1-Math.pow((x-21)/16,2))));r('#8a5a05',x,yt-3,2,3);r('#fff3a0',x,yt-4,1,1)}
   r('#fff3a0',20,15,2,2);r('#fff3a0',14,20,2,1);r('#fff3a0',27,20,2,1);
   r('#a8700a',5,29,32,2);
-  E('#f6d56a',38,22,4,4);E('#f6d56a',41,19,4,4);r('#1a1a2e',43,18,2,2);r('#fff',43,18,1,1);r('#c98a0a',45,21,1,1);r('#ff9a6a',41,21,2,1)})};
+  // đầu dữ: mắt đỏ rực, mày, nanh
+  E('#f6d56a',38,22,4,4);E('#f6d56a',41,19,4,4);r('#ff1e1e',43,18,2,2);r('#fff',43,18,1,1);r('#7a4a08',42,17,4,1);
+  r('#c98a0a',45,21,1,1);r('#5a2a04',40,22,5,1);r('#fff',41,23,1,2);r('#fff',44,23,1,2);
+  // ánh vàng quanh
+  r('#ffe27a',6,10,1,2);r('#ffe27a',5,11,3,1)})};
 const SPR={},get=id=>SPR[id]||(SPR[id]=ART[id]());
 const idxOf=id=>MON.findIndex(m=>m.id==id);
 
@@ -107,7 +167,9 @@ function put(g,id,x,y,w,t,fx){const s=get(id),h=Math.round(w*s.height/s.width),m
  const sm=g.imageSmoothingEnabled;g.imageSmoothingEnabled=false;g.drawImage(s,Math.round(x-w/2),Math.round(y-h/2),w,h);g.imageSmoothingEnabled=sm}
 
 // ---------- dữ liệu ----------
-const bag=()=>{ST.qvm=(ST.qvm&&typeof ST.qvm=='object'&&!Array.isArray(ST.qvm))?ST.qvm:{};return ST.qvm};
+const bag=()=>{ST.qvm=(ST.qvm&&typeof ST.qvm=='object'&&!Array.isArray(ST.qvm))?ST.qvm:{};
+ for(const o in OLD_ID){if(o in ST.qvm){ST.qvm[OLD_ID[o]]=(ST.qvm[OLD_ID[o]]|0)+(ST.qvm[o]|0);delete ST.qvm[o]}}
+ return ST.qvm};
 const total=()=>Object.values(bag()).reduce((a,b)=>a+(b|0),0);
 const MQ=window.MQ={};
 MQ.items=()=>{const b=bag();const L=MON.map((m,i)=>({n:m.n,idx:i,r:m.r,c:b[m.id]|0})).filter(x=>x.c>0).sort((a,b)=>b.r-a.r||a.idx-b.idx).map(x=>({n:x.n,idx:x.idx,sm:'x'+x.c+(HOLD===x.idx?' • đang cầm':'')}));
@@ -343,7 +405,7 @@ MQ.sell=(id,all)=>{const m=MON[idxOf(id)],b=bag(),c=b[id]|0;if(!m||c<1)return MQ
  const n=all?c:1;b[id]=c-n;ST.qv=(ST.qv|0)+n*m.p;SC=null;try{xuUp()}catch(e){}try{save()}catch(e){}toast('💰 Đã bán '+n+' '+m.n+' → +'+fmtXu(n*m.p)+' Xu quái vật');MQ.sellUI()};
 MQ.sellAll=()=>{const b=bag();let sum=0,n=0;for(const m of MON){const c=b[m.id]|0;if(c>0){sum+=c*m.p;n+=c}}
  if(!n)return toast('Bạn chưa có quái vật nào để bán');
- if((b.kq|0)>0&&!(SC=='all'&&performance.now()<SCT)){SC='all';SCT=performance.now()+4000;toast('⚠️ Trong túi có Kim Quy! Bấm lần nữa để bán tất cả');return}
+ if((b[KQ_ID]|0)>0&&!(SC=='all'&&performance.now()<SCT)){SC='all';SCT=performance.now()+4000;toast('⚠️ Trong túi có Kim Quy! Bấm lần nữa để bán tất cả');return}
  for(const m of MON)b[m.id]=0;ST.qv=(ST.qv|0)+sum;SC=null;try{xuUp()}catch(e){}try{save()}catch(e){}toast('💰 Bán '+n+' quái vật → +'+fmtXu(sum)+' Xu quái vật');MQ.sellUI()};
 MQ.shop=()=>{if(window.bnShop)window.bnShop();else closeUI()};
 })();
