@@ -4094,13 +4094,7 @@ const WB=mk(WW,WH,(g,r)=>{
  g.save();g.translate(136,16); // ho bang
  E(r,'#f4f9ff',146,225,29,14);E(r,'#7fb4dc',146,225,26,11);E(r,'#a9d6f2',144,223,22,8);E(r,'#d9efff',140,221,9,3);
  for(const[x,y,w]of[[132,226,10],[150,230,12],[156,220,8]])r('#e6f6ff',x,y,w,1);g.restore();
- g.save();g.translate(152,0); // nha ong gia Noel
- for(let i=0;i<24;i++){const w=60-i*1.3;r(i<5?'#f4f9ff':(i%4?'#8a2a1a':'#a8381f'),Math.round(174-w/2),76+i,Math.round(w),1)}
- r('#d9e5f6',150,94,48,3);r('#7a4a2a',152,98,44,28);for(let y=100;y<126;y+=5)r('#5a3418',152,y,44,1);r('#a8703c',152,98,3,28);
- r('#6b3a2a',182,66,8,18);r('#f4f9ff',181,64,10,3);
- r('#ffcf6a',157,104,11,10);r('#5a3418',162,104,1,10);r('#5a3418',157,108,11,1);r('#fff0b0',158,105,4,4);
- r('#4a2c14',178,108,12,18);E(r,'#2f8a4a',184,107,5,4);r('#d9302a',182,105,2,2);r('#d9302a',186,108,2,2);
- for(let x=148;x<200;x+=4)r('#f4f9ff',x,126,3,2);g.restore();
+ 
  // thong vien
  // (đã bỏ 2 hàng thông viền) — chỉ còn vài cây lẻ
  for(const[x,y]of[[26,70],[76,66],[238,68],[24,112],[304,404],[392,76],[612,92],[346,404],[622,414]])pineS(r,x,y)});
@@ -4145,7 +4139,7 @@ const wbr=(x0,y0,x1,y1)=>WT.rk.push([x0,y0,x1,y1]);/* vật chặn theo px (x0,y
 const wbk=(a,b,c,d)=>wbr(a*16,b*16,(c+1)*16,(d+1)*16);
 /* cây thông Noel (dời sang trái 40px) */
 wbr(88,64,168,128);wbr(72,128,184,208);wbr(88,192,168,224);
-wbr(298,64,352,128);/* xưởng Noel (dời phải 40px) */
+wbr(286,64,376,128);wbr(392,118,402,128);/* xưởng Noel + cột bảng hiệu */
 wbr(-58,192,-22,236);/* người tuyết */
 wbr(248,224,312,256);/* hồ băng */
 wbr(30,400,62,416);/* bảng cổng nông trại */
@@ -4217,11 +4211,52 @@ WOFF=[24,0];
 for(const lx of[56,150])WT.sp.push({by:206,d:()=>{const t=performance.now()/1000,f=Math.round(Math.sin(t*5+lx)*1);
  r('rgba(60,90,140,.3)',lx-4,205,10,2);for(let k=0;k<44;k+=4)r(k%8?'#f4f9ff':'#d9302a',lx,206-k,2,4);r('#d9302a',lx+1,160,5,2);r('#f4f9ff',lx+4,160,2,4);
  E(r,'rgba(255,200,110,'+(.16+f*.03).toFixed(2)+')',lx+4,168,14,12);r('#ffe27a',lx+3,164,4,6);r('#fff6c0',lx+4,165,2,3);r('#6b4a2a',lx+3,162,4,2)}});
-WOFF=[152,0];
-WT.sp.push({by:132,d:()=>{const t=performance.now()/1000;
- for(let i=0;i<6;i++){const p=(t*.5+i/6)%1;r('rgba(235,240,250,'+(.55*(1-p)).toFixed(2)+')',Math.round(186+Math.sin(t+i)*3+p*10),Math.round(62-p*30),Math.round(3+p*3),Math.round(3+p*3))}
- r('rgba(255,200,100,'+(.14+.06*Math.sin(t*3)).toFixed(2)+')',150,98,22,20);
- for(let k=0;k<11;k++)r(['#ff4040','#ffd23f','#40a0ff','#50e070'][(k+Math.floor(t*2))%4],150+k*4,97+(k%2)*2,2,2)}});
+WOFF=[0,0];
+const WSH=outl(mk(150,100,(g,r)=>{/* xưởng Noel — gốc (270,40), đáy nhà y=128 */
+ /* tường gỗ */
+ r('#6b4220',26,50,68,38);for(let y=52;y<88;y+=4){r(y%8?'#a8743c':'#8a5a30',26,y,68,3);r('#4a2c14',26,y+3,68,1)}
+ for(let y=51;y<88;y+=4){E(r,'#c99660',25,y+1,2,2);E(r,'#c99660',94,y+1,2,2)}
+ r('#7d8492',26,84,68,5);for(let x=26;x<94;x+=7){r('#5c6370',x,84,1,5);r('#a9b0bd',x+1,84,5,1)}
+ /* mái */
+ for(let i=0;i<37;i++){const w=Math.round(4+i*1.3),c=i%4==3?'#7a1f18':i%2?'#b02f21':'#c8402e';r(c,60-w,14+i,w*2,1);for(let x=60-w+((i%2)*3);x<60+w;x+=6)r('#8f241a',x,14+i,1,1);r('#e2604c',60-w,14+i,Math.min(5,w),1)}
+ for(let i=0;i<9;i++){const w=Math.round(4+i*1.3);r(i<2?'#ffffff':'#eef4fc',60-w,14+i,w*2,1)}
+ for(let x=11;x<110;x+=5){const h=1+((x*7)%3);r('#f4f9ff',x,49,5,2+h);r('#cfe0f5',x,51+h,5,1)}
+ r('#4a2a14',11,48,98,2);
+ /* ống khói */
+ r('#9a4a36',78,6,12,30);for(let y=8;y<36;y+=4){r('#6b3226',78,y,12,1);r('#b8604a',78+(y%8?0:5),y+1,3,1)}r('#6b3226',89,6,1,30);r('#f4f9ff',76,3,16,4);r('#cfe0f5',76,6,16,1);
+ /* cửa sổ tròn gác mái + sao */
+ E(r,'#4a2a14',60,34,8,8);E(r,'#ffd56a',60,34,6,6);r('#fff3b0',57,31,3,3);r('#6b3a1a',60,28,1,12);r('#6b3a1a',54,34,13,1);r('#f4f9ff',54,41,13,2);
+ r('#ffd23f',59,9,3,3);r('#ffd23f',58,10,5,1);r('#fff6c0',60,10,1,1);
+ /* cửa sổ + cửa chớp */
+ for(const x of[33,75]){r('#4a2a14',x-1,61,14,16);r('#ffcf6a',x,62,12,14);r('#fff0b0',x+1,63,4,4);r('#5a3418',x+5,62,2,14);r('#5a3418',x,68,12,2);
+  r('#b3261e',x-4,61,3,16);r('#d9453a',x-4,61,1,16);r('#b3261e',x+13,61,3,16);r('#d9453a',x+13,61,1,16);r('#f4f9ff',x-4,60,20,2);r('#f4f9ff',x-2,77,16,2);r('#cfe0f5',x-2,79,16,1)}
+ /* cửa chính + vòng nguyệt quế */
+ r('#3d2210',51,61,18,28);r('#6b4220',52,62,16,27);r('#8a5a30',52,62,2,27);r('#4a2c14',59,62,2,27);for(let y=65;y<86;y+=7){r('#4a2c14',54,y,5,5);r('#4a2c14',62,y,5,5)}r('#ffd23f',65,76,2,2);
+ for(let a=0;a<18;a++){const t=a/18*6.283;E(r,a%2?'#2f8a4a':'#1f6a3a',60+Math.cos(t)*5,69+Math.sin(t)*5,2,2)}r('#d9302a',55,67,2,2);r('#d9302a',63,73,2,2);r('#d9302a',60,63,2,2);r('#d9302a',57,66,5,3);r('#ffd23f',59,67,2,2);
+ r('#f4f9ff',46,89,28,2);r('#c9b88a',48,88,24,2);
+ /* gậy kẹo 2 bên cửa */
+ for(const x of[46,72]){for(let k=0;k<16;k+=2){r(k%4?'#ffffff':'#d9302a',x,72+k,2,2)}r('#d9302a',x,70,3,2);r('#fff',x+1,69,2,1)}
+ /* quà + bao dưới nhà */
+ const bx=(x,y,w,h,c1,c2,rb)=>{r(c1,x,y,w,h);r(c2,x,y+h-2,w,2);r(rb,x+(w>>1),y,1,h);r(rb,x,y+(h>>1),w,1);r(rb,x+(w>>1)-2,y-2,2,2);r(rb,x+(w>>1)+1,y-2,2,2)};
+ bx(100,79,9,9,'#2f6fe0','#2050a8','#fff');bx(108,82,8,6,'#a040d0','#7a2aa0','#ffd23f');bx(14,81,9,7,'#3f9a4a','#2a7a34','#ffd23f');bx(21,76,8,12,'#ffb02a','#d98a10','#d9302a');
+ r('#f4f9ff',99,78,10,1);r('#f4f9ff',21,75,8,1);
+}));
+const WSG=outl(mk(56,42,(g,r)=>{/* bảng hiệu bên hông: Xưởng Noel */
+ r('#6b4220',5,12,5,30);r('#8a5a30',5,12,1,30);r('#4a2c14',9,12,1,30);r('#f4f9ff',3,40,9,2);
+ r('#c9a06a',20,6,2,5);r('#c9a06a',46,6,2,5);
+ r('#5a3418',2,10,50,18);r('#c99660',2,10,50,2);r('#c99660',2,26,50,2);r('#c99660',2,10,2,18);r('#c99660',50,10,2,18);r('#2e1a0c',4,12,46,14);
+ g.textAlign='center';g.textBaseline='middle';g.font='900 7px Nunito,"Segoe UI",Arial,sans-serif';g.fillStyle='#7a4a14';g.fillText('XƯỞNG NOEL',27.5,20);g.fillStyle='#ffe9a8';g.fillText('XƯỞNG NOEL',27,19.5);
+ r('#f4f9ff',1,8,52,3);r('#cfe0f5',1,10,52,1);r('#f4f9ff',20,5,2,2);
+ E(r,'#2f8a4a',6,13,3,2);E(r,'#2f8a4a',9,15,3,2);r('#d9302a',5,12,2,2);r('#d9302a',9,14,2,2)}));
+const WSL=[];for(let x=12;x<108;x+=6)WSL.push([x,49+(((x*7)%3)>1?1:0)]);
+WT.sp.push({by:128,d:()=>{const t=performance.now()/1000;
+ r('rgba(60,90,140,.28)',286,126,88,4);
+ E(r,'rgba(255,200,100,'+(.14+.05*Math.sin(t*3)).toFixed(2)+')',309,112,16,14);E(r,'rgba(255,200,100,'+(.14+.05*Math.sin(t*3+1)).toFixed(2)+')',351,112,16,14);
+ E(r,'rgba(255,215,120,'+(.18+.05*Math.sin(t*2.3)).toFixed(2)+')',330,74,12,12);
+ cx.drawImage(WSH,270,40);
+ for(let k=0;k<WSL.length;k++){const[x,y]=WSL[k],on=Math.sin(t*3+k*1.3)>-.35,c=['#ff4040','#ffd23f','#40a0ff','#50e070','#ff80d0'][k%5];r(on?c:'#5a4a40',270+x,40+y,2,2);if(on)r('rgba(255,235,170,.28)',270+x-1,40+y-1,4,4)}
+ for(let i=0;i<6;i++){const p=(t*.5+i/6)%1;r('rgba(235,240,250,'+(.55*(1-p)).toFixed(2)+')',Math.round(354+Math.sin(t+i)*3+p*10),Math.round(44-p*30),Math.round(3+p*3),Math.round(3+p*3))}
+ cx.drawImage(WSG,386,86);E(r,'rgba(255,225,150,'+(.10+.03*Math.sin(t*2)).toFixed(2)+')',413,106,22,8)}});
 WOFF=[14,64];
 WT.sp.push({by:350,d:()=>{const a=[],z=ZZ(a);z('#7a4a26',24,332,3,18);z('#7a4a26',45,332,3,18);z('#a8703c',20,326,32,12);z('#f4f9ff',20,324,32,3);z('#5a3418',22,338,28,1);z('#d9302a',34,329,8,2);z('#ffd23f',44,329,5,2);OL(a)}});
 WOFF=[0,0];
@@ -4239,8 +4274,8 @@ WT.hits.push([52,46,104,160,'🎄 Cây thông Noel khổng lồ — đèn lấp 
 WT.hits.push([70,196,76,18,'🎁 Quà dưới gốc cây — bấm để mở quà (mỗi ngày 1 lần)','gift']);
 WOFF=[-70,16];
 WT.hits.push([12,168,36,50,'⛄ Người tuyết Frosty — "Giáng Sinh vui vẻ nha!"']);
-WOFF=[152,0];
-WT.hits.push([146,66,54,62,'🏠 Xưởng của ông già Noel — ống khói nghi ngút!']);
+WOFF=[0,0];
+WT.hits.push([284,52,94,78,'🏠 Xưởng của ông già Noel — ống khói nghi ngút!']);WT.hits.push([386,92,54,38,'🪧 Bảng hiệu: Xưởng Noel']);
 WOFF=[136,16];
 WT.hits.push([118,212,56,28,'⛸️ Hồ băng — có bạn đang trượt băng!']);
 WOFF=[14,64];
@@ -4248,7 +4283,7 @@ WT.hits.push([16,250,42,76,'🦌 Trường đua Tuần lộc — bấm để và
 WT.hits.push([78,232,52,18,'🦌 Đua Tuần lộc — bấm để chơi (miễn phí)','rr']);
 WT.hits.push([166,250,28,76,'🦌 Vạch đích — bấm để vào cuộc đua!','rr']);
 WT.hits.push([14,326,44,26,'🌾 Cổng về Nông Trại','gate']);
-WOFF=[24,0];WT.lb.push(['CÂY THÔNG NOEL',104,42]);WOFF=[152,0];WT.lb.push(['XƯỞNG NOEL',172,62]);WOFF=[14,64];WT.lb.push(['ĐUA TUẦN LỘC',104,246]);WT.lb.push(['VỀ NÔNG TRẠI',36,322]);
+WOFF=[24,0];WT.lb.push(['CÂY THÔNG NOEL',104,42]);WOFF=[14,64];WT.lb.push(['ĐUA TUẦN LỘC',104,246]);WT.lb.push(['VỀ NÔNG TRẠI',36,322]);
 WOFF=[0,0];
 /* đèn đường (ít, thưa) + băng ghế để ngồi ngay dưới mỗi cột đèn */
 const wLamp=(x,y)=>WT.sp.push({by:y,d:()=>{const t=performance.now()/1000,f=.5+.5*Math.sin(t*1.7+x);
