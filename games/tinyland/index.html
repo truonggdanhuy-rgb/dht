@@ -1976,11 +1976,17 @@ const MOUNTS=[{n:'Trâu Việt',hw:9,drop:8,spd:1.8,seat:{0:[0,-22],1:[0,-22],si
 {n:'Xe đạp 1 bánh',k:'unicycle',hw:4,drop:0,spd:2.2,nobob:1,sh:[11,8],seat:{0:[0,-20],1:[0,-20],side:[-1,-20]},
  legs(R,d,ph,sx,sy,PT,SD,S,hv,c){if(window.uniLegs)uniLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
  hov:(t,mv)=>window.uniHov?uniHov(t,mv):0,lean:(mv,d)=>window.uniLean?uniLean(mv,d):0,
- draw(R,d,f,b,t,pt,c){if(window.uniDraw)uniDraw(R,d,f,b,t,pt,c)}}
+ draw(R,d,f,b,t,pt,c){if(window.uniDraw)uniDraw(R,d,f,b,t,pt,c)}},
+// ===== 🛹 Ván trượt cam (ván GỐC; 1.000 Xu + 300 xu quái vật + 2 💎 ở Shop Phố xá, tab Thú cưỡi; cb = giá gộp; hình vẽ nằm ở skate.js; ván mới LUÔN thêm vào CUỐI mảng MOUNTS, copy dòng này đổi 'orange') =====
+// đi: đứng lướt trên ván • đứng yên: chống 1 chân xuống đất, thỉnh thoảng đạp đuôi hất ván lên nhẹ
+{n:'Ván trượt cam',k:'skate_orange',cb:{xu:1000,qv:300,dia:2},hw:8,drop:0,spd:2.6,nobob:1,acc:1,sh:[26,22],seat:{0:[0,-21],1:[0,-21],side:[0,-21]},
+ legs(R,d,ph,sx,sy,PT,SD,S,hv,c){if(window.skLegs)skLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
+ hov:(t,mv)=>window.skHov?skHov(t,mv):0,lean:(mv,d)=>window.skLean?skLean(mv,d):0,
+ draw(R,d,f,b,t,pt,c){if(window.skDraw)skDraw('orange',R,d,f,b,t,pt,c)}}
 ];
 // nguoi ngoi tren thu cuoi
 function drawRide(g,x,y,o,mi,t){
- const M=MOUNTS[mi],d=o.d,f=o.mv?Math.floor(o.a*9)%4:0,bob=o.mv&&!M.nobob&&(f==1||f==3)?-1:0,hv=M.hov?M.hov(t,!!o.mv):0,mir=d==2,side=d>1,S=SETS[o.set]||SETS[0],ph=o.a*9,C={ph,S,mv:!!o.mv};
+ const M=MOUNTS[mi],d=o.d,f=o.mv?Math.floor(o.a*9)%4:0,bob=o.mv&&!M.nobob&&(f==1||f==3)?-1:0,hv=M.hov?M.hov(t,!!o.mv):0,mir=d==2,side=d>1,S=SETS[o.set]||SETS[0],ph=o.a*9,C={ph,S,mv:!!o.mv,t};
  const R=(c,a,b,w,h)=>{g.fillStyle=c;g.fillRect(x+(mir?-a-w:a),y+b,w,h)};
  const st=M.seat[d>1?'side':d],ln=M.lean?M.lean(!!o.mv,d):0,sx=st[0]+ln,sy=st[1];C.lx=ln;
  E((c,a,b,w,h)=>{g.fillStyle=c;g.fillRect(a,b,w,h)},'rgba(0,0,0,.22)',x,y+1,M.sh?M.sh[side?0:1]:(side?15:11),2);
@@ -6096,7 +6102,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 
 </script>
 <script src="park-map.js?v=20261116"></script>
-<script src="pho-map.js?v=20261117b"></script>
+<script src="pho-map.js?v=20261117c"></script>
 <script src="circus.js?v=20261127"></script>
 <script src="sea-map.js?v=20261116"></script>
 <script src="fishing.js?v=20261117"></script>
@@ -6111,6 +6117,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="baby.js?v=20261116b"></script>
 <script src="newitems3.js?v=20261116"></script>
 <script src="newitems4.js?v=20261117"></script>
+<script src="skate.js?v=20261117"></script>
 <script src="pajama.js?v=20261118"></script>
 <script src="alo.js?v=20261119"></script>
 <script src="winter.js?v=20261120"></script>

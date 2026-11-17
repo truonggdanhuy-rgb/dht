@@ -727,15 +727,17 @@ function mieuLoop(){const c=$('mc');if(!c||!UI||PS.view!='mieu')return;const g=c
 // ============================================================
 //  SHOP
 // ============================================================
-const SHOP={m:{t:'🐃 Thú cưỡi',all:()=>MOUNTS,pr:[4000,5500,4200,9000,1500,null,null,null,null,8000]},p:{t:'🐾 Pet',all:()=>PETS,pr:[250,900,350,300,1100,500]},s:{t:'👕 Set',all:()=>SETS,pr:[0,600,500,450,450,500,800,800,1500,2800,3500,20000, 500,500,600,1000,800,400,400,5000,5000, 0,0,0,0,0,0,0,0,0, 900,700, 500,500,500, 5000,5000, 0, 3000,3000]},h:{t:'🧢 Tóc & mũ',all:()=>HAIRS,pr:[0,150,200,250,300,300, 1000,400,600,200,250,300,1000, 4500,3500,6000,4000,3500,2800, 2200,2000,3200,6000,4500,2800, 0,0,0, 800,500]},
+const SHOP={m:{t:'🐃 Thú cưỡi',all:()=>MOUNTS,pr:[4000,5500,4200,9000,1500,null,null,null,null,8000,1000]},p:{t:'🐾 Pet',all:()=>PETS,pr:[250,900,350,300,1100,500]},s:{t:'👕 Set',all:()=>SETS,pr:[0,600,500,450,450,500,800,800,1500,2800,3500,20000, 500,500,600,1000,800,400,400,5000,5000, 0,0,0,0,0,0,0,0,0, 900,700, 500,500,500, 5000,5000, 0, 3000,3000]},h:{t:'🧢 Tóc & mũ',all:()=>HAIRS,pr:[0,150,200,250,300,300, 1000,400,600,200,250,300,1000, 4500,3500,6000,4000,3500,2800, 2200,2000,3200,6000,4500,2800, 0,0,0, 800,500]},
  e:{t:'😄 Biểu cảm',all:()=>EXPRS,pr:[0,0,0,0,0,0,18000,0,500,500]},   // số 7 'Thổi tim' bán bằng kim cương ở Shop kim cương
  a:{t:'🎀 Phụ kiện',all:()=>ACCS,pr:[300,450, 0,0,0,0, 5000,1500,300,800, 3000, 500,500, 400, 0, 4000]}};   // số 10 = Đàn guitar 3000 Xu • số 14 = Gậy Nấm pháp sư (bán kim cương) • số 15 = Guitar điện 4000 Xu
 const price=(k,i)=>{const v=SHOP[k].pr[i];return v==null?500:v};
+/* Giá gộp nhiều loại tiền: món có cb:{xu,qv,dia} trong MOUNTS (vd Ván trượt cam). qv = xu quái vật, dia = kim cương */
+const cbTxt=(cb,short)=>short?'🪙'+cb.xu.toLocaleString('vi-VN')+' • QV '+cb.qv+' • 💎'+cb.dia:cb.xu.toLocaleString('vi-VN')+' Xu + '+cb.qv.toLocaleString('vi-VN')+' xu quái vật + '+cb.dia+' 💎';
 let SH_TAB='m',SH_I=-1,SH_DIR=0,shRaf=0;
 window.psShop=(tab)=>{if(typeof ownE=='function')ownE();if(tab)SH_TAB=tab;PS.view='shop';SH_I=-1;const S=SHOP[SH_TAB],L=S.all(),own=ST.own[SH_TAB],mt=SH_TAB=='m';
  let h=head('🏘️ Shop Phố xá')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu</div><div class="tabs" style="flex-wrap:wrap">'+['m','p','s','h','e','a'].map(k=>'<button class="b'+(k==SH_TAB?' on':'')+'" onclick="psShop(\''+k+'\')">'+SHOP[k].t+'</button>').join('')+'</div>';
  h+='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+L.map((x,i)=>{const has=own.includes(i);if((x.ach&&!has)||x.dia)return '';
-  return '<button class="sq'+(has?' z':'')+'" onclick="psItem('+i+')"><canvas class="shc" data-i="'+i+'" width="'+(mt?72:44)+'" height="'+(mt?68:SH_TAB=='p'?52:44)+'" style="width:'+(mt?88:57)+'px;height:'+(mt?83:SH_TAB=='p'?68:57)+'px;image-rendering:pixelated"></canvas><b>'+x.n+'</b><small>'+(has?'✓ Đã có':'🪙 '+price(SH_TAB,i).toLocaleString('vi-VN'))+'</small></button>'}).join('')+'</div>';
+  return '<button class="sq'+(has?' z':'')+'" onclick="psItem('+i+')"><canvas class="shc" data-i="'+i+'" width="'+(mt?72:44)+'" height="'+(mt?68:SH_TAB=='p'?52:44)+'" style="width:'+(mt?88:57)+'px;height:'+(mt?83:SH_TAB=='p'?68:57)+'px;image-rendering:pixelated"></canvas><b>'+x.n+'</b><small>'+(has?'✓ Đã có':x.cb?cbTxt(x.cb,1):'🪙 '+price(SH_TAB,i).toLocaleString('vi-VN'))+'</small></button>'}).join('')+'</div>';
  h+='<div class="mut">Đồ đã mua nằm trong 🎒 Túi. Chạm vào món để xem thử & mua.</div>';
  openUI(h);shPaint()};
 function shDraw(g,k,ix,o,t,big){
@@ -751,14 +753,18 @@ function shDraw(g,k,ix,o,t,big){
 function shPaint(){const A=ST.av,t=performance.now()/1000;document.querySelectorAll('canvas.shc').forEach(c=>{const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);shDraw(g,SH_TAB,+c.dataset.i,{d:0,a:0,mv:0,sit:0,hair:A.h,set:A.s,e:A.e},t,0)})}
 window.psItem=i=>{if(SH_TAB=='h'){const W=SETS[ST.av.s];if(W&&(W.mascot||W.deer||W.dn||W.tn||W.aul))return toast('🧸 Bạn cần gỡ mascot mới xem được vật phẩm tóc & mũ')}if(typeof ownE=='function')ownE();SH_I=i;const S=SHOP[SH_TAB],x=S.all()[i],has=ST.own[SH_TAB].includes(i),pr=price(SH_TAB,i);PS.view='item';
  const eq=ST.av[SH_TAB]==i;
- openUI(head(S.t+' — '+x.n)+'<div style="text-align:center"><canvas id="shp" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#d6e8f2,#e8efd6 70%);border:2px solid #7a4a26;cursor:pointer" onclick="SH_DIR=(SH_DIR+1)%4"></canvas><div class="mut" style="margin:2px 0 6px">Chạm vào hình để xoay • bạn có 🪙 <b>'+fmtXu(ST.xu)+'</b> Xu</div></div>'+
- '<div class="pf">'+(has?'<button class="b" onclick="psUse('+i+')">'+(eq?'✓ Đang dùng':'✨ Dùng ngay')+'</button>':'<button class="b" onclick="psBuy('+i+')">🪙 Mua — '+pr.toLocaleString('vi-VN')+' Xu</button>')+'<button class="b" onclick="psShop()">⬅ Quay lại</button></div>');
+ openUI(head(S.t+' — '+x.n)+'<div style="text-align:center"><canvas id="shp" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#d6e8f2,#e8efd6 70%);border:2px solid #7a4a26;cursor:pointer" onclick="SH_DIR=(SH_DIR+1)%4"></canvas><div class="mut" style="margin:2px 0 6px">Chạm vào hình để xoay • bạn có 🪙 <b>'+fmtXu(ST.xu)+'</b> Xu'+(x.cb?' • QV <b>'+fmtXu(ST.qv|0)+'</b> • 💎 <b>'+(ST.dia|0)+'</b>':'')+'</div></div>'+
+ '<div class="pf">'+(has?'<button class="b" onclick="psUse('+i+')">'+(eq?'✓ Đang dùng':'✨ Dùng ngay')+'</button>':'<button class="b" onclick="psBuy('+i+')">'+(x.cb?'🛍️ Mua — '+cbTxt(x.cb):'🪙 Mua — '+pr.toLocaleString('vi-VN')+' Xu')+'</button>')+'<button class="b" onclick="psShop()">⬅ Quay lại</button></div>');
  if(!shRaf)shLoop()};
 function shLoop(){const c=$('shp');if(!c||!UI||PS.view!='item'){shRaf=0;return}const A=ST.av,g=c.getContext('2d'),t=performance.now()/1000;
  shDraw(g,SH_TAB,SH_I,{d:0,a:t,mv:1,sit:0,hair:A.h,set:A.s,e:A.e},t,1);shRaf=requestAnimationFrame(shLoop)}
 window.psBuy=i=>{if(typeof ownE=='function')ownE();const k=SH_TAB,pr=price(k,i),own=ST.own[k];if(own.includes(i))return psItem(i);
  if(SHOP[k].all()[i].dia)return toast('💎 Món này bán bằng kim cương ở Trùm kim cương (Shop kim cương)');
  if(SHOP[k].all()[i].ach)return toast(SHOP[k].all()[i].bd?'❄️ Món này đổi bằng Huy hiệu tuyết ở Ông già Noel (Làng tuyết)':'🏆 Pet này chỉ nhận được từ mốc quà trong Thẻ');
+ const cb=SHOP[k].all()[i].cb;
+ if(cb){const need=[];if(ST.xu<cb.xu)need.push((cb.xu-ST.xu).toLocaleString('vi-VN')+' Xu');if((ST.qv|0)<cb.qv)need.push((cb.qv-(ST.qv|0)).toLocaleString('vi-VN')+' xu quái vật');if((ST.dia|0)<cb.dia)need.push((cb.dia-(ST.dia|0))+' 💎');
+  if(need.length)return toast('Chưa đủ — còn thiếu '+need.join(' + '));
+  ST.xu-=cb.xu;ST.qv=(ST.qv|0)-cb.qv;ST.dia=(ST.dia|0)-cb.dia;own.push(i);xuUp();save();toast('🛍️ Đã mua '+SHOP[k].all()[i].n+'!');return psItem(i)}
  if(ST.xu<pr)return toast('🪙 Chưa đủ Xu — còn thiếu '+(pr-ST.xu).toLocaleString('vi-VN')+' Xu');
  ST.xu-=pr;own.push(i);xuUp();save();toast('🛍️ Đã mua '+SHOP[k].all()[i].n+'!');psItem(i)};
 window.psUse=i=>{const k=SH_TAB;if(!ST.own[k].includes(i))return;ST.av[k]=i;if(k=='m'&&Pl.sit){Pl.sit=0;Pl.mv=0}if(k=='p')petReset();save();toast('✨ Đã dùng '+SHOP[k].all()[i].n);psItem(i)};
