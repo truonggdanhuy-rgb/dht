@@ -10,8 +10,12 @@
 (function(){
 const hsh=(a,b)=>{let h=Math.imul((a|0)*374761393+(b|0)*668265263+7,1274126177);h=Math.imul(h^h>>>13,1103515245);return((h^h>>>16)>>>0)/4294967296};
 const rgba=(c,a)=>'rgba('+c[0]+','+c[1]+','+c[2]+','+Math.max(0,a).toFixed(2)+')';
-const wbkp=(x0,y0,x1,y1)=>wbk(x0>>4,y0>>4,(x1-1)>>4,(y1-1)>>4);
-const SP=WT.sp,HT=WT.hits,LBL=WT.lb;
+let DX=110;/* dời cả cụm bên phải sang phải DX px cho thoáng */
+const wbkp=(x0,y0,x1,y1)=>wbr(x0+DX,y0,x1+DX,y1);
+const _sp=WT.sp.push.bind(WT.sp),_ht=WT.hits.push.bind(WT.hits),_lb=WT.lb.push.bind(WT.lb);
+const SP={push:o=>{const dx=DX,d=o.d;return _sp({by:o.by,d:()=>{cx.save();cx.translate(dx,0);d();cx.restore()}})}};
+const HT={push:h=>{const dx=DX;h=h.slice();h[0]+=dx;if(h[6])h[6]=[h[6][0]+dx,h[6][1]];return _ht(h)}};
+const LBL={push:l=>_lb([l[0],l[1]+DX,l[2]])};
 const snowBlob=(r,x,y,w)=>{for(let i=0;i<w;i++){const h=1+Math.round(1.2*Math.abs(Math.sin(i/3.1+x))+.6*Math.sin(i*1.7));r('#f4f9ff',x+i,y-h,1,h+1);r('#cfe0f5',x+i,y+1,1,1)}};
 
 /* ====================== 1) QUÁN TRÀ TUYẾT ====================== */
@@ -118,7 +122,7 @@ SP.push({by:2,d:()=>{E(r,'#7a1f1f',RGx,RGy,56,15);E(r,'#a8302a',RGx,RGy,53,13);E
  for(let i=0;i<10;i++){r('#e8c060',RGx-32+i*7,RGy-1,3,2)}
  for(let k=0;k<12;k++)r('#f4efe6',RGx-50+k*8+(k%2)*2,RGy+10+(k%2),1,2)}});
 CHx.forEach((x,i)=>{SP.push({by:CHy,d:()=>{r('rgba(60,40,30,.28)',x-14,CHy-2,28,4);cx.drawImage(i?chB:chA,x-17,CHy-41)}});
- HT.push([x-16,CHy-36,32,42,'🪑 Ghế ấm cúng — bấm để ngồi cạnh dây neon','wchair:'+x+':'+(CHy-2)+':'+(CHy+24),[x,CHy+24]])});
+ HT.push([x-16,CHy-36,32,42,'🪑 Ghế ấm cúng — bấm để ngồi cạnh dây neon','wchair:'+(x+DX)+':'+(CHy-2)+':'+(CHy+24),[x,CHy+24]])});
 SP.push({by:TBy,d:()=>{const t=performance.now()/1000;r('rgba(60,40,30,.28)',TBx-12,TBy-2,24,4);cx.drawImage(tableI,TBx-16,TBy-29);
  E(r,'rgba(255,190,100,'+(.18+.05*Math.sin(t*7)).toFixed(2)+')',TBx,TBy-22,10,9);const fl=Math.round(Math.sin(t*9));r('#ffd23f',TBx-1,TBy-25-fl,2,2);r('#fff6c0',TBx,TBy-25-fl,1,1);
  for(const[dx,c]of[[-10,0],[9,1]])for(let i=0;i<2;i++){const u=(t*.6+i*.5+c*.3)%1;r('rgba(255,255,255,'+(.6*(1-u)).toFixed(2)+')',Math.round(TBx+dx+Math.sin(t*3+i)*1),Math.round(TBy-22-u*10),2,2)}}});
@@ -193,7 +197,7 @@ LBL.push(['ÔNG GIÀ NOEL',SAx,SLy-62]);
 /* (cây thông viền đã vẽ sẵn trong nền WB) */
 
 /* ====================== 5) BẢNG CHỈ ĐƯỜNG: ngoài cổng → Ông già Noel ====================== */
-const SGx=178,SGy=412;
+DX=0;const SGx=250,SGy=412;
 const signI=outl(mk(44,38,(g,r)=>{
  // cột + chân tuyết
  r('#6b4220',19,12,4,26);r('#8a5a30',19,12,1,26);r('#4a2c14',22,12,1,26);
