@@ -4560,6 +4560,63 @@ DR.rack=r=>{E(r,'rgba(0,0,0,.18)',24,31,22,1);
   else if(k=='p'){r(c,x,6,7,14);r('#2f5aa0',x+3,11,1,9);r('#2f5aa0',x,6,7,1)}
   else{r(c,x+1,6,6,4);r(c,x,10,8,10);r('#f0b020',x+1,10,6,1);r('rgba(0,0,0,.14)',x,18,8,2)}});
  r('#e8505a',9,24,4,3);r('#f4f4f4',9,26,4,1);r('#4a78c8',15,25,5,2);r('#f6c47e',22,25,4,2)};
+/* ================= MÁY CHIẾU PHIM (Tiệm nội thất, 5000 Xu): màn chiếu to đứng trên chân, phát 3 cảnh phim chuyển động nhẹ =================
+   Kích thước 9x7 ô, 1 hướng. Hình động vẽ vào canvas nhỏ 58x30 cập nhật ~8 khung/giây (không cần mượt) rồi dán lên màn. */
+{const PW=58,PH=30,SCT=8,qf=g=>(c,x,y,w,h)=>{g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),w,h)};
+ const SC=[
+  /* 1) hoàng hôn bãi biển: mặt trời lặn, sóng lấp lánh, thuyền buồm, chim bay */
+  (q,t)=>{const bd=[[2,'#2b2766'],[6,'#6b3a86'],[9,'#c0527a'],[12,'#f2785a'],[14,'#ffa85a']];
+   bd.forEach(([y,c],i)=>q(c,0,y,PW,(bd[i+1]?bd[i+1][0]:17)-y));
+   const sy=15+Math.min(5,(t%SCT)*.6);E(q,'rgba(255,220,140,.25)',34,sy,10,7);E(q,'#ffe08a',34,sy,5,5);E(q,'#fff4c0',33,sy-1,3,2);
+   [[17,'#2e4f9a',3],[20,'#2a4388',4],[24,'#223773',4]].forEach(([y,c,h])=>q(c,0,y,PW,h));
+   for(let k=0;k<5;k++)q('rgba(255,210,130,.55)',29+(k%2)+Math.round(Math.sin(t*3+k)*1.5),18+k*2,10-k,1);
+   for(let i=0;i<6;i++)q('#7f9ae8',((i*13+t*5)%64)-4,19+(i*3)%8,4,1);
+   q('#140e24',4,15,2,12);q('#140e24',5,14,1,2);[[1,13,5],[5,12,5],[2,15,3],[6,15,3]].forEach(([x,y,w])=>q('#140e24',x,y,w,1));
+   const bx=((t*3.2)%80)-12,by=18+Math.round(Math.sin(t*2));q('#1a1230',bx,by+2,9,2);q('#1a1230',bx+4,by-5,1,7);q('#f6e0c0',bx+5,by-4,3,5);q('#e8905a',bx+5,by-4,3,1);
+   for(let i=0;i<3;i++){const x=((t*5+i*21)%72)-8,y=6+i*3+Math.round(Math.sin(t*3+i)*1);q('#2a1a40',x,y,2,1);q('#2a1a40',x+2,y+1,2,1);q('#2a1a40',x+4,y,2,1)}},
+  /* 2) vũ trụ: sao nhấp nháy, hành tinh có vành, tên lửa bay, sao băng */
+  (q,t)=>{q('#080b26',0,2,PW,26);q('#14123e',0,20,PW,8);
+   for(let i=0;i<26;i++)q(Math.sin(t*3+i)>-.2?'#ffffff':'#6a74b8',(i*37+11)%PW,2+(i*53)%26,1,1);
+   E(q,'#e0905a',44,11,7,7);E(q,'#f0b078',43,10,5,4);q('#c06a3c',39,11,10,1);q('#c06a3c',40,14,9,1);q('#f2c890',34,12,20,1);E(q,'#cfd6e8',12,23,3,3);
+   const x=((t*7)%80)-14,y=15+Math.round(Math.sin(t*1.5)*3),fl=(t*12|0)%2;
+   q('#ffd23f',x-3-fl,y+1,3,1);q('#ff7a1a',x-5-fl,y+1,2,1);q('#e8ecf5',x,y,7,3);q('#e8505a',x+7,y,2,3);q('#5ec8ff',x+3,y+1,1,1);q('#e8505a',x,y-1,2,1);q('#e8505a',x,y+3,2,1);
+   const p=(t%5)/5;if(p<.25){const sx=52-p*160,sy=4+p*56;q('#fff',sx,sy,2,1);q('rgba(255,255,255,.4)',sx+2,sy-1,5,1)}},
+  /* 3) đồng cỏ hoa anh đào: mây trôi, cánh hoa rơi, bướm bay */
+  (q,t)=>{q('#8fd0f5',0,2,PW,9);q('#b5e2fa',0,11,PW,6);
+   for(let i=0;i<2;i++){const x=((t*2+i*30)%76)-14,y=5+i*4;q('#fff',x,y,10,2);q('#fff',x+2,y-1,6,1);q('#e8f4ff',x+1,y+2,8,1)}
+   E(q,'#7ec98a',14,22,18,6);E(q,'#6fbf7a',46,23,20,6);q('#4aa557',0,22,PW,6);q('#5fbf6a',0,22,PW,1);
+   q('#6b4a38',10,12,3,11);E(q,'#ffb3d1',11,9,8,5);E(q,'#ff8fb5',7,11,4,3);E(q,'#ffd6e6',14,8,5,3);
+   [[22,25,'#ffd23f'],[27,24,'#ffffff'],[33,26,'#ff8fb5'],[40,24,'#ffd23f'],[46,26,'#fff'],[52,25,'#c77dff'],[17,26,'#fff']].forEach(([x,y,c])=>q(c,x,y,1,1));
+   for(let i=0;i<7;i++){const p=((t*.35+i*.15)%1);q('#ffd0e2',11+(i*7)%30+Math.sin(t+i)*3,8+p*18,1,1)}
+   const bx=34+Math.sin(t*.8)*14,by=15+Math.cos(t*1.3)*4,w=((t*8)|0)%2;q('#ffe14a',bx-1,by,w?3:1,1);q('#ff9a3a',bx-1,by+1,w?1:3,1);q('#222',bx,by,1,1)}];
+ const render=(g,t)=>{const q=qf(g);g.clearRect(0,0,PW,PH);q('#000',0,0,PW,PH);
+  const ph=t%SCT,i=Math.floor(t/SCT)%SC.length;g.save();g.beginPath();g.rect(0,2,PW,26);g.clip();SC[i](q,t);
+  if(ph>SCT-.6){g.globalAlpha=(ph-(SCT-.6))/.6;SC[(i+1)%SC.length](q,t);g.globalAlpha=1}
+  for(let y=2;y<28;y+=2)q('rgba(0,0,0,.07)',0,y,PW,1);
+  q('rgba(0,0,0,.2)',0,2,PW,1);q('rgba(0,0,0,.14)',0,2,2,26);q('rgba(0,0,0,.14)',PW-2,2,2,26);
+  if(((t*8)|0)%29==0)q('rgba(255,255,255,.07)',0,2,PW,26);g.restore()};
+ const PIC=document.createElement('canvas');PIC.width=PW;PIC.height=PH;const pg=PIC.getContext('2d');let PF=-1;
+ const upd=t=>{const f=Math.floor(t*8);if(f!==PF){PF=f;render(pg,t)}};
+ DR.cine=(r,g)=>{
+  E(r,'rgba(0,0,0,.2)',36,54,33,2);
+  /* hộp cuộn màn + khung + mặt màn trắng (vẽ trước để thấy rõ là màn chiếu dựng trên chân) */
+  r('#6b7380',1,0,70,5);r('#c9d0dc',2,0,68,1);r('#9aa3b2',2,1,68,3);r('#4a505c',2,4,68,1);r('#8b94a3',0,1,2,3);r('#8b94a3',70,1,2,3);
+  r('#14161c',4,5,64,36);r('#2a2e3c',4,5,64,1);r('#e8eaf0',5,6,62,34);r('#cfd3dc',5,39,62,1);
+  r('#05060a',6,7,60,32);
+  g.drawImage((render(pg,3),PIC),7,8);PF=-1;
+  /* hai chân + thanh ngang + chân đế */
+  for(const x of[9,60]){r('#3a3f4f',x,41,3,11);r('#5a6074',x,41,1,11);r('#1f2230',x+2,41,1,11)}
+  r('#2a2e3c',9,41,54,2);r('#5a6074',9,41,54,1);
+  for(const x of[4,54]){r('#2a2e3c',x,51,14,3);r('#5a6074',x,51,14,1);r('#14161c',x,53,14,1)}
+  /* máy chiếu nhỏ đặt giữa sàn */
+  r('#2f3342',29,47,14,6);r('#5a6074',29,47,14,1);r('#1f2230',29,52,14,1);r('#8fa0ff',31,49,2,2);r('#ff7a5a',40,49,2,1);E(r,'#c9d0dc',36,46,3,1);E(r,'#8fe3ff',36,46,2,1);
+  for(const x of[31,39]){E(r,'#2f3342',x,44,3,3);E(r,'#5a6074',x,44,2,2);r('#14161c',x,44,1,1)}};
+ ANI.cine=(b,o,t)=>{const X=b[0],Y=b[1];cx.drawImage(dspr('cine',0),X-1,Y-1);upd(t);cx.drawImage(PIC,X+7,Y+8);
+  /* ánh sáng màn chiếu hắt ra + đèn máy chiếu nhấp nháy */
+  const gl=.06+.03*Math.sin(t*5);r('rgba(190,220,255,'+gl.toFixed(3)+')',X-2,Y+40,76,8);
+  r(hsl(t*60,70),X+40,Y+49,2,1)};
+ CAT.cine=['Máy chiếu phim',9,7,'f',1]}
+
 const SPC={};function dspr(id,f){const k=id+f;if(!SPC[k]){const c=CAT[id],w=c[1]*8;SPC[k]=outl(mk(w,c[2]*8,(g,r)=>{if(f){g.translate(w,0);g.scale(-1,1)}DR[id](r,g)}))}return SPC[k]}
 let SEL=null,DECO=0;
 const hov=(a,b)=>a[0]<b[0]+b[2]&&b[0]<a[0]+a[2]&&a[1]<b[1]+b[3]&&b[1]<a[1]+a[3],box=o=>[o[1]*8,o[2]*8,CAT[o[0]][1]*8,CAT[o[0]][2]*8];
@@ -5952,7 +6009,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 
 </script>
 <script src="park-map.js?v=20261116"></script>
-<script src="pho-map.js?v=20261126a"></script>
+<script src="pho-map.js?v=20261117b"></script>
 <script src="circus.js?v=20261127"></script>
 <script src="sea-map.js?v=20261116"></script>
 <script src="fishing.js?v=20261116"></script>
