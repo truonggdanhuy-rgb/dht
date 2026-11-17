@@ -406,38 +406,69 @@ HAIRFX.spike=(u,o,K)=>{
  }
 };
 
-// ---- Mũ giữ nhiệt: mũ lông trắng xù, có hai tai che kín tai (đổi bằng Huy hiệu tuyết) ----
+// ---- Mũ giữ nhiệt (vẽ lại): mũ lông trắng xù + băng len xanh băng có bông tuyết + hai bầu tai lông dày che kín tai như tai nghe (đổi bằng Huy hiệu tuyết) ----
+// Vẽ bằng BẢN ĐỒ PIXEL: mỗi ký tự = 1 điểm ảnh, '.' = trống. {x,y} = góc trên-trái. Nhìn ngang vẽ hướng PHẢI rồi tự lật.
+// Ký tự: X viền • L/W/M/D lông (sáng → vừa → nhạt → bóng) • b/B/c băng len (sáng/vừa/tối) • w bông tuyết
 HAIRFX.earfur=(u,o,K)=>{
- const{side,Rt,back}=K,mx=(x,w)=>Rt?x:20-x-w,
- W='#fbfbfd',L='#ffffff',D='#e2e7f1',DD='#c5cddd',LG='#9aa7bf',LG2='#d8dfec';
- const ro=(c,x0,x1,y)=>u(c,mx(x0,x1-x0+1),y,x1-x0+1,1);      // tô 1 hàng (tự lật theo hướng nhìn)
- const fluff=(x0,x1,y)=>{for(let x=x0;x<=x1;x++)if((x*3+y*5)%7==0)ro(D,x,x,y)};  // đốm lông xù
- if(!side){
-  const R=[[2,8,11],[3,6,13],[4,5,14],[5,4,15],[6,4,15],[7,4,15],[8,4,15],[9,4,15]];
-  R.forEach(q=>u(W,q[1],q[0],q[2]-q[1]+1,1));
-  u(L,8,2,2,1);u(L,6,3,2,1);u(L,5,4,2,1);u(L,5,5,1,2);u(L,9,3,3,1);           // ánh sáng góc trên trái
-  u(D,12,3,2,1);u(D,14,4,1,1);u(D,15,5,1,5);u(D,13,7,2,1);                     // bóng bên phải
-  for(let y=4;y<=7;y++)for(let x=5;x<=14;x++)if((x*3+y*5)%7==0)u(D,x,y,1,1);
-  u(DD,4,8,12,1);for(let x=4;x<=15;x+=2)u(W,x,8,1,1);                            // đường gờ viền mũ
-  for(let x=5;x<=15;x+=2)u(D,x,9,1,1);                                           // viền lông nhấp nhô
-  if(!back){u(LG,9,8,2,2);u(LG2,9,8,1,1);u(LG2,10,9,1,1)}                        // logo thêu nhỏ trước trán
-  // hai tai che kín tai
-  for(const fx of[4,13]){const lt=fx==4;
-   u(W,fx,10,3,4);u(W,fx+(lt?1:0),14,2,1);u(W,fx+(lt?1:0),15,2,1);
-   u(L,fx+(lt?0:2),10,1,3);u(D,fx+(lt?2:0),11,1,3);u(D,fx+(lt?1:0),15,2,1);u(DD,fx+(lt?1:0),16,2,1)}
-  u(D,4,13,1,1);u(D,15,12,1,1);
- }else{
-  const R=[[2,7,11],[3,5,12],[4,4,13],[5,4,14],[6,4,14],[7,4,14],[8,4,14],[9,4,14]];
-  R.forEach(q=>ro(W,q[1],q[2],q[0]));
-  ro(L,8,10,2);ro(L,6,8,3);ro(L,5,6,4);ro(L,5,5,5);ro(L,5,5,6);ro(L,9,11,3);
-  ro(D,12,12,3);ro(D,13,13,4);ro(D,14,14,5);ro(D,14,14,6);ro(D,13,14,7);
-  for(let y=4;y<=7;y++)fluff(5,13,y);
-  ro(DD,4,14,8);for(let x=4;x<=14;x+=2)ro(W,x,x,8);
-  for(let x=5;x<=14;x+=2)ro(D,x,x,9);
-  // tai che bên mặt
-  ro(W,7,10,10);ro(W,7,10,11);ro(W,7,10,12);ro(W,7,10,13);ro(W,8,10,14);ro(W,8,9,15);
-  ro(L,7,7,10);ro(L,7,7,11);ro(L,7,7,12);ro(D,10,10,11);ro(D,10,10,12);ro(D,10,10,13);ro(D,8,10,14);ro(D,8,9,15);ro(DD,8,9,16);
- }
+ const{side,Rt,back}=K;
+ const PAL={X:'#8795b4',D:'#b9c5dc',M:'#d9e1ef',W:'#eff3fa',L:'#ffffff',b:'#8fbbe6',B:'#5f93cb',c:'#3f6ea0',w:'#ffffff'};
+ const stamp=m=>{m.rows.forEach((row,ri)=>{for(let c=0;c<row.length;c++){const ch=row[c];if(ch==='.')continue;let e=c;while(e+1<row.length&&row[e+1]===ch)e++;
+   const x=m.x+c,w=e-c+1;u(PAL[ch],side&&!Rt?20-x-w:x,m.y+ri,w,1);c=e}})};
+ const HF={x:2,y:1,rows:[
+ "....XXXXXXXX....",
+ "...XLLWWMWMMX...",
+ "..XLLWWMWWWMDX..",
+ "..XLWMWWMWWMDX..",
+ ".XXLWWMWWWMMDXX.",
+ "..XLWMWWMWMMDX..",
+ ".XXLWWMWMWWMDXX.",
+ ".XbBbBwBBwBbBbX.",
+ ".XcBcBBwwBBcBcX.",
+ ".XXX........XXX.",
+ "XLWM........WMDX",
+ "XLWW........MMDX",
+ "XLWM........WMDX",
+ "XWWM........MDDX",
+ "XWMM........MDDX",
+ ".XMD........DDX."
+ ]};
+ const HB={x:2,y:1,rows:[
+ "....XXXXXXXX....",
+ "...XLLWWMWMMX...",
+ "..XLLWWMWWWMDX..",
+ "..XLWMWWMWWMDX..",
+ ".XXLWWMWWWMMDXX.",
+ "..XLWMWWMWMMDX..",
+ ".XXLWWMWMWWMDXX.",
+ ".XbBbBbBbBbBbBX.",
+ ".XcBcBcBcBcBcBX.",
+ ".XXXLWWWWMMDXXX.",
+ "XLWMLWWWMWMDWMDX",
+ "XLWWWMWWMWMDMMDX",
+ "XLWMXMWMWMDXWMDX",
+ "XWWM.XMMDDX.MDDX",
+ "XWMM........MDDX",
+ ".XMD........DDX."
+ ]};
+ const HS={x:3,y:1,rows:[
+ "...XXXXXXX...",
+ "..XLLWWWMMX..",
+ ".XLLWWWWMMDX.",
+ ".XLWWMWWWMDX.",
+ ".XLWWWMWWMDX.",
+ ".XLWWWWMWWDX.",
+ ".XLWWMWWWMDX.",
+ ".XbBbBbBbBbX.",
+ ".XcBcBcBcBcBX",
+ "..XXXXXX.....",
+ "..XLWWMM.....",
+ ".XLWWMMD.....",
+ "..XWWMMD.....",
+ ".XWMMMDD.....",
+ "..XMMMDD.....",
+ "...XXXX......"
+ ]};
+ stamp(side?HS:back?HB:HF);
 };
 
 
