@@ -856,64 +856,56 @@ function faceDef(u,side,Rt){
   if(bl)s(EY,11,12,2,1);else{s(EY,11,11,2,2);s(WH,11,11,1,1)}
   s(BS,9,13,1,1);s(MO,12,13,2,1)}
 }
+/* ---- BẢN ĐỒ PIXEL MẶT: mỗi ký tự = 1 điểm ảnh, '.' = trống. Nhìn ngang vẽ theo hướng PHẢI rồi tự lật trái ----
+   E mắt đậm • s mắt nhạt • W/w điểm sáng • B/b nước • M/N/K miệng (vừa/tối/rất tối) • T/t lưỡi • S má hồng
+   F/L/l/g kính râm (khung/tối/vừa/ánh) • h/H/D tim (sáng/vừa/tối) • P môi hồng */
+const FXPAL={E:'#2b1d12',s:'#6b4a38',W:'#ffffff',w:'#cfe8ff',B:'#9bd8ff',b:'#7fcbff',M:'#b5604a',N:'#8a3f32',K:'#6b2230',T:'#ff8c9c',t:'#e8587a',S:'rgba(236,110,110,.5)',F:'#141a28',L:'#2c3a55',l:'#46608f',g:'#9cc8ff',h:'#ffb0c6',D:'#c8245a',P:'#c4566a',Y:'#fff3a8',y:'#ffe9b8'};
+function fxMap(u,side,Rt,rows,x0,y0,pal){
+ for(let j=0;j<rows.length;j++)for(let i=0;i<rows[j].length;i++){const ch=rows[j][i];if(ch=='.')continue;const c=(pal&&pal[ch])||FXPAL[ch];if(!c)continue;const x=x0+i;u(c,side?(Rt?x:19-x):x,y0+j,1,1)}
+}
 function faceFx(u,e,side,Rt){
  const t=performance.now()/1000;
- const EY='#2b1d12',MO='#b5604a',MO2='#c4566a',DK='#6b2230',TG='#ff8c9c',PK='#ff4d7a',PKL='#ffb0c6',BL='#7fcbff',BLD='#3f9be0',WH='#ffffff',
-  BS='rgba(236,110,110,.5)',SG1='#2c3a55',SG2='#141a28',GL='#9cc8ff';
- const s=(c,x,y,w,h)=>u(c,Rt?x:20-x-w,y,w,h);          // vẽ cho nhìn ngang (tự lật trái/phải)
- const eye2=(x,y)=>{u(EY,x,y,2,2);u(WH,x,y,1,1)};          // mắt to có điểm sáng
- const heart=(c,x,y)=>{u(c,x,y,1,1);u(c,x+2,y,1,1);u(c,x,y+1,3,1);u(c,x+1,y+2,1,1)};
+ const m=(rows,x,y,pal)=>fxMap(u,side,Rt,rows,x,y,pal);
  const fl=(a,b)=>Math.floor(((t*a)%1)*b);
+ const pu=Math.sin(t*5)>0?'#ff4d7a':'#ff2f66',HP={H:pu},HE=['h.H','HHD','.D.'];      // mắt trái tim 3x3 (nhấp nháy)
+ const EYE3=['EE','WE','Ey'],EYE4=['sE','WE','BB'],ARC=['.E.','E.E'];                  // mắt long lanh / mắt ngấn nước / mắt cong ^
+ const heart=(c,x,y)=>{u(c,x,y,1,1);u(c,x+2,y,1,1);u(c,x,y+1,3,1);u(c,x+1,y+2,1,1)};
  if(!side){
-  if(e==1){ // 😎 Ngầu: kính râm + cười nhếch
-   u(SG1,6,11,3,1);u(SG2,6,12,3,1);u(SG1,11,11,3,1);u(SG2,11,12,3,1);u(SG2,9,11,2,1);
-   u(GL,7,11,1,1);u(GL,12,11,1,1);
-   u(MO,9,13,3,1);u('#8a3f32',12,13,1,1)}
-  else if(e==2){ // 😍 Iu iu: mắt trái tim + nụ cười + tim bay
-   const pu=Math.sin(t*5)>0?PK:'#ff2f66';
-   heart(pu,6,10);heart(pu,11,10);u(PKL,6,10,1,1);u(PKL,11,10,1,1);
-   u(MO2,8,13,1,1);u(MO2,9,14,2,1);u(MO2,11,13,1,1);
+  if(e==1){ // 😎 Ngầu: kính râm có ánh + cười nhếch 1 bên
+   m(['FglLFFglLF','.LLF..LLF.'],5,11);m(['..MMN','MM...'],9,13)}
+  else if(e==2){ // 😍 Iu iu: mắt trái tim + cười + má hồng + tim bay
+   m(HE,6,10,HP);m(HE,11,10,HP);m(['P..P','.PP.'],8,13);m(['S......S'],6,13);
    for(let k=0;k<2;k++){const p=((t*.45)+k*.5)%1,y=7-Math.round(p*7),x=k?15:1,a=(1-p).toFixed(2);heart('rgba(255,77,122,'+a+')',x+Math.round(Math.sin(t*3+k*3)),y)}}
-  else if(e==3){ // 🤤 Đói bụng: mắt long lanh + le lưỡi + chảy dãi
-   eye2(7,11);eye2(11,11);u(BS,7,13,1,1);u(BS,12,13,1,1);
-   u(DK,9,13,2,1);u(TG,9,14,2,1);
-   const L=1+fl(1.3,3);u(BL,11,14,1,L);u(WH,11,14+L,1,1);u(BL,11,14+L,1,1)}
-  else if(e==4){ // 😢 Buồn: mắt ngấn nước + giọt lệ + miệng mếu
-   eye2(7,11);eye2(11,11);u('rgba(127,203,255,.8)',7,13,2,1);u('rgba(127,203,255,.8)',11,13,2,1);
-   const y=14+fl(1.6,2);u(BL,7,y,1,1);u(BL,12,y,1,1);
-   u(MO,9,13,2,1);u(MO,8,14,1,1);u(MO,11,14,1,1)}
-  else if(e==5){ // 😄 Vui vẻ: mắt cong ^ ^ + cười tươi
-   u(EY,6,12,1,1);u(EY,7,11,1,1);u(EY,8,12,1,1);u(EY,11,12,1,1);u(EY,12,11,1,1);u(EY,13,12,1,1);
-   u(BS,7,12,1,1);u(BS,12,12,1,1);
-   u(DK,8,13,4,1);u(DK,9,14,2,1);u(TG,9,14,2,1);
+  else if(e==3){ // 🤤 Đói bụng: mắt sao long lanh + miệng há + le lưỡi + giọt dãi nhỏ
+   m(EYE3,7,10);m(EYE3,11,10);m(['MKKM','.TT.'],8,13);m(['S......S'],6,13);
+   m(['b'],11,14);if(fl(1.3,2))m(['w'],11,15)}
+  else if(e==4){ // 😢 Sad: mắt to ngấn nước + giọt lệ lăn + miệng mếu nhỏ
+   m(EYE4,7,10);m(EYE4,11,10);const k=fl(1.6,2);m(['b'],7,13+k);m(['b'],12,13+k);m(['.MM.','M..M'],8,13)}
+  else if(e==5){ // 😄 Vui vẻ: mắt cong ^ ^ + cười toe có răng, lưỡi
+   m(ARC,6,11);m(ARC,11,11);m(['KWWK','.TT.'],8,13);m(['S......S'],6,13);
    const tw=Math.sin(t*4)>0;if(tw){u('#fff3a8',16,6,1,1);u('#fff3a8',15,7,3,1);u('#fff3a8',16,8,1,1)}else{u('#fff3a8',2,9,1,1);u('#fff3a8',1,10,3,1);u('#fff3a8',2,11,1,1)}}
   else if(e==6){ bubbleFace(u,t,0,0) }
   else if(e==7){ heartFace(u,t,0,0) }
   else if(e==8){ sleepFace(u,t,0,0) }
   else if(e==9){ cheekyFace(u,t,0,0) }
  }else{
-  if(e==1){s(SG2,8,11,2,1);s(SG1,10,11,3,1);s(SG2,10,12,3,1);s(GL,11,11,1,1);s(MO,11,13,3,1)}
-  else if(e==2){const pu=Math.sin(t*5)>0?PK:'#ff2f66';
-   s(pu,10,10,1,1);s(pu,12,10,1,1);s(pu,10,11,3,1);s(pu,11,12,1,1);s(PKL,10,10,1,1);
-   s(MO2,12,13,1,1);s(MO2,13,12,1,1);s(MO2,13,13,1,1)}
-  else if(e==3){s(EY,11,11,2,2);s(WH,11,11,1,1);s(DK,12,13,2,1);s(TG,12,14,1,1);
-   const L=1+fl(1.3,3);s(BL,13,14,1,L);s(BL,13,14+L,1,1)}
-  else if(e==4){s(EY,11,11,2,2);s(WH,11,11,1,1);s('rgba(127,203,255,.8)',11,13,2,1);
-   s(BL,11,14+fl(1.6,2),1,1);s(MO,12,13,2,1);s(MO,13,14,1,1)}
-  else if(e==5){s(EY,10,12,1,1);s(EY,11,11,1,1);s(EY,12,12,1,1);s(BS,10,13,1,1);
-   s(DK,12,13,2,1);s(TG,12,14,1,1);s(DK,13,14,1,1)}
+  if(e==1){m(['FFglLF','..LLF.'],8,11);m(['MMM'],11,13)}
+  else if(e==2){m(HE,10,10,HP);m(['.P','PP'],12,12);m(['S'],9,13)}
+  else if(e==3){m(EYE3,11,10);m(['MK','.T'],12,13);m(['S'],9,13);m(['b'],12,14);if(fl(1.3,2))m(['w'],12,15)}
+  else if(e==4){m(EYE4,11,10);m(['b'],11,13+fl(1.6,2));m(['MM','.M'],12,13)}
+  else if(e==5){m(ARC,10,11);m(['KW','T.'],12,13);m(['S'],9,13)}
   else if(e==6){ bubbleFace(u,t,1,Rt) }
   else if(e==7){ heartFace(u,t,1,Rt) }
   else if(e==8){ sleepFace(u,t,1,Rt) }
   else if(e==9){ cheekyFace(u,t,1,Rt) }
  }
 }
-/* ---- 😴 Buồn ngủ: nhắm mắt, miệng nhỏ phập phồng, chữ Z bay lên nhẹ ---- */
+/* ---- 😴 Buồn ngủ: mắt nhắm cong ‿, má hồng, miệng nhỏ phập phồng (không há to), chữ Z bay lên nhẹ ---- */
 function sleepFace(u,t,side,Rt){
- const EY='#2b1d12',MO='#b5604a',BS='rgba(236,110,110,.5)',px=(c,x,y)=>side?u(c,Rt?x:19-x,y,1,1):u(c,x,y,1,1);
- if(!side){px(EY,6,12);px(EY,7,13);px(EY,8,12);px(EY,11,12);px(EY,12,13);px(EY,13,12);px(BS,7,14);px(BS,12,14);
-  const o=Math.sin(t*2)>0;px(MO,9,14);px(MO,10,14);if(o){px(MO,9,15);px(MO,10,15)}}
- else{px(EY,10,12);px(EY,11,13);px(EY,12,12);px(BS,9,14);const o=Math.sin(t*2)>0;px(MO,12,14);px(MO,13,14);if(o){px(MO,12,15);px(MO,13,15)}}
+ const m=(rows,x,y,pal)=>fxMap(u,side,Rt,rows,x,y,pal),px=(c,x,y)=>side?u(c,Rt?x:19-x,y,1,1):u(c,x,y,1,1);
+ const o=Math.sin(t*2)>0;
+ if(!side){m(['s.s','.E.'],6,12);m(['s.s','.E.'],11,12);m(['S......S'],6,14);m([o?'KK':'MM'],9,14)}
+ else{m(['s.s','.E.'],10,12);m(['S'],9,14);m([o?'KK':'MM'],12,14)}
  for(let k=0;k<3;k++){
   const p=((t/3.6)+k/3)%1,z=k==2?5:4,x=(side?12:14)+Math.round(p*3+Math.sin(p*6.3+k)*1),y=Math.round(8-p*13),a=Math.min(1,p*6,(1-p)*2.5).toFixed(2);
   if(a<=0)continue;
@@ -922,17 +914,14 @@ function sleepFace(u,t,side,Rt){
   for(let i=1;i<z-1;i++)px(c,x+z-1-i,y+i);
   px(w,x,y)}
 }
-/* ---- 😛 Lém lỉnh: nháy 1 mắt, thè lưỡi, thả 1 trái tim nhỏ bay lên ---- */
+/* ---- 😛 Lém lỉnh: nháy 1 mắt, thè lưỡi nhỏ, thả 1 trái tim nhỏ bay lên ---- */
 function cheekyFace(u,t,side,Rt){
- const EY='#2b1d12',WH='#ffffff',DK='#6b2230',TG='#ff8c9c',TD='#e8587a',BS='rgba(236,110,110,.55)',px=(c,x,y)=>side?u(c,Rt?x:19-x,y,1,1):u(c,x,y,1,1);
+ const m=(rows,x,y,pal)=>fxMap(u,side,Rt,rows,x,y,pal),px=(c,x,y)=>side?u(c,Rt?x:19-x,y,1,1):u(c,x,y,1,1);
  const wink=!side||(t%1.8)<1.2;
- if(!side){px(EY,7,11);px(EY,8,11);px(EY,7,12);px(EY,8,12);px(WH,7,11);
-  px(EY,11,12);px(EY,12,11);px(EY,13,12);                          // mắt phải nháy ^
-  px(BS,6,13);px(BS,13,13);
-  px(DK,8,13);px(DK,9,13);px(DK,10,13);px(DK,11,13);px(TG,9,14);px(TG,10,14);px(TG,9,15);px(TG,10,15);px(TD,10,14)}
+ if(!side){m(['WE','EE'],7,11);m(['.E.','E.E'],11,11);m(['S'],6,13);m(['S'],13,13);m(['MKKM','..Tt'],8,13)}
  else{
-  if(wink){px(EY,10,12);px(EY,11,11);px(EY,12,12)}else{px(EY,11,11);px(EY,12,11);px(EY,11,12);px(EY,12,12);px(WH,11,11)}
-  px(BS,9,13);px(DK,12,13);px(DK,13,13);px(TG,13,14);px(TG,13,15);px(TD,13,14)}
+  if(wink)m(['.E.','E.E'],10,11);else m(['WE','EE'],11,11);
+  m(['S'],9,13);m(['MK','tT'],12,13)}
  const p=(t%2.6)/2.6;
  if(p<.92){const x=(side?14:14)+Math.round(p*5),y=Math.round(9-p*11),a=Math.min(1,(1-p)*2.2).toFixed(2),c='rgba(255,77,122,'+a+')',h='rgba(255,194,207,'+a+')';
   px(c,x,y);px(c,x+2,y);px(c,x,y+1);px(c,x+1,y+1);px(c,x+2,y+1);px(c,x+1,y+2);px(h,x,y)}
@@ -941,10 +930,10 @@ function cheekyFace(u,t,side,Rt){
 function heartFace(u,t,side,Rt){
  const EY='#2b1d12',KS='#e8587a',BS='rgba(236,110,110,.55)',px=(c,x,y)=>side?u(c,Rt?x:19-x,y,1,1):u(c,x,y,1,1);
  const L=2.8,HC=[['#ff3b5c','#c01838','#ffc2cf'],['#4aa8ff','#1f6fc8','#c4e4ff'],['#ffd23f','#d99a10','#fff2b0']];
- // mặt: mắt nhắm cong ^ ^, má hồng, miệng chu tròn
- if(!side){px(EY,6,12);px(EY,7,11);px(EY,8,12);px(EY,11,12);px(EY,12,11);px(EY,13,12);px(BS,7,13);px(BS,12,13);
-  px(KS,9,13);px(KS,10,13);px(KS,9,14);px(KS,10,14)}
- else{px(EY,10,12);px(EY,11,11);px(EY,12,12);px(BS,9,13);px(KS,12,13);px(KS,13,13);px(KS,12,14);px(KS,13,14)}
+ // mặt: mắt nhắm cong ^ ^, má hồng, môi chu bóng (2x2 có điểm sáng)
+ const m=(rows,x,y,pal)=>fxMap(u,side,Rt,rows,x,y,pal);
+ if(!side){m(['.E.','E.E'],6,11);m(['.E.','E.E'],11,11);m(['S......S'],6,13);m(['hP','DD'],9,13)}
+ else{m(['.E.','E.E'],10,11);m(['S'],9,13);m(['hP','DD'],12,13)}
  const mx=side?13:10,my=side?13:13;
  for(let k=0;k<3;k++){
   const p=((t/L)+k/3)%1,C=HC[k];
@@ -988,11 +977,11 @@ function bubbleFace(u,t,side,Rt){
  const chew=Math.floor(t*4)%2;
  if(!side){
   if(blow||pop>=0&&pop<.5){u(DK,9,13,2,1)}
-  else if(surprised){u(DK,9,13,2,2)}
-  else{u(MO,9,13,2,1);if(chew)u(MO,9,14,2,1)}
+  else if(surprised){u(DK,9,13,2,1);u('#ff8c9c',9,14,2,1)}
+  else{u(MO,9,chew?14:13,2,1)}
  }else{
   if(blow||pop>=0){px(DK,12,13);px(DK,13,13)}
-  else{px(MO,12,13);px(MO,13,13);if(chew)px(MO,13,14)}
+  else{px(MO,12,chew?14:13);px(MO,13,chew?14:13)}
  }
  // bong bóng (đường kính chẵn 2/4/6/8 để luôn đối xứng giữa mặt)
  let d=0;
