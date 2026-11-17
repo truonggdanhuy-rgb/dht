@@ -182,6 +182,7 @@ SETFX.warm=(u,o,S,K)=>{
 
 // ---- Áo dài (nữ trắng / nam gấm / cách tân hồng): cổ đứng, vạt dài xẻ tà ----
 SETFX.adai=(u,o,S,K)=>{
+ if(S.n==='Áo dài trắng (nữ)')return SETFX.adaiNu(u,o,S,K);   // bản vẽ lại riêng cho áo dài trắng nữ (xem SETFX.adaiNu bên dưới)
  const{side,Rt,back,sit,rd,lg,sx,SK}=K,C=S.sh,CL=S.shl,CD=S.shd,T=S.trim,CO=S.col||T,P=S.pants,FL=rd?3:(S.fl||5),aL=lg,aR=-lg,
  mx=(x,w)=>Rt?x:20-x-w,sw=o.mv?_sw():0,lfL=lg>0?1:0,lfR=lg<0?1:0;
  if(!side){
@@ -208,6 +209,49 @@ SETFX.adai=(u,o,S,K)=>{
   const bx=mx(5,2),s=o.mv?(Rt?-1:1)*(sw>0?1:0):0,BK=shade(C,-.08);u(BK,bx,23,2,FL-1);u(BK,bx+s,22+FL-1,2,1);
   if(S.dots)for(let y=24;y<22+FL;y+=2)u(S.dots,9,y,1,1);
   if(!sit&&!rd){const x1=8+sx,x2=10-sx,l1=lg>0?1:0,l2=lg<0?1:0;u(P,x1,27,3,2-l1);u(P,x2,27,3,2-l2)}
+ }
+};
+
+// ---- ÁO DÀI TRẮNG (nữ) v2: cổ đứng, cổ chéo cài nút, ôm eo, 2 tà dài thướt tha (trước/sau) loe nhẹ, quần lụa ống rộng ----
+// Chỉ dùng cho set 'Áo dài trắng (nữ)' (SETFX.adai chuyển sang đây theo tên). Áo dài nam & cách tân hồng vẫn dùng SETFX.adai cũ.
+// Bản đồ: tà trước x7..12 (loe ra x6..13 ở gấu), hem ở y27, quần x5..8 & x11..14 (y27-28). Ánh sáng từ trên-trái, 3 tông: C sáng / CM vừa / CD tối.
+SETFX.adaiNu=(u,o,S,K)=>{
+ const{side,Rt,back,sit,rd,lg,sx,SK}=K,C=S.sh,CL=S.shl,CD=S.shd,T=S.trim,P=S.pants,CM=shade(CD,.55),TP=shade(P,-.09),PL=shade(P,.3),PD=shade(P,-.13),BT='#fff6d8',TD=shade(T,-.12),
+  aL=lg,aR=-lg,mx=(x,w)=>Rt?x:20-x-w,sw=o.mv?_sw():0,lfL=lg>0?1:0,lfR=lg<0?1:0,hy=rd?25:(sit?26:27),run=!sit&&!rd;
+ if(!side){
+  // quần lụa ống rộng, tối hơn tà áo một chút để tà nổi lên giữa 2 ống quần
+  if(run){u(TP,5,24,4,5-lfL);u(PL,5,24,1,5-lfL);u(PD,8,24,1,5-lfL);u(TP,11,24,4,5-lfR);u(PL,11,24,1,5-lfR);u(PD,14,24,1,5-lfR)}
+  // cổ đứng: 2 hàng, viền xanh nhạt phía trên
+  u(CM,8,15,1,2);u(CM,11,15,1,2);u(CM,8,16,4,1);u(T,8,15,1,1);u(T,11,15,1,1);u(CD,11,16,1,1);
+  // tay dài ôm, bo cổ tay xanh nhạt, ranh giới tay-thân rõ
+  u(C,2,21+aL,3,1);u(T,2,22+aL,3,1);u(C,15,21+aR,3,1);u(T,15,22+aR,3,1);
+  u(CM,4,17+aL,1,4);u(CM,15,17+aR,1,4);
+  // thân ôm: bỏ viền ngang eo của thân gốc, bóng nhẹ hai bên để thấy eo thắt
+  u(C,6,23,8,1);u(CM,5,19,1,2);u(CM,5,21,2,3);u(CM,14,19,1,2);u(CM,13,21,2,3);
+  if(!back){
+   // cổ chéo cài nút: từ cổ chéo xuống nách rồi chạy dọc sườn
+   [[10,16],[9,17],[8,18],[7,19],[6,20]].forEach(q=>u(T,q[0],q[1],1,1));u(T,6,21,1,3);
+   u(BT,8,18,1,1);u(BT,6,20,1,1);u(BT,6,22,1,1);
+  }else{u(CM,9,17,2,7)}
+  // tà áo hẹp, dài tới mắt cá, có nếp gấp; gấu viền xanh nhạt, lắc nhẹ khi đi
+  const th=hy-23;
+  u(C,7,24,6,th);u(CL,7,24,1,th);u(CD,12,24,1,th);u(CM,9,25,1,th-1);if(th>3)u(CM,11,26,1,th-2);if(back)u(CM,10,25,1,th-1);
+  u(T,7+sw,hy,6,1);u(TD,12+sw,hy,1,1);
+  // hoa văn thêu nhỏ trên tà (cành lá xanh nhạt)
+  if(!back&&!rd&&!sit){u(T,8,25,1,1);u(T,9,26,1,1);u(T,10,25,1,1)}
+ }else{
+  // nhìn ngang: quần lụa, rồi tà sau (bay ra sau khi đi) và tà trước
+  if(run){const x1=8+sx,x2=10-sx,l1=lg>0?1:0,l2=lg<0?1:0;u(TP,x1,24,3,5-l1);u(PL,x1,24,1,5-l1);u(TP,x2,24,3,5-l2);u(PD,x2+2,24,1,5-l2)}
+  u(CM,mx(9,3),15,3,2);u(SK,9,15,2,1);u(T,mx(9,1),15,1,1);u(CD,mx(11,1),16,1,1);
+  if(!o.noarm){const ax=9-sx;u(C,ax,21,3,1);u(CM,ax,22,3,1)}
+  u(C,8,23,6,1);u(CD,mx(13,1),19,1,5);
+  const fl=o.mv?(sw>0?2:1):0,th=hy-23;
+  // tà sau
+  u(C,mx(7,3),24,3,th);u(CL,mx(7,1),24,1,th);u(CM,mx(9,1),25,1,th-1);
+  if(fl)u(C,mx(7-fl,fl),hy-1,fl,1);u(T,mx(7-fl,3+fl),hy,3+fl,1);
+  // tà trước
+  u(C,mx(11,3),24,3,th);u(CL,mx(11,1),24,1,th);u(CD,mx(13,1),24,1,th);u(CM,mx(12,1),26,1,th-2);
+  u(T,mx(11,3),hy,3,1);
  }
 };
 
