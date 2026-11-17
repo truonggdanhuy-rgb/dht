@@ -154,8 +154,7 @@ function ribbon(R,fn,n,ph,t){
  R(GDD,ex,ey,2,2);R(GD,ex,ey,2,1);R(GDL,ex,ey,1,1)}
 
 // ---------- LUỒNG VẦN VŨ (chỉ vòng PHÍA SAU người, 2 dải mảnh vàng + xanh) ----------
-const STR=[{rgb:['255,210,63','255,243,160','232,150,20'],ph:0},
-           {rgb:['63,180,255','190,238,255','31,100,224'],ph:PI}];
+const STR=[{rgb:['255,210,63','255,243,160','232,150,20'],ph:0}];
 function aura(u,t,part,mv){
  if(part)return;
  const N=70,spd=mv?2.2:1.2;
@@ -176,7 +175,7 @@ function sparkles(u,t,mv){
   const R=8+((i*37)%7),x=10+R*cos(ang),y=26-ph*34+sin(t*3+i)*1.2;
   const a=Math.min(1,ph*5,(1-ph)*2.2);if(a<.12)continue;
   if(x>3&&x<17&&y>5&&y<16)continue;                                   // không che mặt
-  star(u,x,y,a,i%2?'160,226,255':'255,226,110',i%3==0)}
+  star(u,x,y,a,i%2?'255,243,170':'255,214,80',i%3==0)}
 }
 
 // ===================================================================================
@@ -225,8 +224,8 @@ function drawHauVuong(r,u,o,S,k){
  const ribF=(s,ph)=>{const w=sin(t*2.4*amp+s*8+ph)*(.4+1.3*s);
   return[3-11*s-(mv?4*s:0),9+5*s+w]};
  const ribbonsFB=()=>{};   // nhìn trước/sau: bỏ ruy băng cho gọn, mặt và tóc luôn rõ
- const ribS=(s,ph)=>[4-17*s-(mv?8*s:0),10+2*s+sin(t*3*amp+s*7+ph)*(.5+1.8*s)];
- const ribbonsS=()=>{ribbon(M,ribS,24,0,t)};
+ const ribS=(s,ph)=>[4-34*s-(mv?14*s:0),10+3*s+sin(t*2.6*amp+s*6+ph)*(.5+2.4*s)];   // dải dài gấp đôi
+ const ribbonsS=()=>{ribbon(M,ribS,50,0,t)};
 
  if(!side){
   // ======================= NHÌN TRƯỚC / SAU =======================
