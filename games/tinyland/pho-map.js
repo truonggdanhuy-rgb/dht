@@ -627,6 +627,7 @@ function psFx(tm,dt){
 #ui.lotui .pf{background:linear-gradient(#2a1055,#1a0b3c);border-top:2px solid #ff5cc8}
 #ui.lotui .pf .b{flex:1;font-weight:900;font-size:14px;color:#fff;background:linear-gradient(#ff7ad0,#e0309a);border:2px solid #ffd0f0;border-radius:12px;box-shadow:0 0 12px #ff3fb4,0 2px 0 #8a1466;text-shadow:0 1px 0 #8a1466}
 #ui.lotui .pf .b:active{transform:translateY(1px)}
+#ui.lotui #lotp{grid-template-columns:1fr 1fr;gap:3px}#ui.lotui #lotp>.it{padding:3px 6px;font-size:11px;border-radius:7px}#ui.lotui #lotp>.it>b{font-size:12px}#ui.lotui #lotp>.it>span>b{font-size:11px}#ui.lotui #lotp>.it>span>small{font-size:10px}#ui.lotui #lotp>.it.lt0{grid-column:1/3}#ui.lotui #lotp>.it.lt0>b{font-size:14px}
 #ui.lotui #lotl>.it{background:linear-gradient(#fff6d6,#ffe9a8);border:2px dashed #c98a2a;border-left:5px solid #e0309a;border-radius:8px;color:#4a2a08}
 #ui.lotui #lotl>.it.z{opacity:.6}#ui.lotui #lotl>.it b{color:#4a2a08;text-shadow:none;font-size:14px;letter-spacing:1px}
 #ui.lotui #lotl>.it .b.x{background:linear-gradient(#7dffb0,#2fc46a);border:2px solid #fff;border-radius:10px;color:#064a22;font-weight:900;box-shadow:0 0 10px #4dff9a;animation:lotflick 1.4s infinite}
@@ -643,8 +644,8 @@ function lotMake(){let u=Math.random(),gi=-1,acc=0;for(let i=0;i<LOT.length;i++)
  return{n,w:w.join(''),j,g:gi,p:gi>=0?LOT[gi].p:LOT_REFUND,at:Date.now()+LOT_WAIT,paid:0}}
 window.psLot=()=>{PS.view='lot';const L=lotS();L.t=L.t.filter((t,i,a)=>!t.paid||i>=a.length-6);
  let h=head('🎟️ Sạp vé số')+'<div class="lotsign"><div class="ln1">VÉ SỐ KIẾN THIẾT</div><div class="ln2">✦ THỬ VẬN MAY · NHẬN THƯỞNG LIỀN TAY ✦</div></div><div class="mut">Vé <b>'+LOT_PRICE+' Xu</b> • xổ số sau <b>2 phút</b> • không trùng số nào được hoàn <b>'+LOT_REFUND+' Xu</b>. Tối đa '+LOT_MAXP+' vé chờ xổ.</div>'+
- '<div class="g1">'+LOT.map((g,gi)=>'<div class="it lt'+gi+'"><span><b>'+g.k+'</b><br><small>khớp '+g.j+' số cuối</small></span><b>'+g.p.toLocaleString('vi-VN')+' Xu</b></div>').join('')+'</div>'+
- '<div class="pf"><button class="b" onclick="psLotBuy(1)">🎟️ Mua 1 vé</button><button class="b" onclick="psLotBuy(5)">🎟️ Mua 5 vé</button></div><div class="mut"><b>Vé của bạn</b> (🪙 '+fmtXu(ST.xu)+' Xu)</div><div class="g1" id="lotl"></div>';
+ '<div class="pf"><button class="b" onclick="psLotBuy(1)">🎟️ Mua 1 vé</button><button class="b" onclick="psLotBuy(5)">🎟️ Mua 5 vé</button></div><div class="mut"><b>Vé của bạn</b> (🪙 '+fmtXu(ST.xu)+' Xu)</div><div class="g1" id="lotl"></div>'+
+ '<div class="mut" style="margin-top:8px"><b>🏆 Bảng giải thưởng</b></div><div class="g1" id="lotp">'+LOT.map((g,gi)=>'<div class="it lt'+gi+'"><span><b>'+g.k+'</b> <small>'+g.j+' số cuối</small></span><b>'+g.p.toLocaleString('vi-VN')+'</b></div>').join('')+'</div>';
  openUI(h);$('ui').classList.add('lotui');lotList()};
 function lotList(){const el=$('lotl');if(!el)return;const L=lotS(),now=Date.now();
  el.innerHTML=L.t.length?L.t.slice().reverse().map(t=>{let st;
