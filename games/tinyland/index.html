@@ -1971,15 +1971,15 @@ const MOUNTS=[{n:'Trâu Việt',hw:9,drop:8,spd:1.8,seat:{0:[0,-22],1:[0,-22],si
 {n:'Phong hỏa luân',k:'firewheel',dia:10,hw:11,drop:0,spd:3,nobob:1,acc:1,sh:[0,0],seat:{0:[0,-19],1:[0,-19],side:[0,-19]},
  legs(){},hov:(t,mv)=>window.wheelHov?wheelHov(t,mv):0,
  draw(R,d,f,b,t,pt,c){if(window.wheelDraw)wheelDraw(R,d,f,b,t,pt,c)}},
-// ===== Xe đạp 1 bánh (8000 Xu ở Shop Phố xá; hình vẽ nằm ở newitems4.js; món mới LUÔN thêm vào CUỐI mảng MOUNTS) =====
+// ===== Xe đạp 1 bánh (8000 Xu ở Tiệm Chú Hề — cl:1 = không hiện ở Shop Phố xá; hình vẽ nằm ở newitems4.js; món mới LUÔN thêm vào CUỐI mảng MOUNTS) =====
 // đi: đạp xe • đứng yên: nghiêng người chống 1 chân (lean = độ nghiêng, hov = hạ người)
-{n:'Xe đạp 1 bánh',k:'unicycle',hw:4,drop:0,spd:2.2,nobob:1,sh:[11,8],seat:{0:[0,-20],1:[0,-20],side:[-1,-20]},
+{n:'Xe đạp 1 bánh',k:'unicycle',cl:1,hw:4,drop:0,spd:2.2,nobob:1,sh:[13,9],seat:{0:[0,-24],1:[0,-24],side:[-1,-24]},
  legs(R,d,ph,sx,sy,PT,SD,S,hv,c){if(window.uniLegs)uniLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
  hov:(t,mv)=>window.uniHov?uniHov(t,mv):0,lean:(mv,d)=>window.uniLean?uniLean(mv,d):0,
  draw(R,d,f,b,t,pt,c){if(window.uniDraw)uniDraw(R,d,f,b,t,pt,c)}},
-// ===== 🛹 Ván trượt cam (ván GỐC; 1.000 Xu + 300 xu quái vật + 2 💎 ở Shop Phố xá, tab Thú cưỡi; cb = giá gộp; hình vẽ nằm ở skate.js; ván mới LUÔN thêm vào CUỐI mảng MOUNTS, copy dòng này đổi 'orange') =====
+// ===== 🛹 Ván trượt cam (ván GỐC; 1.000 Xu + 300 xu quái vật + 2 💎 ở Tiệm Chú Hề (cl:1); cb = giá gộp; hình vẽ nằm ở skate.js; ván mới LUÔN thêm vào CUỐI mảng MOUNTS, copy dòng này đổi 'orange') =====
 // đi: đứng lướt trên ván • đứng yên: chống 1 chân xuống đất, thỉnh thoảng đạp đuôi hất ván lên nhẹ
-{n:'Ván trượt cam',k:'skate_orange',cb:{xu:1000,qv:300,dia:2},hw:8,drop:0,spd:2.6,nobob:1,acc:1,sh:[26,22],seat:{0:[0,-21],1:[0,-21],side:[0,-21]},
+{n:'Ván trượt cam',k:'skate_orange',cl:1,cb:{xu:1000,qv:300,dia:2},hw:8,drop:0,spd:2.6,nobob:1,acc:1,sh:[32,24],seat:{0:[0,-21],1:[0,-21],side:[0,-21]},
  legs(R,d,ph,sx,sy,PT,SD,S,hv,c){if(window.skLegs)skLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
  hov:(t,mv)=>window.skHov?skHov(t,mv):0,lean:(mv,d)=>window.skLean?skLean(mv,d):0,
  draw(R,d,f,b,t,pt,c){if(window.skDraw)skDraw('orange',R,d,f,b,t,pt,c)}}
@@ -6117,7 +6117,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="baby.js?v=20261116b"></script>
 <script src="newitems3.js?v=20261116"></script>
 <script src="newitems4.js?v=20261117"></script>
-<script src="skate.js?v=20261117"></script>
+<script src="skate.js?v=20261118"></script>
 <script src="pajama.js?v=20261118"></script>
 <script src="alo.js?v=20261119"></script>
 <script src="winter.js?v=20261120"></script>
