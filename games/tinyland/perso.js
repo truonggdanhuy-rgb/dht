@@ -2,7 +2,7 @@
    PERSO.JS — Thái tử Ba Tư + Thẻ cuốc + Quyền trượng Thủy Thần (Tinyland)
    - Thái tử Ba Tư đứng ở Phố xá (thổi sáo điều khiển rắn hổ mang trong hủ). Bấm vào mở panel:
        a) Thẻ cuốc (xu quái vật, 1 giờ thật, cộng dồn)  b) Ghép Quyền trượng  c) Nâng cấp
-   - Điểm cuốc: 5 người tuyết ở Làng Tuyết (ra Mảnh tuyết), 5 ngôi sao ở Làng Lễ hội (ra Mảnh sao)
+   - Điểm cuốc: 8 người tuyết ở Làng Tuyết (ra Mảnh tuyết), 13 ngôi sao ở Làng Lễ hội (nhiều nhất trên con đường) (ra Mảnh sao)
    - Quyền trượng Thủy Thần: phụ kiện trong Túi (mỗi cấp là 1 mục ACCS: scepter1/2/3 ở cuối mảng ACCS
      trong index.html) => người chơi khác tự thấy qua số phụ kiện `a` sẵn có, KHÔNG thêm dữ liệu mạng.
    - Dữ liệu lưu trong ST.pr = {t: hạn thẻ (ms), st: mảnh sao, sn: mảnh tuyết, lv: cấp gậy 0..3}
@@ -27,8 +27,8 @@ const UPG=[
 const SOON=[2];                // các mùa sắp ra mắt: hiện "Coming soon" trong panel (khi có vật phẩm mùa đó trong UPG thì tự hiện vật phẩm thay thế)
 /* Vị trí điểm cuốc cố định (tọa độ chân) */
 const PTS={
- wt:[[95,178],[350,238],[520,182],[350,338],[565,278]].map(a=>({x:a[0],y:a[1],hide:0,dig:0})),
- lh:[[760,160],[310,570],[460,440],[850,640],[1040,160]].map(a=>({x:a[0],y:a[1],hide:0,dig:0}))};
+ wt:[[95,178],[350,238],[520,182],[350,338],[565,278],[130,285],[200,372],[470,392]].map(a=>({x:a[0],y:a[1],hide:0,dig:0})),
+ lh:[[760,160],[310,570],[460,440],[850,640],[1040,160],[150,406],[250,452],[350,410],[560,446],[660,408],[770,450],[880,412],[990,448]].map(a=>({x:a[0],y:a[1],hide:0,dig:0}))};
 /* Vị trí Thái tử ở Phố (chân) + điểm đứng khi bấm */
 const PRX=520,PRY=480,PSTAND=[560,494];
 
@@ -122,11 +122,19 @@ function drawSnowman(p){const x=p.x,y=p.y;if(p.hide>now())return;
  r('#2a2a3a',x-3,y-21,6,1);r('#2a2a3a',x-2,y-24,4,3);r('#d9302a',x-2,y-22,4,1);
  if(p.dig)drawPick(p)}
 function drawStar(p){const x=p.x,y=p.y,tm=performance.now()/1000;if(p.hide>now())return;
- if(x<camX-30||x>camX+vw+30||y<camY-40||y>camY+vh+50)return;
- const f=Math.floor(tm*3+x*.1)%3,a=f==0?.55:f==1?.85:1;
- r('rgba(255,230,120,'+(.18*a).toFixed(2)+')',x-6,y-1,12,3);r('rgba(255,235,150,'+(.3*a).toFixed(2)+')',x-4,y-2,8,5);
- r('#ffe27a',x-1,y-3,3,7);r('#ffe27a',x-3,y-1,7,3);r('#fff8c8',x-1,y-1,3,3);r('#ffffff',x,y,1,1);
- if(f==2){r('#fff8c8',x,y-6,1,3);r('#fff8c8',x,y+4,1,3);r('#fff8c8',x-6,y,3,1);r('#fff8c8',x+4,y,3,1)}
+ if(x<camX-40||x>camX+vw+40||y<camY-70||y>camY+vh+50)return;
+ const f=Math.floor(tm*3+x*.1)%3,a=f==0?.7:f==1?.9:1,bob=Math.round(Math.sin(tm*2+x*.05)*2),cy=y-14+bob;
+ r('rgba(0,0,0,.2)',x-7,y,15,3);
+ r('rgba(255,235,150,'+(.1*a).toFixed(2)+')',x-3,cy-30,7,30);               /* cột sáng giúp dễ thấy từ xa */
+ r('rgba(255,230,120,'+(.2*a).toFixed(2)+')',x-14,cy-10,29,21);r('rgba(255,235,150,'+(.3*a).toFixed(2)+')',x-10,cy-7,21,15);
+ /* ngôi sao 5 cánh to ~22px, có viền cam cho nổi trên nền cỏ */
+ const S=(c,dx,dy,w,h)=>r(c,x+dx,cy+dy,w,h);
+ S('#c9741a',-2,-12,5,3);S('#c9741a',-4,-9,9,3);S('#c9741a',-12,-6,25,5);S('#c9741a',-9,-2,19,5);S('#c9741a',-11,2,8,5);S('#c9741a',4,2,8,5);S('#c9741a',-6,3,5,4);S('#c9741a',2,3,5,4);
+ S('#ffd23f',-1,-11,3,3);S('#ffd23f',-3,-8,7,3);S('#ffd23f',-11,-5,23,3);S('#ffd23f',-8,-2,17,5);S('#ffd23f',-10,2,6,4);S('#ffd23f',5,2,6,4);S('#ffd23f',-5,3,3,3);S('#ffd23f',2,3,3,3);
+ S('#fff3a8',-2,-7,4,3);S('#fff3a8',-6,-4,12,3);S('#fff3a8',-4,-1,8,3);
+ S('#ffffff',-1,-5,2,2);S('#c9741a',-3,-3,1,1);S('#c9741a',2,-3,1,1);S('#c9741a',-1,0,3,1);  /* mắt + miệng nhỏ cho dễ thương */
+ if(f==2){S('#ffffff',-1,-20,3,6);S('#ffffff',-1,10,3,6);S('#fff8c8',-22,-3,8,3);S('#fff8c8',15,-3,8,3)}
+ else if(f==1){S('#fff8c8',-17,-14,3,3);S('#fff8c8',15,6,3,3)}
  if(p.dig)drawPick(p)}
 /* cây cuốc pixel tự xuất hiện giữa khoảng không cạnh điểm cuốc, cuốc vài nhát rồi biến mất */
 function drawPick(p){const el=(now()-p.dig)/DIG_MS;if(el<0||el>1)return;
@@ -287,7 +295,7 @@ const standAt=(M,p)=>{const bad=(x,y)=>{const tx=Math.floor(x/16),ty=Math.floor(
  return[p.x,p.y+8]};
 // Làng Tuyết & Làng Lễ hội
 [['wt',WT,drawSnowman,'⛄ Người tuyết — bấm để cuốc Mảnh tuyết (cần Thẻ cuốc)'],['lh',LH,drawStar,'⭐ Ngôi sao lấp lánh — bấm để cuốc Mảnh sao (cần Thẻ cuốc)']].forEach(([key,M,fn,msg])=>{
- PTS[key].forEach((p,i)=>{M.sp.push({by:p.y+2,d:()=>fn(p)});M.hits.push([p.x-12,p.y-26,24,32,msg,'cv:pr:dig:'+key+':'+i,standAt(M,p)])})});
+ PTS[key].forEach((p,i)=>{M.sp.push({by:p.y+2,d:()=>fn(p)});M.hits.push(key=='lh'?[p.x-20,p.y-40,40,48,msg,'cv:pr:dig:'+key+':'+i,standAt(M,p)]:[p.x-12,p.y-26,24,32,msg,'cv:pr:dig:'+key+':'+i,standAt(M,p)])})});
 hookBag();
 window.PERSO={art,buyCard,up,prince,PTS,UPG};
 })();
