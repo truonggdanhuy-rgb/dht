@@ -1013,7 +1013,7 @@ window.gdSellN=(id,n)=>{const it=gdItem(id),G=gdBag(),o=G.inv[id];if(!it||!o)ret
  toast('🥇 Đã bán '+k+' '+it[1]+' — nhận '+gdN(pro)+' Xu ('+(pf>=0?'lời ':'lỗ ')+gdN(Math.abs(pf))+')');gdKeep(()=>goldUI(1))};
 
 function psAct(a,h){const[t,v]=a.split(':');
- if(t=='shop')return psShop(v);
+ if(t=='shop'){toast('Một số trang phục bạn không thể xem khi bạn ĐANG MẶC SET',2000);return psShop(v)}   // vào Shop Phố xá: nhắc 2 giây
  if(t=='mini')return window.bbShop?bbShop():toast('🧸 Shop Miniset đang chuẩn bị');
  if(t=='lot')return psLot();
  if(t=='bm')return buffShopUI('bm');

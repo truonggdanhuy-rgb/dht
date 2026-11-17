@@ -230,7 +230,7 @@ const SBSVG=z=>'<svg width="'+z+'" height="'+z+'" viewBox="0 0 40 40" style="fle
 function santaAct(){const d=new Date().toDateString();
  if(ST.sbd!=d){ST.sbd=d;ST.sb=(ST.sb|0)+1;try{SF.t0=performance.now()}catch(e){}save();
   return toast('🎅 Ho ho ho! Bạn nhận được 1 ❄️ Huy hiệu tuyết!\nĐang có '+ST.sb+' huy hiệu • bấm lại ông để xem gian hàng')}
- santaPanel()}
+ toast('Một số trang phục bạn không thể xem khi bạn ĐANG MẶC SET',2000);santaPanel()}   // mở gian hàng ông Noel: nhắc 2 giây
 /* ---- Gian hàng đổi Huy hiệu tuyết: thêm món mới = thêm 1 dòng vào SBSHOP (loại 'p' pet / 's' set / 'h' tóc-mũ / 'a' phụ kiện / 'x' hành động; k = khóa trong PETS/SETS/HAIRS/ACCS, riêng 'x' là id trong ACTS; giá = bd) ---- */
 const SBSHOP=[{t:'p',k:'ginger'},{t:'p',k:'snowcloud'},{t:'h',k:'earfur'},{t:'x',k:'bell'},{t:'a',k:'gift'},{t:'a',k:'snowbub'},{t:'s',k:'wintm'},{t:'s',k:'wintf'}];
 const sbArr=t=>t=='p'?PETS:t=='s'?SETS:t=='h'?HAIRS:t=='x'?ACTS:ACCS;

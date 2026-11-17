@@ -2341,7 +2341,7 @@ function drawLB(){cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.textAl
 const keys={};let ptr=null,S=3,dpr=1,vw=0,vh=0,camX=0,camY=0,camFree=0,cfx=0,cfy=0;
 addEventListener('keydown',e=>{if(e.target&&(e.target.tagName=='TEXTAREA'||e.target.tagName=='INPUT'))return;const k=e.key.toLowerCase();keys[k]=1;if(UI){if(k=='escape')closeUI();e.preventDefault();return}if(k=='e'||k==' '){near();e.preventDefault()}if(k.startsWith('arrow'))e.preventDefault()});
 addEventListener('keyup',e=>delete keys[e.key.toLowerCase()]);
-let tt;const toast=m=>{const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>t.style.opacity=0,2600)};
+let tt;const toast=(m,ms)=>{const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>t.style.opacity=0,typeof ms=='number'?ms:2600)};   // ms = thời gian hiện (mặc định 2,6 giây)
 const hitAt=(x,y)=>{for(let i=hits.length-1;i>=0;i--){const h=hits[i];if(x>=h[0]&&x<=h[0]+h[2]&&y>=h[1]&&y<=h[1]+h[3])return h}};
 function near(){let best,bd=26;for(const h of hits){if(h[2]>800)continue;
  const dx=Math.max(h[0]-Pl.x,0,Pl.x-h[0]-h[2]),dy=Math.max(h[1]-Pl.y,0,Pl.y-h[1]-h[3]),d=Math.hypot(dx,dy);
