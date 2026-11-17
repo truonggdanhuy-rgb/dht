@@ -3,7 +3,7 @@
    - Bãi biển nhỏ ở góc TRÁI màn hình lúc mới vào, còn lại là mặt biển rất rộng
    - Shop quái vật (biển hiệu to) + NPC bạch tuộc đứng rao "Đồ câu quái vật đây!"
    - Xu quái vật (ST.qv) = đơn vị tiền tệ mới, hiện ở panel avatar góc phải
-   - RA KHƠI bằng THUYỀN: Thuyền mini (1.000 xu vàng) / Thuyền thiên nga (xu quái vật) — bán ở Shop quái vật
+   - RA KHƠI bằng THUYỀN: Thuyền mini (1.000 xu vàng) / Thuyền thiên nga (3.000 xu quái vật) / Thuyền tre đom đóm (5.000 xu quái vật) — bán ở Shop quái vật
    - CHỈ câu được khi đang đứng trên thuyền ngoài biển (không câu trên cầu tàu / bãi cát)
    - Thỉnh thoảng có VÙNG NƯỚC TỐI: câu ở đó dính quái có 15% nhận thêm 1 vé quay hoặc 1 món ăn từ máy chế biến
    - Rương kho báu: mỗi 1 giờ nhận 10–40 xu quái vật (không cộng dồn)
@@ -428,14 +428,16 @@ window.cvAct=(a,h)=>a.startsWith('bn:')?bnAct(a.slice(3),h):pAct(a,h);
 
 // ============================================================
 //  THUYỀN RA BIỂN
-//  ST.boats = {mini:0/1, swan:0/1, use:'mini'|'swan'}  (tự lưu cùng ST; KHÔNG dùng ST.sb vì Làng Tuyết đã dùng cho huy hiệu)
-//  Thuyền mini: 1.000 xu vàng (ST.xu) • Thuyền thiên nga: xu quái vật (ST.qv)
-//  Muốn đổi giá: sửa SB_MINI / SB_SWAN ngay dưới đây.
+//  ST.boats = {mini:0/1, swan:0/1, bamboo:0/1, use:'mini'|'swan'|'bamboo'}  (tự lưu cùng ST; KHÔNG dùng ST.sb vì Làng Tuyết đã dùng cho huy hiệu)
+//  Mã loại thuyền (CV.bk, gửi cho người chơi khác qua park-online): 2 = mini • 3 = thiên nga • 4 = tre đom đóm
+//  Thuyền mini: 1.000 xu vàng (ST.xu) • Thuyền thiên nga 3.000 & Thuyền tre đom đóm 5.000: xu quái vật (ST.qv)
+//  Muốn đổi giá: sửa SB_MINI / SB_SWAN / SB_BAMBOO ngay dưới đây.
 // ============================================================
-const SB_MINI=1000,SB_SWAN=3000;   // swan ≈ 15–30 phút câu liên tục
+const SB_MINI=1000,SB_SWAN=3000,SB_BAMBOO=5000;   // swan ≈ 15–30 phút câu liên tục
+const BNAME={mini:'Thuyền mini',swan:'Thuyền thiên nga',bamboo:'Thuyền tre đom đóm'},BKIND={mini:2,swan:3,bamboo:4};
 const SEAB={dock:0},ZN={z:null,next:0};
-const sbs=()=>{const o=ST.boats=(ST.boats&&typeof ST.boats=='object')?ST.boats:{};o.mini=o.mini?1:0;o.swan=o.swan?1:0;
- if(!(o.use=='mini'&&o.mini)&&!(o.use=='swan'&&o.swan))o.use=o.swan?'swan':o.mini?'mini':'';return o};
+const sbs=()=>{const o=ST.boats=(ST.boats&&typeof ST.boats=='object')?ST.boats:{};o.mini=o.mini?1:0;o.swan=o.swan?1:0;o.bamboo=o.bamboo?1:0;
+ if(!(o.use&&BKIND[o.use]&&o[o.use]))o.use=o.swan?'swan':o.bamboo?'bamboo':o.mini?'mini':'';return o};
 const BROCK=[[700,520,60,36],[1150,250,70,40],[1450,950,64,38],[2000,420,70,40],[2350,820,60,34]],BISLE=[[1900,150],[1000,980]];
 const nearLand=(x,y)=>x<shoreX(y)+36||(x<=PIER.x1+10&&y>=PIER.y0-12&&y<=PIER.y1+34);
 const boatSolid=(x,y)=>{
@@ -447,8 +449,8 @@ const dockSpot=()=>({x:PIER.x1+44,y:Math.round((PIER.y0+PIER.y1)/2)});
 const mirror=(x,dir,fn)=>{cx.save();cx.translate(x,0);if(dir<0)cx.scale(-1,1);cx.translate(-x,0);fn();cx.restore()};
 
 // cần câu cắm bên cạnh mạn thuyền (chỉ để trang trí — không có món "cần câu")
-function seaRod(x,yy,dir,tm){mirror(x,dir,()=>{
- const bx=x-9,by=yy-5,tx=x-26,ty=yy-33,bo=Math.round(Math.sin(tm*3+x));
+function seaRod(x,yy,dir,tm,ox){mirror(x,dir,()=>{ox=ox|0;   // ox: dời chân cần câu ra phía đuôi (Thuyền tre dùng -11)
+ const bx=x-9+ox,by=yy-5,tx=x-26+ox,ty=yy-33,bo=Math.round(Math.sin(tm*3+x));
  line(r,'#5e3f20',bx,by,tx,ty,2);line(r,'#a9844c',bx,by-1,tx,ty-1,1);
  r('#6a6a72',bx+1,by-5,3,3);r('#d8d8e0',bx+1,by-5,1,1);r('#ffd23f',tx-1,ty-1,2,2);
  line(r,'rgba(255,255,255,.85)',tx,ty,tx-3,yy+7+bo,1);
@@ -468,9 +470,69 @@ function miniSea(x,y,dir,tm,mv,rider){
  seaRod(x,yy,dir,tm);
  if(rider)rider(x-2*dir,yy);
  mirror(x,dir,()=>{r('#c98a5a',x-16,yy-5,33,5);r('#f6dc9c',x-16,yy-5,33,1);r('#e0584a',x-16,yy-3,33,1);r('#8a5a30',x-16,yy-1,33,1);r('#8a5a30',x-16,yy-5,1,5);r('#8a5a30',x+16,yy-5,1,5)})}
-window.cvBoatKind=k=>k==2?miniSea:k==3?swanSea:null;   // người chơi khác nhìn thấy đúng loại thuyền
+
+// ---------- THUYỀN TRE ĐOM ĐÓM (5.000 xu quái vật) ----------
+// Bè tre vàng + mái tre đan (hình mẫu) • nhân vật ĐỨNG trên bè, KHÔNG có mái chèo (thuyền tự lướt) • đèn đom đóm vàng ở MŨI thuyền
+// Hình bè + mái vẽ 1 lần vào canvas nhỏ (BAMB) rồi dán lại mỗi khung hình; đèn + đom đóm vẽ động (bambooLantern).
+// Quy ước: phía mũi thuyền luôn là +x (mirror() tự lật khi quay trái). Tâm bè = (26,22) trong ảnh 52x28.
+let BAMB=null;
+const bambooBody=()=>BAMB||(BAMB=mk(52,28,(g,r)=>{
+ const p=(c,a,b,w,h)=>r(c,26+a,22+b,w,h);
+ // --- bè: 3 lớp ống tre (sàn sáng, mặt bên vàng đậm, bóng dưới) ---
+ p('#9a6a18',-20,3,40,1);
+ p('#d19a2b',-22,0,44,3);p('#e9b93c',-22,0,44,1);
+ p('#f5d462',-22,-5,44,5);p('#fbe790',-22,-5,44,1);p('#e3bf4c',-22,-3,44,1);p('#e3bf4c',-22,-1,44,1);
+ for(let a=-17;a<=17;a+=11){p('#b07c1e',a,0,1,3);p('#f1cc58',a+1,0,1,1);p('#d9b13f',a,-4,1,4)}   // mắt tre
+ p('#b8841f',-23,0,1,3);p('#d19a2b',-23,-4,1,4);                                                  // đầu ống phía đuôi
+ p('#f5d462',22,-6,2,2);p('#d19a2b',22,-4,2,5);p('#fbe790',22,-6,2,1);p('#b8841f',24,-5,1,3);      // mũi bè cong nhẹ lên
+ for(const a of[-10,11]){p('#8d5b2a',a,-5,2,8);p('#c8905a',a,-5,1,8)}                              // dây buộc
+ // --- mái tre đan (nửa ống úp), mở ra phía mũi ---
+ const ins=[6,3,2,1,1,0,0,0,0,0,0,0,0,0,0,0];
+ for(let i=0;i<16;i++){const b=-21+i;
+  for(let a=-21+ins[i];a<=-4-ins[i];a++){
+   const u=a+21,cell=((u/3|0)+(i/3|0))%2;
+   let c=cell?'#f2c54c':'#e0a92f';
+   if(u%3==2||i%3==2)c=cell?'#cf9a26':'#c18d20';
+   if(i==0||a==-21+ins[i]||i==15)c='#a87414';
+   p(c,a,b,1,1)}}
+ p('#fff0a0',-18,-20,5,1);p('#fff0a0',-19,-18,1,2);                                                // bóng sáng
+ p('#fbe08a',-8,-17,1,11);p('#3d2808',-7,-17,4,12);p('#3d2808',-6,-18,2,1);p('#6b4510',-7,-17,1,12);   // cửa mái nhìn từ mũi
+ p('#a87414',-21,-5,17,1)}));
+// đèn đom đóm vàng ở mũi: cột tre cong + đèn lồng sáng nhấp nháy + vài chú đom đóm bay quanh (tách 3 phần: quầng sáng / đèn / đom đóm)
+function bambooGlow(R,x,yy,tm){
+ const pu=.5+.5*Math.sin(tm*3.2);
+ E(R,'rgba(255,224,80,'+(.10+.07*pu).toFixed(2)+')',x+23,yy-14,13,10);
+ E(R,'rgba(255,236,120,'+(.14+.09*pu).toFixed(2)+')',x+23,yy-14,8,7)}
+function bambooLamp(R,x,yy){
+ const p=(c,a,b,w,h)=>R(c,x+a,yy+b,w,h);
+ p('#b27a2a',17,-19,2,15);p('#d9a24a',17,-19,1,15);p('#b27a2a',17,-21,7,2);p('#d9a24a',17,-21,7,1);p('#b27a2a',23,-21,1,3);   // cột cong + móc
+ p('#6b4a2a',23,-19,1,1);
+ p('#5e3f20',21,-18,5,1);p('#8a5a2a',22,-19,3,1);                                                  // nắp đèn
+ p('#ffa82a',21,-17,5,5);p('#ffd23a',22,-17,3,5);p('#fff4a8',22,-16,3,3);p('#ffffff',23,-15,1,1);   // thân đèn
+ p('#5e3f20',21,-12,5,1);p('#ff7a3a',23,-11,1,2)}                                                  // đáy + tua
+function bambooFlies(R,x,yy,tm){
+ for(let i=0;i<5;i++){
+  const ph=tm*(.9+i*.17)+i*1.9,fx=Math.round(x+23+Math.cos(ph*1.1+i)*(9+i%2*3)),fy=Math.round(yy-14+Math.sin(ph*1.6+i*2)*(7+i%3)),al=Math.max(0,Math.sin(tm*3.4+i*2.3)*.6+.5);
+  if(al<.12)continue;
+  R('rgba(255,236,110,'+(al*.3).toFixed(2)+')',fx-1,fy,3,1);R('rgba(255,236,110,'+(al*.3).toFixed(2)+')',fx,fy-1,1,3);
+  R('rgba(255,250,170,'+Math.min(1,al+.2).toFixed(2)+')',fx,fy,1,1)}}
+const bambooLantern=(R,x,yy,tm)=>{bambooGlow(R,x,yy,tm);bambooLamp(R,x,yy);bambooFlies(R,x,yy,tm)};
+function bambooSea(x,y,dir,tm,mv,rider){
+ const yy=y+Math.round(Math.sin(tm*2.1+x*.03));
+ E(r,'rgba(20,70,110,.3)',x,y+5,25,3);
+ const a=(tm*.9+x*.01)%1;E(r,'rgba(235,250,255,'+(.35*(1-a)).toFixed(2)+')',x,y+6,Math.round(25+a*8),Math.round(3+a*2));
+ if(mv)for(let i=0;i<3;i++){const p=(tm*1.6+i/3)%1;E(r,'rgba(235,250,255,'+(.55*(1-p)).toFixed(2)+')',Math.round(x-dir*(22+p*28)),y+5,Math.round(4+p*9),Math.round(1+p*2))}
+ mirror(x,dir,()=>cx.drawImage(bambooBody(),Math.round(x-26),Math.round(yy-22)));
+ seaRod(x,yy,dir,tm,-11);
+ if(rider)rider(x+dir,yy);            // nhân vật ĐỨNG trên sàn (ry = mặt sàn)
+ mirror(x,dir,()=>bambooLantern(r,x,yy,tm))}
+const mkBambooIcon=()=>mk(64,38,(g,r)=>{   // chỉ bè + đèn (quầng sáng & đom đóm được vẽ động trong boatIcons để không bị viền đen)
+ E(r,'rgba(0,70,110,.25)',28,36,25,2);
+ g.drawImage(bambooBody(),2,8);                       // tâm bè (26,22) → (28,30)
+ bambooLamp(r,28,30)});
+window.cvBoatKind=k=>k==2?miniSea:k==3?swanSea:k==4?bambooSea:null;   // người chơi khác nhìn thấy đúng loại thuyền
 window.cvBoatSolid=(x,y)=>MAP=='bn'?boatSolid(x,y):pBS(x,y);
-window.cvBoatMe=()=>{if(MAP!='bn')return pBM();const A=ST.av,tm=performance.now()/1000;(CV.bk==3?swanSea:miniSea)(Math.round(Pl.x),Math.round(Pl.y),CV.bdir||1,tm,Pl.mv,window.cvBoatRider(A.s,A.h,A.e,A.a,CV.bdir||1))};
+window.cvBoatMe=()=>{if(MAP!='bn')return pBM();const A=ST.av,tm=performance.now()/1000,k=CV.bk;(k==4?bambooSea:k==3?swanSea:miniSea)(Math.round(Pl.x),Math.round(Pl.y),CV.bdir||1,tm,Pl.mv,window.cvBoatRider(A.s,A.h,A.e,A.a,CV.bdir||1,k==4))};
 
 // lên thuyền / cập bến
 function noBoatUI(){openUI(head('⛵ Bến thuyền')+'<div class="mut" style="text-align:center">🐙 <i>"Chưa có thuyền thì chưa ra biển được nha! Ghé tiệm tôi mua Thuyền mini giá '+fmtXu(SB_MINI)+' xu vàng đi~"</i></div><button class="b w" style="font-size:14px;padding:9px" onclick="bnShop()">🛒 Tới Shop quái vật mua thuyền</button>')}
@@ -481,7 +543,7 @@ function sail(){
  try{if(ACT&&typeof actStop=='function')actStop()}catch(e){}
  if(window.MQ)MQ.clear();
  const d=dockSpot();
- CV.boat=1;CV.bk=o.use=='swan'?3:2;CV.bdir=1;CV.dock=null;SEAB.dock=0;Pl.x=d.x;Pl.y=d.y;Pl.d=3;Pl.mv=0;Pl.pend=0;goal=null;pa=null;
+ CV.boat=1;CV.bk=BKIND[o.use]||2;CV.bdir=1;CV.dock=null;SEAB.dock=0;Pl.x=d.x;Pl.y=d.y;Pl.d=3;Pl.mv=0;Pl.pend=0;goal=null;pa=null;
  if(window.PKO)PKO.onBoat();
  toast('⛵ Bấm giữ mặt nước để di chuyển')}
 function landSea(){
@@ -544,10 +606,11 @@ window.qvImg=qvImg;
 window.bnBuy=k=>{const o=sbs();
  if(k=='mini'){if(o.mini)return;if((ST.xu|0)<SB_MINI)return toast('Không đủ Xu vàng! Cần '+fmtXu(SB_MINI)+' Xu');ST.xu-=SB_MINI;o.mini=1}
  else if(k=='swan'){if(o.swan)return;if((ST.qv|0)<SB_SWAN)return toast('Không đủ Xu quái vật! Cần '+fmtXu(SB_SWAN)+' Xu quái vật');ST.qv-=SB_SWAN;o.swan=1}
+ else if(k=='bamboo'){if(o.bamboo)return;if((ST.qv|0)<SB_BAMBOO)return toast('Không đủ Xu quái vật! Cần '+fmtXu(SB_BAMBOO)+' Xu quái vật');ST.qv-=SB_BAMBOO;o.bamboo=1}
  else return;
  o.use=k;try{xuUp()}catch(e){}try{save()}catch(e){}
- toast('🎉 Đã mua '+(k=='swan'?'Thuyền thiên nga':'Thuyền mini')+' và trang bị luôn! Ra cầu tàu bấm RA BIỂN nhé');bnShop()};
-window.bnEquip=k=>{const o=sbs();if(!o[k])return;o.use=k;try{save()}catch(e){}toast('✅ Đã trang bị '+(k=='swan'?'Thuyền thiên nga':'Thuyền mini'));bnShop()};
+ toast('🎉 Đã mua '+BNAME[k]+' và trang bị luôn! Ra cầu tàu bấm RA BIỂN nhé');bnShop()};
+window.bnEquip=k=>{const o=sbs();if(!BKIND[k]||!o[k])return;o.use=k;try{save()}catch(e){}toast('✅ Đã trang bị '+BNAME[k]);bnShop()};
 // ---------- RƯƠNG: 1 giờ / lần, 10–40 xu quái vật, không cộng dồn (ST.rcT = lúc nhận gần nhất) ----------
 const CH_CD=3600000,CH_MIN=10,CH_MAX=40,CH={fx:0};   // chỉnh thời gian chờ / số xu ở đây
 const QVIM=new Image();QVIM.src=QVI;
@@ -612,15 +675,17 @@ function bnAnim(){const cs=document.querySelectorAll('canvas.bsc');if(!cs.length
  'canvas.bsc{width:88px;height:96px;image-rendering:pixelated;background:linear-gradient(#cfeeff,#eaf7ff 66%,#f3dca4 66%);border-radius:8px}.bst .b{padding:3px 8px;font-size:12px}';
  document.head.appendChild(st)}
 let BOATIM=null;
-function boatIcons(){if(!BOATIM)BOATIM={mini:outl(mkBoat()),swan:outl(mkSwanIcon())};
+function boatIcons(){if(!BOATIM)BOATIM={mini:outl(mkBoat()),swan:outl(mkSwanIcon()),bamboo:outl(mkBambooIcon())};
  document.querySelectorAll('canvas.bnbi').forEach(c=>{const g=c.getContext('2d'),im=BOATIM[c.dataset.b];if(!im)return;g.imageSmoothingEnabled=false;g.clearRect(0,0,c.width,c.height);
   const k=Math.min(Math.floor(c.width/im.width),Math.floor(c.height/im.height))||1,tm=performance.now()/1000,bob=Math.round(Math.sin(tm*1.8)*1.5);
-  g.drawImage(im,Math.round((c.width-im.width*k)/2),Math.round(c.height-im.height*k-4+bob),im.width*k,im.height*k)})}
+  const ox=Math.round((c.width-im.width*k)/2),oy=Math.round(c.height-im.height*k-4+bob);
+  g.drawImage(im,ox,oy,im.width*k,im.height*k);
+  if(c.dataset.b=='bamboo'){const R=(col,x,y,w,h)=>{g.fillStyle=col;g.fillRect(ox+x*k,oy+y*k,w*k,h*k)};bambooGlow(R,29,31,tm);bambooFlies(R,29,31,tm)}})}
 function bnAnim2(){const cs=document.querySelectorAll('canvas.bnbi');if(!cs.length||!UI){BIRAF=0;return}boatIcons();BIRAF=requestAnimationFrame(bnAnim2)}
 let BIRAF=0;
 function bnShop(){
  const o=sbs();
- const B=[['mini','Thuyền mini',fmtXu(SB_MINI)+' 🪙',o.mini],['swan','Thuyền thiên nga',fmtXu(SB_SWAN)+' '+qvImg(),o.swan]];
+ const B=[['mini','Thuyền mini',fmtXu(SB_MINI)+' 🪙',o.mini],['swan','Thuyền thiên nga',fmtXu(SB_SWAN)+' '+qvImg(),o.swan],['bamboo','Thuyền tre đom đóm',fmtXu(SB_BAMBOO)+' '+qvImg(),o.bamboo]];
  const tile=(q,n)=>{const m=qItem(q);if(!m)return '';const own=qOwn(q,m);
   return '<div class="bst"><canvas class="bsc" data-q="'+n+'" width="88" height="96"></canvas><b>'+m.n+'</b>'+
    (own?'<small>✓ Đã có</small>':'<small>'+qvImg()+' <b>'+fmtXu(q.p)+'</b>'+(q.t=='k'&&(ST.kcn|0)>0?' • có x'+(ST.kcn|0):'')+(q.t=='d'&&((ST.pot||{})[q.k]|0)>0?' • có x'+(ST.pot[q.k]|0):'')+'</small><button class="b" onclick="bnBuyItem('+n+')">Mua</button>')+'</div>'};

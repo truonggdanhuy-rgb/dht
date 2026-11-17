@@ -732,7 +732,8 @@ function drawBoat(x,y,dir,tm,mv,rider){
  mirror(x,dir,()=>{const r=R0;   // thành thuyền phía trước che chân người ngồi
   r('#fff',x-13,yy-5,25,5);r('#ff8fb5',x-13,yy-5,25,1);r('#ffc2d8',x-13,yy-4,25,1);r('#dcecf4',x-13,yy-1,25,1);
   r('#fff',x-13,yy-5,1,5);r('#fff',x+11,yy-5,1,5)})}
-const boatRider=(set,hair,e,acc,dir)=>(rx,ry)=>drawAv(cx,rx-10,ry-31,{d:dir>0?3:2,a:0,mv:0,sit:2,hair:hair,set:set,e:e|0,acc:acc==null?-1:acc});
+// stand=true (Thuyền tre đom đóm ở Biển): nhân vật ĐỨNG trên sàn thay vì ngồi (ry = mặt sàn)
+const boatRider=(set,hair,e,acc,dir,stand)=>(rx,ry)=>stand?drawAv(cx,rx-10,ry-32,{d:dir>0?3:2,a:0,mv:0,sit:0,nosh:1,hair:hair,set:set,e:e|0,acc:-1}):drawAv(cx,rx-10,ry-31,{d:dir>0?3:2,a:0,mv:0,sit:2,hair:hair,set:set,e:e|0,acc:acc==null?-1:acc});
 window.cvDrawBoat=drawBoat;window.cvBoatRider=boatRider;   // Biển dùng lại thuyền thiên nga này
 function boatPuff(x,y){CV.puffs.push({x,y,t:0})}
 function boardBoat(){
@@ -774,7 +775,7 @@ window.cvAct=(a,h)=>{const[t,v]=a.split(':');
 // ---------- người chơi khác ----------
 function drawOther(o,tm){let X,Y,sit=0,lift=0;
  if(o.bt){X=Math.round(o.x);Y=Math.round(o.y);o.hx=X;o.hy=Y-36;if(X<camX-40||X>camX+vw+40||Y<camY-40||Y>camY+vh+70)return;
-  const dir=o.bdir||1;((window.cvBoatKind&&o.bt>1&&window.cvBoatKind(o.bt))||drawBoat)(X,Y,dir,tm,o.mv,boatRider(o.set,o.hair,o.e,o.acc,dir));return}
+  const dir=o.bdir||1;((window.cvBoatKind&&o.bt>1&&window.cvBoatKind(o.bt))||drawBoat)(X,Y,dir,tm,o.mv,boatRider(o.set,o.hair,o.e,o.acc,dir,o.bt==4));return}
  if(o.seat>=0&&CV.seats[o.seat]){const s=CV.seats[o.seat];X=s.x;Y=s.y;sit=2}
  else if(o.hz>=0&&CV.horses[o.hz]){const h=CV.horses[o.hz],b=Math.sin(tm*5+h.i);X=h.x+Math.round(b*3);Y=h.y;sit=2;lift=22+Math.round(Math.abs(b)*3)}
  else{X=o.x;Y=o.y}

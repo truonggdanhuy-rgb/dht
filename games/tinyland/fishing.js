@@ -350,6 +350,13 @@ function boatScene(g,k,t,y){
  g.fillStyle='rgba(20,60,100,.35)';g.fillRect(0,SY+3,36,5);
  if(k==3){g.fillStyle='#cfe0ea';g.fillRect(0,y+3,34,8);g.fillStyle='#fff';g.fillRect(0,y,34,6);g.fillStyle='#ff8fb5';g.fillRect(0,y+7,32,1);g.fillStyle='#ffc2d8';g.fillRect(4,y-1,24,2);
   g.fillStyle='#fff';g.fillRect(0,y-9,5,11);g.fillRect(2,y-13,6,6);g.fillStyle='#ffa733';g.fillRect(8,y-11,4,2);g.fillStyle='#222';g.fillRect(5,y-11,1,2)}
+ else if(k==4){ // Thuyền tre đom đóm: bè tre + mái tre đan + đèn vàng, người ĐỨNG
+  g.fillStyle='#9a6a18';g.fillRect(1,y+7,32,1);g.fillStyle='#d19a2b';g.fillRect(0,y+4,34,3);g.fillStyle='#e9b93c';g.fillRect(0,y+4,34,1);g.fillStyle='#f5d462';g.fillRect(0,y-1,34,5);g.fillStyle='#e3bf4c';g.fillRect(0,y+1,34,1);
+  g.fillStyle='#b07c1e';for(let a=5;a<34;a+=11)g.fillRect(a,y+4,1,3);
+  g.fillStyle='#e0a92f';g.fillRect(0,y-11,11,10);g.fillStyle='#f2c54c';g.fillRect(1,y-10,9,3);g.fillRect(1,y-4,9,3);g.fillStyle='#a87414';g.fillRect(0,y-11,11,1);g.fillStyle='#3d2808';g.fillRect(8,y-9,3,8);
+  g.fillStyle='#f2c9a0';g.fillRect(14,y-14,6,6);g.fillStyle='#5a3a22';g.fillRect(13,y-16,8,3);g.fillStyle='#3a6fb0';g.fillRect(13,y-8,8,6);g.fillStyle='#2d4f80';g.fillRect(14,y-2,2,2);g.fillRect(18,y-2,2,2);
+  const pu=.5+.5*Math.sin(t*3.2);g.fillStyle='rgba(255,230,100,'+(.18+.12*pu).toFixed(2)+')';g.fillRect(27,y-12,7,9);g.fillStyle='#b27a2a';g.fillRect(31,y-10,1,10);g.fillStyle='#ffd23a';g.fillRect(29,y-9,4,4);g.fillStyle='#fff4a8';g.fillRect(30,y-8,2,2);
+  g.fillStyle='rgba(255,250,170,'+(.5+.5*Math.sin(t*3.4)).toFixed(2)+')';g.fillRect(26+Math.round(Math.sin(t*1.7)*3),y-12+Math.round(Math.cos(t*2.1)*3),1,1);return}
  else{g.fillStyle='#7a4e28';g.fillRect(0,y+4,34,6);g.fillStyle='#b8764a';g.fillRect(0,y+1,34,6);g.fillStyle='#c98a5a';g.fillRect(0,y,34,3);g.fillStyle='#f6dc9c';g.fillRect(0,y,34,1);g.fillStyle='#e0584a';g.fillRect(0,y+3,34,1);g.fillStyle='#8a5a30';g.fillRect(3,y+8,28,1)}
  g.fillStyle='#f2c9a0';g.fillRect(12,y-9,6,6);g.fillStyle='#5a3a22';g.fillRect(11,y-11,8,3);g.fillStyle='#3a6fb0';g.fillRect(11,y-3,8,4)}
 function draw(c){const g=c.getContext('2d');g.imageSmoothingEnabled=false;const t=performance.now()/1000,W=120,H=90;
@@ -359,7 +366,7 @@ function draw(c){const g=c.getContext('2d');g.imageSmoothingEnabled=false;const 
  g.fillStyle='rgba(255,255,255,.07)';for(let i=0;i<4;i++){const x=40+i*22+Math.sin(t*.6+i)*4;g.beginPath();g.moveTo(x,SY);g.lineTo(x+10,SY);g.lineTo(x+30,H);g.lineTo(x+14,H);g.fill()}
  g.fillStyle='rgba(255,255,255,.55)';for(let x=0;x<W;x+=7)g.fillRect(x+Math.round(Math.sin(t*2+x)*1.5),SY,4,1);
  // thuyền (mini / thiên nga) + cần câu cắm bên mạn thuyền
- const by0=F.bk?10+Math.round(Math.sin(t*2.2)):9;
+ const by0=F.bk?(F.bk==4?15:10)+Math.round(Math.sin(t*2.2)):9;
  if(F.bk)boatScene(g,F.bk,t,by0);
  else{g.fillStyle='#5e3f20';g.fillRect(5,18,3,26);g.fillRect(20,18,3,22);g.fillStyle='rgba(20,60,100,.35)';g.fillRect(0,SY+2,28,6);
   g.fillStyle='#b8864e';g.fillRect(0,10,28,7);g.fillStyle='#d6a66a';g.fillRect(0,10,28,2);g.fillStyle='#8a5f33';g.fillRect(0,16,28,1)}
