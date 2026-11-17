@@ -569,9 +569,12 @@ const QSHOP=[
  {t:'s',k:'duckf',p:3000},
  {t:'h',k:'luffy',p:1200},
  {t:'a',k:'starfish',p:3000},
- {t:'a',k:'octobub',p:3000}];
+ {t:'a',k:'octobub',p:3000},
+ {t:'s',k:'vitvang',p:1000},      // Set Vịt vàng (nam nữ đều mặc) — hình vẽ: vitvang.js
+ {t:'h',k:'duckhat',dh:'m',p:800},    // Mũ vịt vàng (Nam, tóc ngắn)
+ {t:'h',k:'duckhat',dh:'f',p:800}];   // Mũ vịt vàng (Nữ, tóc dài)
 const qArr=t=>t=='h'?HAIRS:t=='s'?SETS:ACCS;
-const qItem=q=>{if(q.t=='k'||q.t=='d')return{n:q.n,i:-1};const A=qArr(q.t),i=A.findIndex(x=>x.k==q.k);return i<0?null:{n:A[i].n,i,it:A[i]}};
+const qItem=q=>{if(q.t=='k'||q.t=='d')return{n:q.n,i:-1};const A=qArr(q.t),i=A.findIndex(x=>x.k==q.k&&(!q.dh||x.dh==q.dh));return i<0?null:{n:A[i].n,i,it:A[i]}};
 const qOwn=(q,m)=>q.t!='k'&&q.t!='d'&&(ST.own&&ST.own[q.t]||[]).includes(m.i);
 const QBAG={h:'Túi › Tóc',s:'Túi › Set',a:'Túi › Phụ kiện',k:'Túi › Biển',d:'Túi › Biển'};
 window.bnBuyItem=n=>{const q=QSHOP[n],m=q&&qItem(q);if(!m)return;
