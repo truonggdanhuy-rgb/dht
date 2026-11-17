@@ -142,7 +142,7 @@ const mkG=()=>[...Array(H)].map(()=>Array(W).fill(0)),solid=mkG(),occ=mkG();
 const blk=(x0,y0,x1,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)solid[y][x]=occ[y][x]=1};
 const mark=(x0,y0,x1,y1)=>{for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)occ[y][x]=1};
 var CVON=0,CW=1440,CH=1008,CVLOCK=0;/* cong vien: co + kich thuoc map */
-const isSolid=(x,y)=>{if(CVON)return CV.boat?cvBoatSolid(x,y):cvSolid(x,y);if(MAP=='wt'){if(x<-WEXT||x>=WW+WEXT||y<64||y>=WH)return true;for(const b of WT.rk)if(x>=b[0]&&x<b[2]&&y>=b[1]&&y<b[3])return true;return false}const tx=Math.floor(x/T),ty=Math.floor(y/T);if(tx<0||ty<0||tx>=W||ty>=H||solid[ty][tx])return true;for(const b of RB)if(x>=b[0]&&x<b[0]+b[2]&&y>=b[1]&&y<b[1]+b[3])return true;return false};
+const isSolid=(x,y)=>{if(CVON)return CV.boat?cvBoatSolid(x,y):cvSolid(x,y);if(MAP=='wt'&&window.WTRK){if(x<-WEXT||x>=WW+WEXT||y<64||y>=WH)return true;for(const b of WTRK)if(x>=b[0]&&x<b[2]&&y>=b[1]&&y<b[3])return true;return false}const tx=Math.floor(x/T),ty=Math.floor(y/T);if(tx<0||ty<0||tx>=W||ty>=H||solid[ty][tx])return true;for(const b of RB)if(x>=b[0]&&x<b[0]+b[2]&&y>=b[1]&&y<b[1]+b[3])return true;return false};
 const hits=[],LB=[],RB=[];
 // ---------- layout / collisions (goc) ----------
 blk(0,0,W-1,7);blk(0,8,0,H-1);blk(W-1,8,W-1,H-1);blk(0,42,W-1,H-1);
@@ -4134,7 +4134,7 @@ const treeI=outl(mk(100,150,(g,r)=>{
   r('#ffd23f',x,y-R-1,1,2);E(r,'#2a1a10',x,y,R+1,R+1);E(r,c,x,y,R,R);r('#fff',x-1,y-R+1,1,1);r('rgba(255,255,255,.5)',x-R+1,y-1,1,2)}});
  r('#5a3a1e',44,140,12,10);r('#7a5230',44,140,4,10)}));
 const LTS=[];{const TT=[[12,26,11],[30,30,19],[50,34,27],[72,38,35],[96,44,44]];for(let i=0;i<26;i++){const [top,h,hw]=TT[i%5],yy=rnd()*h,w=hw*(.25+.75*yy/h);LTS.push({x:104+(rnd()*2-1)*w*.85,y:48+top+yy,c:['#ff4040','#ffd23f','#40a0ff','#50e070','#ff80d0'][i%5],ph:rnd()*6})}}
-const WT={sp:[],hits:[],lb:[],solid:mkG(),pos:{x:130,y:402},rk:[]};
+var WTRK=[];const WT={sp:[],hits:[],lb:[],solid:mkG(),pos:{x:130,y:402},rk:WTRK};
 const wbr=(x0,y0,x1,y1)=>WT.rk.push([x0,y0,x1,y1]);/* vật chặn theo px (x0,y0)-(x1,y1) */
 const wbk=(a,b,c,d)=>wbr(a*16,b*16,(c+1)*16,(d+1)*16);
 /* cây thông Noel (dời sang trái 40px) */
