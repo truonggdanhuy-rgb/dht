@@ -4104,18 +4104,24 @@ const WB=mk(WW,WH,(g,r)=>{
  // thong vien
  // (đã bỏ 2 hàng thông viền) — chỉ còn vài cây lẻ
  for(const[x,y]of[[26,70],[76,66],[238,68],[24,112],[304,404],[392,76],[612,92],[346,404],[622,414]])pineS(r,x,y)});
-const WEX=mk(208,WH,(g,r)=>{
- for(let y=0;y<66;y+=2)for(let x=0;x<208;x+=2)r(['#0a1233','#0f1a47','#16255a','#1f3270','#2b4285'][Math.min(4,(y/14)|0)],x,y,2,2);
- for(let i=0;i<40;i++)r(rnd()<.5?'#c3d3ea':'#fff',ri(0,206),ri(0,60),1,1);
- for(let x=0;x<208;x++){const yh=64-Math.round(16*Math.abs(Math.sin(x/34+1))+3*Math.sin(x/11));r('#2a4381',x,yh,1,70-yh);r('#cfdcf2',x,yh,1,2)}
- for(let y=66;y<WH;y+=2)for(let x=0;x<208;x+=2)r(['#dae5f4','#d3dff0','#e4edf8','#cddbee'][(rnd()*4)|0],x,y,2,2);
- for(let i=0;i<260;i++)r('#fff',ri(0,206),ri(68,WH-2),2,1);
-});
+/* vùng mở rộng 2 bên: vẽ bằng ĐÚNG công thức của nền chính (liền mạch, cùng màu tuyết) */
+const mkWEx=(x0,w)=>mk(w,WH,(g,r)=>{g.translate(-x0,0);const x1=x0+w;
+ const SKC=['#0a1233','#0f1a47','#16255a','#1f3270','#2b4285'];
+ for(let y=0;y<70;y+=2)for(let x=x0;x<x1;x+=2)r(SKC[Math.min(4,(y/14)|0)],x,y,2,2);
+ for(let x=x0;x<x1;x++){const y=20+Math.round(8*Math.sin(x/23)+4*Math.sin(x/9));r('rgba(110,255,200,.12)',x,y,1,10);r('rgba(190,140,255,.10)',x,y+8,1,8)}
+ for(let i=0;i<Math.round(70*w/WW);i++)r('rgba(240,244,255,'+(.3+.6*Math.abs(Math.sin(i*2.7))).toFixed(2)+')',ri(x0,x1-1),ri(0,50),1,1);
+ for(let x=x0;x<x1;x++){const yh=64-Math.round(16*Math.abs(Math.sin(x/38+.6))+3*Math.sin(x/11));r('#2a4381',x,yh,1,70-yh);r('#cfdcf2',x,yh,1,2)}
+ for(let x=x0;x<x1;x+=6){const h=8;for(let k=0;k<h;k+=2)r('#17335f',x+3-(k>>1),66-h+k,(k>>1)*2+1,2)}
+ const SN=['#d9e5f6','#e4edf9','#eef4fc','#f8fbff'];
+ for(let y=66;y<WH;y+=2)for(let x=x0;x<x1;x+=2){const n=Math.sin(x/17+Math.sin(y/13))*.5+Math.sin((x+y)/9)*.3+(rnd()-.5)*.35;r(SN[Math.max(0,Math.min(3,Math.floor((n+.8)*2.4)))],x,y,2,2)}
+ for(let i=0;i<Math.round(520*w/WW);i++)r(rnd()<.5?'#c3d3ea':'#ffffff',ri(x0,x1-2),ri(68,WH-2),2,1);
+ r('#c9d8ef',x0,66,w,2)});
+const WEXL=mkWEx(-512,512),WEXR=mkWEx(WW,512);
 function drawWExt(tm){const x0=Math.floor(camX)-2,y0=Math.floor(camY)-2,w=Math.ceil(vw)+4,y1=Math.ceil(camY+vh)+2;
- if(!WEXP)WEXP=cx.createPattern(WEX,'repeat');
  if(y0<0){cx.fillStyle='#0a1233';cx.fillRect(x0,y0,w,-y0)}
  if(y1>WH){cx.fillStyle='#dae5f4';cx.fillRect(x0,WH,w,y1-WH)}
- cx.fillStyle=WEXP;cx.fillRect(x0,Math.max(0,y0),w,Math.min(WH,y1)-Math.max(0,y0))}
+ if(x0<0){cx.drawImage(WEXL,-512,0);if(x0<-512)cx.drawImage(WEXL,0,0,1,WH,x0,0,-512-x0,WH)}
+ if(x0+w>WW){cx.drawImage(WEXR,WW,0);if(x0+w>WW+512)cx.drawImage(WEXR,511,0,1,WH,WW+512,0,x0+w-WW-512,WH)}}
 function drawWFx(tm){const x0=Math.floor(camX)-2,w=Math.ceil(vw)+4,C=['#d9302a','#ffd23f','#2f8a4a','#2f6fe0','#ff7aa8'];
  for(let x=x0-x0%21;x<x0+w;x+=21){const k=Math.abs(x/21|0),y=70+Math.round(Math.sin(x/11)*2),on=Math.sin(tm*3+k)>-.3;r('#1a2a1a',x,y-1,7,1);if(on){r(C[k%5],x+2,y,2,2);r('rgba(255,255,220,.25)',x+1,y-1,4,4)}}
  for(let i=0;i<60;i++){const x=Math.round(camX+((i*47+Math.sin(tm*.7+i)*8)%vw+vw)%vw),y=Math.round(camY+((tm*(8+i%5*3)+i*29)%(vh+8)));r(i%3?'rgba(255,255,255,.8)':'rgba(255,255,255,.5)',x,y,i%7?1:2,i%7?1:2)}}
