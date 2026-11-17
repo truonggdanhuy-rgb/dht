@@ -203,6 +203,9 @@ function cradle(md){
  +'.bbsc,.bbav{position:relative}.bbfxc{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3;image-rendering:pixelated}'
  +'.bbsay{position:absolute;left:50%;top:6px;transform:translateX(-50%);max-width:92%;box-sizing:border-box;background:#fffdf0;border:2px solid #e6c25a;border-radius:12px;padding:3px 10px;font:800 12px/1.35 Nunito,"Segoe UI",Arial,sans-serif;color:#6b4a10;text-align:center;z-index:4;display:none;pointer-events:none;box-shadow:0 2px 0 rgba(0,0,0,.08)}'
  +'.bbsay.on{display:block;animation:bbsy .25s ease-out}@keyframes bbsy{from{opacity:0;transform:translate(-50%,4px)}to{opacity:1;transform:translate(-50%,0)}}'
+ +'.bbpop{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:8px;z-index:5;line-height:1}'
+ +'.bbpb{width:52px;height:52px;border-radius:50%;border:2px solid #a9d3bc;background:rgba(255,255,255,.93);box-shadow:0 3px 0 #86b79d,0 4px 10px rgba(0,0,0,.15);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font:inherit;padding:0}'
+ +'.bbpb span{font-size:22px;line-height:1}.bbpb small{font-size:9px;font-weight:800;color:#5a7d6c;line-height:1}.bbpb:active{transform:scale(.92);box-shadow:0 1px 0 #86b79d}'
  +'.bbch3 .bbbt{font-size:13px;padding:8px 3px}.bbch3 .bbbt small{font-size:10.5px}';
  document.head.appendChild(css)})();
 
@@ -243,16 +246,15 @@ function paintFashion(){document.querySelectorAll('canvas.bbfc').forEach(c=>{con
 
 function viewMain(){const b=B();if(!b)return viewAdopt();
  const c=bars(b),md=mood(b),ready=tNow()>=b.gt,nm=esc(b.n);LASTMOOD=md;
- const scene=b.big?'<div class="bbav" onclick="bbTurn()"><canvas id="bbav" width="150" height="120"></canvas><div class="bbsay" id="bbsay"></div></div><div class="mut" style="text-align:center;margin:4px 0 0">👆 Chạm vào bé để xoay</div>'
-  :'<div class="bbsc">'+cradle(md)+'<div class="bbsay" id="bbsay"></div></div>';
+ const ACT='<div class="bbpop">'+[['f','🍼','Cho ăn',BB_COST],['p','🎈','Chơi cùng bé',BB_COST],['b','🛁','Tắm cho bé',BB_BATH]].map(q=>'<button class="bbpb" title="'+q[2]+'" onclick="event.stopPropagation();bbAct(\''+q[0]+'\')"><span>'+q[1]+'</span><small>'+q[3]+'🪙</small></button>').join('')+'</div>';
+ const scene=b.big?'<div class="bbav" onclick="bbTurn()"><canvas id="bbav" width="150" height="120"></canvas><div class="bbsay" id="bbsay"></div>'+ACT+'</div><div class="mut" style="text-align:center;margin:4px 0 0">👆 Chạm vào bé để xoay</div>'
+  :'<div class="bbsc">'+cradle(md)+'<div class="bbsay" id="bbsay"></div>'+ACT+'</div>';
  let h=head('🍼 Bé bỏng')+scene
  +'<div class="bbcard"><div class="bbnm"><span>'+(b.g=='f'?'👧 ':'👦 ')+nm+'</span><small id="bbst">'+statusTxt(b)+'</small></div>'
  +(b.big?'':'<div class="bbrow"><div class="bbrl"><span>⭐ EXP</span><b id="bbxv">'+b.exp+' / '+BB_EXP+'</b></div><div class="bbbar"><i id="bbx" style="width:'+b.exp/BB_EXP*100+'%;background:'+COL_X+'"></i></div></div>'
    +'<div class="bbq" style="margin-top:6px;font-size:11px;color:#7b9a8a;font-weight:700">Đủ '+BB_EXP+' EXP bé sẽ lớn</div>')
  +bar('bbh','😊','Vui vẻ',c.h,COL_H)+bar('bbf','🍼','No bụng',c.f,COL_F)+bar('bbs','🫧','Sạch sẽ',c.s,COL_S)+'</div>'
- +'<div class="bbcard"><div class="bbch bbch3"><button class="bbbt on" onclick="bbAct(\'f\')">🍼 Cho ăn<br><small>'+BB_COST+' 🪙'+(b.big?'':' • +'+BB_XP+' EXP')+'</small></button>'
- +'<button class="bbbt on" onclick="bbAct(\'p\')">🎈 Chơi cùng bé<br><small>'+BB_COST+' 🪙'+(b.big?'':' • +'+BB_XP+' EXP')+'</small></button>'
- +'<button class="bbbt on" onclick="bbAct(\'b\')">🛁 Tắm cho bé<br><small>'+BB_BATH+' 🪙</small></button></div>';
+ +'<div class="bbcard">';
  if(!b.big)h+='<button class="bbbt'+(CONF?' warn':' on')+'" onclick="bbGrowNow()">'+(CONF?'⚠️ Bấm lần nữa để xác nhận (−'+BB_DIA_GROW+' 💎)':'💎 Cho bé lớn ngay ('+BB_DIA_GROW+' 💎)')+'</button>';
  else h+='<button class="bbbt on" onclick="bbFollow()">'+(b.fl?'🏠 Cho bé về nhà':'🚶 Cho Bé bỏng đi theo')+'</button>'
    +(b.fl?'':'<div class="mut" style="text-align:center;margin:4px 0 0">Pet sẽ được cất vào Túi — chỉ có thể 1 pet hoặc 1 Bé bỏng đi theo.</div>');
