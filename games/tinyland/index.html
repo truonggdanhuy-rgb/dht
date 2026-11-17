@@ -620,11 +620,10 @@ const pond=(X,Y,rx,ry,boat)=>{const w=rx*2+16,h=ry*2+14,ox=X-w/2,oy=Y-h/2,cxp=w/
  S_.hosen=mk(104,60,(g,r)=>{
   E(r,'rgba(0,0,0,.2)',PCX,PCY+5,PRX+6,PRY+4);
   E(r,'#5c5c55',PCX,PCY+3,PRX+6,PRY+4);E(r,'#8c8c84',PCX,PCY+1,PRX+5,PRY+3);E(r,'#b8b8ae',PCX,PCY,PRX+4,PRY+2);
-  for(let i=0;i<46;i++){const a=i/46*6.283,x=Math.round(PCX+Math.cos(a)*(PRX+4)),y=Math.round(PCY+Math.sin(a)*(PRY+2));r(i%3?'#9a9a90':'#cfcfc4',x-1,y-1,4,3);r('#6f6f66',x-1,y+1,4,1);if(i%5==0)r('#6fae4a',x,y-2,3,1)}
+  for(let i=0;i<46;i++){const a=i/46*6.283,x=Math.round(PCX+Math.cos(a)*(PRX+4)),y=Math.round(PCY+Math.sin(a)*(PRY+2));r(i%3?'#9a9a90':'#cfcfc4',x-1,y-1,4,3);r('#6f6f66',x-1,y+1,4,1);}
   E(r,'#2a7a98',PCX,PCY,PRX,PRY);E(r,'#35899f',PCX,PCY,PRX-1,PRY-1);E(r,'#46a6bd',PCX,PCY+1,PRX-4,PRY-4);E(r,'#62c2d2',PCX-2,PCY,PRX-10,PRY-8);E(r,'#8bdbe4',PCX-6,PCY-3,PRX-24,PRY-13);
   [[22,26,10],[70,44,12],[84,32,8],[40,46,9],[58,24,7]].forEach(([x,y,w])=>{r('rgba(255,255,255,.55)',x,y,w,1);r('rgba(255,255,255,.3)',x+2,y+1,w-4,1)});
   /* lau sậy 2 góc */
-  [[10,50,3],[14,52,3],[92,50,3],[88,53,3]].forEach(([x,y,k])=>{for(let j=0;j<k;j++){const hh=16+j*4,xx=x+j*2;r('#5fa04a',xx,y-hh,1,hh);r('#86c466',xx+1,y-hh,1,hh-2);r('#8a5a2e',xx-1,y-hh-5,3,6);r('#b98550',xx-1,y-hh-5,1,6)}});
   g.drawImage(S_.hosenT,0,0)})}
 // decor mien Tay: trai ruong + phai chuong heo
 lg('cau');lg('cau');
@@ -4996,6 +4995,51 @@ Object.assign(window.FMDX,{
   /* so:0 = nhân vật đi xuyên qua được; by nằm giữa ô để đi qua cổng vẫn không bị cột che lỗi */
   return{im:o,x:Math.round(X+24-S_.gate.width/2)-1,y:(ty+1)*T-1-S_.gate.height-1,by:Y+9,hb:(ty+1)*T-1,fw:3,fh:1,so:0}}});
 S_.fence2T=fenceTile2(10);S_.cactusT=cactusTile(0,1);
+/* ================= DECOR TAI THỎ: hàng rào tai thỏ (2x1, 80 Xu) + cổng tai thỏ (4x1, 300 Xu) =================
+   Màu trắng ngà + tai hồng nhạt. Hàng rào chỉ có chiều ngang; hai đầu thanh ngang chạm mép ô nên đặt cạnh nhau liền thành một hàng. */
+{const RB={l:'#fffaf0',m:'#f1e6c8',d:'#d4c196',k:'#b09a68',p:'#f4c7ba',pd:'#e3a597'};
+ /* một cái tai thỏ cao (x = cột trái, t = đỉnh tai, b = chân cột) */
+ const ear=(r,x,t,w,b,pink)=>{r(RB.m,x+1,t,w-2,1);r(RB.l,x+1,t,1,1);r(RB.m,x,t+1,w,1);r(RB.l,x,t+1,1,1);
+  r(RB.m,x,t+2,w,b-t-2);r(RB.l,x,t+2,1,b-t-2);r(RB.d,x+w-1,t+1,1,b-t-1);r(RB.k,x,b-1,w,1);
+  if(pink){r(RB.p,x+1,t+3,w-2,6);r(RB.pd,x+1,t+8,w-2,1);r(RB.p,x+1+((w-3)>>1),t+2,1,1)}};
+ /* viền mảnh quanh hình nhưng KHÔNG viền ra ngoài mép trái/phải ảnh (để các đoạn liền nhau không có vạch) */
+ const edgeOnly=c=>{const w=c.width,h=c.height,o=document.createElement('canvas');o.width=w;o.height=h;const g=o.getContext('2d'),s=c.getContext('2d').getImageData(0,0,w,h).data,
+   A=(x,y)=>x>=0&&x<w&&y>=0&&y<h&&s[(y*w+x)*4+3]>10;g.fillStyle='rgba(60,48,26,.6)';
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(!A(x,y)&&(A(x-1,y)||A(x+1,y)||A(x,y-1)||A(x,y+1)))g.fillRect(x,y,1,1);
+  g.drawImage(c,0,0);return o};
+ const FW=32,FH=29,FB=27;
+ S_.fenceRb=edgeOnly(mk(FW,FH,(g,r)=>{
+  r('rgba(0,0,0,.14)',0,FB-1,FW,2);
+  /* hai thanh ngang chạy suốt chiều rộng ô */
+  for(const y of[FB-17,FB-8]){r(RB.m,0,y,FW,3);r(RB.l,0,y,FW,1);r(RB.d,0,y+2,FW,1)}
+  /* 4 cọc tai thỏ, cách đều 8px nên đoạn kế tiếp nối liền không lệch nhịp */
+  for(const x of[2,10,18,26])ear(r,x,FB-24,4,FB,1);
+  /* chân cọc */
+  for(const x of[2,10,18,26])r(RB.k,x-1,FB,6,1)}));
+ /* cổng 4x1: hai trụ cao có cặp tai thỏ, vòm cong nối giữa, củ cà rốt treo — đi xuyên qua được */
+ const GWR=64,GHR=58,GB=GHR-3;
+ const post=(r,x)=>{ /* trụ rộng 8 */
+  r(RB.m,x,18,8,GB-18);r(RB.l,x,18,2,GB-18);r(RB.d,x+6,18,2,GB-18);r(RB.d,x+2,28,4,1);r(RB.d,x+2,38,4,1);
+  r(RB.l,x-1,15,10,3);r(RB.m,x-1,17,10,1);r(RB.d,x-1,18,10,1);   /* nắp trụ */
+  r(RB.d,x-1,GB-5,10,5);r(RB.l,x-1,GB-5,10,1);r(RB.k,x-1,GB-1,10,1); /* chân trụ */
+  ear(r,x-1,1,4,15,1);ear(r,x+5,1,4,15,1)};
+ S_.gateRb=outl(mk(GWR,GHR,(g,r)=>{
+  r('rgba(0,0,0,.14)',0,GB-1,GWR,2);
+  post(r,2);post(r,GWR-10);
+  /* vòm cong: thấp ở hai trụ, cao ở giữa */
+  for(let x=9;x<GWR-9;x++){const k=(x-31.5)/22.5,y=26-Math.round(9*(1-k*k));r(RB.l,x,y,1,1);r(RB.m,x,y+1,1,3);r(RB.d,x,y+4,1,1)}
+  /* cặp tai to ở đỉnh vòm */
+  ear(r,27,2,4,19,1);ear(r,33,2,4,19,1);r(RB.l,26,17,12,2);r(RB.d,26,19,12,1);
+  /* cà rốt treo giữa cổng */
+  r('#a8906a',31,21,2,6);r('#f08a2a',30,27,4,3);r('#f08a2a',30,30,4,3);r('#e07418',31,33,2,3);r('#c05a10',31,36,2,1);
+  r('#4cb35a',30,25,1,2);r('#4cb35a',33,25,1,2);
+  /* hoa nhỏ ở chân hai trụ */
+  for(const[x,y,c]of[[0,GB-2,'#ffb3d1'],[12,GB-1,'#ffe27a'],[GWR-3,GB-2,'#ffb3d1'],[GWR-14,GB-1,'#ffe27a']]){r(c,x,y,2,2);r('#fff',x,y,1,1)}}));
+ Object.assign(window.FMDX,{
+  fencerb:(tx,ty)=>{const X=tx*T,by=(ty+1)*T-1;return{im:S_.fenceRb,x:X,y:by-FB-2,by,hb:by,fw:2,fh:1,so:1}},
+  gaterb:(tx,ty)=>{const X=tx*T,Y=ty*T;return{im:S_.gateRb,x:Math.round(X+32-S_.gateRb.width/2),y:(ty+1)*T-1-S_.gateRb.height+2,by:Y+9,hb:(ty+1)*T-1,fw:4,fh:1,so:0}}});
+}
+
 
 /* ---- animation ---- */
 const oN=outl(S_.noelB),oG=outl(S_.giaphoiB),oT=outl(S_.tochimB);
@@ -5069,7 +5113,7 @@ Object.assign(FMD,{
  sapnuoc:['Sạp quán nước',()=>S_.sapnuoc,2,1,1,'v',5000],saprau:['Sạp rau',()=>S_.saprau,2,1,1,'v',5000],
  giaphoi:['Giá phơi đồ',()=>S_.giaphoi,4,1,1,'v',5000],tochim:['Tổ chim',()=>S_.tochim,1,1,1,'v',2000],
  giengmai:['Giếng có mái',()=>S_.giengmai,1,1,1,'v',200],giankho:['Giàn phơi khô',()=>S_.giankho,4,1,1,'v',500],gianholo:['Giàn hồ lô',()=>S_.gianholo,5,1,1,'v',1000],
- fence2:['Hàng rào thư giãn',()=>S_.fence2T,1,1,1,'p',20],gate:['Cổng thư giãn',()=>S_.gate,3,1,0,'p',500],cactus:['Bụi xương rồng',()=>S_.cactusT,1,1,1,'b',100]});
+ fence2:['Hàng rào thư giãn',()=>S_.fence2T,1,1,1,'p',20],gate:['Cổng thư giãn',()=>S_.gate,3,1,0,'p',500],fencerb:['Hàng rào tai thỏ',()=>S_.fenceRb,2,1,1,'p',80],gaterb:['Cổng tai thỏ',()=>S_.gateRb,4,1,0,'p',300],cactus:['Bụi xương rồng',()=>S_.cactusT,1,1,1,'b',100]});
 const FMCAT=[['p','🛤️ Lối đi & hàng rào'],['k','🏡 Công trình'],['c','🌳 Cây cối'],['b','🌸 Bụi & hoa'],['v','🧺 Vật dụng']];
 const FMRAW={},FMOUT={},FMTH={};
 const fmRaw=k=>FMRAW[k]||(FMRAW[k]=FMD[k][1]());
