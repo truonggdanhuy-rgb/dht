@@ -1578,7 +1578,9 @@ const ACCS=[{n:'Lồng đèn trăng rằm',k:'moon',t:'hang',art:accMoon},{n:'Xe
  {n:'Gậy Nấm pháp sư',k:'mushstaff',t:'hold',dia:5,art:(P)=>window.accMushStaff&&accMushStaff(P)},
  {n:'Guitar điện',k:'guitar',t:'hold',art:(P)=>accEGuitar(P)},
  // 16-18 = Quyền trượng Thủy Thần cấp 1/2/3 (nhận ở Thái tử Ba Tư, KHÔNG bán ở shop). Hình vẽ + nâng cấp: perso.js. Mỗi cấp 1 mục để người chơi khác tự thấy đúng cấp qua số phụ kiện sẵn có.
- {n:'Quyền trượng Thủy Thần cấp 1',k:'scepter1',t:'hold',ach:1,sc:1,art:(P)=>window.PERSO&&PERSO.art(P,1)},{n:'Quyền trượng Thủy Thần cấp 2',k:'scepter2',t:'hold',ach:1,sc:2,art:(P)=>window.PERSO&&PERSO.art(P,2)},{n:'Quyền trượng Thủy Thần cấp 3',k:'scepter3',t:'hold',ach:1,sc:3,art:(P)=>window.PERSO&&PERSO.art(P,3)}];   // số 15 = Guitar điện 4000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accEGuitar trong outfits.js   // guitar 3000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accGuitar trong outfits.js
+ {n:'Quyền trượng Thủy Thần cấp 1',k:'scepter1',t:'hold',ach:1,sc:1,art:(P)=>window.PERSO&&PERSO.art(P,1)},{n:'Quyền trượng Thủy Thần cấp 2',k:'scepter2',t:'hold',ach:1,sc:2,art:(P)=>window.PERSO&&PERSO.art(P,2)},{n:'Quyền trượng Thủy Thần cấp 3',k:'scepter3',t:'hold',ach:1,sc:3,art:(P)=>window.PERSO&&PERSO.art(P,3)},
+ // 19-21 = 🎒 BALO (t:'wing' = đeo sau lưng như cánh, vẽ đè lên tóc; bag = loại balo; 2000 Xu/cái ở Shop Phố xá — SHOP.a.pr trong pho-map.js; hình vẽ: balo.js)
+ {n:'Balo Ong mật',k:'bagbee',t:'wing',bag:'bee'},{n:'Balo Thỏ hồng',k:'bagbunny',t:'wing',bag:'bunny'},{n:'Balo Cánh cụt',k:'bagpeng',t:'wing',bag:'peng'}];   // số 15 = Guitar điện 4000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accEGuitar trong outfits.js   // guitar 3000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accGuitar trong outfits.js
 //   t:'float' = cầm DÂY dài, vật bay lơ lửng phía trên đầu -> art(P) giống 'hang'
 // ===== Pet đổi bằng Huy hiệu tuyết: Bánh quy gừng + Mây tuyết =====
 function drawPetGinger(g,x,y,d,mv,a,t){
@@ -3146,7 +3148,7 @@ function bagUI(t){AVTAB=t||AVTAB;const old=$('ui').scrollTop,L=avItems(AVTAB),cu
  h+='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+L.map((x,i)=>'<button class="sq'+(i==cur?' sel':'')+'" onclick="avPick('+i+')"><canvas class="avt" data-i="'+i+'" width="'+(mt?72:44)+'" height="'+(mt?68:AVTAB=='p'?52:44)+'" style="width:'+(mt?88:57)+'px;height:'+(mt?83:AVTAB=='p'?68:57)+'px;image-rendering:pixelated"></canvas><b>'+x.n+'</b><small>'+(x.sm||(i==cur?'✓ Đang dùng':'&nbsp;'))+'</small></button>').join('')+'</div>';
  if(L.length<=1&&(AVTAB=='m'||AVTAB=='p'||AVTAB=='a'))h+='<div class="mut">Bạn chưa có '+(mt?'thú cưỡi':AVTAB=='a'?'phụ kiện':'pet')+' nào. Ghé Phố xá để mua nhé!</div>';
  if(AVTAB=='b'){h+=L.length?'<div class="mut">🖐️ Bấm vào quái vật để cầm trên tay. Di chuyển là tự cất, quay lại phụ kiện cầm tay cũ (nếu có).</div>':'<div class="mut">Bạn chưa câu được quái vật nào. Ra cầu tàu ở Biển để câu nhé! 🎣</div>'}
- if(AVTAB=='a')h+='<div class="mut">🎀 Phụ kiện cầm tay & cánh chỉ hiện khi đi bộ, tự ẩn khi cưỡi thú hoặc ngồi nghỉ. Mỗi lần dùng 1 món.</div>';
+ if(AVTAB=='a')h+='<div class="mut">🎀 Phụ kiện cầm tay, cánh & balo chỉ hiện khi đi bộ, tự ẩn khi cưỡi thú hoặc ngồi nghỉ. Mỗi lần dùng 1 món.</div>';
  if(mt)h+='<div class="mut">Khi cưỡi, nhân vật chạy nhanh hơn. Ngồi nghỉ ở chòi/ghế sẽ tự xuống thú.</div>';
  h+=AVTAB=='b'?'<button class="b w" onclick="goMap(\'bien\')">🌊 Đến Biển câu thêm</button>':'<button class="b w" onclick="goMap(\'phoxa\')">🏘️ Đến Phố xá mua thêm</button>';
  openUI(h);$('ui').scrollTop=old;avPaint();if(!avRaf)avLoop()}
@@ -3159,7 +3161,7 @@ function avPaint(){const A=ST.av,t=performance.now()/1000,L=avItems(AVTAB);docum
  if(AVTAB=='h'){o.hair=ix;g.save();g.scale(2,2);drawAv(g,1,1,o);g.restore()}
  else if(AVTAB=='s'){o.set=ix;drawAv(g,12,5,o)}
  else if(AVTAB=='e'){o.e=ix;g.save();g.scale(3,3);const dr=()=>drawAv(g,-3,-4,o);if(ix==6)tlFreeze(2500,dr);else if(ix==7)tlFreeze(500,dr);else dr();g.restore()}
- else if(AVTAB=='a'){o.acc=ix;const wg=ix>=0&&ACCS[ix]&&ACCS[ix].t=='wing';drawAv(g,wg?12:4,5,o)}
+ else if(AVTAB=='a'){o.acc=ix;const wg=ix>=0&&ACCS[ix]&&ACCS[ix].t=='wing';if(ix>=0&&ACCS[ix]&&ACCS[ix].bag)o.d=1;drawAv(g,wg?12:4,5,o)}
  else if(AVTAB=='b'){MQ.paint(g,ix,c)}
  else if(AVTAB=='m'){if(ix>=0)drawRide(g,36,64,Object.assign({},o,{d:3,a:t,mv:0}),ix,t);else drawAv(g,26,30,o)}
  else{if(ix>=0){g.save();g.scale(2,2);drawPet(g,11,24,0,0,0,t,ix);g.restore()}else{g.font='22px sans-serif';g.textAlign='center';g.fillText('🚫',22,34)}}})}
@@ -6118,6 +6120,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="newitems3.js?v=20261116"></script>
 <script src="newitems4.js?v=20261117"></script>
 <script src="skate.js?v=20261118"></script>
+<script src="balo.js?v=20261203"></script>
 <script src="pajama.js?v=20261118"></script>
 <script src="alo.js?v=20261119"></script>
 <script src="winter.js?v=20261120"></script>

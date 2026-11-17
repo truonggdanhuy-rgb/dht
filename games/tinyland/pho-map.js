@@ -729,7 +729,7 @@ function mieuLoop(){const c=$('mc');if(!c||!UI||PS.view!='mieu')return;const g=c
 // ============================================================
 const SHOP={m:{t:'🐃 Thú cưỡi',all:()=>MOUNTS,pr:[4000,5500,4200,9000,1500,null,null,null,null,8000,1000]},p:{t:'🐾 Pet',all:()=>PETS,pr:[250,900,350,300,1100,500]},s:{t:'👕 Set',all:()=>SETS,pr:[0,600,500,450,450,500,800,800,1500,2800,3500,20000, 500,500,600,1000,800,400,400,5000,5000, 0,0,0,0,0,0,0,0,0, 900,700, 500,500,500, 5000,5000, 0, 3000,3000]},h:{t:'🧢 Tóc & mũ',all:()=>HAIRS,pr:[0,150,200,250,300,300, 1000,400,600,200,250,300,1000, 4500,3500,6000,4000,3500,2800, 2200,2000,3200,6000,4500,2800, 0,0,0, 800,500]},
  e:{t:'😄 Biểu cảm',all:()=>EXPRS,pr:[0,0,0,0,0,0,18000,0,500,500]},   // số 7 'Thổi tim' bán bằng kim cương ở Shop kim cương
- a:{t:'🎀 Phụ kiện',all:()=>ACCS,pr:[300,450, 0,0,0,0, 5000,1500,300,800, 3000, 500,500, 400, 0, 4000]}};   // số 10 = Đàn guitar 3000 Xu • số 14 = Gậy Nấm pháp sư (bán kim cương) • số 15 = Guitar điện 4000 Xu
+ a:{t:'🎀 Phụ kiện',all:()=>ACCS,pr:[300,450, 0,0,0,0, 5000,1500,300,800, 3000, 500,500, 400, 0, 4000, 0,0,0, 2000,2000,2000]}};   // số 19-21 = Balo Ong mật / Thỏ hồng / Cánh cụt 2000 Xu/cái • số 10 = Đàn guitar 3000 Xu • số 14 = Gậy Nấm pháp sư (bán kim cương) • số 15 = Guitar điện 4000 Xu
 const price=(k,i)=>{const v=SHOP[k].pr[i];return v==null?500:v};
 /* Giá gộp nhiều loại tiền: món có cb:{xu,qv,dia} trong MOUNTS (vd Ván trượt cam). qv = xu quái vật, dia = kim cương */
 const cbTxt=(cb,short)=>short?'🪙'+cb.xu.toLocaleString('vi-VN')+' • QV '+cb.qv+' • 💎'+cb.dia:cb.xu.toLocaleString('vi-VN')+' Xu + '+cb.qv.toLocaleString('vi-VN')+' xu quái vật + '+cb.dia+' 💎';
@@ -741,7 +741,7 @@ window.psShop=(tab)=>{if(typeof ownE=='function')ownE();if(tab)SH_TAB=tab;PS.vie
  h+='<div class="mut">Đồ đã mua nằm trong 🎒 Túi. Chạm vào món để xem thử & mua.</div>';
  openUI(h);shPaint()};
 function shDraw(g,k,ix,o,t,big){
- if(k=='h')o.hair=ix;else if(k=='s')o.set=ix;else if(k=='e'){o.e=ix;if(SETS[o.set]&&SETS[o.set].mascot)o.set=0}else if(k=='a')o.acc=ix;
+ if(k=='h')o.hair=ix;else if(k=='s')o.set=ix;else if(k=='e'){o.e=ix;if(SETS[o.set]&&SETS[o.set].mascot)o.set=0}else if(k=='a'){o.acc=ix;if(ACCS[ix]&&ACCS[ix].bag&&!big)o.d=1}
  if(big){const d=AVDIR[SH_DIR];o.d=d;o.a=t;o.mv=1;g.clearRect(0,0,110,92);g.fillStyle='rgba(60,110,40,.28)';g.fillRect(0,78,110,14);
   if(k=='m')drawRide(g,55,80,o,ix,t);else if(k=='e'){o.mv=0;g.save();g.scale(3,3);drawAv(g,8,0,o);g.restore()}else{drawAv(g,k=='p'?34:45,50,o);if(k=='p')drawPet(g,d==3?12:68,82,d,1,t,t,ix)}return}
  if(k=='h'){g.save();g.scale(2,2);drawAv(g,1,1,o);g.restore()}
