@@ -11,6 +11,8 @@
    • 2 thanh Vui vẻ / No bụng tụt theo thời gian thật. Lớn rồi thì tụt chậm hơn nhiều (đỡ tốn xu).
    • Quà: mỗi 2 giờ có 1 món quà, KHÔNG cộng dồn — phải bấm nhận thì mới tính 2 giờ tiếp theo.
    • Đổi tên bé: 1 💎, không ghi chú gì, chỉ hiện thông báo khi đổi.
+   • 🛁 TẮM (mới): thanh Sạch sẽ (b.s, tụt theo thời gian thật). Tắm 10 Xu → bóng nước nổi quanh bé 3 giây rồi biến mất, Sạch sẽ = 100%.
+   • 💬 Bé không đứng yên: nhún nhẹ, hay nói "Anh/Chị ơi, em ..." tùy ngữ cảnh (đói / bẩn / buồn / có quà / sau khi ăn-chơi-tắm / giờ giấc...).
    • Thời trang: danh sách MINISETS bên dưới. Muốn thêm set mới chỉ cần thêm 1 dòng vào MINISETS (xem hướng dẫn ngay đó).
    =================================================================================== */
 (()=>{
@@ -18,13 +20,17 @@
 const BB_COST=20,          // Xu mỗi lần cho ăn / chơi
       BB_FILL=40,          // mỗi lần cho ăn/chơi hồi bao nhiêu % thanh
       BB_ALLOW=60,         // chỉ cho ăn/chơi khi thanh ≤ mức này (tránh bấm liên tục tốn xu)
+      BB_BATH=10,          // Xu mỗi lần tắm
+      BB_ALLOW_BATH=80,    // chỉ cho tắm khi Sạch sẽ ≤ mức này (tránh tốn xu oan)
+      BB_XP_BATH=0,        // EXP mỗi lần tắm (0 = tắm không cộng EXP; chỉ ăn/chơi mới giúp bé lớn)
+      BB_BATH_MS=3000,     // bóng nước nổi bao lâu
       BB_EXP=100,BB_XP=10, // EXP để lớn • EXP mỗi lần cho ăn/chơi (chỉ lúc còn là em bé)
       BB_DIA_GROW=10,      // kim cương để cho bé lớn ngay
       BB_DIA_NAME=1,       // kim cương để đổi tên
       BB_NAME_MAX=7,       // số ký tự tối đa của tên
       BB_GIFT_MS=2*60*60*1000,   // 2 giờ / quà
       BB_SCALE=.7,         // bé bằng 70% nhân vật chính
-      BB_EMPTY={baby:{f:150,h:180},big:{f:420,h:540}};   // số PHÚT để mỗi thanh tụt từ 100 → 0 (em bé / đã lớn)
+      BB_EMPTY={baby:{f:150,h:180,s:200},big:{f:420,h:540,s:500}};   // số PHÚT để mỗi thanh tụt từ 100 → 0 (em bé / đã lớn)
 /* Quà: trọng số (càng lớn càng hay ra). Kim cương & vé Tí Nị để thấp vì "ít khi". Xu ngẫu nhiên 80–160 */
 const BB_GIFTS=[['xu',45],['tk',42],['ti',9],['dia',4]],BB_XU=[80,160],BB_TK=2;
 
@@ -95,17 +101,17 @@ const fmtDay=t=>{const d=new Date(t);return String(d.getDate()).padStart(2,'0')+
 const fmtLeft=ms=>{const s=Math.max(0,Math.ceil(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+' giờ '+m+' phút':m?m+' phút '+(s%60)+' giây':(s%60)+' giây'};
 function bbFix(){const b=ST.bb;if(!b||!b.on)return;
  b.g=b.g=='f'?'f':'m';b.c=b.c=='chi'?'chi':'anh';b.n=cleanName(b.n)||'Bé';b.ad=+b.ad||tNow();b.big=b.big?1:0;b.exp=cl(b.exp|0,0,BB_EXP);
- b.h=cl(+b.h||0,0,100);b.f=cl(+b.f||0,0,100);b.t=+b.t||tNow();b.gt=+b.gt||tNow()+BB_GIFT_MS;b.fl=b.fl?1:0;b.pp=(b.pp|0)>=0?b.pp|0:-1;
+ b.h=cl(+b.h||0,0,100);b.f=cl(+b.f||0,0,100);b.s=b.s==null?100:cl(+b.s||0,0,100);b.t=+b.t||tNow();b.gt=+b.gt||tNow()+BB_GIFT_MS;b.fl=b.fl?1:0;b.pp=(b.pp|0)>=0?b.pp|0:-1;
  if(!Array.isArray(b.own))b.own=[];if(!b.own.includes('warm'))b.own.push('warm');b.own=b.own.filter(id=>MINISETS.some(x=>x.id==id));const cs=MINISETS.find(x=>x.id==b.set);if(!cs||!b.own.includes(b.set)||(cs.g&&cs.g!=b.g))b.set='warm'}
 bbFix();
 
 /* thanh Vui vẻ / No bụng: tính theo mốc thời gian thật nên vẫn tụt khi tắt game (giống thanh Sức khỏe / Độ no) */
-function bars(b){b=b||B();const m=Math.max(0,(tNow()-b.t)/60000),e=BB_EMPTY[b.big?'big':'baby'];return{h:cl(b.h-m*100/e.h,0,100),f:cl(b.f-m*100/e.f,0,100)}}
-function settle(b){const c=bars(b);b.h=c.h;b.f=c.f;b.t=tNow()}
-function mood(b){const c=bars(b);return c.f<30?'hungry':c.h<30?'bored':'ok'}
+function bars(b){b=b||B();const m=Math.max(0,(tNow()-b.t)/60000),e=BB_EMPTY[b.big?'big':'baby'];return{h:cl(b.h-m*100/e.h,0,100),f:cl(b.f-m*100/e.f,0,100),s:cl((b.s==null?100:b.s)-m*100/e.s,0,100)}}
+function settle(b){const c=bars(b);b.h=c.h;b.f=c.f;b.s=c.s;b.t=tNow()}
+function mood(b){const c=bars(b);return c.f<30?'hungry':c.s<30?'dirty':c.h<30?'bored':'ok'}
 function statusTxt(b){const m=mood(b);
- if(b.big)return m=='hungry'?'Đói bụng rồi 🍙':m=='bored'?'Buồn chán, muốn chơi 🥺':'Đang vui vẻ 😊';
- return m=='hungry'?'Đói bụng, khóc nhè 😭':m=='bored'?'Buồn chán, đòi chơi 🥺':'Đang ngủ ngon 💤'}
+ if(b.big)return m=='hungry'?'Đói bụng rồi 🍙':m=='dirty'?'Người bẩn bẩn, muốn tắm 🫧':m=='bored'?'Buồn chán, muốn chơi 🥺':'Đang vui vẻ 😊';
+ return m=='hungry'?'Đói bụng, khóc nhè 😭':m=='dirty'?'Người bẩn bẩn, đòi tắm 🫧':m=='bored'?'Buồn chán, đòi chơi 🥺':'Đang ngủ ngon 💤'}
 
 /* ---------------- VẼ NHÂN VẬT BÉ (dùng lại drawAv của nhân vật chính) ---------------- */
 function avObj(b,d,mv,a){const m=msGet(b.set);return{d,a:a||0,mv:mv?1:0,sit:0,e:0,acc:-1,setObj:m.set,hairObj:(m.g||b.g)=='f'?m.hf:m.hm}}
@@ -114,12 +120,19 @@ function sprite(b,d,mv,f){const key=b.set+b.g+'_'+d+(mv?'w'+f:'i')+(msGet(b.set)
  c=document.createElement('canvas');c.width=48;c.height=72;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.scale(2,2);
  try{drawAv(g,2,2,avObj(b,d,mv,(f+.5)/9))}catch(e){}return SPC[key]=c}
 function drawFollow(){const b=B();if(!b||!b.big||!b.fl||(CVON&&CV.boat)||(HMA&&HMA.hide))return;
- const mv=PET.mv?1:0,f=mv?Math.floor(PET.a*9)%4:0,sp=sprite(b,PET.d|0,mv,f),W=24*BB_SCALE,H=36*BB_SCALE,sm=cx.imageSmoothingEnabled;
+ const mv=PET.mv?1:0,f=mv?Math.floor(PET.a*9)%4:0,sp=sprite(b,PET.d|0,mv,f),W=24*BB_SCALE,H=36*BB_SCALE,sm=cx.imageSmoothingEnabled,
+  tt=performance.now()/1000,bn=mv?0:Math.abs(Math.sin(tt*3.4)),lift=bn*1.3,sy=mv?1:1+.035*(bn-.5);   // đứng yên: nhún nhẹ (nảy lên + co giãn)
  cx.imageSmoothingEnabled=true;try{cx.imageSmoothingQuality='high'}catch(e){}
- cx.drawImage(sp,Math.round(PET.x-12*BB_SCALE),Math.round(PET.y-32*BB_SCALE),W,H);cx.imageSmoothingEnabled=sm}
+ const hh=H*sy,fy=PET.y-32*BB_SCALE+H;                                         // chân luôn đứng đúng chỗ
+ cx.drawImage(sp,Math.round(PET.x-12*BB_SCALE),Math.round((fy-lift-hh)*10)/10,W,hh);cx.imageSmoothingEnabled=sm;
+ if(BATH&&performance.now()<BATH.until){const R=(c,x,y,w,h)=>{cx.fillStyle=c;cx.fillRect(Math.round(PET.x+x),Math.round(PET.y+y),w,h)};
+  bubbleField(R,(performance.now()-BATH.t0)/1000,{cx:0,cy:2,hw:15,rise:36,k:1})}}
 function drawTag(){const b=B();if(!b||!b.big||!b.fl||(CVON&&CV.boat)||(HMA&&HMA.hide))return;
  cx.save();cx.font='400 6px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';cx.lineJoin='round';cx.lineWidth=1.4;
- const x=Math.round(PET.x),y=Math.round(PET.y-23);cx.strokeStyle='rgba(30,20,10,.55)';cx.strokeText(b.n,x,y);cx.fillStyle='#eafff1';cx.fillText(b.n,x,y);cx.restore()}
+ const x=Math.round(PET.x),y=Math.round(PET.y-23);cx.strokeStyle='rgba(30,20,10,.55)';cx.strokeText(b.n,x,y);cx.fillStyle='#eafff1';cx.fillText(b.n,x,y);
+ if(SAY&&performance.now()<SAY.until){const t=SAY.txt,by=y-12;cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.lineWidth=1;const w=Math.min(150,cx.measureText(t).width)+10;   // bong bóng thoại
+  cx.fillStyle='rgba(30,20,10,.45)';cx.fillRect(x-w/2+1,by-9,w,13);cx.fillStyle='#fffdf0';cx.fillRect(x-w/2,by-10,w,13);cx.fillRect(x-2,by+3,4,2);cx.fillStyle='#3a2412';cx.fillText(t,x,by,w-6)}
+ cx.restore()}
 /* móc vào vòng vẽ của game (tên vẽ sau cùng để không bị che) */
 {const od=window.drawNames;window.drawNames=tm=>{if(od)od(tm);drawTag()}}
 window.bbFollowing=()=>{const b=B();return !!(b&&b.big&&b.fl)};
@@ -130,7 +143,7 @@ function cradle(md){
  const face=md=='hungry'?
   '<path d="M136 101q4-4 8 0M148 101q4-4 8 0" fill="none" stroke="#7a5a4a" stroke-width="2" stroke-linecap="round"/><ellipse cx="147" cy="109" rx="3.4" ry="4" fill="#c9605a"/>'
   +'<g class="bbtear" fill="#8fd0ff"><path d="M138 104q-3 5 0 7q3-2 0-7z"/><path d="M156 104q-3 5 0 7q3-2 0-7z"/></g>'
-  :md=='bored'?
+  :(md=='bored'||md=='dirty')?
   '<circle cx="141" cy="99" r="2.3" fill="#7a5a4a"/><circle cx="153" cy="99" r="2.3" fill="#7a5a4a"/><path d="M144 110q3-3 6 0" fill="none" stroke="#c9806a" stroke-width="1.8" stroke-linecap="round"/>'
   :'<path d="M137 99q4 4 8 0M149 99q4 4 8 0" fill="none" stroke="#7a5a4a" stroke-width="2" stroke-linecap="round"/><path d="M144 108q3 3 6 0" fill="none" stroke="#c9806a" stroke-width="1.8" stroke-linecap="round"/>';
  const zz=md=='ok'?'<g font-family="sans-serif" font-weight="800" fill="#9bb5d6"><text class="bbz" x="190" y="88" font-size="14">z</text><text class="bbz bbz2" x="200" y="74" font-size="18">Z</text></g>':'';
@@ -153,6 +166,7 @@ function cradle(md){
  +'<ellipse cx="146" cy="104" rx="22" ry="12" fill="#fff" opacity=".9"/>'
  +'<circle cx="146" cy="98" r="21" fill="#ffe3cc"/><path d="M128 92q18-18 36 0q-18-8-36 0z" fill="#fff0c9"/>'
  +face
+ +(md=='dirty'?'<g fill="#b8956a" opacity=".6"><circle cx="138" cy="91" r="2.2"/><circle cx="156" cy="96" r="1.8"/><circle cx="150" cy="88" r="1.4"/></g>':'')
  +'<ellipse cx="135" cy="107" rx="4.5" ry="3" fill="#ffb7a0" opacity=".7"/><ellipse cx="159" cy="107" rx="4.5" ry="3" fill="#ffb7a0" opacity=".7"/>'
  +'<path d="M84 121Q150 104 216 121L212 128Q150 146 88 128Z" fill="#bfe8d4"/><g fill="#fff" opacity=".85"><circle cx="110" cy="124" r="2"/><circle cx="135" cy="128" r="2"/><circle cx="165" cy="128" r="2"/><circle cx="190" cy="124" r="2"/></g>'
  +'<path d="M58 118Q150 150 242 118" fill="none" stroke="#d6b073" stroke-width="6" stroke-linecap="round"/><path d="M58 118Q150 150 242 118" fill="none" stroke="#e9c88c" stroke-width="3" stroke-linecap="round"/></g>'
@@ -185,14 +199,18 @@ function cradle(md){
  +'#hbb.rdy::after{content:"";position:absolute;top:-4px;right:-4px;width:11px;height:11px;border-radius:50%;background:#ff5a5a;border:2px solid #fff;box-shadow:0 1px 0 rgba(0,0,0,.25)}'
  +'.bbav{border-radius:16px;overflow:hidden;border:2px solid #cfe6d9;line-height:0;cursor:pointer;background:#f6f1de url(data:image/webp;base64,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) center/cover no-repeat}.bbav canvas{width:100%;height:auto;display:block;image-rendering:pixelated}'
  +'.bbfl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}.bbft{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;border-radius:12px;border:2px solid #cfe6d9;background:#fff;font:inherit;color:#4a6a5a;cursor:pointer}'
- +'.bbft.sel{border-color:#e6c25a;background:#fff6d6}.bbft b{font-size:12px}.bbft small{font-size:10.5px;color:#7b9a8a;font-weight:700}.bbft canvas{width:56px;height:72px;image-rendering:pixelated}';
+ +'.bbft.sel{border-color:#e6c25a;background:#fff6d6}.bbft b{font-size:12px}.bbft small{font-size:10.5px;color:#7b9a8a;font-weight:700}.bbft canvas{width:56px;height:72px;image-rendering:pixelated}'
+ +'.bbsc,.bbav{position:relative}.bbfxc{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3;image-rendering:pixelated}'
+ +'.bbsay{position:absolute;left:50%;top:6px;transform:translateX(-50%);max-width:92%;box-sizing:border-box;background:#fffdf0;border:2px solid #e6c25a;border-radius:12px;padding:3px 10px;font:800 12px/1.35 Nunito,"Segoe UI",Arial,sans-serif;color:#6b4a10;text-align:center;z-index:4;display:none;pointer-events:none;box-shadow:0 2px 0 rgba(0,0,0,.08)}'
+ +'.bbsay.on{display:block;animation:bbsy .25s ease-out}@keyframes bbsy{from{opacity:0;transform:translate(-50%,4px)}to{opacity:1;transform:translate(-50%,0)}}'
+ +'.bbch3 .bbbt{font-size:13px;padding:8px 3px}.bbch3 .bbbt small{font-size:10.5px}';
  document.head.appendChild(css)})();
 
 /* ---------------- GIAO DIỆN ---------------- */
 let VIEW='main',SEL={g:'',c:'',n:''},RENN='',RENT=0,CONF=0,CONFT=0,BBDIR=0,BBANI=0,LASTMOOD='';
 const isOpen=()=>UI&&$('ui').classList.contains('bbui');
 const bar=(id,ic,nm,v,col)=>'<div class="bbrow"><div class="bbrl"><span>'+ic+' '+nm+'</span><b id="'+id+'v">'+Math.round(v)+'%</b></div><div class="bbbar"><i id="'+id+'" style="width:'+v+'%;background:'+col+'"></i></div></div>';
-const COL_H='linear-gradient(90deg,#ffe08a,#ffb84d)',COL_F='linear-gradient(90deg,#b5e8d0,#6cc7a3)',COL_X='linear-gradient(90deg,#ffe08a,#ffc24d)';
+const COL_S='linear-gradient(90deg,#bfe8ff,#6fc3f2)',COL_H='linear-gradient(90deg,#ffe08a,#ffb84d)',COL_F='linear-gradient(90deg,#b5e8d0,#6cc7a3)',COL_X='linear-gradient(90deg,#ffe08a,#ffc24d)';
 function show(h,v){const st=$('ui').scrollTop;openUI(h);$('ui').classList.add('bbui');$('ui').scrollTop=st;VIEW=v}
 function syncSel(){const i=$('bbnm0');if(i)SEL.n=i.value}
 function guard(el){if(!el)return;['keydown','keyup','keypress'].forEach(k=>el.addEventListener(k,e=>e.stopPropagation()))}
@@ -211,28 +229,30 @@ window.bbAdopt=()=>{syncSel();const n=cleanName(SEL.n);
  if(!SEL.g)return toast('👶 Hãy chọn bé trai hoặc bé gái');
  if(!SEL.c)return toast('💬 Hãy chọn bé gọi bạn là Anh hay Chị');
  if(!n)return toast('✏️ Hãy đặt tên cho bé');
- const t=tNow();ST.bb={on:1,g:SEL.g,c:SEL.c,n,ad:t,big:0,exp:0,h:50,f:50,t,gt:t+BB_GIFT_MS,nf:0,fl:0,pp:-1,own:['warm'],set:'warm'};
+ const t=tNow();ST.bb={on:1,g:SEL.g,c:SEL.c,n,ad:t,big:0,exp:0,h:50,f:50,s:100,t,gt:t+BB_GIFT_MS,nf:0,fl:0,pp:-1,own:['warm'],set:'warm'};
  save();toast('💝 Bạn đã nhận nuôi '+n+'!\nBé sẽ gọi bạn là '+(SEL.c=='chi'?'Chị':'Anh'));bbUI()};
 
-function charPaint(cv,b,d,mv,sc){const g=cv.getContext('2d'),t=performance.now()/1000;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);g.imageSmoothingEnabled=false;
- g.save();g.scale(sc,sc);drawAv(g,(cv.width/sc-20)/2,cv.height/sc-34,avObj(b,d,mv,t));g.restore()}
-function paintHero(){const cv=$('bbav'),b=B();if(!cv||!b)return;charPaint(cv,b,[0,3,1,2][BBDIR%4],performance.now()<BBANI,3)}
-function heroLoop(){const cv=$('bbav');if(!cv||!UI){return}paintHero();if(performance.now()<BBANI)requestAnimationFrame(heroLoop)}
-window.bbTurn=()=>{BBDIR=(BBDIR+1)%4;BBANI=performance.now()+700;heroLoop()};
+function charPaint(cv,b,d,mv,sc,lift){const g=cv.getContext('2d'),t=performance.now()/1000;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);g.imageSmoothingEnabled=false;
+ g.save();g.translate(0,-(lift|0));g.scale(sc,sc);drawAv(g,(cv.width/sc-20)/2,cv.height/sc-34,avObj(b,d,mv,t));g.restore()}
+function paintHero(){const cv=$('bbav'),b=B();if(!cv||!b)return;const mv=performance.now()<BBANI;charPaint(cv,b,[0,3,1,2][BBDIR%4],mv,3,mv?0:Math.round(Math.abs(Math.sin(performance.now()/1000*3.4))*3))}   // đứng yên: nhún nhẹ
+let HLOOP=0;function heroLoop(){const cv=$('bbav');if(!cv||!UI){HLOOP=0;return}paintHero();requestAnimationFrame(heroLoop)}
+function startHero(){if(!HLOOP){HLOOP=1;requestAnimationFrame(heroLoop)}}
+window.bbTurn=()=>{BBDIR=(BBDIR+1)%4;BBANI=performance.now()+700;startHero()};
 function paintFashion(){document.querySelectorAll('canvas.bbfc').forEach(c=>{const b=B();if(!b)return;const m=MINISETS[+c.dataset.i];if(!m)return;
  charPaint(c,Object.assign({},b,{set:m.id}),0,0,2)})}
 
 function viewMain(){const b=B();if(!b)return viewAdopt();
  const c=bars(b),md=mood(b),ready=tNow()>=b.gt,nm=esc(b.n);LASTMOOD=md;
- const scene=b.big?'<div class="bbav" onclick="bbTurn()"><canvas id="bbav" width="150" height="120"></canvas></div><div class="mut" style="text-align:center;margin:4px 0 0">👆 Chạm vào bé để xoay</div>'
-  :'<div class="bbsc">'+cradle(md)+'</div>';
+ const scene=b.big?'<div class="bbav" onclick="bbTurn()"><canvas id="bbav" width="150" height="120"></canvas><div class="bbsay" id="bbsay"></div></div><div class="mut" style="text-align:center;margin:4px 0 0">👆 Chạm vào bé để xoay</div>'
+  :'<div class="bbsc">'+cradle(md)+'<div class="bbsay" id="bbsay"></div></div>';
  let h=head('🍼 Bé bỏng')+scene
  +'<div class="bbcard"><div class="bbnm"><span>'+(b.g=='f'?'👧 ':'👦 ')+nm+'</span><small id="bbst">'+statusTxt(b)+'</small></div>'
  +(b.big?'':'<div class="bbrow"><div class="bbrl"><span>⭐ EXP</span><b id="bbxv">'+b.exp+' / '+BB_EXP+'</b></div><div class="bbbar"><i id="bbx" style="width:'+b.exp/BB_EXP*100+'%;background:'+COL_X+'"></i></div></div>'
    +'<div class="bbq" style="margin-top:6px;font-size:11px;color:#7b9a8a;font-weight:700">Đủ '+BB_EXP+' EXP bé sẽ lớn</div>')
- +bar('bbh','😊','Vui vẻ',c.h,COL_H)+bar('bbf','🍼','No bụng',c.f,COL_F)+'</div>'
- +'<div class="bbcard"><div class="bbch"><button class="bbbt on" onclick="bbAct(\'f\')">🍼 Cho ăn<br><small>'+BB_COST+' 🪙'+(b.big?'':' • +'+BB_XP+' EXP')+'</small></button>'
- +'<button class="bbbt on" onclick="bbAct(\'p\')">🎈 Chơi cùng bé<br><small>'+BB_COST+' 🪙'+(b.big?'':' • +'+BB_XP+' EXP')+'</small></button></div>';
+ +bar('bbh','😊','Vui vẻ',c.h,COL_H)+bar('bbf','🍼','No bụng',c.f,COL_F)+bar('bbs','🫧','Sạch sẽ',c.s,COL_S)+'</div>'
+ +'<div class="bbcard"><div class="bbch bbch3"><button class="bbbt on" onclick="bbAct(\'f\')">🍼 Cho ăn<br><small>'+BB_COST+' 🪙'+(b.big?'':' • +'+BB_XP+' EXP')+'</small></button>'
+ +'<button class="bbbt on" onclick="bbAct(\'p\')">🎈 Chơi cùng bé<br><small>'+BB_COST+' 🪙'+(b.big?'':' • +'+BB_XP+' EXP')+'</small></button>'
+ +'<button class="bbbt on" onclick="bbAct(\'b\')">🛁 Tắm cho bé<br><small>'+BB_BATH+' 🪙</small></button></div>';
  if(!b.big)h+='<button class="bbbt'+(CONF?' warn':' on')+'" onclick="bbGrowNow()">'+(CONF?'⚠️ Bấm lần nữa để xác nhận (−'+BB_DIA_GROW+' 💎)':'💎 Cho bé lớn ngay ('+BB_DIA_GROW+' 💎)')+'</button>';
  else h+='<button class="bbbt on" onclick="bbFollow()">'+(b.fl?'🏠 Cho bé về nhà':'🚶 Cho Bé bỏng đi theo')+'</button>'
    +(b.fl?'':'<div class="mut" style="text-align:center;margin:4px 0 0">Pet sẽ được cất vào Túi — chỉ có thể 1 pet hoặc 1 Bé bỏng đi theo.</div>');
@@ -246,16 +266,16 @@ function viewMain(){const b=B();if(!b)return viewAdopt();
  +'<div class="bbrn"><input id="bbrn" maxlength="'+BB_NAME_MAX+'" value="'+esc(RENN||b.n)+'" placeholder="Tên mới">'+(RENN?'':'<button class="bbbt on" onclick="bbRename()">✏️ Đổi tên</button>')+'</div>'
  +(RENN?'<div class="bbch"><button class="bbbt warn" onclick="bbRename()">⚠️ Xác nhận đổi tên (−'+BB_DIA_NAME+' 💎)</button><button class="bbbt on" style="flex:none;width:30%" onclick="bbRenCancel()">Hủy</button></div>':'')+'</div>'
  +'<button class="bbbt on" onclick="bbFashion()">👗 Thời trang</button>';
- show(h,'main');guard($('bbrn'));if(b.big)paintHero()}
+ show(h,'main');guard($('bbrn'));if(b.big){paintHero();startHero()}paintSay();bathFx()}
 
 window.bbUI=()=>{const b=B();CONF=0;RENN='';if(!b){SEL={g:'',c:'',n:''};return viewAdopt()}viewMain()};
 function refresh(){if(!isOpen())return;if(VIEW=='fash')viewFashion();else if(VIEW=='main')viewMain()}
 
-window.bbAct=k=>{const b=B();if(!b)return;settle(b);const feed=k=='f';
+window.bbAct=k=>{const b=B();if(!b)return;settle(b);if(k=='b')return bbBath(b);const feed=k=='f';
  if((feed?b.f:b.h)>BB_ALLOW){save();return toast(feed?'🍼 '+b.n+' còn no, chút nữa hãy cho ăn nha!':'🎈 '+b.n+' đang vui lắm, chút nữa hãy chơi nha!')}
  if(ST.xu<BB_COST)return toast('🪙 Chưa đủ xu — cần '+BB_COST+' xu');
  ST.xu-=BB_COST;xuUp();if(feed)b.f=Math.min(100,b.f+BB_FILL);else b.h=Math.min(100,b.h+BB_FILL);
- let tx=feed?'🍼 '+b.n+' ăn no rồi!':'🎈 '+b.n+' chơi vui quá!';
+ let tx=feed?'🍼 '+b.n+' ăn no rồi!':'🎈 '+b.n+' chơi vui quá!';sayNow(feed?'feed':'play');
  if(!b.big){b.exp=Math.min(BB_EXP,b.exp+BB_XP);tx+=' +'+BB_XP+' EXP';if(b.exp>=BB_EXP){b.big=1;b.nf=0;tx+='\n🎉 '+b.n+' đã lớn rồi! Giờ bé mặc đồ và đi theo bạn được nè'}}
  save();toast(tx);refresh()};
 window.bbGrowNow=()=>{const b=B();if(!b||b.big)return;
@@ -292,7 +312,7 @@ function viewFashion(){const b=B();if(!b)return viewAdopt();
  MINISETS.forEach((m,i)=>{if(m.g&&m.g!=b.g)return;const own=b.own.includes(m.id),on=b.set==m.id,pr=m.dia?'💎 '+m.dia:m.xu?'🪙 '+m.xu:'Miễn phí';
   h+='<button class="bbft'+(on?' sel':'')+'" onclick="bbSetPick('+i+')"><canvas class="bbfc" data-i="'+i+'" width="56" height="72"></canvas><b>'+esc(m.n)+'</b><small>'+(on?'✅ Đang mặc':own?'Đã có':pr)+'</small></button>'});
  h+='</div><div class="mut" style="text-align:center;margin-top:8px">✨ Sẽ có thêm Miniset mới, ghé lại sau nhé!</div>';
- show(h,'fash');paintFashion();if(b.big)paintHero()}
+ show(h,'fash');paintFashion();if(b.big){paintHero();startHero()}}
 window.bbFashion=()=>viewFashion();
 window.bbSetPick=i=>{const b=B(),m=MINISETS[i];if(!b||!m)return;
  if(m.g&&m.g!=b.g)return toast('🔒 Set này dành cho '+(m.g=='f'?'bé gái':'bé trai'));
@@ -326,16 +346,74 @@ window.bbShopBuy=i=>{const b=B(),m=MINISETS[i];if(!b||!m||!m.shop)return;
  if(ST.xu<m.xu)return toast('🪙 Chưa đủ xu — cần '+m.xu+' xu');
  ST.xu-=m.xu;xuUp();b.own.push(m.id);save();toast('🛍️ Đã mua '+m.n+'!\nSet nằm trong 👗 Thời trang của '+b.n);bbShop()};
 
+
+/* ---------------- 🛁 TẮM + BÓNG NƯỚC ---------------- */
+let BATH=null,SAY=null,NEXTSAY=0,LASTM='';
+const hs=i=>{const v=Math.sin(i*127.1+311.7)*43758.5453;return v-Math.floor(v)};
+/* Bóng nước: cùng kiểu pixel với bóng nước của Cánh Đại dương (viền xanh nhạt + chấm sáng). t = giây từ lúc bắt đầu (0..3).
+   o={cx,cy,hw,rise,k}: tâm, nửa bề rộng, độ cao bay lên, k = kích thước 1 "pixel". Mỗi bóng sinh ra ở 0–1.2s, sống 1.3–1.8s → hết trước 3s. */
+function bubbleField(R,t,o){const N=44,k=o.k||1;
+ for(let i=0;i<N;i++){const st=hs(i+1)*1.2,L=1.3+hs(i+7)*.5,age=t-st;if(age<0||age>L)continue;const p=age/L,
+  a=Math.min(1,p/.15,(1-p)/.35)*.95,big=i%4==0,mid=i%4==1||i%4==2;
+  const x=Math.round(o.cx+(hs(i+3)*2-1)*o.hw+Math.sin(p*6+i*1.7)*2*k),y=Math.round(o.cy-p*o.rise*(.55+hs(i+9)*.45)-hs(i+5)*4*k);
+  const ring='rgba(176,228,255,'+a.toFixed(2)+')',hi='rgba(255,255,255,'+a.toFixed(2)+')',fl='rgba(200,240,255,'+(a*.3).toFixed(2)+')';
+  const r=(c,dx,dy,w,h)=>R(c,x+dx*k,y+dy*k,w*k,h*k);
+  if(big){r(fl,-2,-2,5,5);r(ring,-1,-3,3,1);r(ring,-1,3,3,1);r(ring,-3,-1,1,3);r(ring,3,-1,1,3);r(ring,-2,-2,1,1);r(ring,2,-2,1,1);r(ring,-2,2,1,1);r(ring,2,2,1,1);r(hi,-1,-1,1,1);r('rgba(255,255,255,'+(a*.6).toFixed(2)+')',1,1,1,1)}
+  else if(mid){r(fl,-1,-1,3,3);r(ring,-1,-2,3,1);r(ring,-1,2,3,1);r(ring,-2,-1,1,3);r(ring,2,-1,1,3);r(hi,-1,-1,1,1)}
+  else{r(ring,0,-1,1,1);r(ring,-1,0,1,1);r(ring,1,0,1,1);r(ring,0,1,1,1);r(hi,0,0,1,1)}}}
+/* lớp phủ bóng nước trên khung bé trong panel */
+function bathFx(){if(!BATH||performance.now()>=BATH.until){const o=document.getElementById('bbfx');if(o)o.remove();return}
+ if(BATH.raf)return;BATH.raf=1;const loop=()=>{if(!BATH||performance.now()>=BATH.until){BATH&&(BATH.raf=0);const o=document.getElementById('bbfx');if(o)o.remove();return}
+  const host=document.querySelector('#ui .bbsc,#ui .bbav');let c=document.getElementById('bbfx');
+  if(host&&UI&&$('ui').classList.contains('bbui')){const W=host.clientWidth,H=host.clientHeight;
+   if(!c||c.parentNode!==host){if(c)c.remove();c=document.createElement('canvas');c.id='bbfx';c.className='bbfxc';host.appendChild(c)}
+   if(c.width!=W||c.height!=H){c.width=W;c.height=H}
+   const g=c.getContext('2d'),k=Math.max(2,Math.round(W/110));g.clearRect(0,0,W,H);
+   bubbleField((col,x,y,w,h)=>{g.fillStyle=col;g.fillRect(x,y,w,h)},(performance.now()-BATH.t0)/1000,{cx:W/2,cy:H*.95,hw:W*.42,rise:H*.85,k})}
+  else if(c)c.remove();
+  requestAnimationFrame(loop)};requestAnimationFrame(loop)}
+function bbBath(b){
+ if(b.s>BB_ALLOW_BATH){save();return toast('🛁 '+b.n+' còn sạch bong, chút nữa hãy tắm nha!')}
+ if(ST.xu<BB_BATH)return toast('🪙 Chưa đủ xu — cần '+BB_BATH+' xu');
+ ST.xu-=BB_BATH;xuUp();b.s=100;let tx='🛁 '+b.n+' tắm xong sạch bong, thơm tho!';
+ if(!b.big&&BB_XP_BATH){b.exp=Math.min(BB_EXP,b.exp+BB_XP_BATH);tx+=' +'+BB_XP_BATH+' EXP';if(b.exp>=BB_EXP){b.big=1;b.nf=0;tx+='\n🎉 '+b.n+' đã lớn rồi!'}}
+ BATH={t0:performance.now(),until:performance.now()+BB_BATH_MS,raf:0};
+ save();toast(tx);sayNow('bath');refresh();bathFx()}
+
+/* ---------------- 💬 THOẠI: "Anh/Chị ơi, em ..." tùy ngữ cảnh ---------------- */
+function pickLine(b,ctx){const A=b.c=='chi'?'Chị':'Anh',a=A.toLowerCase(),c=bars(b),h=new Date().getHours(),pk=L=>L[Math.floor(Math.random()*L.length)];
+ if(ctx=='bath')return pk([A+' ơi, em sạch bong thơm tho rồi nè! ✨','Tắm xong mát quá, cảm ơn '+a+' nha!',A+' ơi, em thơm chưa? Hihi']);
+ if(ctx=='feed')return pk(['Em no căng bụng rồi, cảm ơn '+a+' nha!',A+' ơi, đồ ăn ngon quá trời!','Ợ... em no rồi '+a+' ơi 🍼']);
+ if(ctx=='play')return pk([A+' ơi, chơi vui quá trời!','Em thích chơi với '+a+' nhất!',A+' ơi, mai mình chơi nữa nha!']);
+ if(ctx=='far')return pk([A+' ơi, đợi em với!',A+' ơi, đi chậm thôi, em theo không kịp!']);
+ if(c.f<30)return pk([A+' ơi, em đói bụng quá...','Bụng em kêu ọc ọc rồi, cho em ăn đi '+a+' ơi 🍼','Em đói rồi, '+a+' cho em ăn nha?']);
+ if(c.s<30)return pk([A+' ơi, người em bẩn quá, tắm cho em nha 🛁','Em lấm lem hết rồi '+a+' ơi, em muốn tắm!',A+' ơi, em thấy ngứa ngứa, tắm cho em đi']);
+ if(c.h<30)return pk([A+' ơi, chơi với em đi mà...','Em buồn quá, '+a+' chơi với em nha 🎈',A+' ơi, em chán quá à']);
+ if(tNow()>=b.gt)return pk([A+' ơi, em có quà cho '+a+' nè! 🎁','Em giữ quà cho '+a+' nãy giờ đó, nhận đi nè!']);
+ if(h>=22||h<5)return pk([A+' ơi, em buồn ngủ quá...','Khuya rồi, '+a+' đi ngủ sớm nha, em cũng díp mắt rồi 😴']);
+ if(h>=5&&h<10)return pk(['Chào buổi sáng '+a+' ơi!',A+' ơi, sáng nay em khỏe lắm!']);
+ if(h>=11&&h<14)return pk([A+' ơi, trưa rồi, mình ăn gì nhỉ?','Em thấy buồn ngủ trưa rồi nè '+a+' ơi']);
+ if(h>=18&&h<22)return pk([A+' ơi, tối rồi, trời đẹp ghê!','Em thích đi chơi buổi tối với '+a+'!']);
+ return pk([A+' ơi, hôm nay vui ghê!','Em thương '+a+' nhất trên đời!',A+' ơi, mình đi đâu nữa nè?','Em theo '+a+' hoài luôn nha!',A+' ơi, em khỏe re à!','Hihi, em ở đây với '+a+' nè'])}
+function paintSay(){const e=document.getElementById('bbsay');if(!e)return;const on=SAY&&performance.now()<SAY.until;e.textContent=on?SAY.txt:'';e.classList.toggle('on',!!on)}
+function sayNow(ctx){const b=B();if(!b)return;SAY={txt:pickLine(b,ctx),until:performance.now()+4500};NEXTSAY=performance.now()+9000+Math.random()*7000;paintSay()}
+
 /* ---------------- NHỊP CẬP NHẬT (gọi mỗi khung hình từ update() của game) ---------------- */
 let acc=0;
 window.bbTick=dt=>{acc+=dt;if(acc<1)return;acc=0;const b=B();if(!b)return;
+ // thoại: chỉ khi bé đang đi theo ngoài map, hoặc đang mở panel Bé bỏng
+ const flw=!!(b.big&&b.fl),open=isOpen()&&VIEW=='main',now=performance.now();
+ if(flw||open){const md=mood(b);
+  if(md!=LASTM){const was=LASTM;LASTM=md;if(was&&md!='ok'&&(!SAY||now>=SAY.until)){SAY={txt:pickLine(b),until:now+4500};NEXTSAY=now+9000+Math.random()*7000}}   // vừa đói/bẩn/buồn → nói ngay
+  else if(now>=NEXTSAY){const far=flw&&typeof Pl!='undefined'&&Math.hypot(Pl.x-PET.x,Pl.y-PET.y)>70;SAY={txt:pickLine(b,far?'far':''),until:now+4500};NEXTSAY=now+9000+Math.random()*7000}
+  paintSay()}
  // đang dẫn pet đi theo thì Bé bỏng tự về nhà (chỉ 1 pet HOẶC 1 bé)
  if(b.fl&&ST.av.p>=0){b.fl=0;b.pp=-1;save();toast('🏠 '+b.n+' về nhà vì bạn dẫn pet đi theo')}
  const ready=tNow()>=b.gt,hb=$('hbb');if(hb)hb.classList.toggle('rdy',ready);
  if(ready&&!b.nf){b.nf=1;save();toast('🎁 '+b.n+' có quà cho bạn! Mở 🍼 Bé bỏng để nhận')}
  if(!isOpen()||VIEW!='main')return;
  const c=bars(b),set=(id,v)=>{const e=$(id),t=$(id+'v');if(e)e.style.width=v+'%';if(t)t.textContent=Math.round(v)+'%'};
- set('bbh',c.h);set('bbf',c.f);const st=$('bbst');if(st)st.textContent=statusTxt(b);
+ set('bbh',c.h);set('bbf',c.f);set('bbs',c.s);const st=$('bbst');if(st)st.textContent=statusTxt(b);
  const g=$('bbgt');if(g){if(ready){if(!(document.activeElement&&document.activeElement.tagName=='INPUT'))viewMain()}else g.textContent=fmtLeft(b.gt-tNow())}
  if(mood(b)!=LASTMOOD&&!b.big&&!(document.activeElement&&document.activeElement.tagName=='INPUT'))viewMain()};
 setTimeout(()=>{try{bbTick(1)}catch(e){}},1500);
