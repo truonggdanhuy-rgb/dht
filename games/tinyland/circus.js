@@ -198,6 +198,11 @@ const CL_ITEMS=[
  {k:'skatef',n:'Skater phố (Nữ)',pr:{xu:3000,qv:200,dia:1}},
  {k:'mushm',n:'Nấm pháp sư (Nam)',d:'Mũ pháp sư cao có quả cầu cam phát sáng, nấm nhỏ bay quanh đầu • Không che mặt',pr:{xu:1000,qv:800,dia:5}},
  {k:'mushf',n:'Nấm pháp sư (Nữ)',d:'Mũ pháp sư cao có quả cầu cam phát sáng, nấm nhỏ bay quanh đầu • Không che mặt',pr:{xu:1000,qv:800,dia:5}},
+ {k:'pinkcool',n:'Set Pinkcool (Nữ)',d:'Áo caro đỏ, nơ hồng to ở ngực, váy caro viền ren • Không che mặt',pr:{xu:1000,qv:300,dia:1}},
+ {k:'pinkcoolm',n:'Set Pinkcool (Nam)',d:'Áo sơ mi caro đỏ, nơ cổ, quần short viền trắng • Không che mặt',pr:{xu:1000,qv:300,dia:1}},
+ // h:1 = TÓC (k = 'khóa:pc' trong HAIRS, pc = f nữ / m nam, lưu ở ST.own.h) — hình vẽ: pinkcool.js
+ {k:'pinkcool:f',h:1,n:'Tóc Pinkcool (Nữ)',d:'Tóc hồng xoăn, mũ ren trắng, nơ đỏ rất to • Không che mặt',pr:{xu:900,qv:400,dia:1}},
+ {k:'pinkcool:m',h:1,n:'Tóc Pinkcool (Nam)',d:'Tóc hồng ngắn fade đẹp trai, vương miện vàng như vua • Không che mặt',pr:{xu:900,qv:400,dia:1}},
  {k:'hacvt',n:'Hắc Vô Thường',d:'Mũ cao vút đen, áo choàng đen dài, thè lưỡi dài • Không che mặt',pr:{xu:5000,qv:1000,dia:5}},
  {k:'bachvt',n:'Bạch Vô Thường',d:'Mũ cao vút trắng, áo choàng trắng dài, thè lưỡi dài • Không che mặt',pr:{xu:5000,qv:1000,dia:5}},
  {k:'phuthuy',n:'Phù Thủy Mộng Mơ',d:'Mũ phù thủy hồng cao, vành rất rộng • Nam nữ đều mặc • Không che mặt',pr:{xu:5000,qv:800,dia:5}},
@@ -208,8 +213,9 @@ const CL_ITEMS=[
  {k:'unicycle_blue',m:1,n:'Xe đạp 1 bánh xanh',pr:{xu:8000,qv:0,dia:0}}];
 const vtk=k=>k=='hacvt'||k=='bachvt'||k=='phuthuy'||k=='mushm'||k=='mushf';   // mũ rất cao nên khung xem trước cao hơn
 const wtk=k=>k=='phuthuy';   // Phù Thủy Mộng Mơ: vành mũ rộng ~32 điểm ảnh nên khung xem trước rộng hơn
-const clTab=k=>{const it=CL_ITEMS.find(x=>x.k==k);return it&&it.m?'m':'s'};   // m = thú cưỡi, s = set
-const clIdx=k=>(clTab(k)=='m'?MOUNTS:SETS).findIndex(x=>x.k==k);
+const clTab=k=>{const it=CL_ITEMS.find(x=>x.k==k);return it&&it.m?'m':it&&it.h?'h':'s'};   // m = thú cưỡi, h = tóc, s = set   // m = thú cưỡi, s = set
+const clIdx=k=>{const t=clTab(k);if(t=='m')return MOUNTS.findIndex(x=>x.k==k);if(t=='h'){const q=k.split(':');return HAIRS.findIndex(x=>x.k==q[0]&&x.pc==q[1])}return SETS.findIndex(x=>x.k==k)};
+const clPk=k=>SETS.findIndex(x=>x.k==(/:m$/.test(k||'')?'pinkcoolm':'pinkcool'));   // tóc Pinkcool xem trước bằng Set Pinkcool cùng giới
 const clOwn=k=>{const i=clIdx(k),tb=clTab(k);return i>=0&&!!(ST.own&&ST.own[tb]&&ST.own[tb].includes(i))};
 const clHave=()=>({xu:ST.xu|0,qv:ST.qv|0,dia:ST.dia|0});
 const clMiss=it=>{const h=clHave(),m=[];if(h.xu<it.pr.xu)m.push('🪙 Xu');if(it.pr.qv&&h.qv<it.pr.qv)m.push('Xu quái vật');if(h.dia<it.pr.dia)m.push('💎 Kim cương');return m};
@@ -227,7 +233,7 @@ function clPrev(c,t){const it=CL_ITEMS.find(x=>x.k==c.dataset.k);if(!it)return;c
   const big=c.width>80,H0=c.height;if(big){g.fillStyle='rgba(60,110,40,.28)';g.fillRect(0,H0-14,c.width,14)}
   drawRide(g,c.width/2,big?H0-12:H0-4,{d:big?[0,3,1,2][Math.floor(t/1.8)%4]:3,a:t,mv:big?1:0,sit:0,hair:A.h|0,set:A.s|0,e:A.e|0},i,t);return}
  g.save();g.scale(K,K);const W=c.width/K,H=c.height/K;
- drawAv(g,Math.round(W/2)-10,H-33,{d:[0,3,1,2][Math.floor(t/1.8)%4],a:t,mv:0,sit:0,hair:A.h|0,set:i,e:A.e|0,acc:-1});g.restore()}
+ drawAv(g,Math.round(W/2)-10,H-33,{d:[0,3,1,2][Math.floor(t/1.8)%4],a:t,mv:0,sit:0,hair:it.h?i:(A.h|0),set:it.h?Math.max(0,clPk(it.k)):i,e:A.e|0,acc:-1});g.restore()}
 function clAnim(){const cs=document.querySelectorAll('canvas.clv');if(!cs.length||!UI){CLRAF=0;return}const t=performance.now()/1000;cs.forEach(c=>clPrev(c,t));CLRAF=requestAnimationFrame(clAnim)}
 const CL_TOP=()=>'<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#3b32d6 0 14px,#fff 14px 28px);margin:2px 0 8px"></div>';
 const CL_BOT=()=>'<div style="height:10px;border-radius:6px;background:repeating-linear-gradient(90deg,#1fb5a6 0 14px,#fff 14px 28px);margin:8px 0 4px"></div>';
@@ -240,7 +246,7 @@ window.clownShopUI=()=>{CLV='list';
   '<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+
   CL_ITEMS.map(it=>{const own=clOwn(it.k);
    return '<button class="sq'+(own?' z':'')+'" onclick="clownItem(\''+it.k+'\')" style="padding:6px 3px;gap:3px">'+
-    (it.m?'<canvas class="clv" data-k="'+it.k+'" data-z="1" width="72" height="68" style="width:88px;height:83px;max-width:100%;image-rendering:pixelated;border-radius:8px;background:linear-gradient(#e4dcfa,#f6eefc 70%,#dcccf0 70%)"></canvas>':'<canvas class="clv" data-k="'+it.k+'" data-z="2" width="'+(wtk(it.k)?84:52)+'" height="'+(vtk(it.k)?92:66)+'" style="width:'+(wtk(it.k)?126:78)+'px;height:'+(vtk(it.k)?138:99)+'px;max-width:100%;image-rendering:pixelated;border-radius:8px;background:linear-gradient(#e4dcfa,#f6eefc 70%,#dcccf0 70%)"></canvas>')+
+    (it.m?'<canvas class="clv" data-k="'+it.k+'" data-z="1" width="72" height="68" style="width:88px;height:83px;max-width:100%;image-rendering:pixelated;border-radius:8px;background:linear-gradient(#e4dcfa,#f6eefc 70%,#dcccf0 70%)"></canvas>':'<canvas class="clv" data-k="'+it.k+'" data-z="2" width="'+(it.h?64:wtk(it.k)?84:52)+'" height="'+(it.h?86:vtk(it.k)?92:66)+'" style="width:'+(it.h?96:wtk(it.k)?126:78)+'px;height:'+(it.h?129:vtk(it.k)?138:99)+'px;max-width:100%;image-rendering:pixelated;border-radius:8px;background:linear-gradient(#e4dcfa,#f6eefc 70%,#dcccf0 70%)"></canvas>')+
     '<b>'+it.n+'</b>'+
     (own?'<small>✓ Đã có</small>':'<span style="display:flex;flex-direction:column;align-items:center;gap:1px;margin-top:1px">'+clPriceRows(it)+'</span>')+
     '</button>'}).join('')+'</div>'+
@@ -254,7 +260,7 @@ window.clownItem=k=>{const it=CL_ITEMS.find(x=>x.k==k);if(!it)return clownShopUI
  const own=clOwn(k),miss=own?[]:clMiss(it),can=!own&&!miss.length;
  openUI(head('🤡 '+it.n)+CL_TOP()+
   '<div style="border-radius:14px;padding:8px;background:linear-gradient(180deg,#efe6ff,#ffe3f3);border:3px solid #4a1d82;text-align:center">'+
-  (it.m?'<canvas class="clv" data-k="'+k+'" data-z="1" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;border-radius:10px;background:linear-gradient(#cdbdf5,#efe6ff 70%,#d9c8f0 70%)"></canvas>':'<canvas class="clv" data-k="'+k+'" data-z="3" width="150" height="231" style="width:150px;height:231px;image-rendering:pixelated;border-radius:10px;background:linear-gradient(#cdbdf5,#efe6ff 70%,#d9c8f0 70%)"></canvas>')+
+  (it.m?'<canvas class="clv" data-k="'+k+'" data-z="1" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;border-radius:10px;background:linear-gradient(#cdbdf5,#efe6ff 70%,#d9c8f0 70%)"></canvas>':'<canvas class="clv" data-k="'+k+'" data-z="3" width="150" height="'+(it.h?250:231)+'" style="width:150px;height:'+(it.h?250:231)+'px;image-rendering:pixelated;border-radius:10px;background:linear-gradient(#cdbdf5,#efe6ff 70%,#d9c8f0 70%)"></canvas>')+
   '<div style="font-weight:900;font-size:17px;color:#3b32d6;margin:4px 0 2px">'+it.n+'</div>'+
   (own?'<button class="b w z" disabled style="font-weight:800">✓ Đã có — mở 🎒 Túi để dùng</button>'
    :'<div style="display:inline-flex;flex-direction:column;gap:2px;align-items:flex-start;background:#fff8;border-radius:10px;padding:6px 14px;margin-bottom:8px">'+clPriceRows(it,1)+'</div><br>'+
@@ -271,7 +277,7 @@ window.clownBuy=k=>{const it=CL_ITEMS.find(x=>x.k==k),i=clIdx(k),tb=clTab(k);if(
  if(miss.length)return toast('🤡 Chú Hề: “Bạn còn thiếu: '+miss.join(', ')+'”');
  ST.xu-=it.pr.xu;ST.qv=(ST.qv|0)-it.pr.qv;ST.dia=(ST.dia|0)-it.pr.dia;ST.own[tb].push(i);
  try{xuUp()}catch(e){}save();
- toast('🎉 Chú Hề: “Hề hề! Chúc mừng bạn nhận được '+it.n+'!”\nMở 🎒 Túi → '+(tb=='m'?'Thú cưỡi':'Set')+' để dùng');clownItem(k)};
+ toast('🎉 Chú Hề: “Hề hề! Chúc mừng bạn nhận được '+it.n+'!”\nMở 🎒 Túi → '+(tb=='m'?'Thú cưỡi':tb=='h'?'Tóc':'Set')+' để dùng');clownItem(k)};
 
 window.circusGo=w=>{
  if(w=='wheel')return wheelUI();
