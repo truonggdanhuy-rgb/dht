@@ -5335,6 +5335,43 @@ S_.fence2T=fenceTile2(10);S_.cactusT=cactusTile(0,1);
   gaterb:(tx,ty)=>{const X=tx*T,Y=ty*T;return{im:S_.gateRb,x:Math.round(X+32-S_.gateRb.width/2),y:(ty+1)*T-1-S_.gateRb.height+2,by:Y+9,hb:(ty+1)*T-1,fw:4,fh:1,so:0}}});
 }
 
+/* ================= HÀNG RÀO THƯ GIÃN 4x1 (vẽ lại, cao hơn, mịn hơn) =================
+   64x38px: 8 thanh đứng đầu nhọn, 2 thanh ngang có đinh, 3 cột có nắp tròn. Hai đầu khớp nhau nên đặt nối đuôi liền mạch. */
+{const FW=64,FH=40,FB=37;
+ const Wd={l:'#f7e3b5',m:'#e6bb7c',m2:'#dcad6c',d:'#bb8647',k:'#7a4e27',g:'#cf9d5b'};
+ const edgeOnly=c=>{const w=c.width,h=c.height,o=document.createElement('canvas');o.width=w;o.height=h;const g=o.getContext('2d'),s=c.getContext('2d').getImageData(0,0,w,h).data,
+   A=(x,y)=>x>=0&&x<w&&y>=0&&y<h&&s[(y*w+x)*4+3]>10;g.fillStyle='rgba(70,44,20,.7)';
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(!A(x,y)&&(A(x-1,y)||A(x+1,y)||A(x,y-1)||A(x,y+1)))g.fillRect(x,y,1,1);
+  g.drawImage(c,0,0);return o};
+ /* một thanh đứng đầu nhọn: x = cột trái, t = đỉnh, w = rộng, b = chân */
+ const picket=(r,x,t,w,b,v)=>{const m=v?Wd.m2:Wd.m;
+  r(m,x+((w-2)>>1),t,2,1);r(m,x+1,t+1,w-2,1);r(Wd.l,x+((w-2)>>1),t,1,1);
+  r(m,x,t+2,w,b-t-2);r(Wd.l,x,t+2,1,b-t-2);r(Wd.l,x+1,t+1,1,1);
+  r(Wd.d,x+w-1,t+2,1,b-t-2);r(Wd.d,x+w-2,t+1,1,1);
+  r(Wd.g,x+2,t+5,1,6);r(Wd.g,x+3,t+16,1,5);/* vân gỗ */
+  r(Wd.k,x,b-1,w,1)};
+ const post=(r,x)=>{/* cột 6px, cao hơn thanh đứng, nắp tròn */
+  r(Wd.m,x,5,6,FB-5);r(Wd.l,x,5,2,FB-5);r(Wd.d,x+4,5,2,FB-5);r(Wd.k,x+5,5,1,FB-5);r(Wd.g,x+2,12,1,8);r(Wd.g,x+3,24,1,6);
+  r(Wd.l,x-1,3,8,2);r(Wd.m,x-1,5,8,1);r(Wd.d,x-1,6,8,1);/* nắp */
+  r(Wd.m,x,1,6,2);r(Wd.l,x+1,1,3,1);r(Wd.l,x,2,1,1);r(Wd.d,x+5,2,1,1);r(Wd.l,x+2,0,2,1);
+  r(Wd.k,x,FB-1,6,1)};
+ S_.fence2T4=edgeOnly(mk(FW,FH,(g,r)=>{
+  r('rgba(0,0,0,.15)',0,FB,FW,2);
+  /* thanh đứng: cao thấp lệch nhẹ cho tự nhiên (lặp lại mỗi 64px nên nối tiếp vẫn đều) */
+  for(let i=0;i<8;i++){const x=1+i*8,hh=[0,1,0,2,0,1,0,2][i];picket(r,x,8+hh,6,FB,i%2)}
+  /* 2 thanh ngang chạy suốt ô, nằm đè lên thanh đứng */
+  for(const y of[FB-24,FB-11]){r(Wd.m,0,y,FW,4);r(Wd.l,0,y,FW,1);r(Wd.d,0,y+3,FW,1);r(Wd.k,0,y+4,FW,1);
+   for(let x=0;x<FW;x+=8){r(Wd.k,x+3,y+1,1,1);r('rgba(255,255,255,.5)',x+3,y,1,1)}}
+  /* 3 cột: hai nửa ở 2 mép + 1 cột giữa */
+  post(r,-3);post(r,29);post(r,61);
+  /* cỏ nhỏ + hoa dưới chân */
+  for(const x of[10,22,44,54]){r('#6cc058',x,FB-2,1,2);r('#8fdc78',x+1,FB-3,1,3);r('#4a9a37',x+2,FB-2,1,2)}
+  r('#ffffff',23,FB-4,1,1);r('#ffd23f',23,FB-3,1,1);r('#ff9ec4',46,FB-4,1,1);r('#ffd23f',46,FB-3,1,1)}));
+ S_.fence2T=S_.fence2T4;
+ Object.assign(window.FMDX,{
+  fence2:(tx,ty)=>{const X=tx*T,by=(ty+1)*T-1;return{im:S_.fence2T4,x:X,y:by-FB-2,by,hb:by,fw:4,fh:1,so:1}}});
+}
+
 
 /* ================= DECOR ĐÈN NÔNG TRẠI (1x1, 150 Xu) =================
    Cột mảnh cao, đỉnh có hai đèn lồng nhỏ hai bên, cùng màu trắng ngà với hàng rào tai thỏ. Ánh đèn nhấp nháy nhẹ. */
@@ -5561,13 +5598,13 @@ const FMHOA=hoa();
 [['ff6f91','hồng'],['ffd23f','vàng'],['ffffff','trắng'],['c77dff','tím'],['ff9f45','cam']].forEach(([c,n])=>{FMD['b'+c]=['Bụi hoa '+n,()=>S_.bush('#'+c),1,1,0,'b']});
 Object.assign(FMD,{
  path:['Lối đi đất',()=>S_.pathT,1,1,0,'p',10],fence:['Hàng rào rổ',()=>S_.fenceT,1,1,1,'p',20],
- thong:['Cây thông',()=>S_.thong,1,1,1,'c',1000],thongnho:['Thông nhỏ',()=>S_.thongnho,1,1,1,'c',600],noel:['Thông Noel',()=>S_.noel,1,1,1,'c',10000],
+ thong:['Cây thông',()=>S_.thong,1,1,1,'c',200],thongnho:['Thông nhỏ',()=>S_.thongnho,1,1,1,'c',90],noel:['Thông Noel',()=>S_.noel,1,1,1,'c',10000],
  cumhoa:['Cụm hoa',()=>S_.cumhoa,1,1,0,'b',300],cumhoavang:['Cụm hoa vàng',()=>S_.cumhoavang,1,1,0,'b',300],
  xerom:['Xe đẩy rơm',()=>S_.xerom,2,1,1,'v',1500],xehang:['Xe đẩy hàng',()=>S_.xehang,2,1,1,'v',2000],
  sapnuoc:['Sạp quán nước',()=>S_.sapnuoc,2,1,1,'v',3000],saprau:['Sạp rau',()=>S_.saprau,2,1,1,'v',3000],
  giaphoi:['Giá phơi đồ',()=>S_.giaphoi,4,1,1,'v',1500],tochim:['Tổ chim',()=>S_.tochim,1,1,1,'v',200],
  giengmai:['Giếng có mái',()=>S_.giengmai,1,1,1,'v',500],giankho:['Giàn phơi khô',()=>S_.giankho,4,1,1,'v',500],gianholo:['Giàn hồ lô',()=>S_.gianholo,5,1,1,'v',1000],
- fence2:['Hàng rào thư giãn',()=>S_.fence2T,1,1,1,'p',20],gate:['Cổng thư giãn',()=>S_.gate,3,1,0,'p',500],fencerb:['Hàng rào tai thỏ',()=>S_.fenceRb,2,1,1,'p',80],gaterb:['Cổng tai thỏ',()=>S_.gateRb,4,1,0,'p',300],cactus:['Bụi xương rồng',()=>S_.cactusT,1,1,1,'b',100],farmlamp:['Đèn nông trại',()=>S_.farmlamp,1,1,1,'v',150],denlong:['Đèn lồng',()=>S_.denlong,1,1,1,'v',1000],
+ fence2:['Hàng rào thư giãn',()=>S_.fence2T,4,1,1,'p',80],gate:['Cổng thư giãn',()=>S_.gate,3,1,0,'p',500],fencerb:['Hàng rào tai thỏ',()=>S_.fenceRb,2,1,1,'p',80],gaterb:['Cổng tai thỏ',()=>S_.gateRb,4,1,0,'p',300],cactus:['Bụi xương rồng',()=>S_.cactusT,1,1,1,'b',100],farmlamp:['Đèn nông trại',()=>S_.farmlamp,1,1,1,'v',150],denlong:['Đèn lồng',()=>S_.denlong,1,1,1,'v',1000],
  bantrua:['Bàn nghỉ trưa',()=>S_.bantrua,4,1,1,'v',300],ghetrua:['Ghế nghỉ trưa',()=>S_.ghetrua,1,1,1,'v',80],
  bonsai1:['Chậu bonsai 1',()=>S_.bonsai1,1,1,1,'b',200],bonsai2:['Chậu bonsai 2',()=>S_.bonsai2,1,1,1,'b',200],bonsai3:['Chậu bonsai 3',()=>S_.bonsai3,1,1,1,'b',200]});
 const FMCAT=[['p','🛤️ Lối đi & hàng rào'],['k','🏡 Công trình'],['c','🌳 Cây cối'],['b','🌸 Bụi & hoa'],['v','🧺 Vật dụng']];
@@ -5599,8 +5636,8 @@ const FMRS=[
  [37,31,42,38]             // khí cầu + phi công + nhãn
 ];
 const FMN=mkG();
-/* hàng 8 (mép trên, chỗ nhân vật đứng được) giờ cho đặt; chỉ chặn y<8 (rừng cây), y>40 (bờ sông) và 2 cột rìa */
-for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(SNT[y][x]||y<8||y>40||x<1||x>W-2)FMN[y][x]=1;
+/* hàng 7 là đất cỏ (chân bụi tre) nên cũng cho đặt đồ; chỉ chặn y<7 (nền trời/đồi), y>40 (bờ sông) và 2 cột rìa */
+for(let y=0;y<H;y++)for(let x=0;x<W;x++)if((SNT[y][x]&&y!=7)||y<7||y>40||x<1||x>W-2)FMN[y][x]=1;
 for(const[a,b,c,d]of FMRS)for(let y=b;y<=d;y++)for(let x=a;x<=c;x++)if(FMN[y]&&x<W)FMN[y][x]=1;
 let FMX=mkG(),FMODE=0,FMEDIT=0,FMSEL=null,FMTAB='de',FMSELL=0,FMQ=1;
 const SPNT0=SPNT.slice(),HNT0=HNT.slice(),LNT0=LNT.slice(),SNT0=SNT.map(q=>q.slice());
@@ -5662,6 +5699,9 @@ function fmInit(){let f=ST.fm;
   else if(kd=='bee'){if(!(id>=0&&id<BEEN))return false}else if(kd=='mi'){if(id!==0)return false}else if(kd=='ma'){if(!MACHS[id])return false}else if(kd=='tr'){if(!FRUITS[id])return false}else if(kd=='de'){if(!FMD[id])return false}else return false;
   if(kd!='de'){const k=kd+id;if(seen[k])return false;seen[k]=1}return true});
  for(const k of Object.keys(f.d))if(!FMD[k]||!(f.d[k]>0))delete f.d[k];
+ if(!f.m3){f.m3=1;/* hàng rào thư giãn đổi từ 1x1 sang 4x1: gom các mảnh cũ trên bản đồ về thùng (4 mảnh cũ = 1 mảnh mới, làm tròn lên) */
+  const old=f.p.filter(o=>o[0]=='de'&&o[1]=='fence2').length;
+  if(old){f.p=f.p.filter(o=>!(o[0]=='de'&&o[1]=='fence2'));f.d.fence2=(f.d.fence2||0)+Math.ceil(old/4)}}
  if(!f.m2){f.m2=1;/* lần đầu: đặt 4 tổ ong + máy đào ở chỗ quen thuộc (tìm chỗ trống gần đó nếu bị vướng đồ khác) */
   const occ=mkG();for(const o of f.p){const a=fmArt(o[0],o[1],o[2],o[3]);for(let y=o[3];y<o[3]+a.fh;y++)for(let x=o[2];x<o[2]+a.fw;x++)if(y>=0&&y<H&&x>=0&&x<W)occ[y][x]=1}
   const fit=(kd,id,tx,ty)=>{const a=fmArt(kd,id,0,0),ok=(x,y)=>{for(let j=y;j<y+a.fh;j++)for(let i=x;i<x+a.fw;i++)if(j<0||j>=H||i<0||i>=W||FMN[j][i]||occ[j][i])return 0;return 1};
@@ -5705,7 +5745,7 @@ function fmStart(kd,id){closeUI();if(FMSEL&&FMSEL.o)ST.fm.p.push(FMSEL.o);if(!FM
  toast('👆 Chạm ô muốn đặt (xanh = được)\nChạm lần nữa hoặc bấm ✔ Đặt • vuốt để xem rộng hơn')}
 function fmTap(wx,wy){const s=FMSEL;
  if(s){const a=fmArt(s.k,s.id,0,0),tx=Math.floor(wx/T)-((a.fw-1)>>1),ty=Math.floor(wy/T)-(a.fh-1);
-  if(tx==s.tx&&ty==s.ty)return fmDo(0);s.tx=tx;s.ty=ty;if(s.k=='de'&&!s.o&&(s.id=='path'||s.id=='fence'||s.id=='fence2'||s.id=='cactus'))return fmDo(0);return}
+  if(tx==s.tx&&ty==s.ty)return fmDo(0);s.tx=tx;s.ty=ty;if(s.k=='de'&&!s.o&&(s.id=='path'||s.id=='fence'||s.id=='cactus'))return fmDo(0);return}
  const tx=Math.floor(wx/T),ty=Math.floor(wy/T);let bi=-1,bh=-1e9;
  ST.fm.p.forEach((o,i)=>{const a=fmArt(o[0],o[1],o[2],o[3]);let hit=tx>=o[2]&&tx<o[2]+a.fw&&ty>=o[3]&&ty<o[3]+a.fh,sc=a.hb+(hit?1e5:0);
   if(!hit&&o[0]!='pl'&&o[0]!='po'&&wx>=a.x&&wx<a.x+a.im.width&&wy>=a.y&&wy<a.y+a.im.height)hit=true;
@@ -5758,12 +5798,11 @@ function fmShop(){const old=FMSCR>=0?FMSCR:$('ui').scrollTop;FMSCR=-1;
  let h=head('🛒 Shop nông trại')+'<div class="mut">🪙 Xu: <b>'+fmtXu(ST.xu)+'</b></div>';
  for(const[c,cn]of FMCAT){const ks=Object.keys(FMD).filter(k=>FMD[k][5]==c);h+='<div class="fh2">'+cn+'</div><div class="fg">'+ks.map(k=>fmTile(fmDeTh(k),FMD[k][0],'',"fmAsk('"+k+"')",fmPr(k)+'🪙')).join('')+'</div>'}
  openUI(h);$('ui').scrollTop=old}
-function fmAsk(k){if(!FMD[k])return;const c=fmPr(k);FMSCR=$('ui').scrollTop;FMBL=performance.now()+500;
+function fmAsk(k){if(!FMD[k])return;const c=fmPr(k);FMSCR=$('ui').scrollTop;FMBL=performance.now()+150;
  openUI(head('🛒 Xác nhận mua')+'<div style="text-align:center;margin:8px 0 10px"><img src="'+fmDeTh(k)+'" alt="" style="width:68px;height:68px;image-rendering:pixelated"><div style="font-weight:800;font-size:16px;margin:4px 0">'+FMD[k][0]+'</div>'
   +'<div class="mut" style="margin:2px 0">Giá: <b>'+fmtXu(c)+' 🪙</b> • Bạn có: <b>'+fmtXu(ST.xu)+' 🪙</b></div>'
   +(ST.xu>=c?'<div class="mut">Mua xong còn lại: <b>'+fmtXu(ST.xu-c)+' 🪙</b></div>':'<div style="color:#c0392b;font-weight:800;margin-top:4px">⚠ Chưa đủ Xu (thiếu '+fmtXu(c-ST.xu)+')</div>')+'</div>'
-  +'<div style="display:flex;gap:8px"><button class="b mgbig" style="flex:1;margin:0" onclick="fmShop()">↩ Quay lại</button><button class="b mgbig" id="fmyes" style="flex:1;margin:0;opacity:.4" onclick="fmYes(\''+k+'\')">✅ Mua</button></div>');
- setTimeout(()=>{const b=$('fmyes');if(b)b.style.opacity=1},500)}
+  +'<div style="display:flex;gap:8px"><button class="b mgbig" style="flex:1;margin:0" onclick="fmShop()">↩ Quay lại</button><button class="b mgbig" id="fmyes" style="flex:1;margin:0" onclick="fmYes(\''+k+'\')">✅ Mua</button></div>');}
 function fmYes(k){if(performance.now()<FMBL)return;fmBuy(k)}
 function fmBuy(k){const c=fmPr(k);if(!FMD[k])return;if(ST.xu<c)return toast('Không đủ Xu! Cần '+c+' Xu');
  ST.xu-=c;ST.fm.d[k]=(ST.fm.d[k]||0)+1;xuUp();save();toast('🛒 Mua '+FMD[k][0]+' (−'+c+' Xu) → Thùng nông trại');fmShop()}
