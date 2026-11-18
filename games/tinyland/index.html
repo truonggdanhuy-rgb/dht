@@ -6078,7 +6078,7 @@ function diaShop(){const L=ACTS.filter(a=>a.k=='solo'&&!a.bd);
  +L.map(a=>{const have=!!ST.acts[a.id],ok=(ST.dia|0)>=a.pr;
   return '<div class="dcd">'+actCv(a.id,72,100,'mini')+'<b>'+a.n+'</b>'+(have?'<button class="b" onclick="actUI()">✓ Đã có</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuy(\''+a.id+'\')">💎 '+a.pr+'</button>')+'</div>'}).join('')
  +'</div>');actAnimGo();if(!dsRaf)dsLoop()}
-const DSETS=['deerm','deerf','dnm','dnf','tn','madong','mushm','mushf','aloim','aloif','btm','btf','mhv'];let dsRaf=0;
+const DSETS=['deerm','deerf','dnm','dnf','tn','madong','aloim','aloif','btm','btf','mhv'];let dsRaf=0;
 /* ---- Biểu cảm bán bằng kim cương (EXPRS có thuộc tính dia) ---- */
 function diaExprRows(){return EXPRS.map((x,i)=>{if(!x.dia)return '';const have=ownE().includes(i),ok=(ST.dia|0)>=x.dia;
  return '<div class="dcd"><canvas class="dec" data-i="'+i+'" width="144" height="176"></canvas><b>'+x.n+'</b>'+(have?'<button class="b" onclick="diaWearE('+i+')">'+(ST.av.e==i?'✓ Đang dùng':'✓ Đã có • Dùng')+'</button>':'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="diaBuyE('+i+')">💎 '+x.dia+'</button>')+'</div>'}).join('')}
@@ -6112,7 +6112,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 </script>
 <script src="park-map.js?v=20261206"></script>
 <script src="pho-map.js?v=20261117c"></script>
-<script src="circus.js?v=20261205"></script>
+<script src="circus.js?v=20261211"></script>
 <script src="sea-map.js?v=20261206"></script>
 <script src="fishing.js?v=20261206"></script>
 <script src="park-online.js?v=20261116"></script>
@@ -6125,7 +6125,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="newitems.js?v=20261116"></script>
 <script src="newitems2.js?v=20261116"></script>
 <script src="baby.js?v=20261117d"></script>
-<script src="newitems3.js?v=20261116"></script>
+<script src="newitems3.js?v=20261211"></script>
 <script src="newitems4.js?v=20261117"></script>
 <script src="skate.js?v=20261118"></script>
 <script src="balo.js?v=20261203"></script>
@@ -6146,4 +6146,5 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
  <script src="phuthuy.js?v=20261210"></script>
  <script src="tetmount.js?v=1"></script>
  <script src="lowfx.js?v=1"></script>
+ <script>if(window.registerMushSets)registerMushSets()</script>
 </body></html>

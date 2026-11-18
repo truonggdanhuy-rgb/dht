@@ -196,6 +196,8 @@ const CL_ITEMS=[
  {k:'hanbokf',n:'Hanbok (Nữ)',  d:'Búi củ hành cài trâm, áo đỏ thêu rắn • Không che mặt', pr:{xu:5000,qv:500,dia:2}},
  {k:'skatem',n:'Skater phố (Nam)',pr:{xu:3000,qv:200,dia:1}},
  {k:'skatef',n:'Skater phố (Nữ)',pr:{xu:3000,qv:200,dia:1}},
+ {k:'mushm',n:'Nấm pháp sư (Nam)',d:'Mũ pháp sư cao có quả cầu cam phát sáng, nấm nhỏ bay quanh đầu • Không che mặt',pr:{xu:1000,qv:800,dia:5}},
+ {k:'mushf',n:'Nấm pháp sư (Nữ)',d:'Mũ pháp sư cao có quả cầu cam phát sáng, nấm nhỏ bay quanh đầu • Không che mặt',pr:{xu:1000,qv:800,dia:5}},
  {k:'hacvt',n:'Hắc Vô Thường',d:'Mũ cao vút đen, áo choàng đen dài, thè lưỡi dài • Không che mặt',pr:{xu:5000,qv:1000,dia:5}},
  {k:'bachvt',n:'Bạch Vô Thường',d:'Mũ cao vút trắng, áo choàng trắng dài, thè lưỡi dài • Không che mặt',pr:{xu:5000,qv:1000,dia:5}},
  {k:'phuthuy',n:'Phù Thủy Mộng Mơ',d:'Mũ phù thủy hồng cao, vành rất rộng • Nam nữ đều mặc • Không che mặt',pr:{xu:5000,qv:800,dia:5}},
@@ -204,7 +206,7 @@ const CL_ITEMS=[
  {k:'skate_orange',m:1,n:'Ván trượt cam',d:'Thú cưỡi • Đứng lướt trên ván cam, bánh xe xanh',pr:{xu:1000,qv:300,dia:2}},
  {k:'skate_clown',m:1,n:'Ván trượt hề',pr:{xu:1000,qv:400,dia:2}},
  {k:'unicycle_blue',m:1,n:'Xe đạp 1 bánh xanh',pr:{xu:8000,qv:0,dia:0}}];
-const vtk=k=>k=='hacvt'||k=='bachvt'||k=='phuthuy';   // mũ rất cao nên khung xem trước cao hơn
+const vtk=k=>k=='hacvt'||k=='bachvt'||k=='phuthuy'||k=='mushm'||k=='mushf';   // mũ rất cao nên khung xem trước cao hơn
 const wtk=k=>k=='phuthuy';   // Phù Thủy Mộng Mơ: vành mũ rộng ~32 điểm ảnh nên khung xem trước rộng hơn
 const clTab=k=>{const it=CL_ITEMS.find(x=>x.k==k);return it&&it.m?'m':'s'};   // m = thú cưỡi, s = set
 const clIdx=k=>(clTab(k)=='m'?MOUNTS:SETS).findIndex(x=>x.k==k);
