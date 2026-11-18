@@ -1698,7 +1698,9 @@ const ACCS=[{n:'Lồng đèn trăng rằm',k:'moon',t:'hang',art:accMoon},{n:'Xe
  // 16-18 = Quyền trượng Thủy Thần cấp 1/2/3 (nhận ở Thái tử Ba Tư, KHÔNG bán ở shop). Hình vẽ + nâng cấp: perso.js. Mỗi cấp 1 mục để người chơi khác tự thấy đúng cấp qua số phụ kiện sẵn có.
  {n:'Quyền trượng Thủy Thần cấp 1',k:'scepter1',t:'hold',ach:1,sc:1,art:(P)=>window.PERSO&&PERSO.art(P,1)},{n:'Quyền trượng Thủy Thần cấp 2',k:'scepter2',t:'hold',ach:1,sc:2,art:(P)=>window.PERSO&&PERSO.art(P,2)},{n:'Quyền trượng Thủy Thần cấp 3',k:'scepter3',t:'hold',ach:1,sc:3,art:(P)=>window.PERSO&&PERSO.art(P,3)},
  // 19-21 = 🎒 BALO (t:'wing' = đeo sau lưng như cánh, vẽ đè lên tóc; bag = loại balo; 2000 Xu/cái ở Shop Phố xá — SHOP.a.pr trong pho-map.js; hình vẽ: balo.js)
- {n:'Balo Ong mật',k:'bagbee',t:'wing',bag:'bee'},{n:'Balo Thỏ hồng',k:'bagbunny',t:'wing',bag:'bunny'},{n:'Balo Cánh cụt',k:'bagpeng',t:'wing',bag:'peng'}];   // số 15 = Guitar điện 4000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accEGuitar trong outfits.js   // guitar 3000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accGuitar trong outfits.js
+ {n:'Balo Ong mật',k:'bagbee',t:'wing',bag:'bee'},{n:'Balo Thỏ hồng',k:'bagbunny',t:'wing',bag:'bunny'},{n:'Balo Cánh cụt',k:'bagpeng',t:'wing',bag:'peng'},
+ // 22-23 = 🦊 ĐUÔI HỒ LY (t:'wing' = đeo sau lưng như cánh, vẽ đè lên tóc; tail = loại đuôi; 💎15/cái ở Shop kim cương mục Phụ kiện; hình vẽ: duoi.js)
+ {n:'Đuôi Mộng hồ ly',k:'tailmong',t:'wing',tail:'mong',dia:15},{n:'Đuôi Hỏa hồ ly',k:'tailfire',t:'wing',tail:'fire',dia:15}];   // số 15 = Guitar điện 4000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accEGuitar trong outfits.js   // guitar 3000 Xu (SHOP.a.pr trong pho-map.js) — hình vẽ: accGuitar trong outfits.js
 //   t:'float' = cầm DÂY dài, vật bay lơ lửng phía trên đầu -> art(P) giống 'hang'
 // ===== Pet đổi bằng Huy hiệu tuyết: Bánh quy gừng + Mây tuyết =====
 function drawPetGinger(g,x,y,d,mv,a,t){
@@ -6468,6 +6470,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="newitems4.js?v=20261117"></script>
 <script src="skate.js?v=20261118"></script>
 <script src="balo.js?v=20261203"></script>
+<script src="duoi.js?v=20261218"></script>
 <script src="pajama.js?v=20261118"></script>
 <script src="vitvang.js?v=20261204"></script>
 <script src="vothuong.js?v=20261205"></script>
