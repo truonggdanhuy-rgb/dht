@@ -146,6 +146,7 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 window.onerror=function(m,s,l){try{var t=document.getElementById('toast');t.textContent='LỖI: '+m+' (dòng '+l+')';t.style.opacity=1}catch(e){}};
 </script>
 <script src="outfits.js?v=20261118b"></script>
+<script src="congso.js?v=20261118"></script>   <!-- vẽ lại set Công sở nam / nữ (PHẢI sau outfits.js) -->
 <script src="aulac.js?v=20261116"></script>
 <script src="aulac2.js?v=20261118"></script>
 <script>
@@ -883,8 +884,8 @@ const SETS=[
  {n:'Áo len xanh lá',fx:'coatV',cs:'knit',sh:'#3f8a4a',scarf:'#d9302a',belt:'#222222',pt:'#2c2f48',shoe:'#3a2a22',tail:1,trim:'#f4f9ff'},
  {n:'Áo len tím',fx:'coatV',cs:'knit',sh:'#7a3b8a',scarf:'#2f6fe0',belt:'#222222',pt:'#2c2f48',shoe:'#3a2a22',tail:1,trim:'#f4f9ff'},
  {n:'Áo khoác nâu',sh:'#a04030',scarf:'#ffffff',belt:'#222222',pt:'#2c2f48',shoe:'#3a2a22',tail:1,trim:'#f4f9ff'},
- {n:'Công sở nam',sh:'#f6f6f8',shl:'#ffffff',shd:'#cfd2dc',scarf:'#ffffff',knot:'#26336b',tie:'#26336b',belt:'#15151a',pt:'#2b2d36',shoe:'#17171b'},
- {n:'Công sở nữ',sh:'#f6f6f8',shl:'#ffffff',shd:'#cfd2dc',scarf:'#ffffff',knot:'#d6456b',bow:1,belt:'#2f3550',skirt:'#2f3550',pt:'#f1c08a',rpt:'#2f3550',shoe:'#3a2024'},
+ {n:'Công sở nam',fx:'officeM',sh:'#f7f8fb',shl:'#ffffff',shd:'#d6d9e4',scarf:'#ffffff',belt:'#14141a',pt:'#1a1b22',shoe:'#0f0f13'},
+ {n:'Công sở nữ',fx:'officeF',sh:'#f7f8fb',shl:'#ffffff',shd:'#d6d9e4',scarf:'#ffffff',belt:'#2b3252',skirt:'#2b3252',pt:'#f1c08a',rpt:'#2b3252',shoe:'#2a1a1e'},
  {n:'Siêu anh hùng',sh:'#2b59c8',shl:'#4a7ae0',shd:'#1c3f94',scarf:'#2b59c8',knot:'#ffd23f',belt:'#ffd23f',trim:'#c61f2b',pt:'#2b59c8',shoe:'#c61f2b',boot:1,cape:'#d8232a',emblem:1},
  {n:'Mascot Gấu Poh',mascot:'pooh',sh:'#d8232a',pt:'#f2b233',rpt:'#f2b233',shoe:'#c98a1c',scarf:'#d8232a'},
  {n:'Mascot Kỳ lân',mascot:'uni',sh:'#fbfbff',pt:'#fbfbff',rpt:'#fbfbff',shoe:'#ffd35a',scarf:'#fbfbff'},
