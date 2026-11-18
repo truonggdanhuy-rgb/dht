@@ -145,7 +145,7 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 <script>
 window.onerror=function(m,s,l){try{var t=document.getElementById('toast');t.textContent='LỖI: '+m+' (dòng '+l+')';t.style.opacity=1}catch(e){}};
 </script>
-<script src="outfits.js?v=20261116"></script>
+<script src="outfits.js?v=20261118b"></script>
 <script src="aulac.js?v=20261116"></script>
 <script src="aulac2.js?v=20261118"></script>
 <script>
@@ -879,9 +879,9 @@ const shade=(h,k)=>{const n=parseInt(h.slice(1),16),f=v=>Math.max(0,Math.min(255
 const SETS=[
  {n:'Áo làng',sh:'#3f74a8',shl:'#5f93c6',shd:'#2c5886',scarf:'#ded8bd',knot:'#b5503a',belt:'#b33b2e',pt:'#2c2f48',shoe:'#6a4526'},
  {n:'Áo Noel đỏ',sh:'#c0392b',scarf:'#ffd23f',belt:'#222222',pt:'#2c2f48',shoe:'#3a2a22',tail:1,trim:'#fff3d8'},
- {n:'Áo khoác xanh',sh:'#2f6f9a',scarf:'#ffffff',belt:'#222222',pt:'#2c2f48',shoe:'#3a2a22',tail:1,trim:'#f4f9ff'},
- {n:'Áo len xanh lá',sh:'#3f8a4a',scarf:'#d9302a',belt:'#222222',pt:'#2c2f48',shoe:'#3a2a22',tail:1,trim:'#f4f9ff'},
- {n:'Áo len tím',sh:'#7a3b8a',scarf:'#2f6fe0',belt:'#222222',pt:'#2c2f48',shoe:'#3a2a22',tail:1,trim:'#f4f9ff'},
+ {n:'Áo khoác xanh',fx:'coatV',cs:'coat',sh:'#2f6f9a',scarf:'#ffffff',belt:'#222222',pt:'#2c2f48',shoe:'#3a2a22',tail:1,trim:'#f4f9ff'},
+ {n:'Áo len xanh lá',fx:'coatV',cs:'knit',sh:'#3f8a4a',scarf:'#d9302a',belt:'#222222',pt:'#2c2f48',shoe:'#3a2a22',tail:1,trim:'#f4f9ff'},
+ {n:'Áo len tím',fx:'coatV',cs:'knit',sh:'#7a3b8a',scarf:'#2f6fe0',belt:'#222222',pt:'#2c2f48',shoe:'#3a2a22',tail:1,trim:'#f4f9ff'},
  {n:'Áo khoác nâu',sh:'#a04030',scarf:'#ffffff',belt:'#222222',pt:'#2c2f48',shoe:'#3a2a22',tail:1,trim:'#f4f9ff'},
  {n:'Công sở nam',sh:'#f6f6f8',shl:'#ffffff',shd:'#cfd2dc',scarf:'#ffffff',knot:'#26336b',tie:'#26336b',belt:'#15151a',pt:'#2b2d36',shoe:'#17171b'},
  {n:'Công sở nữ',sh:'#f6f6f8',shl:'#ffffff',shd:'#cfd2dc',scarf:'#ffffff',knot:'#d6456b',bow:1,belt:'#2f3550',skirt:'#2f3550',pt:'#f1c08a',rpt:'#2f3550',shoe:'#3a2024'},
@@ -895,7 +895,7 @@ const SETS=[
  // ---- Áo dài ----
  {n:'Áo dài trắng (nữ)',fx:'adai',sh:'#fbfbfd',shl:'#ffffff',shd:'#cfd8e6',scarf:'#fbfbfd',belt:'#fbfbfd',trim:'#bcd3ee',pants:'#f3f3f7',pt:'#f3f3f7',rpt:'#f3f3f7',shoe:'#ece3d3',fl:5},
  {n:'Áo dài Việt (nam)',fx:'adai',sh:'#2a4f9c',shl:'#3d68be',shd:'#1b3570',scarf:'#2a4f9c',belt:'#1b3570',trim:'#e8c25a',dots:'#e8c25a',hem:1,pants:'#f3f3f7',pt:'#f3f3f7',rpt:'#f3f3f7',shoe:'#1b1b20',fl:5},
- {n:'Áo dài cách tân hồng',fx:'adai',sh:'#f48fb1',shl:'#f9b3cb',shd:'#d46a90',scarf:'#f48fb1',belt:'#d46a90',trim:'#fff4f8',hem:1,bowc:'#ffffff',pants:'#fff8fb',pt:'#fff8fb',rpt:'#fff8fb',shoe:'#fff0f5',fl:3},
+ {n:'Áo dài cách tân hồng',fx:'adai',flare:1,hemc:'#e9739f',sh:'#f48fb1',shl:'#f9b3cb',shd:'#d46a90',scarf:'#f48fb1',belt:'#d46a90',trim:'#fff4f8',hem:1,bowc:'#ffffff',pants:'#fff8fb',pt:'#fff8fb',rpt:'#fff8fb',shoe:'#f4bfd3',fl:3},
  // ---- Bà ba / chú ba ----
  {n:'Bà ba (nữ)',fx:'baba',sh:'#3fb5a6',shl:'#6fd0c3',shd:'#2a8579',scarf:'#3fb5a6',belt:'#2a8579',dots:'#e9fbf7',pants:'#1f1f26',pt:'#1f1f26',rpt:'#1f1f26',shoe:'#5a3b24',btn:'#f7f1e1'},
  {n:'Chú ba nâu (nam)',fx:'baba',sh:'#8a5630',shl:'#a9724a',shd:'#5f3a1e',scarf:'#8a5630',belt:'#5f3a1e',pk:1,pants:'#1f1f26',pt:'#1f1f26',rpt:'#1f1f26',shoe:'#3a2a22',btn:'#e8d9b0'},
@@ -955,7 +955,6 @@ const HAIRS=[{n:'Nón lá',k:'hat'},{n:'Tóc đen ngắn',k:'short',c:'#2b1d12'}
  {n:'Khăn rằn',k:'krang',c:'#2b1d12'},{n:'Khăn mấn',k:'kman',c:'#2b1d12'},{n:'Nón quai thao',k:'qthao',c:'#2b1d12'},
  {n:'Sóng xanh hồng',k:'lwave',fl:'w',p:['#74c8ff','#9fb0ff','#d9a0ff','#ff9ccf']},{n:'Sóng bạch kim',k:'lwave',fl:'y',p:['#ffffff','#ece8fb','#cfc6ee','#b9aee0']},{n:'Sóng cầu vồng',k:'lwave',fl:'w',p:['#ff7a8a','#ffb36b','#ffe66b','#8fe388','#6fc8ff','#a98cff']},
  {n:'Hai chùm hồng',k:'twt',p:['#ff9fcf','#ff79b8','#ff5aa5'],b:'#7a5cff'},{n:'Hoa sương',k:'pony',p:['#ffb6d9','#ff8fc2','#f06aa8'],b:'#fff3a8'},{n:'Đuôi ngựa bạc hà',k:'pony',p:['#9ff0d6','#6fdcc0','#4cc2a6'],b:'#ffffff'},
- {n:'Gai hồng',k:'spike',p:['#d94a8c','#ff8ec4']},{n:'Gai đen xanh',k:'spike',p:['#20282a','#2fe0a0']},{n:'Gai trắng xanh',k:'spike',p:['#f2f6ff','#6fb8ff']},{n:'Gai cầu vồng',k:'spike',m:'r',p:['#ff6b6b','#ffc24a','#fff06b','#6fe38a','#5ab8ff','#b184ff']},{n:'Gai hồng lam',k:'spike',p:['#ff7fc0','#46e0d4']},{n:'Gai cam lửa',k:'spike',p:['#d8321c','#ffa23a']},
  {n:'Mũ giữ nhiệt',k:'earfur',ach:1,bd:3},
  {n:'Nón rộng vành',k:'hawaii',c:'#2b1d12',ach:1},
  {n:'Mũ rơm',k:'luffy',c:'#1a1418',ach:1},
@@ -2526,6 +2525,11 @@ const VPI=[['trung','🥚','Trứng gà',12],['heo','🥓','Thịt heo',35],['su
 const NETS=[['Lưới thường',25,4,45],['Lưới lớn',60,10,60]],MIN=60000,now=()=>Date.now();
 let ST={xu:500,dia:0,qv:0,tk:0,wh:{n:0,p:0},ns:{},vp:{},plots:Array(40).fill(null),pots:Array(20).fill(null),tree:{},nets:[null,null,null],mine:null,lv:1,exp:0,od:null,odT:0,bo:null},UI=0,pa=null,LASTC=-1;
 try{const sv=JSON.parse(localStorage.getItem('nt_save')||'null');if(sv&&sv.plots)ST=Object.assign(ST,sv)}catch(e){}
+// ---- Đã XÓA VĨNH VIỄN 6 tóc Gai (cũ: số 19-24 trong HAIRS). Tóc lưu theo SỐ THỨ TỰ nên đổi save 1 lần: tóc sau Gai lùi 6 số, ai đang đội/đang có Gai thì bỏ (đang đội -> Tóc đen ngắn) ----
+try{if(!ST.gaiDel){const fx=i=>i>=19&&i<=24?-1:(i>24?i-6:i);
+ if(ST.own&&Array.isArray(ST.own.h))ST.own.h=ST.own.h.map(i=>fx(i|0)).filter(i=>i>=0);
+ if(ST.av&&typeof ST.av.h=='number'){const n=fx(ST.av.h|0);ST.av.h=n<0?1:n}
+ ST.gaiDel=1}}catch(e){}
 function lvFix(){ST.lv=Math.max(1,Math.min(100,ST.lv|0||1));ST.exp=Math.max(0,ST.exp|0);if(ST.od&&!Array.isArray(ST.od.it))ST.od=null;ST.odT=+ST.odT||0}
 lvFix();
 function fmtXu(n){n=Math.floor(n||0);
@@ -6459,7 +6463,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 
 </script>
 <script src="park-map.js?v=20261206"></script>
-<script src="pho-map.js?v=20261118a"></script>
+<script src="pho-map.js?v=20261118b"></script>
 <script src="broomkit.js?v=20261118"></script>
 <script src="circus.js?v=20261218"></script>
 <script src="sea-map.js?v=20261206"></script>

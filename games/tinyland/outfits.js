@@ -182,7 +182,8 @@ SETFX.warm=(u,o,S,K)=>{
 
 // ---- Áo dài (nữ trắng / nam gấm / cách tân hồng): cổ đứng, vạt dài xẻ tà ----
 SETFX.adai=(u,o,S,K)=>{
- if(S.n==='Áo dài trắng (nữ)')return SETFX.adaiNu(u,o,S,K);   // bản vẽ lại riêng cho áo dài trắng nữ (xem SETFX.adaiNu bên dưới)
+ if(S.n==='Áo dài trắng (nữ)')return SETFX.adaiNu(u,o,S,K);
+ if(S.n==='Áo dài Việt (nam)'||S.n==='Áo dài cách tân hồng')return SETFX.adaiV(u,o,S,K);   // bản vẽ lại: tà dài phủ tới mắt cá (SETFX.adaiV bên dưới)   // bản vẽ lại riêng cho áo dài trắng nữ (xem SETFX.adaiNu bên dưới)
  const{side,Rt,back,sit,rd,lg,sx,SK}=K,C=S.sh,CL=S.shl,CD=S.shd,T=S.trim,CO=S.col||T,P=S.pants,FL=rd?3:(S.fl||5),aL=lg,aR=-lg,
  mx=(x,w)=>Rt?x:20-x-w,sw=o.mv?_sw():0,lfL=lg>0?1:0,lfR=lg<0?1:0;
  if(!side){
@@ -255,6 +256,105 @@ SETFX.adaiNu=(u,o,S,K)=>{
  }
 };
 
+// ---- ÁO DÀI v3 (Áo dài Việt nam / Áo dài cách tân hồng): cổ đứng, cổ chéo cài nút, tà dài PHỦ CHÂN tới mắt cá, chỉ lộ mũi giày ----
+// Chân gốc: quần y24-26, cẳng y27-28, giày y29. Tà dài phủ y24..28 nên không còn lòi quần/chân. Chân nhấc khi đi thì gấu tà ngắn đi 1 hàng (thấy bước chân).
+// Tham số theo set: S.flare=1 (loe rộng ở gấu — cách tân), S.dots (hoa văn gấm), S.hem (viền gấu 2 hàng), S.bowc (nơ eo).
+SETFX.adaiV=(u,o,S,K)=>{
+ const{side,Rt,back,sit,rd,lg,sx,SK}=K,C=S.sh,CL=S.shl,CD=S.shd,T=S.trim,CM=shade(C,-.13),HM=S.hemc||T,TD=shade(HM,-.14),BT=S.btn||'#fff6d8',
+  aL=lg,aR=-lg,mx=(x,w)=>Rt?x:20-x-w,sw=o.mv?_sw():0,lfL=lg>0?1:0,lfR=lg<0?1:0,hy=rd?26:(sit?27:28),th=hy-23,fl=S.flare?1:0;
+ if(!side){
+  // cổ đứng + viền cổ
+  u(CM,8,15,1,2);u(CM,11,15,1,2);u(CM,8,16,4,1);u(T,8,15,1,1);u(T,11,15,1,1);u(CD,11,16,1,1);
+  // tay dài ôm, bo cổ tay
+  u(C,2,21+aL,3,1);u(T,2,22+aL,3,1);u(C,15,21+aR,3,1);u(T,15,22+aR,3,1);
+  u(CM,4,17+aL,1,4);u(CM,15,17+aR,1,4);
+  // thân ôm eo
+  u(C,6,23,8,1);u(CM,5,19,1,2);u(CM,5,21,2,3);u(CM,14,19,1,2);u(CM,13,21,2,3);
+  if(!back){
+   [[10,16],[9,17],[8,18],[7,19],[6,20]].forEach(q=>u(T,q[0],q[1],1,1));u(T,6,21,1,3);
+   u(BT,8,18,1,1);u(BT,6,20,1,1);u(BT,6,22,1,1);
+  }else u(CM,9,17,2,7);
+  // hoa văn gấm trên thân
+  if(S.dots&&back){for(const q of[[7,19],[12,19],[8,22],[11,22]])u(S.dots,q[0],q[1],1,1)}
+  // nơ eo (cách tân)
+  if(S.bowc&&!back){u(S.bowc,7,22,2,1);u(S.bowc,11,22,2,1);u(shade(S.bowc,-.25),9,22,2,1)}
+  if(!sit&&!rd){
+   // tà trái / phải (mỗi bên rút ngắn 1 hàng khi chân đó nhấc lên). Cách tân: loe ra 1 ô mỗi bên từ y26
+   const hL=th-lfL,hR=th-lfR;
+   u(C,7,24,3,hL);u(CL,7,24,1,hL);u(C,10,24,3,hR);u(CD,12,24,1,hR);u(CM,9,25,1,Math.min(hL,hR)-1);
+   if(fl){u(C,6,26,1,hL-2);u(CL,6,26,1,hL-2);u(C,13,26,1,hR-2);u(CD,13,26,1,hR-2)}
+   else{u(C,6,27,1,2-lfL);u(CL,6,27,1,2-lfL);u(C,13,27,1,2-lfR);u(CD,13,27,1,2-lfR)}   // gấu tà hơi xòe che kín ống quần
+   if(back)u(CM,10,25,1,Math.min(hL,hR)-1);
+   // gấu viền
+   u(HM,7-fl+sw,24+hL-1,3+fl,1);u(HM,10+sw,24+hR-1,3+fl,1);
+   if(S.hem){u(TD,7-fl+sw,24+hL-2,3+fl,1);u(TD,10+sw,24+hR-2,3+fl,1)}
+   // hoa văn nhỏ trên tà
+   if(S.dots)for(const q of[[8,25],[11,26],[9,27],[10,24]])u(S.dots,q[0],q[1],1,1);
+   else if(!back){u(T,8,25,1,1);u(T,9,26,1,1);u(T,10,25,1,1)}
+  }else{
+   u(C,6,24,8,hy-23);u(CL,6,24,1,hy-23);u(CD,13,24,1,hy-23);u(CM,9,25,1,hy-24);u(HM,6,hy,8,1)
+  }
+ }else{
+  u(CM,mx(9,3),15,3,2);u(SK,9,15,2,1);u(T,mx(9,1),15,1,1);u(CD,mx(11,1),16,1,1);
+  if(!o.noarm){const ax=9-sx;u(C,ax,21,3,1);u(CM,ax,22,3,1)}
+  u(C,7,23,7,1);u(CD,mx(13,1),19,1,5);
+  if(S.bowc)u(S.bowc,mx(Rt?7:11,2),22,2,1);
+  if(!sit&&!rd){
+   const x1=8+sx,x2=10-sx,l1=lg>0?1:0,l2=lg<0?1:0,f2=o.mv?(sw>0?2:1):0;
+   // khối tà liền từ lưng tới ngực + tà phủ theo từng chân đang bước
+   u(C,7,24,7,th-1);u(CL,mx(7,1),24,1,th-1);u(CD,mx(13,1),24,1,th-1);u(CM,mx(9,1),25,1,th-2);u(CM,mx(11,1),26,1,th-3);
+   for(const[x,l]of[[x1,l1],[x2,l2]]){const h=th-l;u(C,x,24,3,h);u(CM,x+1,26,1,h-3);u(HM,x,24+h-1,3,1);if(S.hem)u(TD,x,24+h-2,3,1)}
+   u(HM,7,hy,7,1);if(S.hem)u(TD,7,hy-1,7,1);
+   // tà sau bay ra sau khi đi
+   if(f2){u(C,mx(7-f2,f2),hy-2,f2,2);u(HM,mx(7-f2,f2),hy,f2,1)}
+   if(S.dots)for(const q of[[9,25],[11,26],[10,24]])u(S.dots,q[0],q[1],1,1);
+   if(fl){u(C,mx(6,1),26,1,th-3);u(HM,mx(6,1),hy,1,1)}
+  }else{
+   u(C,7,24,7,hy-23);u(CL,mx(7,1),24,1,hy-23);u(CD,mx(13,1),24,1,hy-23);u(HM,7,hy,7,1)
+  }
+ }
+};
+const P_=S=>S.pants||S.pt;
+
+// ---- ÁO KHOÁC / ÁO LEN (làm đẹp nhẹ, GIỮ NGUYÊN khung thân + tay + khăn như bản gốc để đồng bộ nhân vật) ----
+// Dùng cho: Áo khoác xanh (cs:'coat'), Áo len xanh lá & Áo len tím (cs:'knit'). Vẽ ĐÈ lên thân gốc rồi vẽ lại khăn quàng (khăn nằm trên cùng).
+//  coat: khóa kéo giữa + khóa vàng, túi có nắp, bo gấu & bo tay gân.   knit: họa tiết hoa văn len 3 hàng, bo gấu/bo tay gân dọc.
+SETFX.coatV=(u,o,S,K)=>{
+ const{side,Rt,back,lg,sx,SK}=K,H=S.sh,HL=S.shl||shade(H,.18),HD=S.shd||shade(H,-.28),
+  RB=shade(H,-.24),RB2=shade(H,-.12),LT=shade(H,.34),DK=shade(H,-.4),SCF=S.scarf,SCD=shade(SCF,-.25),SCL=shade(SCF,.32),
+  aL=lg,aR=-lg,knit=S.cs==='knit';
+ // bo gấu: gân dọc xen kẽ (thay đai đen + viền trắng của bản gốc)
+ const hem=(x0,w)=>{u(RB,x0,22,w,1);u(RB2,x0,23,w,1);for(let x=x0;x<x0+w;x+=2)u(RB,x,23,1,1)};
+ // họa tiết len 3 hàng (xen kẽ sáng/tối)
+ const knitBand=(x0,x1,skipA,skipB)=>{for(let x=x0;x<x1;x++){if(x>=skipA&&x<skipB)continue;
+   const m=x%4;u(m==2?LT:H,x,18,1,1);u(m==1||m==3?LT:H,x,19,1,1);u(m==2?LT:H,x,20,1,1)}};
+ if(!side){
+  hem(6,8);
+  // bo tay gân
+  u(RB2,2,20+aL,3,1);u(RB,2,21+aL,3,1);u(RB,3,20+aL,1,1);u(RB2,15,20+aR,3,1);u(RB,15,21+aR,3,1);u(RB,16,20+aR,1,1);
+  if(knit){u(H,9,17,2,5);knitBand(5,15,99,99)}
+  else{
+   if(!back){
+    u(RB2,9,17,1,5);u(HL,10,17,1,5);u('#f1d37a',9,19,1,2);          // khóa kéo + khóa vàng
+    u(HD,6,21,3,1);u(HL,6,20,3,1);u(HD,6,20,1,1);                     // túi trái có nắp
+    u(HD,11,21,3,1);u(HL,11,20,3,1);                                  // túi phải
+   }else{u(HD,6,19,8,1);u(HL,6,18,8,1);u(HD,9,19,2,4)}               // cầu vai + sống lưng
+  }
+  // khăn quàng (giữ như bản gốc, thêm sọc sáng + tua)
+  u(SCF,5,15,10,2);u(SCD,5,16,10,1);u(SCL,5,15,10,1);
+  if(back){u(SCF,9,17,3,6);u(SCD,9,22,3,1);u(SCL,9,19,3,1);u(SCF,9,23,1,1);u(SCF,11,23,1,1)}
+  else{u(SCF,11,17,3,6);u(SCD,11,22,3,1);u(SCL,11,19,3,1);u(SCF,11,23,1,1);u(SCF,13,23,1,1)}
+ }else{
+  hem(7,7);
+  const ax=9-sx;
+  if(!o.noarm){u(RB2,ax,20,3,1);u(RB,ax,21,3,1);u(RB,ax+1,20,1,1)}
+  if(knit)knitBand(7,14,ax,ax+3);
+  else{u(HD,Rt?10:7,19,3,1);u(HL,Rt?10:7,18,3,1);if(!o.noarm){/* túi sát tay */}}
+  u(SCF,7,15,7,2);u(SCD,7,16,7,1);u(SCL,7,15,7,1);
+  u(SCF,Rt?5:13,16,2,6);u(SCD,Rt?5:13,21,2,1);u(SCL,Rt?5:13,18,2,1);u(SCF,Rt?5:13,22,1,1);
+ }
+};
+
 // ---- Áo bà ba (nữ) / áo bà ba nâu (nam): áo rộng cài nút giữa + quần lụa đen ống rộng ----
 SETFX.baba=(u,o,S,K)=>{
  const{side,Rt,back,sit,rd,lg,sx,SK}=K,C=S.sh,CL=S.shl,CD=S.shd,P=S.pants,PL=shade(P,.22),PD=shade(P,-.25),aL=lg,aR=-lg,
@@ -320,7 +420,7 @@ SETFX.tuthan=(u,o,S,K)=>{
 function SPH(u,y0,rows,pal){rows.forEach((s,j)=>{let i=0;while(i<s.length){const ch=s[i];if(ch=='.'||ch==' '){i++;continue}let k=i;while(k<s.length&&s[k]==ch)k++;const c=pal[ch];if(c){u(c,i,y0+j,k-i,1);u(c,20-k,y0+j,k-i,1)}i=k}})}
 
 /* ============ TÓC MÀU MỚI (nam / nữ) — dùng bảng màu HS.p trong HAIRS ============
-   p = mảng màu. lwave/twt/pony: màu đổi dần từ trên xuống. spike: HS.m=='r' => mỗi gai 1 màu (cầu vồng), còn lại gốc p[0] – ngọn p[1]. */
+   p = mảng màu. lwave/twt/pony: màu đổi dần từ trên xuống. (tóc Gai đã xóa vĩnh viễn) */
 const _gy=(p,t)=>p[Math.max(0,Math.min(p.length-1,Math.floor(t*p.length)))];
 const _hs=K=>K.HS||{p:['#888']};
 const _sh=(c,k)=>(typeof shade=='function'?shade(c,k):c);
@@ -385,24 +485,6 @@ HAIRFX.pony=(u,o,K)=>{
  }else{
   u(cy(5),mx(7,6),5,6,1);u(cy(6),mx(5,9),6,9,3);u(_sh(cy(6),.4),mx(8,3),6,3,1);u(cy(9),mx(10,3),9,3,1);u(cy(9),mx(6,5),9,4,1);
   u(cy(4),mx(3,3),4,3,2);tail(mx(1,4),6,22,o.mv?-sw:0);flower(mx(4,1),6);
- }
-};
-
-// ---- Tóc gai nhiều màu (nam) ----
-HAIRFX.spike=(u,o,K)=>{
- const{side,Rt,back}=K,H=_hs(K),p=H.p,mx=(x,w)=>Rt?x:20-x-w,rb=H.m=='r',
- base=i=>rb?p[i%p.length]:p[0],tip=i=>rb?p[i%p.length]:p[1]||p[0],
- sp=(cx,top,bot,i)=>{u(tip(i),cx,top,1,1);u(tip(i),cx-1,top+1,3,1);for(let y=top+2;y<=bot;y++)u(y<=top+3||rb?tip(i):base(i),cx-1,y,3,1);u(_sh(tip(i),.45),cx,top+1,1,1)};
- if(!side){
-  u(base(0),6,6,8,3);u(base(2),5,7,10,2);
-  [[6,2,6],[9,0,6],[12,1,6],[15,3,7],[4,3,7]].forEach(([cx,t,b],i)=>sp(cx,t+1,b+1,i+(rb?0:0)));
-  sp(10,0,5,2);
-  if(!back){u(base(1),6,9,2,2);u(base(1),12,9,2,2);u(base(1),9,9,2,1);u(_sh(base(1),.3),7,9,1,1);u(base(0),5,9,1,3);u(base(0),14,9,1,3);u(base(0),6,11,1,1);u(base(0),13,11,1,1)}
-  else{u(base(1),5,9,10,4);u(_sh(base(1),-.25),6,12,8,1)}
- }else{
-  u(base(0),mx(5,9),6,9,3);
-  sp(mx(6,1)+(Rt?0:0),2,6,1);sp(mx(9,1),0,5,3);sp(mx(12,1),2,6,2);sp(mx(4,1)+(Rt?-1:1),5,8,0);
-  u(base(1),mx(10,3),9,3,1);u(base(0),mx(6,4),9,4,3);
  }
 };
 
