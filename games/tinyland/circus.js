@@ -210,7 +210,8 @@ const CL_ITEMS=[
  {k:'unicycle',m:1,n:'Xe đạp 1 bánh',d:'Thú cưỡi • Đạp xe 1 bánh cao to, yên đen, vành bạc',pr:{xu:8000,qv:0,dia:0}},
  {k:'skate_orange',m:1,n:'Ván trượt cam',d:'Thú cưỡi • Đứng lướt trên ván cam, bánh xe xanh',pr:{xu:1000,qv:300,dia:2}},
  {k:'skate_clown',m:1,n:'Ván trượt hề',pr:{xu:1000,qv:400,dia:2}},
- {k:'unicycle_blue',m:1,n:'Xe đạp 1 bánh xanh',pr:{xu:8000,qv:0,dia:0}}];
+ {k:'unicycle_blue',m:1,n:'Xe đạp 1 bánh xanh',pr:{xu:8000,qv:0,dia:0}},
+ {k:'broom_witch',m:1,n:'Chổi bay phù thủy',d:'Thú cưỡi • Chổi bay dài, ngồi bay lơ lửng trên mặt đất, sao nhỏ treo ở đầu cán',pr:{xu:1000,qv:500,dia:3}}];
 const vtk=k=>k=='hacvt'||k=='bachvt'||k=='phuthuy'||k=='mushm'||k=='mushf';   // mũ rất cao nên khung xem trước cao hơn
 const wtk=k=>k=='phuthuy';   // Phù Thủy Mộng Mơ: vành mũ rộng ~32 điểm ảnh nên khung xem trước rộng hơn
 const clTab=k=>{const it=CL_ITEMS.find(x=>x.k==k);return it&&it.m?'m':it&&it.h?'h':'s'};   // m = thú cưỡi, h = tóc, s = set   // m = thú cưỡi, s = set

@@ -2115,7 +2115,12 @@ const MOUNTS=[{n:'Trâu Việt',hw:9,drop:8,spd:1.8,seat:{0:[0,-22],1:[0,-22],si
 {n:'Xe đạp 1 bánh xanh',k:'unicycle_blue',cl:1,hw:4,drop:0,spd:2.2,nobob:1,sh:[13,9],seat:{0:[0,-24],1:[0,-24],side:[-1,-24]},
  legs(R,d,ph,sx,sy,PT,SD,S,hv,c){if(window.uniLegs)uniLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
  hov:(t,mv)=>window.uniHov?uniHov(t,mv):0,lean:(mv,d)=>window.uniLean?uniLean(mv,d):0,
- draw(R,d,f,b,t,pt,c){if(window.uniDraw)uniDraw(R,d,f,b,t,pt,c,'blue')}}
+ draw(R,d,f,b,t,pt,c){if(window.uniDraw)uniDraw(R,d,f,b,t,pt,c,'blue')}},
+// ===== 🧹 Chổi bay phù thủy (1.000 Xu + 500 xu quái vật + 3 💎 ở Tiệm Chú Hề; BAY lơ lửng, nhân vật NGỒI; hình vẽ + cách thêm chổi mới ở broomkit.js; chổi mới LUÔN thêm vào CUỐI mảng MOUNTS) =====
+{n:'Chổi bay phù thủy',k:'broom_witch',cl:1,cb:{xu:1000,qv:500,dia:3},hw:2,drop:6,spd:3,nobob:1,acc:1,noarm:1,sh:[16,12],seat:{0:[0,-15],1:[0,-13],side:[0,-14]},
+ legs(R,d,ph,sx,sy,PT,SD,S,hv,c){if(window.brLegs)brLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
+ hov:(t,mv)=>window.brHov?brHov(t,mv):0,
+ draw(R,d,f,b,t,pt,c){if(window.brDraw)brDraw('witch',R,d,f,b,t,pt,c)}}
 ];
 // nguoi ngoi tren thu cuoi
 function drawRide(g,x,y,o,mi,t){
@@ -6454,6 +6459,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 </script>
 <script src="park-map.js?v=20261206"></script>
 <script src="pho-map.js?v=20261118a"></script>
+<script src="broomkit.js?v=20261118"></script>
 <script src="circus.js?v=20261211"></script>
 <script src="sea-map.js?v=20261206"></script>
 <script src="fishing.js?v=20261206"></script>
