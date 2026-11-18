@@ -5572,6 +5572,136 @@ Object.assign(window.FMANI,{banhtrang:(a,X,Y)=>{const t=performance.now()/1000,B
  for(let k=0;k<7;k++){const y=gy+k;if(y<3||y>BH-4)continue;const al=.22*(1-Math.abs(k-3)/4);
   r('rgba(255,255,255,'+al.toFixed(2)+')',a.x+1+2,a.y+1+y,BW-4,1)}}});
 
+/* ================= DECOR MỚI: CHONG CHÓNG x2, BỒN TRỮ NƯỚC, AO CÁ THỦY SINH x2 =================
+   • Chong chóng cầu vồng (100 Xu, 1x1) / Chong chóng 4 cánh (100 Xu, 1x1): cánh được VẼ SẴN 24 khung hình, khi chạy chỉ drawImage 1 khung → rất nhẹ.
+   • Bồn trữ nước (500 Xu, 2x2 chiếm đất, hình cao 4 ô: 2 ô trên nhân vật đi xuyên phía sau được), có vòi, xô hứng và giọt nước nhỏ.
+   • Ao cá thủy sinh nhỏ (500 Xu, 4x4) / lớn (1000 Xu, 6x6): cá bơi, rùa (ao lớn), bèo tấm, lục bình hoa tím, rong dưới nước. */
+{const hs=a=>{a=Math.imul((a+1)*2654435761^a>>>15,2246822519);a=Math.imul(a^a>>>13,3266489917);return((a^a>>>16)>>>0)/4294967296};
+ const hxc=c=>[1,3,5].map(i=>parseInt(c.substr(i,2),16));
+ const mixc=(c,t,k)=>{const a=hxc(c),b=hxc(t);return '#'+a.map((v,i)=>Math.round(v+(b[i]-v)*k).toString(16).padStart(2,'0')).join('')};
+
+ /* ---------- CHONG CHÓNG ---------- */
+ const PWN=24,TAU=Math.PI*2;
+ const pwFrames=(R,N,cols)=>{const sz=R*2+2,cc=sz/2,out=[],w=TAU/N;
+  for(let f=0;f<PWN;f++){const th=f/PWN*TAU,c=document.createElement('canvas');c.width=c.height=sz;const g=c.getContext('2d'),r=RR(g);
+   for(let py=0;py<sz;py++)for(let px=0;px<sz;px++){const dx=px+.5-cc,dy=py+.5-cc,rho=Math.hypot(dx,dy);if(rho<1.4||rho>R)continue;
+    let a=(Math.atan2(dy,dx)-th)%TAU;if(a<0)a+=TAU;const i=Math.floor(a/w),u=(a-i*w)/w;
+    if(u>.9)continue;if(rho>R*(1-.34*Math.pow(u/.9,1.3)))continue;
+    let col=cols[i%cols.length];
+    if(u<.07)col=mixc(col,'#000000',.3);else if(u<.3)col=mixc(col,'#ffffff',.4);else if(u>.72)col=mixc(col,'#000000',.2);
+    r(col,px,py,1,1)}
+   r('#8a6420',cc-1,cc-1,2,2);r('#fff0a0',cc-1,cc-1,1,1);
+   out.push(c)}
+  return out};
+ const pwPole=r=>{E(r,'rgba(0,0,0,.18)',10,34,6,1);
+  r('#d9a566',9,10,1,24);r('#9a6a36',10,10,1,24);r('#6b4220',8,33,4,1);
+  r('#5fa84a',5,33,1,2);r('#7ccf5e',6,32,1,2);r('#5fa84a',13,33,1,2);r('#7ccf5e',14,32,1,2);r('#7ccf5e',4,32,1,1)};
+ const pwBuild=(key,R,N,cols,spd)=>{const fr=pwFrames(R,N,cols),sz=R*2+2,ho=10-sz/2;
+  S_[key+'P']=mk(20,36,(g,r)=>pwPole(r));
+  S_[key]=mk(20,36,(g,r)=>{pwPole(r);g.drawImage(fr[0],ho,ho)});
+  S_[key+'Th']=mk(32,32,(g,r)=>g.drawImage(S_[key],0,0,20,32,6,0,20,32));
+  const po=outl(S_[key+'P']),hoo=fr.map(outl);
+  FMANI[key]=(a,X,Y)=>{const t=performance.now()/1000,ph=t*spd+3*Math.sin(t*.45+a.x*.2)+a.x*.37,i=((Math.floor(ph)%PWN)+PWN)%PWN;
+   cx.drawImage(po,a.x,a.y);cx.drawImage(hoo[i],a.x+ho,a.y+ho)}};
+ pwBuild('ccvong',9,6,['#ff4d5e','#ff9a3d','#ffd84a','#5fcf5a','#3fa0ff','#a65df0'],11);
+ pwBuild('cc4',8,4,['#ff5d8f','#fff4ea'],9);
+
+ /* ---------- BỒN TRỮ NƯỚC (32x64) ---------- */
+ S_.bontru=mk(32,64,(g,r)=>{
+  const TC=14,col=x=>{const n=(x-3.5)/21;return n<.08?'#5fb4ec':n<.22?'#a0dcfb':n<.34?'#cdeeff':n<.5?'#a0dcfb':n<.65?'#6cc2f2':n<.8?'#46a6e0':n<.92?'#3388c4':'#2a70a6'};
+  E(r,'rgba(0,0,0,.18)',16,62,15,2);
+  /* chân đỡ + giằng */
+  r('#98a4b2',5,47,2,15);r('#d0d8e2',5,47,1,15);r('#5f6b79',22,47,2,15);r('#8a96a4',22,47,1,15);
+  r('#7a8794',7,51,15,1);r('#4d5764',5,61,3,1);r('#4d5764',21,61,4,1);
+  /* thân + mái vòm */
+  for(let y=4;y<=47;y++){let hw=10;
+   if(y<=12){const t=(12.5-y)/8.5;hw=Math.round(10.5*Math.sqrt(Math.max(0,1-t*t)))}
+   else if(y>=46)hw=y==46?10:9;
+   for(let x=TC-hw;x<=TC+hw;x++)r(y>=46?mixc(col(x),'#1a2a3a',.35):col(x),x,y,1,1)}
+  /* đai gân */
+  for(const y of[19,30,40]){r('rgba(18,60,110,.32)',4,y,21,1);r('rgba(255,255,255,.22)',4,y+1,21,1)}
+  r('#7a8794',4,46,21,1);r('#4d5764',4,47,21,1);
+  /* nắp + núm */
+  r('#33414f',9,3,11,2);r('#5d6f82',9,3,11,1);r('#8a9aad',12,1,5,2);r('#c5d1de',12,1,5,1);
+  /* ống đo mực nước */
+  r('#244f77',18,16,5,29);r('#dff1ff',19,17,3,27);r('#3f9bf0',19,27,3,17);r('#8fd0ff',19,27,1,17);r('#ffffff',19,27,3,1);
+  for(const y of[21,33,41])r('#1e4f7a',17,y,1,1);
+  /* biểu tượng giọt nước */
+  r('#ffffff',9,23,1,1);r('#ffffff',8,24,3,1);r('#ffffff',7,25,5,1);r('#ffffff',7,26,5,2);r('#ffffff',8,28,3,1);r('#7fcaff',8,26,1,1);
+  /* vòi + tay vặn */
+  r('#c9a24a',14,48,2,4);r('#f0cf6a',14,48,1,4);r('#e0463a',11,49,3,2);r('#ff8a7a',11,49,3,1);
+  r('#a8832e',13,52,4,2);r('#d9b04a',13,52,4,1);r('#8a6a22',14,54,2,1);
+  /* xô hứng nước */
+  r('#e1e8f0',9,57,12,1);r('#4aa6ff',11,58,8,1);r('#8fd0ff',11,58,3,1);
+  r('#a2adba',10,59,10,3);r('#c9d3de',10,59,2,3);r('#6b7684',18,59,2,3);r('#4d5764',11,62,8,1);
+  /* bơm tay + ống nối */
+  r('#c9a24a',23,49,4,2);r('#f0cf6a',23,49,4,1);
+  r('#d9473a',26,46,4,15);r('#ff8a7a',26,46,1,15);r('#9a2f26',29,46,1,15);r('#7a8794',25,44,6,2);r('#c5d1de',25,44,6,1);
+  r('#4d5764',25,60,7,2);
+  for(const[x,y]of[[28,43],[29,42],[29,41],[30,40],[30,39],[31,38]])r('#5f6b79',x,y,1,1);
+  r('#e0463a',30,35,2,3);r('#ff8a7a',30,35,1,1);
+  r('#6fae52',2,61,1,2);r('#8fd36a',3,60,1,2);r('#6fae52',31,62,1,1)});
+ S_.bontruTh=mk(32,32,(g,r)=>{g.imageSmoothingEnabled=false;g.drawImage(S_.bontru,0,0,32,64,8,0,16,32)});
+ FMANI.bontru=(a,X,Y)=>{cx.drawImage(a.im,a.x,a.y);const t=performance.now()/1000,c=(t+a.x*.013)%1.9,ox=a.x+1,oy=a.y+1;
+  if(c<.35)r('#7cc6ff',ox+14,oy+55,1,1);else if(c<.7)r('#7cc6ff',ox+14,oy+55,2,2);
+  else if(c<.9)r('#7cc6ff',ox+14,oy+56+Math.floor((c-.7)/.2*2),2,2);
+  else if(c<1.5){const u=(c-.9)/.6,R=1+u*2.5;r('rgba(255,255,255,'+(.75*(1-u)).toFixed(2)+')',Math.round(ox+15-R),oy+58,Math.round(R*2),1)}};
+
+ /* ---------- AO CÁ THỦY SINH ---------- */
+ const hyac=(r,x,y,fl)=>{
+  E(r,'#2c7a3c',x-5,y+1,3,2);E(r,'#46a84a',x-5,y,2,1);E(r,'#2c7a3c',x+5,y+1,3,2);E(r,'#46a84a',x+5,y,2,1);
+  E(r,'#2c7a3c',x,y,6,3);E(r,'#46a84a',x-1,y-1,5,2);E(r,'#7fd46e',x-3,y-2,2,1);
+  r('#8fd36a',x-1,y+1,3,2);r('#bfeaa0',x-1,y+1,1,1);
+  if(fl){r('#4f9f48',x,y-9,1,9);
+   for(const[dx,dy,s]of[[0,-13,0],[-2,-10,1],[2,-9,1],[0,-7,1]]){const w=s?4:3;
+    r('#8d5fe0',x+dx-(w>>1),y+dy,w,3);r('#b58cf0',x+dx-(w>>1),y+dy,w,2);r('#e0cbff',x+dx-(w>>1),y+dy,1,1);r('#ffe066',x+dx,y+dy+1,1,1)}}};
+ const dkw=(r,x,y,n,sd)=>{for(let i=0;i<n;i++){const px=Math.round(x+hs(sd+i)*16-8),py=Math.round(y+hs(sd+i+50)*6-3);
+  r(i%2?'#6fd05a':'#4aa83c',px,py,2,1);r('#a5ec8a',px,py,1,1);if(i%3==0)r('#4aa83c',px+2,py+1,1,1)}};
+ const fishD=(x,y,d,t,f)=>{const wg=Math.round(Math.sin(t*9+f.ph*3)),P=(dx,dy,w,h,c)=>r(c,d>0?x+dx:x-dx-w+1,y+dy,w,h);
+  r('rgba(0,50,70,.22)',x-3,y+3,7,1);
+  P(-3,1,7,1,f.c);P(-2,0,5,1,f.c);P(-2,2,5,1,f.c);P(-1,0,3,1,mixc(f.c,'#ffffff',.4));
+  P(-6,wg>0?0:1,2,1,f.c);P(-6,2,2,1,f.c);P(-5,1,2,1,f.c);P(0,1,2,1,f.c2);P(0,3,2,1,mixc(f.c,'#ffffff',.3));P(2,1,1,1,'#222222')};
+ const turD=(x,y,d,t,ph)=>{const sw=Math.round(Math.sin(t*2.2+ph)),P=(dx,dy,w,h,c)=>r(c,d>0?x+dx:x-dx-w+1,y+dy,w,h);
+  r('rgba(0,50,70,.25)',x-5,y+4,12,2);
+  P(2,-4+(sw>0?0:1),3,1,'#8fb35c');P(2,4-(sw>0?0:1),3,1,'#8fb35c');P(-5,-4+(sw>0?1:0),3,1,'#8fb35c');P(-5,4-(sw>0?1:0),3,1,'#8fb35c');P(-7,0,2,1,'#8fb35c');
+  E(r,'#2f5d2a',x,y,5,3);E(r,'#4f8a3a',x,y,4,2);
+  P(-2,-1,2,1,'#6aa94a');P(1,-1,2,1,'#6aa94a');P(-2,1,2,1,'#6aa94a');P(1,1,2,1,'#6aa94a');P(0,-2,1,5,'#3a6e2c');
+  P(5,-1,3,2,'#a8c97a');P(7,-1,1,1,'#222222')};
+ const POND=(key,W,Hh,C)=>{const{px,py,rx,ry,wx,wy,sd}=C;
+  S_[key+'B']=mk(W,Hh,(g,r)=>{
+   E(r,'rgba(0,0,0,.2)',px,py+4,rx,ry);
+   E(r,'#5c5c55',px,py+3,rx,ry);E(r,'#8c8c84',px,py+1,rx-1,ry-1);E(r,'#b8b8ae',px,py,rx-2,ry-2);
+   E(r,'#2a7a98',px,py,wx,wy);E(r,'#35899f',px,py,wx-1,wy-1);E(r,'#46a6bd',px,py+1,wx-3,wy-3);E(r,'#62c2d2',px-2,py,wx-8,wy-7);E(r,'#8bdbe4',px-4,py-3,wx-16,wy-13);
+   /* rong + đá dưới đáy ao */
+   for(const[x,y]of C.weed){E(r,'#256f8a',x,y+1,6,2);for(let j=0;j<5;j++){const bx=x+j*2-4,bh=3+Math.round(hs(sd+x+j)*4);r('#2a8a5a',bx,y-bh,1,bh);r('#3fae6e',bx+1,y-bh+1,1,bh-1)}r('#9fb7b0',x+6,y+1,2,1);r('#cfe0da',x+6,y+1,1,1)}
+   for(let i=0;i<C.rip;i++)r('rgba(255,255,255,.4)',Math.round(px-wx*.6+hs(sd+i)*wx*1.2),Math.round(py-wy*.6+hs(sd+i+9)*wy*1.2),5+i%3*2,1);
+   /* đá viền rêu */
+   const N=Math.round(rx*1.05),L=[];for(let i=0;i<N;i++){const a=i/N*TAU;L.push([Math.round(px+Math.cos(a)*(rx-3)),Math.round(py+Math.sin(a)*(ry-3)),i])}
+   L.sort((p,q)=>p[1]-q[1]);
+   for(const[x,y,i]of L){r(i%3?'#9a9a90':'#cfcfc4',x-2,y-1,5,3);r('#6f6f66',x-2,y+1,5,1);if(i%4==0)r('#6fae52',x-1,y-1,3,1);if(i%5==2)r('#8fd36a',x,y-2,1,1)}
+   /* cỏ viền */
+   for(let i=0;i<N;i++){const a=hs(sd+i*3)*TAU,x=Math.round(px+Math.cos(a)*(rx-1)),y=Math.round(py+Math.sin(a)*(ry-1));r('#4f9f48',x,y-2,1,3);r('#66c060',x+1,y-1,1,2)}});
+  S_[key+'T']=mk(W,Hh,(g,r)=>{for(const[x,y,n]of C.dk)dkw(r,x,y,n,sd+x);for(const[x,y,f]of C.hy)hyac(r,x,y,f)});
+  S_[key]=mk(W,Hh,(g,r)=>{g.drawImage(S_[key+'B'],0,0);g.drawImage(S_[key+'T'],0,0)});
+  const bo=outl(S_[key+'B']);
+  FMANI[key]=(a,X,Y)=>{const t=performance.now()/1000,ox=a.x+1,oy=a.y+1;cx.drawImage(bo,a.x,a.y);
+   for(let i=0;i<C.rip;i++){const k=Math.floor(t*.35+i/C.rip),u=(t*.35+i/C.rip)%1,R=2+u*7,qx=px+(hs(i*7+k)-.5)*wx*1.1,qy=py+(hs(i*7+k+30)-.5)*wy*1.0;
+    r('rgba(255,255,255,'+(.4*(1-u)).toFixed(2)+')',Math.round(ox+qx-R),Math.round(oy+qy),Math.round(R*2),1)}
+   for(const tu of C.tur){const q=t*tu.s+tu.ph,x=Math.round(ox+px+Math.cos(q)*tu.ax),y=Math.round(oy+py+Math.sin(q)*tu.ay);turD(x,y,-Math.sin(q)*tu.s>0?1:-1,t,tu.ph)}
+   for(const f of C.fish){const q=t*f.s+f.ph,m=1+.12*Math.sin(t*f.s*1.31+f.ph*2.3),x=Math.round(ox+px+Math.cos(q)*f.ax*m),y=Math.round(oy+py+Math.sin(q)*f.ay*m);fishD(x,y,-Math.sin(q)*f.s>0?1:-1,t,f)}
+   cx.drawImage(S_[key+'T'],a.x+1+Math.round(Math.sin(t*.5+a.x*.1)*1.2),a.y+1+Math.round(Math.sin(t*.9+1)*.7))}};
+ const FC=[['#ff7a1a','#ffffff'],['#ffffff','#ff7a1a'],['#ffb13b','#fff0b0'],['#ff5a3a','#ffd0a0'],['#3a3a44','#ffffff'],['#ffd23f','#fff6c0']];
+ const mkFish=(wx,wy,n)=>[...Array(n).keys()].map(i=>({c:FC[i%6][0],c2:FC[i%6][1],s:(i%2?-1:1)*(.38+hs(i+3)*.3),ph:i*1.9,ax:(wx-9)*(.35+.1*(i%5)),ay:(wy-8)*(.35+.1*(i%5))}));
+ POND('aonho',64,64,{px:32,py:30,rx:30,ry:27,wx:25,wy:21,sd:11,rip:2,
+  weed:[[14,34],[50,24],[26,46],[46,46]],hy:[[20,22,1],[45,38,1],[34,43,0]],dk:[[40,20,5],[22,38,4],[48,28,3]],
+  fish:mkFish(25,21,3),tur:[]});
+ POND('aolon',96,96,{px:48,py:45,rx:46,ry:41,wx:40,wy:34,sd:23,rip:3,
+  weed:[[16,48],[78,34],[30,66],[62,68],[70,52],[36,24]],
+  hy:[[22,30,1],[70,28,1],[34,58,0],[62,60,1],[50,38,1],[78,46,0]],dk:[[40,24,6],[66,44,5],[28,48,5],[52,64,6],[74,60,4],[44,50,4]],
+  fish:mkFish(40,34,6),tur:[{s:.16,ph:0,ax:22,ay:15},{s:-.12,ph:2.6,ax:14,ay:10}]});
+}
+
+
 })();
 
 /* ---- Cối xay gió (2x2, cao) & Tua bin gió (1x1, cao hơn) — cánh quạt quay ---- */
@@ -5628,7 +5758,10 @@ Object.assign(FMD,{
  fence2:['Hàng rào thư giãn',()=>S_.fence2T,1,1,1,'p',20],gate:['Cổng thư giãn',()=>S_.gate,4,1,0,'p',500],fencerb:['Hàng rào tai thỏ',()=>S_.fenceRb,2,1,1,'p',80],gaterb:['Cổng tai thỏ',()=>S_.gateRb,4,1,0,'p',300],cactus:['Bụi xương rồng',()=>S_.cactusT,1,1,1,'b',100],farmlamp:['Đèn nông trại',()=>S_.farmlamp,1,1,1,'v',150],denlong:['Đèn lồng',()=>S_.denlong,1,1,1,'v',1000],
  bantrua:['Bàn nghỉ trưa',()=>S_.bantrua,4,1,1,'v',300],ghetrua:['Ghế nghỉ trưa',()=>S_.ghetrua,1,1,1,'v',80],
  bonsai1:['Chậu bonsai 1',()=>S_.bonsai1,1,1,1,'b',200],bonsai2:['Chậu bonsai 2',()=>S_.bonsai2,1,1,1,'b',200],bonsai3:['Chậu bonsai 3',()=>S_.bonsai3,1,1,1,'b',200],
- banhtrang:['Sạp phơi bánh tráng',()=>S_.banhtrang,1,6,1,'v',1000]});
+ banhtrang:['Sạp phơi bánh tráng',()=>S_.banhtrang,1,6,1,'v',1000],
+ ccvong:['Chong chóng cầu vồng',()=>S_.ccvong,1,1,1,'v',100],cc4:['Chong chóng 4 cánh',()=>S_.cc4,1,1,1,'v',100],
+ bontru:['Bồn trữ nước',()=>S_.bontru,2,2,1,'v',500],
+ aonho:['Ao cá thủy sinh nhỏ',()=>S_.aonho,4,4,1,'k',500],aolon:['Ao cá thủy sinh lớn',()=>S_.aolon,6,6,1,'k',1000]});
 const FMCAT=[['p','🛤️ Lối đi & hàng rào'],['k','🏡 Công trình'],['c','🌳 Cây cối'],['b','🌸 Bụi & hoa'],['v','🧺 Vật dụng']];
 const FMRAW={},FMOUT={},FMTH={};
 const fmRaw=k=>FMRAW[k]||(FMRAW[k]=FMD[k][1]());
