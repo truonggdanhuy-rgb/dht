@@ -830,3 +830,77 @@ function accGuitar(P){
    Dùng lại dáng + động tác của Đàn guitar, đổi sang thân hồng cánh sen, cần đàn đen, có lấp lánh. Giá: SHOP.a.pr (số 15) trong pho-map.js */
 const EGT_MAP={'#f2b872':'#ff9ad0','#e0944a':'#e8409a','#c47a38':'#b02270','#6b3414':'#4a0f33','#2a1408':'#c9d2dc','#3a1d0c':'#8a96a4','#4a2a14':'#22222c','#2a160a':'#101018','#8a5a2c':'#2e2e3a','#a8743a':'#3c3c4a'};
 function accEGuitar(P){const R0=P.R;accGuitar(Object.assign({},P,{R:(c,x,y,w,h)=>R0(EGT_MAP[c]||c,x,y,w,h)}))}
+
+/* ---------------------- CHẢO CHỐNG DÍNH (t:'hold') — bán ở Shop Phố xá: 500 Xu ----------------------
+   Chảo đen cầm cán dựng đứng trước người: viền xám đậm, lòng chảo đen bóng có vệt sáng chạy ngang, hơi nóng bay lên.
+   Khai báo: ACCS (k:'pan') trong index.html • giá: SHOP.a.pr (số 24) trong pho-map.js */
+function accPan(P){
+ const R=P.side?(c,x,y,w,h)=>P.R(c,x+2,y,w,h):P.R,t=P.t,hy=P.hy,SK='#f1c08a',SKD='#d99e6a';
+ const RIM='#4a4a56',RIML='#7c7c8c',RIMD='#26262e',IN='#16161c',IN2='#23232b';
+ // cán: đen, có đai đỏ ở chỗ cầm
+ for(let y=hy+3;y>=hy-7;y--){R('#3a3a44',0,y,1,1);R('#1c1c24',1,y,1,1)}
+ R('#6a6a78',0,hy-6,1,1);R('#e0483a',0,hy+2,2,1);R('#9a2a20',0,hy+3,2,1);   // đai đỏ cuối cán
+ const top=hy-18;
+ if(P.side){
+  // nhìn nghiêng: chảo mỏng như tấm đĩa dựng đứng
+  const W=[2,3,3,3,3,3,3,3,3,3,2];
+  W.forEach((w,i)=>{const x0=i==0||i==10?0:-1;R(RIM,x0,top+i,w,1);if(w==3){R(RIML,x0,top+i,1,1);R(RIMD,x0+2,top+i,1,1)}});
+  R(IN,0,top+2,1,7);
+ }else if(P.back){
+  // nhìn sau: lưng chảo đen nhám
+  const W=[6,10,12,12,12,12,12,12,12,10,6];
+  W.forEach((w,i)=>{const x0=1-w/2;R(RIMD,x0,top+i,w,1);R('#2e2e38',x0+1,top+i,w-3>0?w-3:1,1)});
+  R('#5a5a68',-3,top+2,3,1);R('#5a5a68',-4,top+3,1,2);
+ }else{
+  // nhìn trước: viền + lòng chảo
+  const W=[6,10,12,12,12,12,12,12,12,10,6];
+  W.forEach((w,i)=>{const x0=1-w/2;R(RIM,x0,top+i,w,1);R(RIML,x0,top+i,1,1);R(RIMD,x0+w-1,top+i,1,1)});
+  R(RIML,-3,top,6,1);R(RIMD,-3,top+10,6,1);
+  const IW=[0,8,10,10,10,10,10,10,10,8,0];
+  IW.forEach((w,i)=>{if(w){const x0=1-w/2;R(IN,x0,top+i,w,1);R(IN2,x0+w-2,top+i,2,1)}});
+  // vệt bóng + ánh sáng chạy ngang lòng chảo
+  R('#5c5c6c',-3,top+3,1,2);R('#5c5c6c',-2,top+2,2,1);
+  const sx=Math.floor((t*9)%16)-4;if(sx>=-3&&sx<=4){R('rgba(255,255,255,.35)',sx,top+4,1,3);R('rgba(255,255,255,.2)',sx+1,top+5,1,2)}
+  R('#ffffff',-3,top+3,1,1);
+ }
+ // hơi nóng bay lên
+ for(let k=0;k<3;k++){const p=(t*.7+k/3)%1,al=p<.2?p/.2:(1-p)/.8,x=Math.round(-2+k*2+Math.sin(p*6+k*2)*1.5),y=Math.round(top-1-p*8);
+  R('rgba(235,240,255,'+(al*.55).toFixed(2)+')',x,y,1,2)}
+ // bàn tay nắm cán
+ R(SK,-1,hy,3,2);R(SKD,-1,hy+2,3,1);
+}
+window.accPan=accPan;
+
+/* ---------------------- KEM ỐC QUẾ (t:'hold') — bán ở Shop Phố xá: 100 Xu ----------------------
+   Ốc quế vàng caro, 2 viên kem (hồng dâu + vani) xếp chồng, quả cherry đỏ trên đỉnh; lấp lánh + giọt kem chảy nhẹ.
+   Khai báo: ACCS (k:'icecream') trong index.html • giá: SHOP.a.pr (số 25) trong pho-map.js */
+function accIceCream(P){
+ const R=P.side?(c,x,y,w,h)=>P.R(c,x+2,y,w,h):P.R,t=P.t,hy=P.hy,SK='#f1c08a',SKD='#d99e6a';
+ // ốc quế: đầu nhọn ở tay, rộng dần lên trên (độ rộng chẵn, tâm x=0.5)
+ const CW=[2,2,4,4,6,6,8,8,8];
+ CW.forEach((w,i)=>{const y=hy+4-i,x0=1-w/2;
+  R('#e8b266',x0,y,w,1);
+  for(let x=x0;x<x0+w;x++){if(((x+y)&1)==0)R('#cf8f3f',x,y,1,1)}          // caro waffle
+  R('#f6d08c',x0,y,1,1);R('#a8671f',x0+w-1,y,1,1)});                     // sáng trái / tối phải
+ R('#b9772e',-3,hy-4,8,1);R('#8a5418',4,hy-4,1,1);                         // viền miệng ốc quế
+ // viên kem dâu (dưới) có "váy" nhăn
+ const S1=[[10,0],[10,1],[10,1],[10,1],[10,1],[8,1],[6,1]];
+ S1.forEach(([w,s],i)=>{const y=hy-5-i,x0=1-w/2;
+  R(i==0?'#e0709f':'#ff9ac4',x0,y,w,1);
+  if(i>0)R('#ffc4de',x0,y,2,1);R(i==0?'#b84878':'#e0709f',x0+w-2,y,2,1)});
+ for(let x=-4;x<=5;x+=2)R('#e0709f',x,hy-5,1,1);                           // nếp váy
+ // viên kem vani (trên)
+ const S2=[8,8,8,6,4];
+ S2.forEach((w,i)=>{const y=hy-12-i,x0=1-w/2;
+  R('#fff4d6',x0,y,w,1);R('#ffffff',x0,y,Math.min(2,w),1);R('#ead9a8',x0+w-2,y,2,1)});
+ // cherry + cuống
+ R('#d8202e',0,hy-18,2,2);R('#ff6070',0,hy-18,1,1);R('#8a1018',1,hy-17,1,1);
+ R('#5a8a2a',1,hy-20,1,1);R('#5a8a2a',2,hy-21,1,1);
+ // giọt kem chảy xuống ốc quế (chớp nhẹ)
+ const dr=Math.floor((t*1.2)%3);R('#ff9ac4',4,hy-4+(dr>1?1:0),1,2+(dr>0?1:0));R('#e0709f',4,hy-3+(dr>1?1:0)+(dr>0?1:0),1,1);
+ // lấp lánh
+ if(Math.sin(t*4)>.6){R('#ffffff',-3,hy-9,1,1);R('rgba(255,255,255,.7)',-4,hy-9,1,1);R('rgba(255,255,255,.7)',-3,hy-10,1,1)}
+ // bàn tay nắm đầu ốc quế
+ R(SK,-1,hy,3,2);R(SKD,-1,hy+2,3,1);
+}
+window.accIceCream=accIceCream;
