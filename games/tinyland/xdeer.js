@@ -159,7 +159,7 @@ window.xdBuy=function(n){const q=XDI[n],i=find(q);if(i<0)return;ST.own=ST.own||{
 let XRAF=0;
 function xdAnim(){const cs=document.querySelectorAll('canvas.xdc');if(!cs.length||!UI){XRAF=0;return}const t=performance.now()/1000;
  cs.forEach(c=>{const q=XDI[+c.dataset.q],i=find(q),g=c.getContext('2d'),A=ST.av||{};g.clearRect(0,0,c.width,c.height);g.imageSmoothingEnabled=false;g.save();g.scale(3,3);
-  const d=[0,3,1,2][Math.floor(t/1.6)%4];drawAv(g,Math.round(c.width/6)-10,c.height/3-33+(q.t=='h'?0:0),{d,a:t,mv:0,sit:0,hair:q.t=='h'?i:(A.h|0),set:q.t=='s'?i:(A.s|0),e:A.e|0,acc:-1});g.restore()});
+  const d=[0,3,1,2][Math.floor(t/1.6)%4];drawAv(g,Math.round(c.width/6)-10,c.height/3-33+(q.t=='h'?0:0),{d,a:t,mv:0,sit:0,hair:q.t=='h'?i:(A.h|0),set:q.t=='s'?i:(q.t=='h'?(window.nmSet?nmSet(A.s):(A.s|0)):(A.s|0)),e:A.e|0,acc:-1});g.restore()});
  XRAF=requestAnimationFrame(xdAnim)}
 const _nx=window.nxHouse;
 if(typeof _nx=='function')window.nxHouse=function(){_nx.apply(this,arguments);

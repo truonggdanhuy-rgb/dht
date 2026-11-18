@@ -598,7 +598,7 @@ function zoneArrow(){ // mũi tên chỉ hướng vùng nước tối khi nó n�
 
 function bnAct(a){const t=a.split(':')[0];
  if(t=='chest')return chestClaim();
- if(t=='shop'){toast('Một số trang phục bạn không thể xem khi bạn ĐANG MẶC SET',2000);return bnShop()}   // vào Shop quái vật (Biển): nhắc 2 giây
+ if(t=='shop'){return bnShop()}   // vào Shop quái vật (Biển): nhắc 2 giây
  if(t=='sail')return sail()}
 window.bnShop=()=>bnShop();
 const qvImg=()=>'<img src="'+QVI+'" style="width:15px;height:15px;vertical-align:-3px;image-rendering:pixelated">';
@@ -654,7 +654,7 @@ function bnPrev(c,t){const q=QSHOP[+c.dataset.q],m=q&&qItem(q);if(!m)return;cons
  if(q.t=='k'||q.t=='d'){if(window.MQ)MQ.paint(g,q.t=='k'?100:MQ.potId(q.k),c);return}
  const A=ST.av||{},K=2;g.save();g.scale(K,K);const W=c.width/K,H=c.height/K;
  const d=q.t=='a'?(m.it.t=='pull'?3:0):[0,3,1,2][Math.floor(t/1.6)%4];
- drawAv(g,Math.round(W/2)-10,H-33+(q.t=='a'&&m.it.t=='float'?6:0),{d,a:t,mv:q.t=='a'?1:0,sit:0,hair:q.t=='h'?m.i:(A.h|0),set:q.t=='s'?m.i:(A.s|0),e:A.e|0,acc:q.t=='a'?m.i:-1});
+ drawAv(g,Math.round(W/2)-10,H-33+(q.t=='a'&&m.it.t=='float'?6:0),{d,a:t,mv:q.t=='a'?1:0,sit:0,hair:q.t=='h'?m.i:(A.h|0),set:q.t=='s'?m.i:(q.t=='h'?(window.nmSet?nmSet(A.s):(A.s|0)):(A.s|0)),e:A.e|0,acc:q.t=='a'?m.i:-1});
  g.restore()}
 function bnAnim(){const cs=document.querySelectorAll('canvas.bsc');if(!cs.length||!UI){BRAF=0;return}const t=performance.now()/1000;cs.forEach(c=>bnPrev(c,t));BRAF=requestAnimationFrame(bnAnim)}
 {const st=document.createElement('style');st.textContent=

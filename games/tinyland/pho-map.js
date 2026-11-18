@@ -756,6 +756,7 @@ function mieuLoop(){const c=$('mc');if(!c||!UI||PS.view!='mieu')return;const g=c
 const SHOP={m:{t:'🐃 Thú cưỡi',all:()=>MOUNTS,pr:[4000,5500,4200,9000,1500,null,null,null,null,8000,1000]},p:{t:'🐾 Pet',all:()=>PETS,pr:[250,900,350,300,1100,500,null,null,null,null,null,null,10000]},s:{t:'👕 Set',all:()=>SETS,pr:[0,600,500,450,450,500,800,800,1500,2800,3500,20000, 500,500,600,1000,800,400,400,5000,5000, 0,0,0,0,0,0,0,0,0, 900,700, 500,500,500, 5000,5000, 0, 3000,3000]},h:{t:'🧢 Tóc & mũ',all:()=>HAIRS,pr:[0,150,200,250,300,300, 1000,400,600,200,250,300,1000, 4500,3500,6000,4000,3500,2800, 2200,2000,3200,6000,4500,2800, 0,0,0, 800,500]},
  e:{t:'😄 Biểu cảm',all:()=>EXPRS,pr:[0,0,0,0,0,0,18000,0,500,500]},   // số 7 'Thổi tim' bán bằng kim cương ở Shop kim cương
  a:{t:'🎀 Phụ kiện',all:()=>ACCS,pr:[300,450, 0,0,0,0, 5000,1500,300,800, 3000, 500,500, 400, 0, 4000, 0,0,0, 2000,2000,2000]}};   // số 19-21 = Balo Ong mật / Thỏ hồng / Cánh cụt 2000 Xu/cái • số 10 = Đàn guitar 3000 Xu • số 14 = Gậy Nấm pháp sư (bán kim cương) • số 15 = Guitar điện 4000 Xu
+window.nmSet=s=>{const W=SETS[s|0];return W&&(W.mascot||W.deer||W.dn||W.tn||W.aul)?0:(s|0)};   // set mascot che mất tóc -> khi XEM THỬ tóc/mũ trong shop thì mặc tạm set thường
 const price=(k,i)=>{const it=SHOP[k].all()[i];if(it&&it.xu!=null)return it.xu;const v=SHOP[k].pr[i];return v==null?500:v};   // món có trường xu (vd nhanvien.js) thì lấy giá ở đó
 /* Giá gộp nhiều loại tiền: món có cb:{xu,qv,dia} trong MOUNTS (vd Ván trượt cam). qv = xu quái vật, dia = kim cương */
 const cbTxt=(cb,short)=>short?'🪙'+cb.xu.toLocaleString('vi-VN')+' • QV '+cb.qv+' • 💎'+cb.dia:cb.xu.toLocaleString('vi-VN')+' Xu + '+cb.qv.toLocaleString('vi-VN')+' xu quái vật + '+cb.dia+' 💎';
@@ -767,7 +768,7 @@ window.psShop=(tab)=>{if(typeof ownE=='function')ownE();if(tab)SH_TAB=tab;PS.vie
  h+='<div class="mut">Đồ đã mua nằm trong 🎒 Túi. Chạm vào món để xem thử & mua.</div>';
  openUI(h);shPaint()};
 function shDraw(g,k,ix,o,t,big){
- if(k=='h')o.hair=ix;else if(k=='s')o.set=ix;else if(k=='e'){o.e=ix;if(SETS[o.set]&&SETS[o.set].mascot)o.set=0}else if(k=='a'){o.acc=ix;if(ACCS[ix]&&ACCS[ix].bag&&!big)o.d=1}
+ if(k=='h'){o.hair=ix;o.set=nmSet(o.set)}else if(k=='s')o.set=ix;else if(k=='e'){o.e=ix;if(SETS[o.set]&&SETS[o.set].mascot)o.set=0}else if(k=='a'){o.acc=ix;if(ACCS[ix]&&ACCS[ix].bag&&!big)o.d=1}
  if(big){const d=AVDIR[SH_DIR];o.d=d;o.a=t;o.mv=1;g.clearRect(0,0,110,92);g.fillStyle='rgba(60,110,40,.28)';g.fillRect(0,78,110,14);
   if(k=='m')drawRide(g,55,80,o,ix,t);else if(k=='e'){o.mv=0;g.save();g.scale(3,3);drawAv(g,8,0,o);g.restore()}else{drawAv(g,k=='p'?34:45,50,o);if(k=='p')drawPet(g,d==3?12:68,82,d,1,t,t,ix)}return}
  if(k=='h'){g.save();g.scale(2,2);drawAv(g,1,1,o);g.restore()}
@@ -777,7 +778,7 @@ function shDraw(g,k,ix,o,t,big){
  else if(k=='e'){g.save();g.scale(3,3);const dr=()=>drawAv(g,-3,-4,o);if(ix==6)tlFreeze(2500,dr);else dr();g.restore()}
  else{g.save();g.scale(2,2);drawPet(g,11,24,0,0,0,t,ix);g.restore()}}
 function shPaint(){const A=ST.av,t=performance.now()/1000;document.querySelectorAll('canvas.shc').forEach(c=>{const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);shDraw(g,SH_TAB,+c.dataset.i,{d:0,a:0,mv:0,sit:0,hair:A.h,set:A.s,e:A.e},t,0)})}
-window.psItem=i=>{if(SH_TAB=='h'){const W=SETS[ST.av.s];if(W&&(W.mascot||W.deer||W.dn||W.tn||W.aul))return toast('🧸 Bạn cần gỡ mascot mới xem được vật phẩm tóc & mũ')}if(typeof ownE=='function')ownE();SH_I=i;const S=SHOP[SH_TAB],x=S.all()[i],has=ST.own[SH_TAB].includes(i),pr=price(SH_TAB,i);PS.view='item';
+window.psItem=i=>{if(typeof ownE=='function')ownE();SH_I=i;const S=SHOP[SH_TAB],x=S.all()[i],has=ST.own[SH_TAB].includes(i),pr=price(SH_TAB,i);PS.view='item';
  const eq=ST.av[SH_TAB]==i;
  openUI(head(S.t+' — '+x.n)+'<div style="text-align:center"><canvas id="shp" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#d6e8f2,#e8efd6 70%);border:2px solid #7a4a26;cursor:pointer" onclick="SH_DIR=(SH_DIR+1)%4"></canvas><div class="mut" style="margin:2px 0 6px">Chạm vào hình để xoay • bạn có 🪙 <b>'+fmtXu(ST.xu)+'</b> Xu'+(x.cb?' • QV <b>'+fmtXu(ST.qv|0)+'</b> • 💎 <b>'+(ST.dia|0)+'</b>':'')+'</div></div>'+
  '<div class="pf">'+(has?'<button class="b" onclick="psUse('+i+')">'+(eq?'✓ Đang dùng':'✨ Dùng ngay')+'</button>':'<button class="b" onclick="psBuy('+i+')">'+(x.cb?'🛍️ Mua — '+cbTxt(x.cb):'🪙 Mua — '+pr.toLocaleString('vi-VN')+' Xu')+'</button>')+'<button class="b" onclick="psShop()">⬅ Quay lại</button></div>');
@@ -1039,7 +1040,7 @@ window.gdSellN=(id,n)=>{const it=gdItem(id),G=gdBag(),o=G.inv[id];if(!it||!o)ret
  toast('🥇 Đã bán '+k+' '+it[1]+' — nhận '+gdN(pro)+' Xu ('+(pf>=0?'lời ':'lỗ ')+gdN(Math.abs(pf))+')');gdKeep(()=>goldUI(1))};
 
 function psAct(a,h){const[t,v]=a.split(':');
- if(t=='shop'){toast('Một số trang phục bạn không thể xem khi bạn ĐANG MẶC SET',2000);return psShop(v)}   // vào Shop Phố xá: nhắc 2 giây
+ if(t=='shop'){return psShop(v)}   // vào Shop Phố xá: nhắc 2 giây
  if(t=='mini')return window.bbShop?bbShop():toast('🧸 Shop Miniset đang chuẩn bị');
  if(t=='lot')return psLot();
  if(t=='bm')return buffShopUI('bm');

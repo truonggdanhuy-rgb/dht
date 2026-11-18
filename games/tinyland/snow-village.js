@@ -230,7 +230,7 @@ const SBSVG=z=>'<svg width="'+z+'" height="'+z+'" viewBox="0 0 40 40" style="fle
 function santaAct(){const d=new Date().toDateString();
  if(ST.sbd!=d){ST.sbd=d;ST.sb=(ST.sb|0)+1;try{SF.t0=performance.now()}catch(e){}save();
   return toast('🎅 Ho ho ho! Bạn nhận được 1 ❄️ Huy hiệu tuyết!\nĐang có '+ST.sb+' huy hiệu • bấm lại ông để xem gian hàng')}
- toast('Một số trang phục bạn không thể xem khi bạn ĐANG MẶC SET',2000);santaPanel()}   // mở gian hàng ông Noel: nhắc 2 giây
+ santaPanel()}   // mở gian hàng ông Noel: nhắc 2 giây
 /* ---- Gian hàng đổi Huy hiệu tuyết: thêm món mới = thêm 1 dòng vào SBSHOP (loại 'p' pet / 's' set / 'h' tóc-mũ / 'a' phụ kiện / 'x' hành động; k = khóa trong PETS/SETS/HAIRS/ACCS, riêng 'x' là id trong ACTS; giá = bd) ---- */
 const SBSHOP=[{t:'p',k:'ginger'},{t:'p',k:'snowcloud'},{t:'h',k:'earfur'},{t:'x',k:'bell'},{t:'a',k:'gift'},{t:'a',k:'snowbub'},{t:'s',k:'wintm'},{t:'s',k:'wintf'}];
 const sbArr=t=>t=='p'?PETS:t=='s'?SETS:t=='h'?HAIRS:t=='x'?ACTS:ACCS;
@@ -241,14 +241,14 @@ function sbPrev(c,t){const g=c.getContext('2d'),q=SBSHOP[+c.dataset.q],m=sbItem(
  const A=ST.av||{},K=m.t=='p'?3:2;g.save();g.scale(K,K);const W=c.width/K,H=c.height/K;
  if(m.t=='p'){g.fillStyle='rgba(80,110,60,.15)';drawPet(g,Math.round(W/2),H-6,Math.floor(t/2)%2?3:0,1,t,t,m.i)}
  else{const d=(m.t=='s'||m.t=='h')?[0,3,1,2][Math.floor(t/1.6)%4]:(m.it.t=='pull'?3:0);
-  drawAv(g,Math.round(W/2)-10,H-33+(m.it.t=='float'?6:0),{d,a:t,mv:m.t=='a'?1:0,sit:0,hair:m.t=='h'?m.i:(A.h|0),set:m.t=='s'?m.i:(A.s|0),e:A.e|0,acc:m.t=='a'?m.i:-1})}
+  drawAv(g,Math.round(W/2)-10,H-33+(m.it.t=='float'?6:0),{d,a:t,mv:m.t=='a'?1:0,sit:0,hair:m.t=='h'?m.i:(A.h|0),set:m.t=='s'?m.i:(m.t=='h'?(window.nmSet?nmSet(A.s):(A.s|0)):(A.s|0)),e:A.e|0,acc:m.t=='a'?m.i:-1})}
  g.restore()}
 function sbAnim(){const cs=document.querySelectorAll('canvas.sbc');if(!cs.length||!UI){SBRAF=0;return}const t=performance.now()/1000;cs.forEach(c=>sbPrev(c,t));SBRAF=requestAnimationFrame(sbAnim)}
 function sbBuy(n){const q=SBSHOP[n],m=q&&sbItem(q);if(!m)return;ST.own=ST.own||{};ST.acts=ST.acts||{};const own=m.t=='x'?[]:(ST.own[m.t]=ST.own[m.t]||[]);
  if(sbOwn(m))return toast(m.t=='x'?'✓ Bạn đã có hành động này rồi, mở ⚡ Hành động để dùng':'✓ Bạn đã có món này rồi, mở 🎒 Túi để dùng');
  const c=m.it.bd|0;if((ST.sb|0)<c)return toast('❄️ Chưa đủ huy hiệu — cần '+c+', bạn có '+(ST.sb|0)+'\nMỗi ngày ghé ông Noel nhận 1 huy hiệu nhé!');
  ST.sb-=c;if(m.t=='x')ST.acts[m.it.id]=1;else own.push(m.i);save();toast('🎁 Ông Noel: "Ho ho ho! Chúc mừng con nhận được '+m.it.n+'!"\n'+(m.t=='x'?'Mở ⚡ Hành động để dùng':'Mở 🎒 Túi để dùng'));santaPanel()}
-function sbHairChk(){const W=SETS[ST.av.s];if(W&&(W.mascot||W.deer||W.dn||W.tn||W.aul))toast('🧸 Bạn cần gỡ mascot mới xem được vật phẩm tóc & mũ')}
+function sbHairChk(){}
 function santaPanel(){const n=ST.sb|0;
  const tile=(q,qi)=>{const m=sbItem(q);if(!m)return '';const own=sbOwn(m),c=m.it.bd|0,ok=n>=c,kind=m.t=='p'?'Pet':m.t=='s'?'Set':m.t=='h'?'Mũ':m.t=='x'?'Hành động':'Phụ kiện';
   return '<div class="sbt on">'+(m.t=='x'?actCv(m.it.id,72,100,'sbx'):'<canvas class="sbc" data-q="'+qi+'" width="88" height="96"'+(m.t=='h'?' onclick="sbHairChk()"':'')+'></canvas>')+'<b>'+m.it.n+'</b><small>'+kind+'</small>'
