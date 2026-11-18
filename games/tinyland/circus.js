@@ -192,8 +192,8 @@ window.circusUI=()=>{
    ============================================================ */
 const CL_ITEMS=[
  {k:'clown',  n:'Hề Quái Đản',  d:'Nón hề cao 2 màu • Không che mặt',               pr:{xu:1500,qv:500,dia:5}},
- {k:'hanbokm',n:'Hanbok (Nam)', d:'Nón gat cao viền đỏ, áo đỏ thêu rắn • Không che mặt', pr:{xu:5000,qv:500,dia:2}},
- {k:'hanbokf',n:'Hanbok (Nữ)',  d:'Búi củ hành cài trâm, áo đỏ thêu rắn • Không che mặt', pr:{xu:5000,qv:500,dia:2}},
+ {k:'hanbokm',n:'Hanbok (Nam)', d:'Nón gat cao viền đỏ, áo đỏ thêu rắn • Không che mặt', pr:{xu:2000,qv:500,dia:2}},
+ {k:'hanbokf',n:'Hanbok (Nữ)',  d:'Búi củ hành cài trâm, áo đỏ thêu rắn • Không che mặt', pr:{xu:2000,qv:500,dia:2}},
  {k:'skatem',n:'Skater phố (Nam)',pr:{xu:3000,qv:200,dia:1}},
  {k:'skatef',n:'Skater phố (Nữ)',pr:{xu:3000,qv:200,dia:1}},
  {k:'mushm',n:'Nấm pháp sư (Nam)',d:'Mũ pháp sư cao có quả cầu cam phát sáng, nấm nhỏ bay quanh đầu • Không che mặt',pr:{xu:1000,qv:800,dia:5}},
@@ -203,11 +203,11 @@ const CL_ITEMS=[
  // h:1 = TÓC (k = 'khóa:pc' trong HAIRS, pc = f nữ / m nam, lưu ở ST.own.h) — hình vẽ: pinkcool.js
  {k:'pinkcool:f',h:1,n:'Tóc Pinkcool (Nữ)',d:'Tóc hồng xoăn, mũ ren trắng, nơ đỏ rất to • Không che mặt',pr:{xu:900,qv:400,dia:1}},
  {k:'pinkcool:m',h:1,n:'Tóc Pinkcool (Nam)',d:'Tóc hồng ngắn fade đẹp trai, vương miện vàng như vua • Không che mặt',pr:{xu:900,qv:400,dia:1}},
- {k:'hacvt',n:'Hắc Vô Thường',d:'Mũ cao vút đen, áo choàng đen dài, thè lưỡi dài • Không che mặt',pr:{xu:5000,qv:1000,dia:5}},
- {k:'bachvt',n:'Bạch Vô Thường',d:'Mũ cao vút trắng, áo choàng trắng dài, thè lưỡi dài • Không che mặt',pr:{xu:5000,qv:1000,dia:5}},
- {k:'phuthuy',n:'Phù Thủy Mộng Mơ',d:'Mũ phù thủy hồng cao, vành rất rộng • Nam nữ đều mặc • Không che mặt',pr:{xu:5000,qv:800,dia:5}},
-  {k:'tamm',n:'Tiểu ác ma (Nam)',d:'Tóc trắng ngắn, thái dương nâu, 2 sừng đỏ chớp điện, áo khoác đen thánh giá • Biểu cảm lạnh lùng cố định',pr:{xu:2000,qv:1000,dia:5}},
-  {k:'tamf',n:'Tiểu ác ma (Nữ)',d:'Tóc trắng muốt dài, 2 sừng đỏ chớp điện, áo khoác đen thánh giá • Biểu cảm lạnh lùng cố định',pr:{xu:2000,qv:1000,dia:5}},
+ {k:'hacvt',n:'Hắc Vô Thường',d:'Mũ cao vút đen, áo choàng đen dài, thè lưỡi dài • Không che mặt',pr:{xu:2000,qv:1000,dia:5}},
+ {k:'bachvt',n:'Bạch Vô Thường',d:'Mũ cao vút trắng, áo choàng trắng dài, thè lưỡi dài • Không che mặt',pr:{xu:2000,qv:1000,dia:5}},
+ {k:'phuthuy',n:'Phù Thủy Mộng Mơ',d:'Mũ phù thủy hồng cao, vành rất rộng • Nam nữ đều mặc • Không che mặt',pr:{xu:2000,qv:800,dia:5}},
+  {k:'tamm',n:'Tiểu ác ma (Nam)',d:'Tóc trắng ngắn, thái dương nâu, 2 sừng đỏ chớp điện, áo khoác đen thánh giá • Biểu cảm lạnh lùng cố định',pr:{xu:2000,qv:1000,dia:10}},
+  {k:'tamf',n:'Tiểu ác ma (Nữ)',d:'Tóc trắng muốt dài, 2 sừng đỏ chớp điện, áo khoác đen thánh giá • Biểu cảm lạnh lùng cố định',pr:{xu:2000,qv:1000,dia:10}},
  // m:1 = THÚ CƯỠI (k = khóa trong MOUNTS, lưu ở ST.own.m). Giá 0 thì dòng đó tự ẩn.
  {k:'unicycle',m:1,n:'Xe đạp 1 bánh',d:'Thú cưỡi • Đạp xe 1 bánh cao to, yên đen, vành bạc',pr:{xu:8000,qv:0,dia:0}},
  {k:'skate_orange',m:1,n:'Ván trượt cam',d:'Thú cưỡi • Đứng lướt trên ván cam, bánh xe xanh',pr:{xu:1000,qv:300,dia:2}},
