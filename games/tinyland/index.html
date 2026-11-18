@@ -1986,7 +1986,12 @@ const MOUNTS=[{n:'Trâu Việt',hw:9,drop:8,spd:1.8,seat:{0:[0,-22],1:[0,-22],si
 {n:'Ván trượt hề',k:'skate_clown',cl:1,cb:{xu:1000,qv:400,dia:2},hw:8,drop:0,spd:2.6,nobob:1,acc:1,sh:[26,20],seat:{0:[0,-13],1:[0,-13],side:[0,-13]},
  legs(R,d,ph,sx,sy,PT,SD,S,hv,c){if(window.skLegs)skLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
  hov:(t,mv)=>window.skHov?skHov(t,mv):0,lean:(mv,d)=>window.skLean?skLean(mv,d):0,
- draw(R,d,f,b,t,pt,c){if(window.skDraw)skDraw('clown',R,d,f,b,t,pt,c)}}
+ draw(R,d,f,b,t,pt,c){if(window.skDraw)skDraw('clown',R,d,f,b,t,pt,c)}},
+// ===== 🚲 Xe đạp 1 bánh xanh dương (8000 Xu ở Tiệm Chú Hề; cùng hình vẽ với xe đen trong newitems4.js, chỉ khác bảng màu 'blue') =====
+{n:'Xe đạp 1 bánh xanh',k:'unicycle_blue',cl:1,hw:4,drop:0,spd:2.2,nobob:1,sh:[13,9],seat:{0:[0,-24],1:[0,-24],side:[-1,-24]},
+ legs(R,d,ph,sx,sy,PT,SD,S,hv,c){if(window.uniLegs)uniLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
+ hov:(t,mv)=>window.uniHov?uniHov(t,mv):0,lean:(mv,d)=>window.uniLean?uniLean(mv,d):0,
+ draw(R,d,f,b,t,pt,c){if(window.uniDraw)uniDraw(R,d,f,b,t,pt,c,'blue')}}
 ];
 // nguoi ngoi tren thu cuoi
 function drawRide(g,x,y,o,mi,t){

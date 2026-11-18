@@ -13,8 +13,13 @@
 const PI=Math.PI,sin=Math.sin,cos=Math.cos,rnd=Math.round,abs=Math.abs,hyp=Math.hypot,at2=Math.atan2;
 // ---------- bảng màu ----------
 const TIRE='#2a2a33',TIRL='#52525f',RIM='#dfe5ec',RIMD='#a4aeb9',SPK='#98a2ae',HUB='#f1f4f7',
- FORK='#383844',FORKL='#6a6a7c',CHR='#c6cdd6',CHRL='#f4f7fa',CHRD='#8791a0',
- SAD='#30303a',SADL='#5f5f72',PED='#b9c0c8',PEDD='#6d7580',CRK='#7f8995',RED='#ff4a4a',GOLD='#f0c84c';
+ PED='#b9c0c8',PEDD='#6d7580',CRK='#7f8995',RED='#ff4a4a',GOLD='#f0c84c';
+// màu thay đổi theo từng xe (càng, chắn bùn/cổ yên, yên): 'black' = xe gốc, 'blue' = xe xanh dương
+const UPAL={
+ black:{FORK:'#383844',FORKL:'#6a6a7c',CHR:'#c6cdd6',CHRL:'#f4f7fa',CHRD:'#8791a0',SAD:'#30303a',SADL:'#5f5f72'},
+ blue:{FORK:'#1f55c4',FORKL:'#5b8cf0',CHR:'#3f86f2',CHRL:'#a9cdff',CHRD:'#2459b8',SAD:'#1d2b5c',SADL:'#44559a'}};
+let FORK,FORKL,CHR,CHRL,CHRD,SAD,SADL;
+const setPal=k=>({FORK,FORKL,CHR,CHRL,CHRD,SAD,SADL}=UPAL[k]||UPAL.black);setPal('black');
 const HX=0,HY=-9,CR=2.7,LEG_GO=9.3,LEG_STOP=11.3;   // tâm bánh (hub), bán kính tay quay, độ dài đùi/cẳng chân (đi / đứng chống chân)
 // độ nghiêng theo độ cao: càng cao càng lệch (lx = độ lệch của yên, px)
 const sh=(lx,y)=>lx?rnd(lx*Math.max(0,Math.min(1,(-y-1)/19))):0;
@@ -49,7 +54,8 @@ function uniLegs(R,d,ph,sx,sy,PT,SD,S,hv,c){
 }
 
 // ---------- thân xe ----------
-function uniDraw(R,d,f,b,t,pt,c){
+function uniDraw(R,d,f,b,t,pt,c,key){
+ setPal(key);
  const mv=c.mv,lx=c.lx||0,th=mv?c.ph*.62:0,S=c.S,
   Rs=(col,x,y,w,h)=>R(col,x+sh(lx,y),y,w,h);                          // vẽ có nghiêng
  const hx=HX+sh(lx,HY);
