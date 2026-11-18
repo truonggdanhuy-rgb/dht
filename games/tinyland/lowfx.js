@@ -7,7 +7,8 @@
    • Chỉ cần thêm 1 dòng <script src="lowfx.js"> vào CUỐI index.html (sau xdeer.js)
    ===================================================================== */
 (function(){
-const KEY='tl_lowfx2';   // khóa mới: bỏ trạng thái tự bật của bản cũlet low=false;
+/* khóa mới: bỏ trạng thái tự bật của bản cũ */
+const KEY='tl_lowfx2';let low=false;
 const P=CanvasRenderingContext2D.prototype,sb=Object.getOwnPropertyDescriptor(P,'shadowBlur'),dprD=Object.getOwnPropertyDescriptor(window,'devicePixelRatio');
 function apply(on){low=!!on;
  try{Object.defineProperty(P,'shadowBlur',on?{configurable:true,get(){return 0},set(v){}}:sb)}catch(e){}
