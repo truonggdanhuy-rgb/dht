@@ -86,6 +86,9 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 .sq.sel{background:#ffe27a;border-color:#4caf50}
 .sg.kg{grid-template-columns:repeat(4,1fr);gap:5px}.sg.kg .sq{min-height:66px;padding:4px 1px}.sg.kg .sq .e{font-size:24px}.sg.kg .sq small{font-size:9.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ksel{position:sticky;top:0;z-index:2;background:#fff3cf;border:2px solid #c9a06a;padding:5px 6px;margin:4px 0 6px;display:flex;justify-content:space-between;align-items:center;gap:6px;min-height:42px}.ksel .kin{display:flex;align-items:center;gap:6px;font-size:12.5px;min-width:0}.ksel .kin .e{font-size:26px}.ksel .ksb{display:flex;gap:4px;flex:none}.ksel .b.z{opacity:.45}
+/* Túi nhân vật: nút tab nằm dọc bên TRÁI, vật phẩm bên PHẢI (vuốt lên/xuống trong khung phải) */
+.bgw{display:flex;gap:8px;align-items:flex-start}.bgt{display:flex;flex-direction:column;gap:5px;flex:0 0 78px}.bgt .b{margin:0;padding:9px 2px;font-size:12px;line-height:1.2;width:100%}.bgt .b.on{background:#ffe27a;border-color:#d9a000}
+.bgr{flex:1;min-width:0;max-height:max(200px,calc(84vh - 285px));overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding-right:3px}.bgr .sg{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))!important}.bgr.bgf{max-height:max(190px,calc(84vh - 110px))}
 .tabs{display:flex;gap:5px;margin-bottom:8px}.tabs .b{flex:1;margin:0}.tabs .b.on{background:#ffe27a;border-color:#d9a000}
 #title,#xu,.hb{opacity:.93}
 @media(max-width:640px){#title{left:6px;top:calc(6px + env(safe-area-inset-top,0px));padding:3px 7px;font-size:12px;border-width:2px}#title small{display:none}
@@ -3287,15 +3290,15 @@ const avItems=k=>{if(k=='f')return[];if(k=='b')return window.MQ?MQ.items():[];if
  if(k=='m'||k=='p'||k=='a'||W)L.push({n:k=='m'?'Không cưỡi':'Không dùng',idx:-1});
  all.forEach((x,i)=>{if(own.includes(i)&&(!(k=='a'||W)||(x.t=='wing')==W))L.push({n:x.n,idx:i})});return L};
 const avCur=k=>avItems(k).findIndex(x=>x.idx==ST.av[k]);
-function bagUI(t){AVTAB=t||AVTAB;const old=$('ui').scrollTop,L=avItems(AVTAB),cur=avCur(AVTAB),mt=AVTAB=='m';
- let h=head('🎒 Túi nhân vật')+'<div style="text-align:center"><canvas id="avp" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#bfe6ff,#d9f0b8 70%);border:2px solid #7a4a26;cursor:pointer" onclick="avTurn()"></canvas><div class="mut" style="margin:2px 0 6px">Chạm vào hình để xoay nhân vật</div></div>';
+function bagUI(t){const sameT=!t||t==AVTAB;AVTAB=t||AVTAB;const ob0=document.querySelector('#ui .bgr'),ost=sameT&&ob0?ob0.scrollTop:0;const old=$('ui').scrollTop,L=avItems(AVTAB),cur=avCur(AVTAB),mt=AVTAB=='m';
+ let h=head('🎒 Túi nhân vật')+'<div style="text-align:center"><canvas id="avp" width="110" height="92" style="width:176px;height:147px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#bfe6ff,#d9f0b8 70%);border:2px solid #7a4a26;cursor:pointer" onclick="avTurn()"></canvas><div class="mut" style="margin:2px 0 6px">Chạm vào hình để xoay nhân vật</div></div>';
  if(SETS[ST.av.s]&&SETS[ST.av.s].pjv)h+='<div class="mut">🌙 Đang mặc Pijama — bộ có sẵn tóc & dép bông (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].mascot)h+='<div class="mut">🧸 Đang mặc Mascot — đã gồm cả tóc & khuôn mặt nên tóc/biểu cảm tạm ẩn, nhưng <b>phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].dn)h+='<div class="mut">🌕 Đang mặc Dạ nguyệt — bộ có sẵn tóc & mão/trâm (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].aul)h+='<div class="mut">⚔️ Đang mặc Chiến binh Âu Lạc — bộ có sẵn tóc & mão (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].tn)h+='<div class="mut">🧚 Đang mặc Tiên nữ — bộ có sẵn tóc búi & mão hoa (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt, biểu cảm & phụ kiện cầm tay vẫn hiện</b>.</div>';
  else if(SETS[ST.av.s]&&SETS[ST.av.s].deer)h+='<div class="mut">🦌 Đang mặc Tiệc mùa đông — bộ này có sẵn tóc riêng (tóc bạn chọn tạm ẩn), nhưng <b>khuôn mặt & biểu cảm vẫn hiện</b>.</div>';
- h+='<div class="tabs" style="flex-wrap:wrap">'+AVTABS.map(([k,n])=>'<button class="b'+(k==AVTAB?' on':'')+'" onclick="bagUI(\''+k+'\')">'+n+'</button>').join('')+'</div>';
+ h+='<div class="bgw"><div class="bgt">'+AVTABS.map(([k,n])=>'<button class="b'+(k==AVTAB?' on':'')+'" onclick="bagUI(\''+k+'\')">'+n+'</button>').join('')+'</div><div class="bgr">';
  h+='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+L.map((x,i)=>'<button class="sq'+(i==cur?' sel':'')+'" onclick="avPick('+i+')"><canvas class="avt" data-i="'+i+'" width="'+(mt?72:44)+'" height="'+(mt?68:AVTAB=='p'?52:44)+'" style="width:'+(mt?88:57)+'px;height:'+(mt?83:AVTAB=='p'?68:57)+'px;image-rendering:pixelated"></canvas><b>'+x.n+'</b><small>'+(x.sm||(i==cur?'✓ Đang dùng':'&nbsp;'))+'</small></button>').join('')+'</div>';
  if(L.length<=1&&(AVTAB=='m'||AVTAB=='p'||AVTAB=='a'||AVTAB=='w'))h+='<div class="mut">Bạn chưa có '+(mt?'thú cưỡi':AVTAB=='a'?'phụ kiện':AVTAB=='w'?'cánh / balo / đuôi':'pet')+' nào. Ghé Phố xá để mua nhé!</div>';
  if(AVTAB=='b'){h+=L.length?'<div class="mut">🖐️ Bấm vào quái vật để cầm trên tay. Di chuyển là tự cất, quay lại phụ kiện cầm tay cũ (nếu có).</div>':'<div class="mut">Bạn chưa câu được quái vật nào. Ra cầu tàu ở Biển để câu nhé! 🎣</div>'}
@@ -3303,7 +3306,7 @@ function bagUI(t){AVTAB=t||AVTAB;const old=$('ui').scrollTop,L=avItems(AVTAB),cu
  if(AVTAB=='w')h+='<div class="mut">🪽 Cánh, balo & đuôi đeo sau lưng, mỗi lần dùng 1 món. Mang chung được với 1 phụ kiện cầm tay ở tab <b>Phụ kiện</b>. Tự ẩn khi cưỡi thú hoặc ngồi nghỉ.</div>';
  if(mt)h+='<div class="mut">Khi cưỡi, nhân vật chạy nhanh hơn. Ngồi nghỉ ở chòi/ghế sẽ tự xuống thú.</div>';
  h+=AVTAB=='b'?'<button class="b w" onclick="goMap(\'bien\')">🌊 Đến Biển câu thêm</button>':'<button class="b w" onclick="goMap(\'phoxa\')">🏘️ Đến Phố xá mua thêm</button>';
- openUI(h);$('ui').scrollTop=old;avPaint();if(!avRaf)avLoop()}
+ h+='</div></div>';openUI(h);$('ui').scrollTop=old;{const nb=document.querySelector('#ui .bgr');if(nb)nb.scrollTop=ost}avPaint();if(!avRaf)avLoop()}
 function avPick(i){const A=ST.av,x=avItems(AVTAB)[i];if(!x)return;
  if(AVTAB=='b'){MQ.hold(x.idx);return}
  if(AVTAB=='h')A.h=x.idx;else if(AVTAB=='s')A.s=x.idx;else if(AVTAB=='e')A.e=x.idx;else if(AVTAB=='a')A.a=x.idx;else if(AVTAB=='w')A.w=x.idx;else if(AVTAB=='m'){A.m=x.idx;if(x.idx>=0&&Pl.sit){Pl.sit=0;Pl.mv=0}}else{A.p=x.idx;if(x.idx>=0)petReset()}
@@ -6096,11 +6099,11 @@ function foodEat(f,k){if(!(ST.food[f]>0))return toast('Hết '+FOOD[f][0]+' rồ
  ST.food[f]--;vitAdd(0,FOOD_NO);toast(FOOD[f][1]+' Ăn '+FOOD[f][0]+' ngon quá! +'+FOOD_NO+'% độ no');
  if(k)foodShop(k);else foodUI()}
 function foodUI(){const v=vit(),old=$('ui').scrollTop;let h=head('🎒 Túi nhân vật')
- +'<div class="tabs">'+AVTABS.map(([k,n])=>'<button class="b'+(k=='f'?' on':'')+'" onclick="bagUI(\''+k+'\')">'+n+'</button>').join('')+'</div>'
+ +'<div class="bgw"><div class="bgt">'+AVTABS.map(([k,n])=>'<button class="b'+(k=='f'?' on':'')+'" onclick="bagUI(\''+k+'\')">'+n+'</button>').join('')+'</div><div class="bgr bgf">'
  +'<div class="mut">🍚 Độ no: <b>'+Math.round(v.f)+'%</b>'+(v.f<=VT_LOW?' — đang đói, đi rất chậm!':'')+' • 💤 Sức khỏe: <b>'+Math.round(v.h)+'%</b>'+(v.h<=VT_LOW?' — buồn ngủ, về nhà ngủ nhé!':'')+'</div><div class="g1">';
  const ks=Object.keys(FOOD).filter(f=>ST.food[f]>0);
  h+=ks.length?ks.map(f=>'<div class="it"><span>'+FOOD[f][1]+' '+FOOD[f][0]+' <small>x'+ST.food[f]+' • +'+FOOD_NO+'% no</small></span><span class="sb"><button class="b" onclick="foodEat(\''+f+'\',\'\')">Ăn</button></span></div>').join(''):'<div class="mut">Chưa có đồ ăn. Ghé 🏮 Lễ hội mua bánh tét, kẹo tò he, chè, trà đá (10 Xu/món).</div>';
- h+='</div><button class="b w" onclick="goMap(\'lehoi\')">🏮 Đến Lễ hội mua đồ ăn</button>';
+ h+='</div><button class="b w" onclick="goMap(\'lehoi\')">🏮 Đến Lễ hội mua đồ ăn</button></div></div>';
  openUI(h);$('ui').scrollTop=old}
 
 function switchMap(m){if(MAP==m)return;if(ACT)actStop();if(MAP=='nt'&&FMODE)fmExit();if(MAP=='cv'||MAP=='ps'||MAP=='bn')cvLeave();if(MAP=='hm'){setA(RB,RBSAVE);HMA=null;DECO=0;decoDrop();barUp();$('dbtn').style.display='none'}if(MAP=='nt')MPOS.nt={x:Pl.x,y:Pl.y};if(m=='hm'){MPOS.nt={x:560,y:268};RBSAVE=RB.slice();setA(RB,HM.rb);if(ST.av.m>=0)ST.av.m=-1;WW=HW;WH=HH}else if(m=='wt'){WW=640;WH=432}MAP=m;WTM=m=='wt'?1:0;WTON=0;resize();
