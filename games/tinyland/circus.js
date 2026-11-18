@@ -194,6 +194,8 @@ const CL_ITEMS=[
  {k:'clown',  n:'Hề Quái Đản',  d:'Nón hề cao 2 màu • Không che mặt',               pr:{xu:1500,qv:500,dia:5}},
  {k:'hanbokm',n:'Hanbok (Nam)', d:'Nón gat cao viền đỏ, áo đỏ thêu rắn • Không che mặt', pr:{xu:5000,qv:500,dia:2}},
  {k:'hanbokf',n:'Hanbok (Nữ)',  d:'Búi củ hành cài trâm, áo đỏ thêu rắn • Không che mặt', pr:{xu:5000,qv:500,dia:2}},
+ {k:'skatem',n:'Skater phố (Nam)',pr:{xu:3000,qv:200,dia:1}},
+ {k:'skatef',n:'Skater phố (Nữ)',pr:{xu:3000,qv:200,dia:1}},
  {k:'hacvt',n:'Hắc Vô Thường',d:'Mũ cao vút đen, áo choàng đen dài, thè lưỡi dài • Không che mặt',pr:{xu:5000,qv:1000,dia:5}},
  {k:'bachvt',n:'Bạch Vô Thường',d:'Mũ cao vút trắng, áo choàng trắng dài, thè lưỡi dài • Không che mặt',pr:{xu:5000,qv:1000,dia:5}},
  {k:'phuthuy',n:'Phù Thủy Mộng Mơ',d:'Mũ phù thủy hồng cao, vành rất rộng • Nam nữ đều mặc • Không che mặt',pr:{xu:5000,qv:800,dia:5}},
@@ -250,7 +252,6 @@ window.clownItem=k=>{const it=CL_ITEMS.find(x=>x.k==k);if(!it)return clownShopUI
   '<div style="border-radius:14px;padding:8px;background:linear-gradient(180deg,#efe6ff,#ffe3f3);border:3px solid #4a1d82;text-align:center">'+
   (it.m?'<canvas class="clv" data-k="'+k+'" data-z="1" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;border-radius:10px;background:linear-gradient(#cdbdf5,#efe6ff 70%,#d9c8f0 70%)"></canvas>':'<canvas class="clv" data-k="'+k+'" data-z="3" width="150" height="231" style="width:150px;height:231px;image-rendering:pixelated;border-radius:10px;background:linear-gradient(#cdbdf5,#efe6ff 70%,#d9c8f0 70%)"></canvas>')+
   '<div style="font-weight:900;font-size:17px;color:#3b32d6;margin:4px 0 2px">'+it.n+'</div>'+
-  '<div class="mut" style="margin-bottom:6px">'+it.d+'</div>'+
   (own?'<button class="b w z" disabled style="font-weight:800">✓ Đã có — mở 🎒 Túi để dùng</button>'
    :'<div style="display:inline-flex;flex-direction:column;gap:2px;align-items:flex-start;background:#fff8;border-radius:10px;padding:6px 14px;margin-bottom:8px">'+clPriceRows(it,1)+'</div><br>'+
     (can?'<button class="b w" onclick="clownBuy(\''+k+'\')" style="font-weight:800;color:#fff;border:3px solid #4a1d82;border-radius:12px;background:linear-gradient(135deg,#9b5de5,#3a86ff);text-shadow:0 1px 0 #4a1d82">🛒 Mua</button>'

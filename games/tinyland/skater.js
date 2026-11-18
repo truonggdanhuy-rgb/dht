@@ -1,8 +1,8 @@
 /* ===================================================================================
    SKATER.JS — 🛹 Mascot SKATER PHỐ (Nam / Nữ) — 2 set, THÂN GIỐNG HỆT NHAU, chỉ khác phần ĐẦU
    • Khai báo ở CUỐI mảng SETS (index.html):
-       {k:'skatem', mascot:'skater', skt:'m'}  — Skater (Nam): mũ lưỡi trai xanh navy đội NGƯỢC, tóc đen, tai nghe quàng cổ
-       {k:'skatef', mascot:'skater', skt:'f'}  — Skater (Nữ):  tóc nâu buộc đuôi ngựa cao + scrunchie hồng, băng đô trắng
+       {k:'skatem', mascot:'skater', skt:'m'}  — Skater (Nam): mũ lưỡi trai navy đội NGƯỢC, tóc đen ngắn, tai nghe quàng cổ
+       {k:'skatef', mascot:'skater', skt:'f'}  — Skater (Nữ):  mũ lưỡi trai navy đội NGƯỢC + bông hồng nhí trên mũ, tóc nâu thả 2 đuôi thấp buộc scrunchie hồng
    • Bán ở TIỆM CHÚ HỀ (circus.js, mảng CL_ITEMS) — cùng chỗ bán Ván trượt cam.
    • Thân (dùng chung): hoodie vàng nghệ oversize, mũ trùm đã hạ xuống sau cổ, dây rút trắng đầu đỏ,
      túi kangaroo có đường may, họa tiết ván trượt trước ngực, bo gấu + bo cổ tay sọc,
@@ -106,70 +106,95 @@ function drawSkater(r,u,o,S,k){
  else if(!side){fillRows(SK,MSTD.HF);u(SKD,15,8,1,4);u(SKD,6,13,8,1)}
  else{fillRows(SK,MSTD.HS,1);M(SKD,13,9,2,4);M(SKD,6,13,6,1)}
 
- if(!fem)boyHead();else girlHead();
 
+
+ /* =============== ĐẦU: MŨ LƯỠI TRAI ĐỘI NGƯỢC (nam & nữ dùng chung khung mũ) =============== */
+ const rose=(Fm,x,y)=>{                                   // bông hoa hồng nhí 4x4 + lá
+  Fm(RDK,x+1,y,2,1);Fm(RD,x,y+1,4,2);Fm(RDL,x+1,y+1,1,1);Fm(RDK,x+2,y+2,1,1);Fm(RD,x+1,y+3,2,1);
+  Fm('#3fae4e',x+3,y+3,2,1);Fm('#2a8a3a',x+4,y+3,1,1);Fm('#3fae4e',x-1,y+3,1,1)};
+ function cap(){
+  if(!side){
+   // chỏm mũ tròn, 6 múi, nút đỏ trên đỉnh
+   u(NV,8,-2,4,1);u(NV,6,-1,8,1);u(NV,5,0,10,1);u(NV,4,1,12,1);u(NV,3,2,14,1);u(NV,3,3,14,3);
+   u(NVL,7,-1,3,1);u(NVL,5,0,3,1);u(NVL,4,1,3,1);u(NVL,3,2,3,3);
+   u(NVK,13,0,2,1);u(NVK,14,1,2,1);u(NVK,15,2,2,1);u(NVK,15,3,2,3);
+   u(NVK,10,-1,1,5);u(NVL,9,-1,1,3);u(NVK,7,1,1,3);u(NVK,13,1,1,3);   // đường may múi (thưa)
+   u(RD,9,-3,2,1);u(RDL,9,-3,1,1);u(RDK,10,-2,1,1);                                              // nút đỉnh
+   if(!fem){u(WH,4,2,3,1);u(WH,5,3,1,1);u(RD,5,4,1,1)}                           // logo thêu bên mũ
+   // đai chỉnh size phía sau (vì đội ngược nên nó nằm ngang trán): dây nhựa xám + khóa bấm
+   u('#aab0c4',3,6,14,1);u('#d6dae6',3,6,14,0);u('#d6dae6',4,5,12,1);u('#8b92a8',3,6,14,1);
+   for(let x=5;x<16;x+=2)u(NVK,x,5,1,1);                                                        // lỗ khóa
+   u(WH,8,5,4,2);u(RD,9,5,2,1);u('#8b92a8',8,7,4,0);
+   if(fem)rose(u,4,0);
+  }else if(back){
+   // nhìn từ phía sau: thấy LƯỠI mũ chìa ra
+   u(NV,8,-2,4,1);u(NV,6,-1,8,1);u(NV,5,0,10,1);u(NV,4,1,12,1);u(NV,3,2,14,4);
+   u(NVL,7,-1,3,1);u(NVL,5,0,3,1);u(NVL,4,1,3,1);u(NVL,3,2,3,3);u(NVK,15,2,2,4);u(NVK,14,1,2,1);
+   u(NVK,10,-1,1,5);u(NVK,7,1,1,3);u(NVK,13,1,1,3);u(RD,9,-3,2,1);
+   u(NV,2,6,16,1);u(NVL,3,6,6,1);u(RD,2,7,16,1);u(RDL,3,7,6,1);u(RDK,3,8,14,1);u(NVK,5,9,10,1);   // lưỡi mũ: mặt xanh + viền đỏ + bóng đổ
+   if(fem)rose(u,4,0);
+  }else{
+   // nhìn ngang: chỏm trùm đỉnh đầu, đai chỉnh ở phía MẶT, LƯỠI TRAI chìa ra phía SAU gáy
+   M(NV,6,-2,6,1);M(NV,4,-1,9,1);M(NV,3,0,11,1);M(NV,2,1,12,1);M(NV,2,2,13,3);
+   M(NVL,5,-1,3,1);M(NVL,3,0,3,1);M(NVL,2,1,3,3);M(NVK,12,0,2,1);M(NVK,13,1,2,1);M(NVK,13,2,2,3);
+   M(NVK,8,-1,1,5);M(NVL,7,-1,1,3);
+   M(RD,7,-3,2,1);M(RDL,7,-3,1,1);M(RDK,8,-2,1,1);
+   if(!fem){M(WH,3,2,3,1);M(WH,4,3,1,1);M(RD,4,4,1,1)}
+   else rose(M,5,-1);
+   // đai chỉnh size ở phía mặt (khóa bấm nhìn nghiêng)
+   M('#d6dae6',11,4,4,1);M('#aab0c4',11,5,4,1);M(WH,13,4,1,2);M(RD,14,5,1,1);
+   // lưỡi trai ngắn, cong xuống: mặt trên xanh, viền đỏ, mặt dưới tối
+   M(NV,-3,5,6,1);M(NVL,-1,5,4,1);M(RD,-4,6,6,1);M(RDL,-2,6,3,1);M(NVK,-3,7,4,1);
+  }
+ }
+
+ /* =============== NAM: tóc đen ngắn lộn xộn dưới mũ =============== */
+ function boyHead(){
+  if(back){
+   u(HC,3,8,14,6);u(HLc,5,9,2,1);u(HD,3,10,1,4);u(HD,16,10,1,4);u(HD,9,11,2,3);
+   cap();
+  }else if(!side){
+   // mái tóc chĩa ra dưới đai mũ + tóc mai
+   u(HC,4,7,5,1);u(HC,11,7,5,1);u(HC,4,8,3,1);u(HC,14,8,2,1);u(HD,6,7,1,1);u(HD,13,7,1,1);u(HC,8,7,1,1);u(HC,10,7,2,0);
+   for(let y=7;y<=10;y++){u(HC,3,y,1,1);u(HC,16,y,1,1)}u(HD,3,9,1,2);u(HD,16,9,1,2);u(HLc,5,7,1,1);
+   cap();
+  }else{
+   M(HC,5,7,6,1);M(HC,10,7,3,2);M(HD,11,8,1,1);M(HC,2,7,7,7);M(HLc,3,8,1,3);M(HD,2,12,1,2);M(HD,8,10,1,3);M(HC,8,7,2,3);
+   cap();
+  }
+ }
+
+ /* =============== NỮ: tóc nâu thả 2 đuôi thấp buộc dây hồng dưới mũ + hoa hồng nhí trên mũ =============== */
+ function girlHead(){
+  const sw=Math.round(Math.sin(T*3+(mv?1:0))*(mv?2:1));
+  if(back){
+   u(BR,3,8,14,5);u(BRL,5,9,2,1);u(BRK,9,9,2,4);
+   cap();
+   // 2 đuôi thấp rủ xuống, buộc scrunchie hồng
+   for(const[x0,dir]of[[3,-1],[14,1]]){
+    u(BR,x0,13,3,2);u(PK,x0,12,3,1);u(PKL,x0,12,1,1);u(PKK,x0+2,12,1,1);
+    u(BR,x0+dir*0+sw*0,14,3,5);u(BRK,x0+(dir>0?2:0),14,1,5);u(BRL,x0+(dir>0?0:1),15,1,3);u(BR,x0+(sw>0?1:0),19,2,1)}
+  }else if(!side){
+   u(BR,4,7,5,1);u(BR,11,7,5,1);u(BR,4,8,3,1);u(BR,14,8,2,1);u(BRK,6,7,1,1);u(BRK,13,7,1,1);u(BRL,5,7,1,1);
+   for(let y=7;y<=13;y++){u(BR,3,y,2,1);u(BR,15,y,2,1)}
+   u(BRK,3,10,1,4);u(BRK,16,10,1,4);u(BRL,3,8,1,2);
+   cap();
+   // 2 lọn tóc dài buông trước vai, buộc scrunchie hồng
+   for(const x0 of[1,16]){
+    u(BR,x0,13,3,2);u(BRL,x0,13,1,2);u(PK,x0,15,3,1);u(PKL,x0,15,1,1);u(PKK,x0+2,15,1,1);
+    u(BR,x0,16,3,3);u(BRK,x0+(x0<8?2:0),16,1,3);u(BR,x0+(sw?1:0),19,2,1)}
+  }else{
+   M(BR,5,7,6,1);M(BR,10,7,3,2);M(BRK,11,8,1,1);M(BR,2,7,7,10);M(BRL,3,8,1,4);M(BRK,2,13,1,4);M(BRK,8,11,1,3);M(BR,8,7,2,3);
+   cap();
+   // scrunchie hồng + đuôi tóc đung đưa sau gáy
+   M(PK,1,12,4,2);M(PKL,1,12,2,1);M(PKK,3,13,2,1);
+   M(BR,-1+sw,14,5,3);M(BRL,0+sw,14,1,3);M(BR,-2+sw,17,4,3);M(BRK,-1+sw,18,3,1);M(BR,-2+sw*2,20,2,1)
+  }
+ }
+ if(!fem)boyHead();else girlHead();
  if(!back){
   if(o.e>0)faceFx(u,o.e,side?1:0,side?Rt:0);
   else faceDef(u,side?1:0,side?Rt:0);
- }
-
- /* =============== ĐẦU NAM: tóc đen + MŨ LƯỠI TRAI navy ĐỘI NGƯỢC =============== */
- function boyHead(){
-  if(back){
-   u(HC,3,5,14,9);u(HLc,6,7,2,1);u(HD,3,9,1,5);u(HD,16,9,1,5);u(HD,9,11,2,3);
-   // phía sau: thấy LƯỠI mũ + khóa chỉnh
-   u(NV,3,1,14,5);u(NVL,4,1,3,1);u(NVK,3,5,14,1);u(RD,3,6,14,2);u(RDK,3,7,14,1);u(RDL,4,6,3,1);
-   u(NVL,9,2,2,3);u(WH,9,3,2,1);u(RD,9,0,2,1);
-  }else if(!side){
-   // tóc mái + tóc mai
-   u(HC,4,6,12,2);u(HLc,6,6,3,1);u(HD,8,7,1,1);u(HD,12,7,1,1);u(HC,4,8,2,1);u(HC,14,8,2,1);
-   for(let y=6;y<=10;y++){u(HC,3,y,1,1);u(HC,16,y,1,1)}u(HD,3,9,1,2);u(HD,16,9,1,2);
-   // mũ: chỏm tròn + 6 múi + nút đỏ
-   u(NV,7,0,6,1);u(NV,5,1,10,1);u(NV,4,2,12,1);u(NV,3,3,14,3);
-   u(NVL,6,1,3,1);u(NVL,5,2,2,1);u(NVL,4,3,2,2);
-   u(NVK,14,2,2,1);u(NVK,15,3,2,3);u(NVK,3,5,14,1);
-   u(NVL,9,1,1,4);u(NVK,10,1,1,4);                                                         // đường may giữa
-   u(RD,9,-1,2,1);u(RDL,9,-1,1,1);                                                         // nút đỉnh
-   u(WH,7,3,2,2);u(RD,8,4,1,1);                                                            // logo thêu
-   u(RD,3,6,14,1);u(RDK,3,6,1,1);u(RDK,16,6,1,1);                                          // đai mũ đỏ sát trán
-   u(WH,16,4,1,1);u(WH,3,4,1,1);                                                           // lỗ xỏ
-  }else{
-   M(HC,4,6,9,2);M(HLc,6,6,3,1);M(HC,11,7,2,2);M(HD,11,7,1,1);
-   M(HC,2,6,6,7);M(HLc,3,7,1,3);M(HD,2,11,1,2);M(HD,7,10,1,3);
-   // mũ đội ngược: chỏm + đai + LƯỠI TRAI chìa ra phía SAU gáy
-   M(NV,6,0,6,1);M(NV,4,1,9,1);M(NV,3,2,11,3);M(NVL,5,1,3,1);M(NVL,4,2,2,2);M(NVK,12,2,2,3);
-   M(NVK,3,5,11,1);M(RD,3,5,11,1);M(RDK,12,5,2,1);
-   M(NVL,8,1,1,4);M(RD,8,-1,2,1);M(WH,9,2,2,2);M(RD,10,3,1,1);
-   M(RD,-1,4,5,1);M(RDL,-1,4,2,1);M(RD,-2,5,6,1);M(RDK,0,5,4,1);   // lưỡi mũ
-  }
- }
-
- /* =============== ĐẦU NỮ: tóc nâu ĐUÔI NGỰA CAO + scrunchie hồng + băng đô trắng =============== */
- function girlHead(){
-  const sw=Math.round(Math.sin(T*3+(mv?1:0))*(mv?2:1));                                    // đuôi tóc đung đưa
-  if(back){
-   u(BR,3,4,14,11);u(BRL,6,6,2,1);u(BRL,12,8,1,3);u(BRK,3,9,1,6);u(BRK,16,9,1,6);u(BRK,9,10,2,5);
-   u(WH,3,5,14,1);u(WS,3,6,14,0);
-  }else if(!side){
-   u(BR,4,4,12,2);u(BRL,6,4,3,1);u(BRL,11,5,2,1);u(BR,4,6,12,2);u(BRK,8,6,1,2);u(BRK,12,6,1,2);u(BRL,5,6,2,1);
-   u(BR,4,8,2,1);u(BR,14,8,2,1);
-   for(let y=6;y<=13;y++){u(BR,3,y,2,1);u(BR,15,y,2,1)}
-   u(BRK,3,9,1,4);u(BRK,16,9,1,4);u(BRL,3,7,1,2);u(BRL,16,7,1,2);
-   u(BR,2,11,2,3);u(BR,16,11,2,3);u(BRK,2,13,1,1);u(BRK,17,13,1,1);
-   u(WH,3,5,14,1);u(WS,3,6,14,1);u(WH,3,5,2,2);u(PK,9,4,2,2);u(PKL,9,4,1,1);u(PKK,10,5,1,1);   // băng đô + nơ nhỏ
-  }else{
-   M(BR,4,4,9,2);M(BRL,6,4,3,1);M(BR,4,6,10,2);M(BR,11,8,2,1);
-   M(BR,2,6,8,9);M(BRL,3,8,1,4);M(BRK,2,12,1,3);M(BRK,8,11,1,3);
-   M(WH,3,5,11,1);M(WS,3,6,10,1);M(PK,9,4,2,2);
-  }
-  if(!side){u(BR,6,2,8,2);u(BRL,7,2,2,1);u(BR,4,3,12,1)}else{M(BR,5,2,8,2);M(BRL,6,2,2,1);M(BR,4,3,9,1)}   // đỉnh đầu nối với đuôi ngựa
-  // đuôi ngựa cao: buộc scrunchie ở đỉnh đầu, đuôi rủ xuống sau lưng
-  const pony=(Fm,flip)=>{
-   Fm(BR,8,-1,4,2);Fm(BRL,8,-1,1,1);Fm(PK,7,0,6,2);Fm(PKL,7,0,6,1);Fm(PKK,7,1,6,1);Fm(PKK,12,0,1,2);   // scrunchie
-   Fm(BR,12+sw,2,3,2);Fm(BR,13+sw,4,3,3);Fm(BR,14+sw,7,3,3);Fm(BR,14+sw,10,2,3);Fm(BRK,15+sw,12,1,2);   // đuôi tóc
-   Fm(BRL,12+sw,2,1,2);Fm(BRL,13+sw,4,1,3);Fm(BRK,16+sw,5,1,5);
-  };
-  if(!side)pony(u);else pony((c,x,y,w,h)=>M(c,x-6,y,w,h));
  }
 }
 window.drawMascotSkater=drawSkater;
