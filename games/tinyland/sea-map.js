@@ -7,6 +7,7 @@
    - CHỈ câu được khi đang đứng trên thuyền ngoài biển (không câu trên cầu tàu / bãi cát)
    - Thỉnh thoảng có VÙNG NƯỚC TỐI: câu ở đó dính quái có 15% nhận thêm 1 vé quay hoặc 1 món ăn từ máy chế biến
    - Rương kho báu: mỗi 1 giờ nhận 10–40 xu quái vật (không cộng dồn)
+   - HÒM KHO BÁU TRÔI: trôi lững lờ ngoài biển gần đảo dừa (1150,250), mỗi ngày (giờ máy người chơi) khui 1 lần nhận 2–4 kim cương (ST.tcD = ngày đã khui)
    - Decor: vỏ sò, sao biển, cua, cọc phao, dừa, dù che nắng, hải âu, thuyền buồm xa xa
    ============================================================ */
 (()=>{
@@ -349,6 +350,7 @@ function build(){
  for(const[x,y]of[[1900,150],[1000,980]].filter(p=>p[0]<BGW))put(mkIsle(),x+60,y+56);
  for(const[x,y,l]of[[1946,128,.3],[1030,950,-.3]].filter(p=>p[0]<BGW))put(mkPalm(l),x,y+36);
  SEA.fx=seaFx;
+ tcBuild();   // hòm kho báu trôi gần ốc đảo (xem khối HÒM KHO BÁU TRÔI bên dưới)
  // sóng lấp lánh trên mặt biển
  for(let i=0;i<240;i++)SPK.push({x:shoreX(100)+60+rn()*(BGW-420),y:rn()*SH,ph:rn()*6.3});
  for(let i=0;i<14;i++)GULL.push({y:60+rn()*(SH-120),sp:20+rn()*18,ph:rn()*BGW,dir:rn()<.5?1:-1,fl:rn()*6});
@@ -372,7 +374,7 @@ function drawCrab(c,tm){const L=c.x1-c.x0,sp=14,leg=L/sp,rest=3,cyc=2*(leg+rest)
 const SPK=[],GULL=[];
 function seaFx(tm,dt){
  if(CV.cur!='bn')return;
- boatTick();zoneTick();hud();zoneArrow();
+ boatTick();zoneTick();hud();zoneArrow();tcArrow();
  // thoại bạch tuộc: nói 3.6s, nghỉ 2.4s, đổi câu
  const now=performance.now();
  if(now>OCTS.next){OCTS.on=1;OCTS.i=(OCTS.i+1)%OCT_LINES.length;OCTS.until=now+3600;OCTS.next=now+6000}
@@ -545,7 +547,7 @@ function sail(){
  const d=dockSpot();
  CV.boat=1;CV.bk=BKIND[o.use]||2;CV.bdir=1;CV.dock=null;SEAB.dock=0;Pl.x=d.x;Pl.y=d.y;Pl.d=3;Pl.mv=0;Pl.pend=0;goal=null;pa=null;
  if(window.PKO)PKO.onBoat();
- toast('⛵ Bấm giữ mặt nước để di chuyển')}
+ toast('⛵ Bấm giữ mặt nước để di chuyển'+(tcReady()?'\n🧰 Hôm nay có hòm kho báu trôi gần ốc đảo!':''))}
 function landSea(){
  const d=dockSpot();CV.boat=0;CV.bk=0;CV.dock=null;SEAB.dock=0;
  Pl.x=PIER.x1-26;Pl.y=d.y;Pl.d=2;Pl.mv=0;goal=null;pa=null;
@@ -558,6 +560,7 @@ function boatTick(){
 window.cvBoatTap=(wx,wy)=>{
  if(MAP!='bn')return pBT(wx,wy);
  if(!CV.boat)return;
+ if(tcTap(wx,wy))return;   // bấm trúng hòm kho báu trôi → khui (nếu thuyền đủ gần)
  if(boatSolid(wx,wy)){if(nearLand(wx,wy))return dockNow();if(wx>SEA_LIM)return toast('🌊 Ngoài kia sóng lớn quá, không ra xa hơn được');return toast('🏝️ Có đảo nhỏ chắn đường — lái thuyền vòng qua nhé')}
  SEAB.dock=0;goal=null;fishHere()};   // bấm mặt nước = câu
 function fishHere(){if(window.MQ)MQ.open({boat:CV.bk})}
@@ -617,6 +620,73 @@ const QVIM=new Image();QVIM.src=QVI;
 function chestReady(){return Date.now()-(+ST.rcT||0)>=CH_CD}
 function chestClaim(){if(!chestReady())return;const n=CH_MIN+Math.floor(Math.random()*(CH_MAX-CH_MIN+1));
  ST.rcT=Date.now();ST.qv=(ST.qv|0)+n;CH.fx=performance.now()+900;try{xuUp()}catch(e){}try{save()}catch(e){}toast('+'+n+' xu quái vật')}
+// ============================================================
+//  HÒM KHO BÁU TRÔI (ngoài biển, gần ốc đảo dừa) — mỗi ngày khui 1 lần, nhận 2–4 💎 kim cương
+//  - Phải đang ở TRÊN THUYỀN, lái lại gần hòm (≤ TC_R px) rồi bấm vào hòm
+//  - ST.tcD = ngày đã khui gần nhất ("năm-tháng-ngày" theo giờ máy). Sang ngày mới hòm tự trôi tới lại
+//  - Muốn đổi: TC_AX/TC_AY = tâm quỹ đạo trôi • TC_MIN/TC_MAX = số kim cương • TC_R = khoảng cách khui
+//  - Quỹ đạo nằm trong vùng thuyền đi được (x ≤ SEA_LIM=1300, không đè đảo/đá). Nếu đổi chỗ nhớ kiểm tra boatSolid
+// ============================================================
+const TC_AX=1205,TC_AY=352,TC_R=80,TC_MIN=2,TC_MAX=4,TC={dk:'',dn:0,fx:0};
+function tcDay(){const n=performance.now();if(n>TC.dn){const d=new Date();TC.dk=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();TC.dn=n+20000}return TC.dk}
+function tcReady(){return ST.tcD!==tcDay()}
+function tcPos(t){return{x:Math.round(TC_AX+Math.sin(t*.21)*34+Math.sin(t*.09+1)*10),y:Math.round(TC_AY+Math.sin(t*.33)*9+Math.sin(t*.13)*3)}}
+const mkFloatChest=open=>mk(56,44,(g,r)=>{
+ E(r,'rgba(0,50,90,.25)',28,40,25,3);
+ // bè gỗ nhỏ đỡ hòm
+ r('#b8764a',6,33,44,5);r('#d6a66a',6,33,44,1);r('#8a5a30',16,33,1,5);r('#8a5a30',27,33,1,5);r('#8a5a30',38,33,1,5);r('#5e3f20',6,38,44,1);
+ r('#e0584a',8,36,4,2);r('#fff6e0',44,36,4,2);   // dây buộc
+ // thân hòm
+ r('#5a3418',14,22,28,11);r('#7a4a26',15,23,26,3);r('#6b4220',14,26,28,7);r('#8a5a30',15,26,26,1);
+ r('#ffd23f',14,22,3,11);r('#ffd23f',39,22,3,11);r('#c89a10',16,22,1,11);r('#c89a10',41,22,1,11);
+ if(!open){
+  // nắp đóng
+  r('#5a3418',15,15,26,7);r('#7a4a26',17,14,22,2);r('#8a5a30',19,15,18,1);
+  r('#ffd23f',15,15,3,7);r('#ffd23f',38,15,3,7);r('#ffd23f',17,14,22,1);r('#c89a10',15,21,26,1);
+  r('#ffd23f',26,21,4,5);r('#c89a10',26,25,4,1);r('#3a2412',27,23,2,2)}
+ else{
+  // nắp mở bật ra sau + ánh vàng + kim cương
+  r('#5a3418',16,7,24,6);r('#7a4a26',17,8,22,2);r('#ffd23f',16,7,24,1);r('#ffd23f',16,7,3,6);r('#ffd23f',37,7,3,6);
+  r('#2a1408',15,19,26,4);r('#ffe27a',17,17,22,3);r('#fff3b0',20,17,8,1);
+  for(const[x,y,c]of[[19,13,'#33d6ff'],[26,11,'#7fe8ff'],[33,14,'#33d6ff']]){r(c,x,y,4,4);r('#ffffff',x,y,1,1);r('#1486b0',x+1,y+3,2,1)}
+  r('#ffd23f',24,23,5,4);r('#c89a10',24,26,5,1)}});
+function tcGem(x,y){r('#7fe8ff',x-2,y-3,4,1);r('#33d6ff',x-3,y-2,6,2);r('#1aa6d6',x-2,y,4,1);r('#1486b0',x-1,y+1,2,1);r('#ffffff',x-2,y-2,1,1)}
+function tcBuild(){
+ const cl=outl(mkFloatChest(0)),op=outl(mkFloatChest(1));
+ SEA.sp.push({by:TC_AY+22,d:()=>{
+  const now=performance.now(),rdy=tcReady(),fxOn=TC.fx&&now<TC.fx;
+  if(!rdy&&!fxOn)return;
+  const t=tmNow(),p=tcPos(t);
+  if(p.x<camX-60||p.x>camX+vw+60||p.y<camY-80||p.y>camY+vh+40)return;
+  const bob=Math.round(Math.sin(t*2.1+1)*1.5),u=fxOn?1-(TC.fx-now)/1600:0;
+  // gợn nước quanh hòm
+  const a=(t*.8)%1;E(r,'rgba(235,250,255,'+(.4*(1-a)).toFixed(2)+')',p.x,p.y+3,Math.round(26+a*9),Math.round(3+a*2));
+  cx.save();if(fxOn&&u>.6)cx.globalAlpha=Math.max(0,1-(u-.6)/.4);   // khui xong thì mờ dần rồi chìm
+  cx.drawImage(fxOn?op:cl,p.x-29,p.y-41+bob+(fxOn&&u>.6?Math.round((u-.6)*20):0));cx.restore();
+  if(rdy){ // kim cương nhảy lơ lửng + lấp lánh báo hòm chưa khui
+   tcGem(p.x,p.y-48+Math.round(Math.sin(t*2.6)*2));
+   for(let k=0;k<4;k++){const s=Math.sin(t*3+k*1.9);if(s>.4){const px=p.x-16+((k*9+Math.round(t*4))%32),py=p.y-34+(k*7%18);r('#ffffff',px,py,1,1);r('rgba(255,236,150,.9)',px-1,py,3,1);r('rgba(255,236,150,.9)',px,py-1,1,3)}}}
+  if(fxOn){ // kim cương bắn lên
+   for(let k=0;k<7;k++){const an=-1.57+(k-3)*.42,d=u*30+k%2*6;tcGem(Math.round(p.x+Math.cos(an)*d*.7),Math.round(p.y-26+Math.sin(an)*d-u*8))}}}})}
+function tcTap(wx,wy){
+ if(!tcReady())return false;
+ const p=tcPos(tmNow());
+ if(Math.hypot(wx-p.x,wy-(p.y-14))>30)return false;
+ if(Math.hypot(Pl.x-p.x,Pl.y-p.y)>TC_R){toast('🧰 Hòm kho báu ở xa quá — lái thuyền lại gần rồi bấm vào hòm nhé');return true}
+ tcClaim();return true}
+function tcClaim(){
+ if(!tcReady())return;
+ const n=TC_MIN+Math.floor(Math.random()*(TC_MAX-TC_MIN+1));
+ ST.tcD=tcDay();ST.dia=(ST.dia|0)+n;TC.fx=performance.now()+1600;
+ try{xuUp()}catch(e){}try{save()}catch(e){}
+ toast('🧰 Khui hòm kho báu! +'+n+' 💎 kim cương\nNgày mai hòm mới sẽ trôi tới nhé')}
+function tcArrow(){ // mũi tên vàng chỉ hướng hòm khi nó nằm ngoài màn hình (chỉ khi đang ở trên thuyền)
+ if(!CV.boat||MAP!='bn'||!tcReady())return;
+ const p=tcPos(tmNow()),sx=p.x-camX,sy=p.y-camY;if(sx>-20&&sx<vw+20&&sy>-20&&sy<vh+20)return;
+ const dx=sx-vw/2,dy=sy-vh/2,k=Math.min((vw/2-16)/Math.abs(dx||1e-3),(vh/2-16)/Math.abs(dy||1e-3)),an=Math.atan2(dy,dx);
+ cx.save();cx.translate(Math.round(camX+vw/2+dx*k),Math.round(camY+vh/2+dy*k));
+ cx.fillStyle='rgba(90,50,10,.88)';cx.beginPath();cx.arc(0,0,9,0,6.283);cx.fill();
+ cx.rotate(an);cx.fillStyle='#ffd23f';cx.beginPath();cx.moveTo(12,0);cx.lineTo(4,-5);cx.lineTo(4,5);cx.fill();cx.restore()}
 // ---------- ĐỒ BIỂN bán bằng Xu quái vật ----------
 // t: 'k' kem chống nắng • 'h' tóc/nón • 's' set • 'a' phụ kiện cầm tay • k = khóa trong HAIRS/SETS/ACCS • p = GIÁ (xu quái vật)
 // Cân bằng: câu ~10 phút ≈ 1.000 xu quái vật. Muốn đổi giá chỉ cần sửa số p.
