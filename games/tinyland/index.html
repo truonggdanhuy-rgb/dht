@@ -769,7 +769,7 @@ function qClaimAll(){let xu=0,lu='';for(const q of ST.dq.q)if(q.done&&!q.cl){q.c
 const AN=[],mkA=(sp,n,b,s,k,ex)=>{for(let i=0;i<n;i++){const a={sp,x:ri(b[0],b[1]),y:ri(b[2],b[3]),vx:0,vy:0,t:rnd()*2,b,s,f:0,dir:1,k:k||1,ex};if(ex)for(const q of ex)if(a.x>q[0]&&a.x<q[1]&&a.y>q[2]&&a.y<q[3])a.y=q[2]-1;AN.push(a)}};
 mkA(chick('#ffffff','#e6e6dc'),4,[664,711,331,364],12,1,[[672,704,342,368]]);mkA(chick('#d49a55','#b07a3a'),3,[664,711,331,364],12,1,[[672,704,342,368]]);mkA(pig,3,[794,853,331,364],9,1,[[798,834,344,368],[834,864,356,368]]);
 mkA(cowB,3,[670,769,453,477],8,1);mkA(cowD,3,[878,977,453,477],8,1);
-mkA(buff,1,[760,900,550,610],6);mkA(duck,4,[170,420,668,684],8);mkA(duck,3,[660,900,668,684],8);
+mkA(duck,4,[170,420,668,684],8);mkA(duck,3,[660,900,668,684],8);
 const bf=[...Array(24)].map(()=>({x:ri(100,950),y:ri(160,600),tx:0,ty:0,c:pick(['#ffd23f','#ff9fc2','#ffffff','#9fd8ff']),t:0}));
 // ---------- water ----------
 const WV=[...Array(Math.round(150*W/68))].map(()=>[ri(0,PX),ri(RY,PY),ri(3,8),rnd()*6]),
@@ -3493,14 +3493,23 @@ SP.push({by:598,d:()=>{const t=performance.now()/1000,X=652,hv=6+Math.round(Math
  r('#ff7a1f',X-2+sw,b0+56-f,4,f);r('#ffd23f',X-1+sw,b0+56-Math.round(f*.7),2,Math.round(f*.7));r('#fffbe0',X+sw,b0+54,1,2)}});
 SP.push({by:600,d:()=>{const t=performance.now()/1000,x=618,y=600,a=[],z=ZZ(a),b=Math.round(Math.sin(t*2.2)),w=Math.sin(t*5)>0?1:0;
  r('rgba(0,0,0,.22)',x-6,y+1,13,2);
- z('#3a2412',x-4,y-3,4,3);z('#3a2412',x+1,y-3,4,3);z('#6a4a2a',x-4,y-9,3,6);z('#6a4a2a',x+1,y-9,3,6);
- z('#d98a1a',x-5,y-19+b,11,11);z('#f0b050',x-5,y-19+b,11,2);z('#a8620a',x-5,y-10+b,11,1);z('#f1c08a',x-7,y-14+b,2,3);
- z('#f1c08a',x+5,y-19+b-w*2,2,3);z('#d98a1a',x+5,y-16+b-w*2,2,3);
- z('#c0392b',x-5,y-20+b,11,2);z('#c0392b',x+5,y-20+b,3+w,2);
- z('#f1c08a',x-3,y-26+b,7,6);z('#5a3a1e',x-4,y-28+b,9,4);z('#5a3a1e',x-5,y-25+b,2,4);z('#5a3a1e',x+4,y-25+b,2,4);
- z('#8fd8e8',x-3,y-25+b,3,2);z('#8fd8e8',x+1,y-25+b,3,2);z('#222',x-2,y-23+b,1,1);z('#222',x+2,y-23+b,1,1);
+ const sc=Math.round(Math.sin(t*3)*1+1);                                   // đuôi khăn bay phấp phới
+ z('#3a2412',x-5,y-3,4,3);z('#3a2412',x+1,y-3,4,3);z('#6b4a2e',x-4,y-10,3,7);z('#6b4a2e',x+1,y-10,3,7);   // ủng + quần
+ z('#c9a96a',x-5,y-3,4,1);z('#c9a96a',x+1,y-3,4,1);
+ z('#b8793a',x-5,y-20+b,11,11);z('#d9984f',x-5,y-20+b,11,2);z('#8a5a2a',x-5,y-10+b,11,1);                  // áo da phi công
+ z('#5a3a1e',x-5,y-12+b,11,1);z('#ffd23f',x-1,y-12+b,3,1);                                                // thắt lưng + khóa
+ z('#8a5a2a',x,y-18+b,1,6);                                                                                // khóa kéo
+ z('#b8793a',x-7,y-18+b,2,7);z('#5a3a1e',x-7,y-11+b,2,2);                                                 // tay trái + găng
+ z('#b8793a',x+5,y-18+b-w*2,2,5);z('#5a3a1e',x+5,y-19+b-w*3,3,2);                                        // tay phải vẫy
+ z('#f4f0e0',x-5,y-21+b,11,2);                                                                             // cổ lông trắng
+ z('#d9302a',x-3,y-20+b,7,2);z('#d9302a',x+3,y-19+b,2,4+sc);z('#a8201a',x+3,y-16+b+sc,2,1);               // khăn đỏ
+ z('#f1c08a',x-3,y-28+b,7,7);z('#e8a87a',x-3,y-24+b,1,1);z('#e8a87a',x+3,y-24+b,1,1);                      // mặt + má hồng
+ z('#6b4220',x-4,y-31+b,9,5);z('#8a5a30',x-4,y-31+b,9,1);z('#6b4220',x-5,y-28+b,2,5);z('#6b4220',x+4,y-28+b,2,5);   // mũ da + tai mũ
+ z('#c9a96a',x-4,y-27+b,9,1);                                                                              // dây kính
+ z('#8fd8e8',x-3,y-29+b,3,2);z('#8fd8e8',x+1,y-29+b,3,2);z('#e8c050',x-4,y-30+b,5,1);z('#e8c050',x,y-30+b,5,1);z('#ffffff',x-3,y-29+b,1,1);z('#ffffff',x+1,y-29+b,1,1);   // kính bay trên trán
+ z('#222',x-2,y-25+b,1,1);z('#222',x+2,y-25+b,1,1);z('#b5523a',x-1,y-23+b,3,1);                          // mắt + miệng cười
  OL(a);
- if(t%5<2){const tx='Giao 1 đơn nhận 1 vé quay nè!';cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';const w=Math.min(170,cx.measureText(tx).width)+10,by=y-34+b;cx.fillStyle='rgba(30,20,10,.45)';cx.fillRect(x-w/2+1,by-9,w,13);cx.fillStyle='#fffdf0';cx.fillRect(x-w/2,by-10,w,13);cx.fillRect(x-2,by+3,4,2);cx.fillStyle='#3a2412';cx.fillText(tx,x,by,w-6)}}});
+ if(t%5<2){const tx='Giao 1 đơn nhận 1 vé quay nè!';cx.font='800 8px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';const w=Math.min(170,cx.measureText(tx).width)+10,by=y-38+b;cx.fillStyle='rgba(30,20,10,.45)';cx.fillRect(x-w/2+1,by-9,w,13);cx.fillStyle='#fffdf0';cx.fillRect(x-w/2,by-10,w,13);cx.fillRect(x-2,by+3,4,2);cx.fillStyle='#3a2412';cx.fillText(tx,x,by,w-6)}}});
 hits.push([622,502,60,96,'🎈 Khí cầu — đơn hàng hằng ngày','bl',[652,612]]);
 hits.push([606,572,26,30,'🎈 Phi công khí cầu','bl',[620,612]]);
 LB.push(['KHÍ CẦU',652,612]);
@@ -5074,9 +5083,9 @@ function soilTile(m,v){const k='s'+m+'_'+v;if(PCV[k])return PCV[k];
  const c=mk(16,16,(g,r)=>{
   for(let y=0;y<16;y++)for(let x=0;x<16;x++){
    if(ins(x,y)){
-    let col='#e2cba0';const h=H_(x+v*17,y+m*5+3);
-    if(h<.07)col='#ecd9b2';else if(h<.16)col='#dbc194';else if(h<.19)col='#cdb083';else if(h>.96)col='#efdfba';
-    if(!ins(x,y+1))col='#cdb083';else if(!ins(x+1,y))col='#d6bc8e';else if(!ins(x,y-1))col='#eddcb6';else if(!ins(x-1,y))col='#e9d5ab';
+    let col='#a77f4e';const h=H_(x+v*17,y+m*5+3);   /* đất xới sậm hơn lối đi để dễ phân biệt */
+    if(h<.07)col='#b38a57';else if(h<.16)col='#9b7445';else if(h<.19)col='#8c673c';else if(h>.96)col='#bd9461';
+    if(!ins(x,y+1))col='#7e5b34';else if(!ins(x+1,y))col='#93703f';else if(!ins(x,y-1))col='#b58d5a';else if(!ins(x-1,y))col='#ab8250';
     r(col,x,y,1,1)}
    else if(ins(x,y-1)||ins(x-1,y)||ins(x+1,y)||ins(x,y+1))r(!ins(x,y-1)&&ins(x,y+1)?'rgba(100,150,60,.30)':'rgba(120,90,50,.26)',x,y,1,1)}
  });return PCV[k]=c}
