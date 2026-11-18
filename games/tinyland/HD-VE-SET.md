@@ -1,31 +1,18 @@
-# QUY TẮC VẼ SET / MASCOT "ĐỒ HỌA CAO" (HD) — tinyland
-Áp dụng MẶC ĐỊNH cho mọi set / mascot / mũ / pet mới. Mẫu chuẩn: games/tinyland/tieuacma.js (Tiểu ác ma). Bộ máy: hdkit.js.
+# VẼ SET / MASCOT — BẢN NGẮN (thay cho bản dài cũ)
+Mặc định: vẽ NHANH, đưa vào game luôn. Không bắt buộc xem trước, không bắt buộc đọc nhiều file.
 
-## 1. Nguyên lý (vì sao đẹp, không thấy pixel)
-- Mỗi "điểm ảnh game" chia thành 4x4 điểm nhỏ (K=4). Vẽ bằng HÌNH CONG (ell, rrect, poly, bez, stroke), KHÔNG tô từng ô vuông 1x1.
-- Khung vẽ 44x52 ô, gốc lệch (12,12): tóc/sừng/mũ/cánh thoải mái vượt khung chuẩn 20x31.
-- Dựng 1 lần rồi CACHE theo (giới tính, hướng nhìn, bước chân, ngồi...). Mỗi khung chỉ vẽ lại lớp hiệu ứng.
-- Cần đủ 3 hướng: trước (f), nghiêng (s, nhìn trái = lật gương nhìn phải), sau (b).
+## Chọn kiểu vẽ (hỏi người dùng nếu chưa nói)
+- **Kiểu cũ (pixel, nhanh nhất)**: dùng cho mọi thứ nhỏ. Mascot → copy `clown.js`. Cầm tay → `mau-cam-tay.js`. Pet → `cunboi.js`. Thú cưỡi → `tetmount.js`.
+- **Kiểu HD (K=4, cong mượt)**: CHỈ khi người dùng yêu cầu "đồ họa cao / HD". Cần `hdkit.js` + mẫu `boyboy.js` (set+tóc) hoặc `mau-hd-mascot.js`. Không cần đọc tieuacma.js.
 
-## 2. Công thức màu & khối
-- Mọi khối dùng bảng 4 màu [tối, vừa, sáng, rất sáng], ánh sáng từ TRÊN-TRÁI (shade(pal)). Bên phải/dưới tối, bên trái/trên sáng.
-- Màu viết đủ 6 ký tự (#ffffff, KHÔNG #fff — bộ đọc màu không hiểu 3 ký tự).
-- Viền: end(2) = viền tối tự lấy từ màu khối (olDark); chi tiết nhỏ (mắt, ngón tay) end(1); tóc sáng/da dùng olSoft cho mềm.
-- Da có 3 sắc: thường / bóng đổ phía phải / sáng phía trái. Tóc, vải mỗi loại 1 bảng 4 màu riêng.
+## Quy tắc kỹ thuật HD (chỉ khi dùng HD)
+- Khung 44x52 ô, gốc (12,12), mỗi ô chia 4x4. Vẽ bằng ell / rrect / poly / stroke(bez) — không tô từng ô.
+- Bảng màu 4 tông [tối, vừa, sáng, rất sáng], sáng từ trên-trái. Màu viết đủ 6 ký tự (#ffffff, KHÔNG #fff).
+- Sừng/tóc lọn/mũ nhọn dùng stroke(bez(...)), không dùng tam giác. Đối xứng dùng mirP/mirB.
+- Thứ tự vẽ: tóc sau → chân → thân → tay → cổ → đầu → tóc trước → mũ/sừng → phụ kiện.
+- Cần 3 hướng: trước, nghiêng, sau. Dựng 1 lần rồi cache.
 
-## 3. Hình dáng (tránh kiểu thô)
-- Sừng, tóc lọn, tai, mũ cong: dùng stroke(bez(...), r0, r1, shade(pal), pw): gốc to r0 -> đầu nhỏ r1. TUYỆT ĐỐI không dùng tam giác poly cho sừng/mũ nhọn.
-- Mũ rộng vành / cao: dựng bằng ell + stroke cong, vát mượt; được phép vượt khung 20 điểm.
-- Đối xứng: dùng mirP / mirB để lật gương các nét bên trái sang phải cho khỏi lệch.
-- Thứ tự vẽ (sau đè trước): tóc sau -> chân -> thân -> tay -> cổ -> đầu -> tóc trước -> sừng/mũ -> phụ kiện.
-
-## 4. Hiệu ứng
-- Chỉ vẽ lại hiệu ứng mỗi khung (quầng sáng, chớp, tuyết, lấp lánh) trên canvas riêng, rồi drawImage lớp đã cache lên trên.
-- Hiệu ứng nhẹ, không che mặt; nhịp thở/chớp theo thời gian (t).
-
-## 5. Quy trình bắt buộc khi AI vẽ set mới
-1. Đọc hdkit.js + tieuacma.js (hoặc mau-hd-mascot.js) trước khi vẽ.
-2. Vẽ MẪU XEM TRƯỚC (ảnh PNG phóng to 3 hướng) cho tớ duyệt, rồi mới đưa vào game.
-3. Kiểm tra 3 hướng + chân bước + ngồi, không bị hở/lệch.
-4. Giữ bản backup file cũ. Gửi từng file riêng (không zip) + nói rõ đặt vào thư mục GitHub nào.
-5. Set có biểu cảm cố định hay đổi theo Túi: ghi rõ trong ds.
+## Giao hàng
+- Mỗi món = 1 file .js riêng đặt trong `games/tinyland/`, tự `push` vào SETS/HAIRS/MOUNTS/PETS/ACCS, giá bằng `xu:`/`dia:`.
+- KHÔNG sửa index.html / pho-map.js. Chỉ báo người dùng dán 1 dòng `<script src="...">` vào CUỐI danh sách script.
+- Xem preview PNG chỉ khi người dùng yêu cầu.
