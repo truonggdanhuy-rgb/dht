@@ -171,7 +171,7 @@ const hits=[],LB=[],RB=[];
 // ---------- layout / collisions (goc) ----------
 blk(0,0,W-1,7);blk(0,8,0,H-1);blk(W-1,8,W-1,H-1);blk(0,42,W-1,H-1);
 for(let y=41;y<=49;y++)for(const x of[34,35])solid[y][x]=0;for(let y=48;y<=49;y++)for(let x=33;x<=36;x++)solid[y][x]=0;
-blk(32,11,37,15);blk(22,12,27,15);blk(44,12,48,15);/* (đã gỡ 2 ô cản vô hình ở (30,15) và (39,15) cạnh nhà) */
+blk(32,11,37,15);blk(52,12,57,15);/*KNS: ô chặn của kho nông sản = KNS_X/16 .. KNS_X/16+5*/blk(44,12,48,15);/* (đã gỡ 2 ô cản vô hình ở (30,15) và (39,15) cạnh nhà) */
 const TREES=[];TREES.forEach(([k,x,by])=>blk(Math.floor(x/T),Math.ceil(by/T)-1,Math.floor(x/T),Math.ceil(by/T)-1));
 blk(42,22,43,22);blk(50,22,51,22);blk(43,27,46,27);blk(56,27,59,27);/* (đã gỡ 3 ô cản vô hình giữa bãi cỏ bên phải chuồng heo) */
 const bankE=x=>RY+Math.round(3*Math.sin(x/9)+2*Math.sin(x/4.3));
@@ -601,7 +601,9 @@ const SP=[],place=(im0,x,by,msg)=>{const img=outl(im0);SP.push({by,d:()=>cx.draw
 const LEG={},lg=k=>{LEG[k]=(LEG[k]||0)+1},bk=c=>lg('b'+c.slice(1));
 hits.push([0,RY+8,PX,PY-RY,'🌊 Dòng sông lớn']);
 place(houseS,504,256,'🏠 Nhà của bạn — bấm để vào nhà!');hits[hits.length-1][5]='home';hits[hits.length-1][6]=[560,266];LB.push(['NHÀ',560,162]);
-place(barnA,352,256,'🧺 Kho nông sản');hits[hits.length-1][5]='kho:ns';LB.push(['KHO NÔNG SẢN',400,178]);
+/* Kho nông sản nằm bên PHẢI kho vật phẩm, 2 hàng lối đi nằm giữa 2 kho. Muốn dịch sang trái/phải: đổi KNS_X (mỗi ô = 16) và 4 số tương ứng ở blk(...) + FMRS (xem chú thích KNS). */
+const KNS_X=832;
+place(barnA,KNS_X,256,'🧺 Kho nông sản');hits[hits.length-1][5]='kho:ns';LB.push(['KHO NÔNG SẢN',KNS_X+48,204]);
 place(barnB,704,256,'📦 Kho vật phẩm');hits[hits.length-1][5]='kho:vp';LB.push(['KHO VẬT PHẨM',752,204]);
 lg('cau');lg('cau');bk('#ff6f91');bk('#ffd23f');bk('#ffffff');
 const xi=outl(xuong);SP.push({by:762,d:()=>{const t=performance.now()/1000,b=Math.round(Math.sin(t*1.6)*1.2);
@@ -5527,7 +5529,7 @@ const FMDIRT=dirt(44,16);
 const FMRS=[
  [0,16,W-1,17],            // đường chính chạy ngang
  [34,18,35,41],            // đường dọc xuống bến sông (rộng đúng 2 ô)
- [22,11,27,15],            // kho nông sản
+ [52,11,57,15],            // kho nông sản (KNS: bên phải kho vật phẩm)
  [31,10,38,15],            // nhà
  [43,9,53,11],             // ghế, bàn, bếp lửa dưới cây anh đào
  [43,11,48,15],            // kho vật phẩm
