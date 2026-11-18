@@ -194,6 +194,8 @@ const CL_ITEMS=[
  {k:'clown',  n:'Hề Quái Đản',  d:'Nón hề cao 2 màu • Không che mặt',               pr:{xu:1500,qv:500,dia:5}},
  {k:'hanbokm',n:'Hanbok (Nam)', d:'Nón gat cao viền đỏ, áo đỏ thêu rắn • Không che mặt', pr:{xu:5000,qv:500,dia:2}},
  {k:'hanbokf',n:'Hanbok (Nữ)',  d:'Búi củ hành cài trâm, áo đỏ thêu rắn • Không che mặt', pr:{xu:5000,qv:500,dia:2}},
+ {k:'skatem',n:'Skater phố (Nam)',d:'Mũ lưỡi trai đội ngược, hoodie vàng, sneaker • Không che mặt',pr:{xu:3000,qv:200,dia:1}},
+ {k:'skatef',n:'Skater phố (Nữ)',d:'Đuôi ngựa scrunchie hồng, hoodie vàng, sneaker • Không che mặt',pr:{xu:3000,qv:200,dia:1}},
  {k:'hacvt',n:'Hắc Vô Thường',d:'Mũ cao vút đen, áo choàng đen dài, thè lưỡi dài • Không che mặt',pr:{xu:5000,qv:1000,dia:5}},
  {k:'bachvt',n:'Bạch Vô Thường',d:'Mũ cao vút trắng, áo choàng trắng dài, thè lưỡi dài • Không che mặt',pr:{xu:5000,qv:1000,dia:5}},
  // m:1 = THÚ CƯỠI (k = khóa trong MOUNTS, lưu ở ST.own.m). Giá 0 thì dòng đó tự ẩn.
