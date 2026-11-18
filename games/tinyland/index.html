@@ -38,6 +38,21 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 .sq small{font-size:10.5px;color:#6a3d1c;font-weight:700}.sq.z{opacity:.45}
 .pf{position:sticky;bottom:0;margin:10px -10px -10px;padding:8px 10px;background:#f6e7b4;border-top:2px solid #c9a06a;display:flex;gap:6px;z-index:2}
 .pf .b{flex:1;margin:0;padding:9px 4px;font-size:13px}
+#ui.sdui{background:#fffaf0}
+#ui.sdui .mut{color:#5a4128;font-weight:800}
+#ui.sdui .sg.sd{gap:6px}
+#ui.sdui .sq.sd{background:#fff;border:2px solid #d8c398;border-radius:8px;box-shadow:0 2px 0 #cdb78a;min-height:88px;padding:6px 2px;gap:2px;color:#2e1d0f}
+#ui.sdui .sq.sd:active{transform:translateY(2px);box-shadow:none}
+#ui.sdui .sq.sd b{font-size:12.5px;color:#2e1d0f}
+#ui.sdui .sq.sd .pr{font-size:11.5px;font-weight:800;color:#5a3a1c}
+#ui.sdui .sq.sd small{font-size:11px;color:#4a5a6a;font-weight:700}
+#ui.sdui .sq.sd.z{opacity:.7;background:#f1ede4}#ui.sdui .sq.sd.z .pr{color:#b3261e}
+#ui.sdui .b.w{background:#fff;border-color:#a8814f;box-shadow:0 2px 0 #cdb78a;border-radius:8px}
+#ui.sdui .pf{flex-wrap:wrap;background:#fffaf0;border-top:2px solid #d8c398}
+#ui.sdui .pf .b{border-radius:8px;background:#fff;border-color:#a8814f;box-shadow:0 2px 0 #cdb78a}
+#ui.sdui .pf .b.gr{flex:1 1 100%;background:#4fa84a;border-color:#2f6b2a;color:#fff;box-shadow:0 2px 0 #1f4a1c;text-shadow:0 1px 0 rgba(0,0,0,.35);padding:8px 4px}
+#ui.sdui .pf .b.gr small{display:block;font-size:11px;font-weight:700}
+#ui.sdui .pf .b.gr.z{background:#6f7d6f;border-color:#4d584d;box-shadow:0 2px 0 #343c34}
 .sl.on{border-color:#4caf50}.sl .pb{position:absolute;left:0;bottom:0;height:3px;background:#4caf50}
 .rc{display:block;width:100%;text-align:left;margin-top:4px}.rc.z{opacity:.45}.b.z{opacity:.5}.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.tk{background:#fff3cf;border:2px solid #c9a06a;padding:4px;display:flex;flex-direction:column;gap:2px;font-size:11px;line-height:1.3;min-height:112px;min-width:0}.tk.sp{background:#ffe27a;border-color:#d9a000}.tk.ok{border-color:#4caf50;box-shadow:0 0 0 1px #4caf50}.tk.z{opacity:.6;justify-content:center;text-align:center}.tl.no{color:#a03020}.tl small{color:#7a4a26}.trw{margin-top:auto;font-weight:800;font-size:11px}.tb{display:flex;gap:3px}.tb .b{flex:1;padding:4px 2px;font-size:11px}.tb .b.x{flex:none}.tsp{font-size:10px;font-weight:800;color:#8a5a00}
 .rc small{display:block;font-size:11px;color:#7a4a26;margin-top:2px;font-weight:700}
@@ -2387,7 +2402,7 @@ function lvUi(){const e=$('hlv');if(!e)return;const mx=ST.lv>=100;e.textContent=
 function addExp(n){if(ST.lv>=100){ST.exp=0;return ''}let up=0;ST.exp+=n;while(ST.lv<100&&ST.exp>=lvNeed(ST.lv)){ST.exp-=lvNeed(ST.lv);ST.lv++;up++}if(ST.lv>=100)ST.exp=0;lvUi();return up?'\n🎉 Lên cấp '+ST.lv+'!':''}
 const head=t=>'<div class="uh"><span>'+t+'</span><button class="b x" onclick="closeUI()">X</button></div>';
 var UIT=0;
-function openUI(h){$('ui').classList.remove('wui','tgn','bbui','bkui','gdui','lotui','nxui');if(!UI)UIT=performance.now();UI=1;MUI=-1;BUI=0;$('ui').style.top='';$('ui').innerHTML=h;$('ui').style.display='block';try{fmBarUp()}catch(e){}}
+function openUI(h){$('ui').classList.remove('wui','tgn','bbui','bkui','gdui','lotui','nxui','sdui');if(!UI)UIT=performance.now();UI=1;MUI=-1;BUI=0;$('ui').style.top='';$('ui').innerHTML=h;$('ui').style.display='block';try{fmBarUp()}catch(e){}}
 function closeUI(){UI=0;MUI=-1;$('ui').style.display='none';save();try{barUp()}catch(e){}try{fmBarUp()}catch(e){}}
 const rd=h=>Math.hypot(Math.max(h[0]-Pl.x,0,Pl.x-h[0]-h[2]),Math.max(h[1]-Pl.y,0,Pl.y-h[1]-h[3]));
 function act(h){const a=h[5];if(!a)return toast(h[4]);if(a.startsWith('cv:'))return cvAct(a.slice(3),h);if(a.startsWith('bench:')){const q=a.split(':');return benchSit(+q[1],+q[2])}if(a.startsWith('fmsit:')){const q=a.split(':');return fmSit(+q[1],+q[2],+q[3])}if(a.startsWith('sitf:')){const q=a.split(':');SEAT.x=+q[1];SEAT.y=+q[2];return sitGo()}if(a=='sit')return sitGo();if(a=='gate')return switchMap('nt');if(a=='chb')return chbAct();if(a=='qb')return qUI();if(a=='mk')return mkOpen();if(a=='home')return switchMap('hm');if(a.startsWith('hm:'))return hmAct(a.slice(3));if(a=='tug')return tugGame();if(a=='hd')return hdAct();if(a=='bench')return benchAct();if(a=='nc')return ncAct();if(a=='ln')return lnAct();if(a=='wr')return wrAct();if(a=='rr')return rrGame();if(a=='santa')return santaAct();if(a=='nxh')return nxHouse();if(a.startsWith('nxd:'))return nxFeedAct(+a.slice(4));if(a.startsWith('wchair:'))return wChair(a);if(a=='gift')return giftAct();if(a=='tl')return tlAct();if(a=='bl')return blAct();const[t,v]=a.split(':');
@@ -2395,22 +2410,30 @@ function act(h){const a=h[5];if(!a)return toast(h[4]);if(a.startsWith('cv:'))ret
 function tapHit(h,far){if(far&&h[5]&&!h[5].startsWith('cv:')&&!h[5].startsWith('sitf:')&&!h[5].startsWith('bench:')&&!h[5].startsWith('fmsit:')&&h[5]!='sit'&&h[5]!='gate'&&h[5]!='home')return act(h);if(!h[5]||h[5]=='sit'||h[5].startsWith('sitf:')||h[5].startsWith('net:')||rd(h)<=34)return act(h);toast('🚶 Đang đi tới...');goal=h[6]?{x:h[6][0],y:h[6][1],t:-14}:{x:h[0]+h[2]/2,y:h[1]+h[3]+8,t:-14};pa=h;Pl.pend=0}
 // ruong
 const GD={plot:{arr:'plots',list:CROPS,key:'c',name:'Ô đất',ic:'🌱',last:-1,pick:'chọn hạt giống'},pot:{arr:'pots',list:POTS,key:'p',name:'Chậu',ic:'🪴',last:-1,pick:'chọn cây'}};
-const gFoot=t=>'<div class="pf"><button class="b" onclick="harvestAll()">🧺 Thu hoạch hết</button><button class="b" onclick="sowUI(\''+t+'\')">🌱 Gieo hết</button></div>';
-const seedGrid=(list,fn)=>'<div class="mut">Giá hạt • thời gian chín</div><div class="sg">'+list.map((c,k)=>'<button class="sq'+(ST.xu<c[3]?' z':'')+'" onclick="'+fn(k)+'"><span class="e">'+ic(c[1],c[0])+'</span><b>'+c[0]+'</b><small>'+c[3]+' Xu • '+c[2]+'p</small></button>').join('')+'</div>';
+const gQuick=t=>{const g=GD[t],A=ST[g.arr],n=g.list.length,need=n*2,e=A.filter((p,i)=>!p&&fmHasT(t,i)).length,cost=g.list.reduce((a,c)=>a+c[3],0)*2;return{n,need,e,cost,ok:e>=need}};
+const gFoot=t=>{const q=gQuick(t);return '<div class="pf"><button class="b gr'+(q.ok?'':' z')+'" onclick="sowDouble(\''+t+'\')">🌈 Trồng mỗi cây 2 ô<small>'+(q.ok?'Dùng '+q.need+' ô trống • '+q.cost+' Xu':'Cần '+q.need+' ô trống • hiện có '+q.e)+'</small></button><button class="b" onclick="harvestAll()">🧺 Thu hoạch hết</button><button class="b" onclick="sowUI(\''+t+'\')">🌱 Gieo hết</button></div>'};
+function gUI(h){openUI(h);$('ui').classList.add('sdui')}
+function sowDouble(t){const g=GD[t],A=ST[g.arr],q=gQuick(t);
+ if(!q.ok)return toast('Chưa đủ ô để trồng mỗi cây 2 ô!\nCần '+q.need+' ô trống cho '+q.n+' loại cây, hiện chỉ có '+q.e+' ô.\n(Đặt thêm '+g.name.toLowerCase()+' ra nông trại từ 📦 Thùng)');
+ if(ST.xu<q.cost)return toast('Không đủ Xu! Trồng mỗi cây 2 ô cần '+q.cost+' Xu.');
+ const em=[];for(let i=0;i<A.length;i++)if(!A[i]&&fmHasT(t,i))em.push(i);
+ g.list.forEach((c,k)=>{for(let j=0;j<2;j++)A[em[k*2+j]]={c:k,t:now()}});
+ ST.xu-=q.cost;xuUp();save();closeUI();toast('🌈 Đã trồng mỗi cây 2 ô: '+q.n+' loại, '+q.need+' ô (−'+q.cost+' Xu)')}
+const seedGrid=(list,fn)=>'<div class="mut">🪙 Giá hạt • ⏱ Thời gian chín</div><div class="sg sd">'+list.map((c,k)=>'<button class="sq sd'+(ST.xu<c[3]?' z':'')+'" onclick="'+fn(k)+'"><span class="e">'+ic(c[1],c[0])+'</span><b>'+c[0]+'</b><span class="pr">🪙 '+c[3]+' Xu</span><small>⏱ '+c[2]+' phút</small></button>').join('')+'</div>';
 function plotAct(i){gAct('plot',i)}
 function potAct(i){gAct('pot',i)}
 function gAct(t,i){const g=GD[t],p=ST[g.arr][i];
  if(!p){let h=head(g.ic+' '+g.name+' '+(i+1)+' — '+g.pick)+seedGrid(g.list,k=>"gPlant('"+t+"',"+i+","+k+")");
   if(g.last>=0)h+='<button class="b w" onclick="gSow(\''+t+'\','+g.last+')">🔁 Gieo mọi '+g.name.toLowerCase()+' trống bằng '+g.list[g.last][1]+' '+g.list[g.last][0]+'</button>';
-  return openUI(h+gFoot(t))}
+  return gUI(h+gFoot(t))}
  const c=g.list[p.c],left=p.t+c[2]*MIN-now();
- if(left>0)return openUI(head(g.ic+' '+g.name+' '+(i+1))+'<div class="mut">'+ic(c[1],c[0])+' <b>'+c[0]+'</b> — còn '+fmt(left)+' nữa chín.<br>Chín xong bấm vào để thu 2.</div>'+gFoot(t));
+ if(left>0)return gUI(head(g.ic+' '+g.name+' '+(i+1))+'<div class="mut">'+ic(c[1],c[0])+' <b>'+c[0]+'</b> — còn '+fmt(left)+' nữa chín.<br>Chín xong bấm vào để thu 2.</div>'+gFoot(t));
  add('ns',g.key+p.c,2);ST[g.arr][i]=null;if(g.arr=='pots')tiProg(p.c);qAdd('harv',1);save();toast('🧺 +2 '+c[1]+' '+c[0]+' → Kho nông sản')}
 function gPlant(t,i,k){const g=GD[t],c=g.list[k];if(ST.xu<c[3])return toast('Không đủ Xu mua hạt giống!');ST.xu-=c[3];ST[g.arr][i]={c:k,t:now()};g.last=k;xuUp();save();closeUI();toast('🌱 Đã trồng '+c[1]+' '+c[0]+' — chín sau '+c[2]+' phút')}
 function gSow(t,k){const g=GD[t],c=g.list[k],A=ST[g.arr];let n=0;for(let i=0;i<A.length;i++)if(!A[i]&&fmHasT(t,i)&&ST.xu>=c[3]){ST.xu-=c[3];A[i]={c:k,t:now()};n++}
  if(!n)return toast('Không còn chỗ trống hoặc không đủ Xu!');g.last=k;xuUp();save();closeUI();toast('🌱 Đã trồng '+n+' '+g.name.toLowerCase()+' '+c[1]+' '+c[0]+' (−'+n*c[3]+' Xu)')}
 function sowUI(t){t=t||'plot';const g=GD[t],e=ST[g.arr].filter((p,i)=>!p&&fmHasT(t,i)).length;if(!e)return toast('Không còn chỗ trống để gieo! (đặt thêm '+g.name.toLowerCase()+' ra nông trại từ 📦 Thùng)');
- openUI(head(g.ic+' Gieo hết — '+e+' '+g.name.toLowerCase()+' trống')+seedGrid(g.list,k=>"gSow('"+t+"',"+k+")")+gFoot(t))}
+ gUI(head(g.ic+' Gieo hết — '+e+' '+g.name.toLowerCase()+' trống')+seedGrid(g.list,k=>"gSow('"+t+"',"+k+")")+gFoot(t))}
 function harvestAll(){if(UI)closeUI();const tl={},T=(k,n)=>{tl[k]=(tl[k]||0)+n},t=now();
  ST.plots.forEach((p,i)=>{if(!p)return;const c=CROPS[p.c];if(t>=p.t+c[2]*MIN){add('ns','c'+p.c,2);ST.plots[i]=null;qAdd('harv',1);T(c[1]+' '+c[0],2)}});
  ST.pots.forEach((p,i)=>{if(!p)return;const c=POTS[p.c];if(t>=p.t+c[2]*MIN){add('ns','p'+p.c,2);ST.pots[i]=null;tiProg(p.c);qAdd('harv',1);T(c[1]+' '+c[0],2)}});
