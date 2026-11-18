@@ -147,9 +147,9 @@ const hits=[],LB=[],RB=[];
 // ---------- layout / collisions (goc) ----------
 blk(0,0,W-1,7);blk(0,8,0,H-1);blk(W-1,8,W-1,H-1);blk(0,42,W-1,H-1);
 for(let y=41;y<=49;y++)for(const x of[34,35])solid[y][x]=0;for(let y=48;y<=49;y++)for(let x=33;x<=36;x++)solid[y][x]=0;
-blk(32,11,37,15);blk(22,12,27,15);blk(44,12,49,15);blk(30,15,30,15);blk(39,15,39,15);
+blk(32,11,37,15);blk(22,12,27,15);blk(44,12,49,15);/* (đã gỡ 2 ô cản vô hình ở (30,15) và (39,15) cạnh nhà) */
 const TREES=[];TREES.forEach(([k,x,by])=>blk(Math.floor(x/T),Math.ceil(by/T)-1,Math.floor(x/T),Math.ceil(by/T)-1));
-blk(42,22,43,22);blk(50,22,51,22);blk(43,27,46,27);blk(56,27,59,27);blk(57,22,58,22);blk(62,21,63,21);blk(60,22,61,22);
+blk(42,22,43,22);blk(50,22,51,22);blk(43,27,46,27);blk(56,27,59,27);/* (đã gỡ 3 ô cản vô hình giữa bãi cỏ bên phải chuồng heo) */
 const bankE=x=>RY+Math.round(3*Math.sin(x/9)+2*Math.sin(x/4.3));
 // ---------- nen tinh ----------
 const A=mk(PX,PY,(g,r)=>{
@@ -5284,10 +5284,29 @@ const FMPOT=mk(16,16,(g,r)=>{const X=2,Y=1;
  for(let k=0;k<8;k++){const w=10-Math.round(k*.3),x=X+6-(w>>1);r('#b5693c',x,Y+5+k,w,1);r('#e8a26a',x+1,Y+5+k,2,1);r('#8a4a28',x+w-3,Y+5+k,2,1)}
  r('#b5693c',X,Y+2,12,3);r('#e8a26a',X,Y+2,12,1);r('#8a4a28',X,Y+4,12,1);r('#4b2d15',X+2,Y+3,8,1);r('#6f3a1e',X+2,Y+13,8,1)});
 const FMDIRT=dirt(44,16);
-// vùng KHÔNG cho đặt: đường đi, nhà, kho, mỏ, chuồng, ao, trại ong, bảng nhiệm vụ, cầu...
-const FMRS=[[35,32,60,33],[0,16,W-1,17],[33,18,36,41],[19,9,29,11],[43,9,53,12],[48,9,59,19],[39,18,65,31],[29,19,33,21],[26,18,30,21],[37,39,42,41],[31,33,38,38],[37,31,43,38]];
+// vùng KHÔNG cho đặt (v2): chỉ chặn đúng phần đang có đồ cố định (đường đất, nhà, kho, chuồng, mỏ, trại ong, quầy, bảng, khí cầu...).
+// Đã thu nhỏ cho sát kích thước thật: cỏ ven đường, quanh chuồng, rìa trên bản đồ (hàng 8) giờ đều đặt được.
+const FMRS=[
+ [0,16,W-1,17],            // đường chính chạy ngang
+ [34,18,35,41],            // đường dọc xuống bến sông (rộng đúng 2 ô)
+ [19,8,28,10],             // trại ong + nhãn TRẠI ONG
+ [22,11,27,15],            // kho nông sản
+ [31,10,38,15],            // nhà
+ [43,9,57,11],             // ghế, bàn, bếp lửa dưới cây anh đào + trụ đá
+ [43,11,48,15],            // kho vật phẩm
+ [48,12,58,15],            // hang mỏ + máy đào + đá
+ [54,17,55,18],            // xe goòng mỏ
+ [27,18,30,20],            // gian hàng
+ [31,18,33,20],            // bảng nhiệm vụ
+ [40,19,45,23],[48,19,54,23],[40,26,49,30],[53,26,62,30],   // 4 chuồng (đúng khung hàng rào)
+ [42,18,43,18],[50,18,51,18],                                 // lối đất nối đường chính vào cổng chuồng gà / heo
+ [35,32,58,33],            // lối đất ngang dưới các chuồng bò
+ [44,31,45,31],[57,31,58,31],                                 // lối đất từ cổng chuồng bò xuống
+ [37,31,42,38]             // khí cầu + phi công + nhãn
+];
 const FMN=mkG();
-for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(SNT[y][x]||y<9||y>40||x<1||x>W-2)FMN[y][x]=1;
+/* hàng 8 (mép trên, chỗ nhân vật đứng được) giờ cho đặt; chỉ chặn y<8 (rừng cây), y>40 (bờ sông) và 2 cột rìa */
+for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(SNT[y][x]||y<8||y>40||x<1||x>W-2)FMN[y][x]=1;
 for(const[a,b,c,d]of FMRS)for(let y=b;y<=d;y++)for(let x=a;x<=c;x++)if(FMN[y]&&x<W)FMN[y][x]=1;
 let FMX=mkG(),FMODE=0,FMEDIT=0,FMSEL=null,FMTAB='de',FMSELL=0,FMQ=1;
 const SPNT0=SPNT.slice(),HNT0=HNT.slice(),LNT0=LNT.slice(),SNT0=SNT.map(q=>q.slice());
