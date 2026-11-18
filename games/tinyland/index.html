@@ -342,16 +342,63 @@ S_.rom=mk(48,50,(g,r)=>{for(let y=0;y<44;y++){const w=Math.round(5+17*Math.pow(y
  r('#d9b24a',x,y+4,w*2,1);r('#ecd078',x,y+4,Math.ceil(w*.6),1);r('#b58a36',x+w*2-Math.ceil(w*.5),y+4,Math.ceil(w*.5),1)}
  for(let i=0;i<110;i++){const y=ri(2,42),w=Math.round(5+17*Math.pow(y/43,.62)),x=24+ri(-w+1,w-3);r(rnd()<.5?'#f6e394':'#a07a2a',x,y+4,ri(2,4),1)}
  const bw=Math.round(5+17*Math.pow(26/43,.62));r('#8a5a2e',24-bw,30,bw*2,2);r('#e0be56',21,0,6,5);r('#e0be56',18,2,2,4);r('#e0be56',28,2,2,4)});
-S_.chum=mk(24,28,(g,r)=>{E(r,'#7a3f20',12,17,9,9);E(r,'#a85d32',11,16,7,8);E(r,'#d08650',8,13,2,4);
- r('#5e3018',3,15,18,1);r('#5e3018',4,21,16,1);r('#7a3f20',6,8,12,4);r('#a85d32',7,8,8,3);r('#5e3018',5,8,14,1);
- E(r,'#c28a4e',12,6,8,3);r('#e0b070',7,5,8,1);E(r,'#6b4a2a',12,3,3,2);r('#a8845a',11,2,3,1)});
-S_.well=mk(28,34,(g,r)=>{E(r,'#7a7a7a',14,26,13,6);r('#9a9a9a',2,16,24,12);
- for(let y=16;y<28;y+=4)r('#7e7e7e',2,y,24,1);for(let x=2;x<26;x+=6)r('#7e7e7e',x,16,1,12);
- E(r,'#2a6a9a',14,16,10,3);r('#7a4a26',3,4,3,20);r('#7a4a26',22,4,3,20);
- for(let i=0;i<12;i++)r(i%4<2?'#a8452d':'#c0502f',1+i,2,26-i*2,1);
- r('#d9a566',13,6,1,10);r('#7a4a26',11,15,5,4)});
-S_.hay=mk(26,24,(g,r)=>{E(r,'#d9b866',13,15,12,8);E(r,'#e8cd7a',12,11,9,6);E(r,'#ecd890',11,7,5,4);
- for(let i=0;i<12;i++)r('#b8943f',ri(3,22),ri(6,20),3,1)});
+S_.chum=mk(24,28,(g,r)=>{
+ const C={d:'#5e3018',m:'#7a3f20',b:'#a85d32',l:'#d08650',h:'#f0b080'};
+ E(r,'rgba(0,0,0,.2)',12,26,10,2);
+ /* nắp đậy + núm */
+ E(r,'#c28a4e',12,4,7,2);r('#e0b070',7,3,9,1);r('#8a5a2e',6,5,12,1);r('#6b4a2a',10,0,4,2);r('#a8845a',11,0,2,1);
+ /* cổ + miệng chum */
+ r(C.d,6,6,12,1);r(C.l,7,6,3,1);r(C.m,8,7,8,2);r(C.b,9,7,4,2);
+ /* thân bầu: bề ngang theo từng hàng */
+ const P=[[9,10],[10,12],[11,14],[12,16],[13,18],[14,20],[15,20],[16,20],[17,19],[18,18],[19,16],[20,14],[21,12]];
+ P.forEach(([y,w])=>{const x=12-(w>>1);r(C.b,x,y-0,w,1);r(C.l,x,y,Math.max(2,w>>2),1);r(C.m,x+w-Math.max(3,w>>2),y,Math.max(3,w>>2),1);r(C.d,x+w-1,y,1,1)});
+ /* đáy */
+ r(C.d,7,22,10,1);r(C.m,8,22,8,1);r(C.d,6,23,12,1);
+ /* đường gờ + hoa văn sóng */
+ r(C.d,5,12,14,1);r(C.l,6,11,3,1);
+ for(let x=6;x<19;x+=2){r(C.d,x,16+(x%4?0:1),1,1);r(C.l,x+1,18+(x%4?1:0),1,1)}
+ r(C.d,5,20,14,1);
+ /* bóng men */
+ r(C.h,7,13,1,3);r(C.h,8,12,1,1);r(C.l,6,14,2,5)});
+S_.well=mk(28,34,(g,r)=>{
+ const S={l:'#c9c1b0',m:'#a9a190',d:'#857d6e',k:'#6a6458'},W2={l:'#c99660',m:'#a8703c',d:'#7a4a26'};
+ E(r,'rgba(0,0,0,.22)',14,32,13,2);
+ /* thân giếng xây gạch đá */
+ for(let y=22;y<=30;y++){const sh=y>28?1:0,x0=2+sh,x1=26-sh;r(S.m,x0,y,x1-x0,1);r(S.l,x0,y,5,1);r(S.d,x1-6,y,6,1);r(S.k,x1-1,y,1,1)}
+ for(const y of[24,27,30])r(S.k,3,y,22,1);
+ for(let y=22;y<30;y+=3){const o=((y-22)/3|0)%2?0:3;for(let x=3+o;x<25;x+=6)r(S.k,x,y+1,1,2)}
+ r('#6aa04a',3,28,3,2);r('#4f8a3a',4,29,3,1);r('#6aa04a',20,25,2,1);
+ /* miệng giếng + mặt nước */
+ E(r,S.l,14,21,12,4);E(r,S.m,14,22,11,3);E(r,'#2a4a6a',14,21,9,3);E(r,'#4f8fbf',13,22,6,1);r('#9fd0f0',10,21,3,1);
+ r(S.l,5,18,18,1);
+ /* hai trụ gỗ + thanh ngang */
+ for(const x of[3,22]){r(W2.m,x,7,3,15);r(W2.l,x,7,1,15);r(W2.d,x+2,7,1,15);r(S.d,x-1,21,5,2);r(S.l,x-1,21,5,1)}
+ r(W2.d,2,8,24,3);r(W2.m,2,8,24,1);r(W2.l,2,8,24,1);
+ /* trục cuốn dây + tay quay */
+ r('#d9b87a',6,10,16,3);r('#b89658',6,12,16,1);for(let x=7;x<21;x+=3)r('#8a6a3a',x,10,1,3);
+ r(W2.d,25,11,3,1);r(W2.m,27,12,1,3);r('#e8c040',27,14,1,1);
+ /* dây + gàu */
+ r('#e0cc92',14,13,1,5);r('#b89658',15,13,1,5);
+ r(W2.m,12,17,6,4);r(W2.l,12,17,6,1);r('#4a4a4a',12,19,6,1);r(W2.d,12,20,6,1);r('#2a2a2a',13,17,4,1);
+ /* mái ngói đỏ */
+ for(let i=0;i<8;i++){const w=8+i*3,x=14-(w>>1),y=i,e=i%2;r(e?'#a8452d':'#c0502f',x,y,w,1);if(i>0)for(let k=x+1;k<x+w-1;k+=3)r('#d9684a',k,y,1,1);r('#7a2f1f',x,y,1,1);r('#7a2f1f',x+w-1,y,1,1)}
+ r('#7a2f1f',1,7,26,1);r('#e8806a',10,0,8,1);r('#d9684a',11,1,6,1)});
+S_.hay=mk(26,24,(g,r)=>{
+ const H={l:'#f3dc8a',m:'#e0bf5e',d:'#c29b3c',k:'#8a6a24'};
+ for(let i=0;i<24;i++)rnd();
+ E(r,'rgba(0,0,0,.2)',13,22,12,2);
+ /* mặt trước */
+ r(H.m,3,10,16,12);r(H.l,3,10,16,1);r(H.d,3,20,16,2);r(H.k,3,22,16,1);
+ for(let y=12;y<20;y+=2)for(let x=4+(y%4?0:2);x<18;x+=5)r(y%4?H.d:H.l,x,y,3,1);
+ /* mặt trên (hình bình hành) */
+ for(let i=0;i<4;i++)r(i%2?H.l:'#fff0b8',3+(3-i),6+i,16,1);
+ /* mặt bên */
+ for(let j=0;j<4;j++){r(H.d,19+j,10-j,1,12);r(H.k,19+j,20-j,1,2)}
+ for(let y=12;y<20;y+=3)r(H.k,19,y,3,1);
+ /* hai dây buộc vắt qua mặt trên */
+ for(const x of[7,13]){r('#8a5a2e',x,10,2,12);r('#b98550',x,10,1,12);for(let i=0;i<4;i++)r('#8a5a2e',x+(3-i),6+i,2,1)}
+ /* vài cọng rơm thò ra */
+ for(const[x,y,h]of[[4,4,3],[10,3,3],[16,3,3],[21,4,3],[1,14,2],[24,10,2],[13,2,2]]){r(H.l,x,y,1,h);r(H.m,x+1,y+1,1,h-1)}});
 S_.reed=mk(14,22,(g,r)=>{[[3,2],[7,0],[10,4]].forEach(([x,t])=>{r('#6a9a3a',x,t+4,1,18-t);r('#7a4a26',x-1,t,3,5)})});
 const flip=c=>mk(c.width,c.height,g=>{g.translate(c.width,0);g.scale(-1,1);g.drawImage(c,0,0)});
 const spr=f=>{const a=[0,1].map(f).map(outl);return{r:a,l:a.map(flip)}};
@@ -467,11 +514,31 @@ S_.coi=mk(26,22,(g,r)=>{E(r,'#9a9a92',13,16,11,4);r('#9a9a92',2,12,22,5);E(r,'#b
  r('#8a5a2e',20,2,2,12);r('#8a5a2e',20,2,5,2);r('#d9d9d0',6,10,6,1)});
 const nong=c=>mk(32,14,(g,r)=>{E(r,'#8a6a2a',16,8,15,5);E(r,'#c9a24a',16,7,14,4);E(r,c,16,6,12,3);
  for(let i=0;i<30;i++)r(pick([c,'rgba(255,255,255,.35)','rgba(0,0,0,.2)']),ri(5,26),ri(3,9),1,1)});
-S_.gian=mk(56,46,(g,r)=>{[4,50].forEach(x=>{r('#a8923a',x,8,3,38);r('#c8b25a',x,8,1,38)});r('#a8923a',2,8,52,3);r('#c8b25a',2,8,52,1);
- for(let x=8;x<50;x+=8)r('#a8923a',x,8,2,3);
- for(let i=0;i<40;i++)E(r,'#3f9a46',ri(4,50),ri(5,12),3,2);
- for(let i=0;i<5;i++){const x=10+i*9;r('#6a8a3a',x,11,1,6);E(r,'#b8dc78',x,20,3,4);E(r,'#a0c860',x,26,4,5);r('#e8f0a8',x-2,17,1,3)}
- for(let i=0;i<4;i++)r('#ffd23f',ri(6,48),ri(6,10),2,2)});
+S_.gian=mk(56,46,(g,r)=>{
+ const B={l:'#d4c070',m:'#a8923a',d:'#7a6a24'};
+ for(let i=0;i<88;i++)rnd();
+ const h=(a,b)=>{a=Math.imul((a|0)*374761393+(b|0)*668265263+7,1274126177);a=Math.imul(a^a>>>13,1103515245);return((a^a>>>16)>>>0)/4294967296};
+ E(r,'rgba(0,0,0,.18)',28,44,26,2);
+ /* hai cột tre có mắt */
+ for(const x of[3,49]){r(B.m,x,7,4,38);r(B.l,x,7,1,38);r(B.d,x+3,7,1,38);for(let y=12;y<44;y+=8)r(B.d,x-1,y,6,1);r(B.d,x-1,43,6,2);r('#8a8a82',x-2,44,8,1)}
+ /* xà ngang + nan tre */
+ r(B.m,1,6,54,3);r(B.l,1,6,54,1);r(B.d,1,8,54,1);
+ for(let x=9;x<48;x+=8){r(B.m,x,9,2,5);r(B.l,x,9,1,5)}
+ r(B.m,3,13,50,1);
+ /* tán lá dày: nhiều lớp lá xanh */
+ const leaf=(x,y,k)=>{const c=[['#2e7a3a','#3f9a46','#6cc65a'],['#3a8a40','#52ae52','#86d870']][k&1];E(r,c[0],x,y+1,4,2);E(r,c[1],x,y,4,2);r(c[2],x-2,y-1,3,1)};
+ for(let i=0;i<46;i++)leaf(Math.round(4+h(i,1)*48),Math.round(5+h(i,2)*9),i);
+ for(let i=0;i<9;i++)leaf(Math.round(6+h(i,5)*44),Math.round(15+h(i,6)*5),i+1);
+ /* dây leo + râu */
+ for(const x of[8,19,30,41,50]){let xx=x;for(let y=13;y<22;y++){xx+=Math.round(Math.sin(y*.9+x)*.6);r('#6a8a3a',xx,y,1,1)}}
+ /* hoa bầu trắng */
+ for(const[x,y]of[[6,9],[16,7],[27,10],[37,8],[46,10],[33,17]]){r('#ffffff',x,y,3,2);r('#fff3b0',x+1,y,1,1);r('#e8f0c8',x,y+1,1,1)}
+ /* quả bầu treo */
+ const gourd=(x,y,n,bw)=>{r('#6a8a3a',x,y,1,3);r('#8fbf4f',x-1,y+3,3,n);r('#b5dc78',x-1,y+3,1,n);
+  const cy=y+3+n+bw;E(r,'#6f9f3a',x,cy,bw+1,bw+1);E(r,'#8fbf4f',x-1,cy-1,bw,bw+1);r('#d6efa0',x-bw+1,cy-bw+1,1,bw-1);r('#4f7a28',x+bw,cy,1,bw-1);r('#4f7a28',x-1,cy+bw+1,3,1)};
+ gourd(10,16,2,3);gourd(20,16,3,4);gourd(29,16,2,3);gourd(38,16,3,4);gourd(47,16,2,3);
+ /* chồi lá nhỏ che chân quả */
+ for(const x of[11,21,30,39,46])leaf(x,15,x)});
 S_.xe=mk(30,20,(g,r)=>{r('#8a5a2e',6,6,16,8);r('#a8703c',6,6,16,2);r('#6a4220',6,12,16,2);
  E(r,'#2a2a2a',24,15,4,4);E(r,'#888888',24,15,2,2);r('#8a5a2e',0,8,8,1);r('#8a5a2e',0,10,8,1);r('#6a4220',4,13,2,7);r('#6a4220',16,14,2,6);E(r,'#e8c040',10,5,3,2)});
 S_.mieu=mk(40,44,(g,r)=>{r('#c9b890',6,20,28,24);r('#e8d8a8',6,20,12,24);r('#a8986a',28,20,6,24);
@@ -5363,8 +5430,8 @@ const FMP=10;/* giá mọi món decor: 10 Xu */
 const FMD={
  cau:['Cây cau',()=>S_.cau,1,1,1,'c'],chuoi:['Cây chuối',()=>S_.chuoi,1,1,1,'c'],ban:['Cây bàng',()=>S_.ban,1,1,1,'c'],dua:['Cây dừa',()=>S_.dua,1,1,1,'c'],nipa:['Dừa nước',()=>S_.nipa,1,1,0,'c'],
  mon:['Bụi cỏ',()=>S_.mon,1,1,0,'b'],hoa:['Luống hoa',()=>FMHOA,1,1,0,'b'],
- rom:['Đống rơm',()=>S_.rom,2,1,1,'v'],hay:['Bó rơm',()=>S_.hay,1,1,0,'v'],chum:['Chum sành',()=>S_.chum,1,1,0,'v'],well:['Giếng làng',()=>S_.well,2,1,1,'v'],
- bunhin:['Bù nhìn',()=>S_.bunhin,1,1,0,'v'],gian:['Giàn bầu',()=>S_.gian,3,1,1,'v'],mieu:['Miếu thổ địa',()=>S_.mieu,2,1,1,'v'],
+ rom:['Đống rơm',()=>S_.rom,2,1,1,'v'],hay:['Bó rơm',()=>S_.hay,1,1,0,'v'],chum:['Chum sành',()=>S_.chum,1,1,0,'v'],well:['Giếng làng',()=>S_.well,2,1,1,'v',100],
+ bunhin:['Bù nhìn',()=>S_.bunhin,1,1,0,'v'],gian:['Giàn bầu',()=>S_.gian,3,1,1,'v',150],mieu:['Miếu thổ địa',()=>S_.mieu,2,1,1,'v'],
  nong_d9302a:['Nia đỏ',()=>nong('#d9302a'),2,1,0,'v'],nong_e8c040:['Nia vàng',()=>nong('#e8c040'),2,1,0,'v'],
  hosen:['Hồ sen',()=>S_.hosen,6,3,1,'k',200],choi:['Chòi nghỉ',()=>S_.choi,4,1,1,'k',150],
  coixay:['Cối xay gió',()=>S_.wind,2,2,1,'k',500],tuabin:['Tua bin gió',()=>S_.turb,1,1,1,'k',200]};
@@ -5376,9 +5443,9 @@ Object.assign(FMD,{
  thong:['Cây thông',()=>S_.thong,1,1,1,'c',1000],thongnho:['Thông nhỏ',()=>S_.thongnho,1,1,1,'c',600],noel:['Thông Noel',()=>S_.noel,1,1,1,'c',10000],
  cumhoa:['Cụm hoa',()=>S_.cumhoa,1,1,0,'b',300],cumhoavang:['Cụm hoa vàng',()=>S_.cumhoavang,1,1,0,'b',300],
  xerom:['Xe đẩy rơm',()=>S_.xerom,2,1,1,'v',1500],xehang:['Xe đẩy hàng',()=>S_.xehang,2,1,1,'v',2000],
- sapnuoc:['Sạp quán nước',()=>S_.sapnuoc,2,1,1,'v',5000],saprau:['Sạp rau',()=>S_.saprau,2,1,1,'v',5000],
- giaphoi:['Giá phơi đồ',()=>S_.giaphoi,4,1,1,'v',5000],tochim:['Tổ chim',()=>S_.tochim,1,1,1,'v',2000],
- giengmai:['Giếng có mái',()=>S_.giengmai,1,1,1,'v',200],giankho:['Giàn phơi khô',()=>S_.giankho,4,1,1,'v',500],gianholo:['Giàn hồ lô',()=>S_.gianholo,5,1,1,'v',1000],
+ sapnuoc:['Sạp quán nước',()=>S_.sapnuoc,2,1,1,'v',3000],saprau:['Sạp rau',()=>S_.saprau,2,1,1,'v',3000],
+ giaphoi:['Giá phơi đồ',()=>S_.giaphoi,4,1,1,'v',1500],tochim:['Tổ chim',()=>S_.tochim,1,1,1,'v',200],
+ giengmai:['Giếng có mái',()=>S_.giengmai,1,1,1,'v',500],giankho:['Giàn phơi khô',()=>S_.giankho,4,1,1,'v',500],gianholo:['Giàn hồ lô',()=>S_.gianholo,5,1,1,'v',1000],
  fence2:['Hàng rào thư giãn',()=>S_.fence2T,1,1,1,'p',20],gate:['Cổng thư giãn',()=>S_.gate,3,1,0,'p',500],fencerb:['Hàng rào tai thỏ',()=>S_.fenceRb,2,1,1,'p',80],gaterb:['Cổng tai thỏ',()=>S_.gateRb,4,1,0,'p',300],cactus:['Bụi xương rồng',()=>S_.cactusT,1,1,1,'b',100],farmlamp:['Đèn nông trại',()=>S_.farmlamp,1,1,1,'v',150],
  bantrua:['Bàn nghỉ trưa',()=>S_.bantrua,4,1,1,'v',300],ghetrua:['Ghế nghỉ trưa',()=>S_.ghetrua,1,1,1,'v',80],
  bonsai1:['Chậu bonsai 1',()=>S_.bonsai1,1,1,1,'b',200],bonsai2:['Chậu bonsai 2',()=>S_.bonsai2,1,1,1,'b',200],bonsai3:['Chậu bonsai 3',()=>S_.bonsai3,1,1,1,'b',200]});
