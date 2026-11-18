@@ -786,5 +786,6 @@ function drawOther(o,tm){let X,Y,sit=0,lift=0;
  if(o.m>=0&&!sit)drawRide(cx,X,Y,ob,o.m,tm);else drawAv(cx,X-10,Y-30,ob)}
 window.cvPushOthers=(L,tm)=>{for(const o of CV.others.values()){let key=o.y;
  if(o.seat>=0&&CV.seats[o.seat])key=CV.seats[o.seat].by+.5;else if(o.hz>=0&&CV.horses[o.hz])key=CV.horses[o.hz].y+.5;
- L.push([key,()=>drawOther(o,tm)])}};
+ L.push([key,()=>drawOther(o,tm)]);
+ if(o.bb&&window.bbDrawOther)L.push([key+.02,()=>bbDrawOther(o,tm)])}};   // Bé bỏng của người chơi khác (baby.js)
 })();

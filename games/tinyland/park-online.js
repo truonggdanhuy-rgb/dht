@@ -161,7 +161,9 @@ CV.snd=localStorage.cv_snd!='0';$('cvsn').textContent=CV.snd?'🔊':'🔇';
 $('cvsn').onclick=()=>{CV.snd=!CV.snd;localStorage.cv_snd=CV.snd?'1':'0';$('cvsn').textContent=CV.snd?'🔊':'🔇'};
 
 // ---------- mạng ----------
-const me=()=>({id:ME.id,u:myUid(),n:ST.name,h:ST.av.h,s:ST.av.s,e:ST.av.e|0,a:ST.av.a,w:ST.av.w,m:ST.av.m,x:Math.round(Pl.x),y:Math.round(Pl.y),ts:ME.ts,q:ME.q,qt:ME.qt,z:ME.z,zt:ME.zt,bt:CV.boat?(CV.bk||1):0,bf:((ST.id&&typeof ST.id.bt=='number')?ST.id.bt:-1),ac:ACT?actIdx(ACT)+1:0});
+const me=()=>({id:ME.id,u:myUid(),n:ST.name,h:ST.av.h,s:ST.av.s,e:ST.av.e|0,a:ST.av.a,w:ST.av.w,m:ST.av.m,x:Math.round(Pl.x),y:Math.round(Pl.y),ts:ME.ts,q:ME.q,qt:ME.qt,z:ME.z,zt:ME.zt,bt:CV.boat?(CV.bk||1):0,bf:((ST.id&&typeof ST.id.bt=='number')?ST.id.bt:-1),ac:ACT?actIdx(ACT)+1:0,bb:bbInfo()});
+// Bé bỏng đang đi theo mình (chỉ gửi tên + giới tính + set để người khác vẽ được)
+function bbInfo(){const b=ST.bb;return(b&&b.on&&b.big&&b.fl&&!CV.boat)?{n:String(b.n||'Bé').slice(0,8),g:b.g=='f'?'f':'m',s:b.set||'warm'}:0}
 function track(){if(ch&&PK.in)try{ch.track(me())}catch(e){}}
 function bcast(ev,p){if(ch)try{ch.send({type:'broadcast',event:ev,payload:p})}catch(e){}}
 const loadLib=()=>window.supabase?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';s.onload=ok;s.onerror=()=>no(new Error('không tải được thư viện Supabase'));document.head.appendChild(s)});
@@ -171,7 +173,7 @@ function sync(){if(!ch)return;const st=ch.presenceState(),all=[];for(const k in 
  const okIds=new Set(PK.all.map(p=>p.id));
  for(const p of PK.all){if(p.id==ME.id)continue;let o=CV.others.get(p.id);
   if(!o){o={id:p.id,x:p.x,y:p.y,tx:p.x,ty:p.y,d:0,a:0,mv:0};CV.others.set(p.id,o)}
-  o.seen=performance.now();o.pres=1;o.u=p.u||'';o.n=p.n;o.hair=p.h;o.set=p.s;o.e=p.e|0;o.acc=p.a==null?-1:p.a;o.wg=p.w==null?undefined:p.w;o.m=p.m==null?-1:p.m;o.seat=p.q==null?-1:p.q;o.hz=p.z==null?-1:p.z;o.qt=p.qt||0;o.zt=p.zt||0;o.bt=p.bt|0;o.bf=p.bf==null?-1:p.bf|0;o.ac=p.ac|0}
+  o.seen=performance.now();o.pres=1;o.u=p.u||'';o.n=p.n;o.hair=p.h;o.set=p.s;o.e=p.e|0;o.acc=p.a==null?-1:p.a;o.wg=p.w==null?undefined:p.w;o.m=p.m==null?-1:p.m;o.seat=p.q==null?-1:p.q;o.hz=p.z==null?-1:p.z;o.qt=p.qt||0;o.zt=p.zt||0;o.bt=p.bt|0;o.bf=p.bf==null?-1:p.bf|0;o.ac=p.ac|0;o.bb=p.bb&&p.bb.s?p.bb:null}
  for(const[id,o]of[...CV.others])if(!okIds.has(id)){o.pres=0;if(performance.now()-(o.seen||0)>10000)CV.others.delete(id)} // chớp tắt presence ngắn: giữ người chơi thêm tối đa 10s
  if(PK.in){chatUI();
   if(PK.rank<0&&ch&&ch.state==='joined')selfHeal();   // máy chủ đã xóa mình khỏi danh sách (rớt mạng ngắn, iPhone ngủ...) -> đăng ký lại ngay
@@ -262,7 +264,7 @@ const PKO=window.PKO={
   const x=Math.round(Pl.x),y=Math.round(Pl.y);
   if(tMv>=.25&&(x!=lx||y!=ly||Pl.d!=ld)){tMv=0;tHb=0;lx=x;ly=y;ld=Pl.d;bcast('mv',{i:ME.id,x,y,d:Pl.d})}
   else if(tHb>=3){tHb=0;bcast('mv',{i:ME.id,x,y,d:Pl.d})}
-  tAv+=dt;if(tAv>1){tAv=0;const k=ST.av.h+'|'+ST.av.s+'|'+(ST.av.e|0)+'|'+ST.av.a+'|'+ST.av.w+'|'+ST.av.m+'|'+ST.name+'|'+(ACT||0);if(k!=avs){avs=k;track()}}
+  tAv+=dt;if(tAv>1){tAv=0;const k=ST.av.h+'|'+ST.av.s+'|'+(ST.av.e|0)+'|'+ST.av.a+'|'+ST.av.w+'|'+ST.av.m+'|'+ST.name+'|'+(ACT||0)+'|'+(()=>{const q=bbInfo();return q?q.n+q.g+q.s:''})();if(k!=avs){avs=k;track()}}
   gTick(dt)}};
 
 // ============================================================
@@ -276,7 +278,7 @@ const players=tb=>tb.seats.map(si=>{if(CV.seat==si)return{id:ME.id,n:ST.name,me:
 const mySide=()=>G?(CV.seat==G.tb.seats[0]?0:1):0;
 const isHost=()=>G&&mySide()==0;
 function gSit(s){const tb=CV.tbls.find(t=>t.id==s.tb);G={tb,ph:'wait',gid:'',bd:null,turn:0,w:-1,msg:'Đang chờ người chơi thứ 2...',dl:0,sc:[0,0],pick:[],paid:0};
- rdy[tb.id]=rdy[tb.id]||{};rdy[tb.id][ME.id]=1;bcast('g',{k:'rdy',tb:tb.id,f:ME.id});gUI()}
+ rdy[tb.id]=rdy[tb.id]||{};rdy[tb.id][ME.id]=1;bcast('g',{k:'rdy',tb:tb.id,f:ME.id,seat:CV.seat});gUI()}
 function gLeave(){if(G){delete (rdy[G.tb.id]||{})[ME.id];bcast('g',{k:'unr',tb:G.tb.id,f:ME.id});G=null}CVLOCK=0;elG.style.display='none'}
 function gSend(p){p.tb=G.tb.id;p.gid=G.gid;p.f=ME.id;bcast('g',p)}
 function pay(w,why){if(!G||G.paid)return;G.paid=1;G.ph='over';G.w=w;CVLOCK=0;const b=G.tb.bet,s=mySide();
@@ -319,12 +321,17 @@ function gSync(){ // gọi sau mỗi lần presence đổi
  if(G.ph=='play'){const opp=pl[1-mySide()];if(!opp){if(!G.gone)G.gone=Date.now()}else G.gone=0}
  if(G.ph!='play'&&(!pl[1-mySide()])){G.msg='Đang chờ người chơi thứ 2...';G.ph='wait'}
  gUI()}
-function gRecv(p){if(!G||p.tb!=G.tb.id)return;const k=p.k;
- if(k=='rdy'){(rdy[p.tb]=rdy[p.tb]||{})[p.f]=1;return}
+function gRecv(p){if(!p)return;const k=p.k;
+ // 'sẵn sàng' phải được ghi nhận kể cả khi mình CHƯA ngồi xuống bàn (trước đây bị bỏ rơi nếu bạn ngồi trước, mình ngồi sau => bàn đứng im mãi)
+ if(k=='rdy'){(rdy[p.tb]=rdy[p.tb]||{})[p.f]=1;const o=CV.others.get(p.f);if(o&&p.seat!=null&&p.seat>=0&&o.seat!=p.seat)o.seat=p.seat;
+  if(G&&G.tb.id==p.tb&&G.ph!='play'){if(p.re!=2&&(rdy[G.tb.id]||{})[ME.id])bcast('g',{k:'rdy',tb:G.tb.id,f:ME.id,seat:CV.seat,re:2});gSync()}return}
  if(k=='unr'){delete (rdy[p.tb]||{})[p.f];return}
- if(k=='start'&&!isHost()){if(ST.xu<G.tb.bet){bcast('g',{k:'no',tb:G.tb.id,gid:p.gid,f:ME.id});return}G.gid=p.gid;startGame(p.first,null)}
+ if(!G||p.tb!=G.tb.id)return;
+ if(k=='start'&&!isHost()){if(G.gid==p.gid){gSend({k:'ack'});return}   // bản gửi lại của ván đang chơi: chỉ báo đã nhận
+  if(ST.xu<G.tb.bet){bcast('g',{k:'no',tb:G.tb.id,gid:p.gid,f:ME.id});return}G.gid=p.gid;if(startGame(p.first,null))gSend({k:'ack'})}
  else if(k=='no'&&isHost()&&p.gid==G.gid&&G.ph=='play'){ST.xu+=G.tb.bet;xuUp();save();G.ph='wait';CVLOCK=0;G.msg='Đối thủ không đủ Xu';rdy[G.tb.id]={};gUI()}
  else if(p.gid!=G.gid)return;
+ else if(k=='ack'&&isHost())G.acked=1;
  else if(k=='mv'&&isHost())hostMove(p.c,1-0,p.f);
  else if(k=='sh')shotIn(p.c);
  else if(k=='sr')shotRes(p);
@@ -352,12 +359,19 @@ window.pkMv=c=>{if(!G||G.ph!='play'||G.turn!=mySide())return;
 window.pkRdy=()=>{if(!G)return;rdy[G.tb.id]=rdy[G.tb.id]||{};rdy[G.tb.id][ME.id]=1;bcast('g',{k:'rdy',tb:G.tb.id,f:ME.id});G.msg='Đã sẵn sàng, chờ đối thủ...';gUI()};
 window.pkLeave=()=>{if(G&&G.ph=='play'&&!confirm('Rời bàn giữa ván sẽ bị xử thua và mất '+G.tb.bet+' Xu. Rời thật không?'))return;CVLOCK=0;Pl.sit=0;Pl.y=Pl.by;goal=null};
 let tG=0;
+let tRdy=0,tRs=0,tRe=0;
 function gTick(dt){if(!G)return;tG+=dt;if(tG<.25)return;tG=0;
  const pl=players(G.tb);
+ // phát lại 'sẵn sàng' mỗi 1.5s (tin phát đi đúng 1 lần dễ bị rớt => người kia chờ mãi)
+ if(G.ph!='play'&&(rdy[G.tb.id]||{})[ME.id]&&(tRdy+=.25)>=1.5){tRdy=0;bcast('g',{k:'rdy',tb:G.tb.id,f:ME.id,seat:CV.seat})}
+ // chủ bàn gửi lại lệnh 'start' mỗi 1s cho tới khi đối thủ báo đã nhận (tối đa 10s)
+ if(G.ph=='play'&&isHost()&&!G.acked&&G.startAt&&Date.now()-G.startAt<10000&&(tRs+=.25)>=1){tRs=0;gSend({k:'start',first:G.first0})}
+ // ttt / caro: chủ bàn phát lại bàn cờ mỗi 2.5s để máy kia không bị lệch nếu rớt 1 tin
+ if(G.ph=='play'&&isHost()&&(G.tb.kind=='ttt'||G.tb.kind=='caro')&&G.bd&&(tRe+=.25)>=2.5){tRe=0;gSend({k:'ts',b:G.bd,turn:G.turn,left:Math.max(0,G.dl-Date.now()),w:-1,lm:G.last})}
  if(isHost()&&G.ph!='play'&&pl[0]&&pl[1]&&(rdy[G.tb.id]||{})[pl[0].id]&&(rdy[G.tb.id]||{})[pl[1].id]){
   const gid=G.tb.id+'-'+Date.now(),first=Math.random()<.5?0:1;G.gid=gid;
   const deck=G.tb.kind=='mem'?[...EMO,...EMO].sort(()=>Math.random()-.5).map(e=>EMO.indexOf(e)):null;
-  rdy[G.tb.id]={};if(startGame(first,deck))gSend({k:'start',first})}
+  rdy[G.tb.id]={};if(startGame(first,deck)){G.first0=first;G.acked=0;G.startAt=Date.now();tRs=0;gSend({k:'start',first})}}
  if(G.ph=='play'&&G.gone&&Date.now()-G.gone>25000)pay(mySide(),'đối thủ rời bàn');
  if(G.ph=='play'&&isHost()&&Date.now()>G.dl+1500&&!(G.pend&&Date.now()-G.pend<12000)){gSend({k:'end',w:1-G.turn,why:'hết giờ'});pay(1-G.turn,'hết giờ')}
  if(G.ph=='play')gUI(1)}

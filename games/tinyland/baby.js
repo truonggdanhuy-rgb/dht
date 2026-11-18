@@ -157,6 +157,19 @@ function drawTag(){const b=B();if(!b||!b.big||!b.fl||(CVON&&CV.boat)||(HMA&&HMA.
 /* móc vào vòng vẽ của game (tên vẽ sau cùng để không bị che) */
 {const od=window.drawNames;window.drawNames=tm=>{if(od)od(tm);drawTag()}}
 window.bbFollowing=()=>{const b=B();return !!(b&&b.big&&b.fl)};
+/* ---------- Bé bỏng của NGƯỜI KHÁC trong Công viên / Phố xá / Biển ----------
+   Dữ liệu (tên, giới tính, set) đến từ presence (park-online.js → o.bb). Bé đi theo chủ phía sau-bên, mượt dần về vị trí. */
+window.bbDrawOther=(o,tm)=>{const d=o&&o.bb;if(!d||!d.s||o.seat>=0||o.hz>=0||o.bt||o.m>=0)return;
+ const dir=o.d|0,tx=o.x+(dir==2?15:dir==3?-15:-13),ty=o.y+(dir==1?5:dir==0?-3:1);
+ if(o.bpx==null||Math.hypot(o.bpx-tx,o.bpy-ty)>120){o.bpx=tx;o.bpy=ty}
+ const dx=tx-o.bpx,dy=ty-o.bpy;o.bpx+=dx*.14;o.bpy+=dy*.14;
+ const mv=Math.hypot(dx,dy)>1.6,t=performance.now()/1000,f=mv?Math.floor(t*9)%4:0,x=Math.round(o.bpx),y=Math.round(o.bpy);
+ const b={set:d.s,g:d.g=='f'?'f':'m'},ms=msGet(b.set),isS=!!ms.spr,sp=sprite(b,dir,mv,f),W=(isS?BBSPR.w*.35:24*BB_SCALE),H=(isS?BBSPR.h*.35:36*BB_SCALE),
+  bn=mv?0:Math.abs(Math.sin(t*3.4+(o.x||0))),lift=bn*1.3,sy=mv?1:1+.035*(bn-.5),sm=cx.imageSmoothingEnabled,hh=H*sy,fy=y-32*BB_SCALE+36*BB_SCALE;
+ cx.imageSmoothingEnabled=true;try{cx.imageSmoothingQuality='high'}catch(e){}
+ cx.drawImage(sp,Math.round(x-W/2),Math.round((fy-lift-hh)*10)/10,W,hh);cx.imageSmoothingEnabled=sm;
+ cx.save();cx.font='400 6px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';cx.lineJoin='round';cx.lineWidth=1.4;
+ const ty2=Math.round(y-(isS?18:23)),nm=String(d.n||'Bé').slice(0,8);cx.strokeStyle='rgba(30,20,10,.55)';cx.strokeText(nm,x,ty2);cx.fillStyle='#eafff1';cx.fillText(nm,x,ty2);cx.restore()};
 window.bbDrawFollow=drawFollow;
 
 /* ---------------- NÔI EM BÉ (SVG) ---------------- */
