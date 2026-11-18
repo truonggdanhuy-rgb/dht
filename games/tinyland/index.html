@@ -1981,7 +1981,12 @@ const MOUNTS=[{n:'Trâu Việt',hw:9,drop:8,spd:1.8,seat:{0:[0,-22],1:[0,-22],si
 {n:'Ván trượt cam',k:'skate_orange',cl:1,cb:{xu:1000,qv:300,dia:2},hw:8,drop:0,spd:2.6,nobob:1,acc:1,sh:[26,20],seat:{0:[0,-13],1:[0,-13],side:[0,-13]},
  legs(R,d,ph,sx,sy,PT,SD,S,hv,c){if(window.skLegs)skLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
  hov:(t,mv)=>window.skHov?skHov(t,mv):0,lean:(mv,d)=>window.skLean?skLean(mv,d):0,
- draw(R,d,f,b,t,pt,c){if(window.skDraw)skDraw('orange',R,d,f,b,t,pt,c)}}
+ draw(R,d,f,b,t,pt,c){if(window.skDraw)skDraw('orange',R,d,f,b,t,pt,c)}},
+// ===== 🤡 Ván trượt hề (1.000 Xu + 400 xu quái vật + 2 💎 ở Tiệm Chú Hề; hình vẽ ở skate.js, bảng màu 'clown', có bong bóng hề buộc ở đuôi ván) =====
+{n:'Ván trượt hề',k:'skate_clown',cl:1,cb:{xu:1000,qv:400,dia:2},hw:8,drop:0,spd:2.6,nobob:1,acc:1,sh:[26,20],seat:{0:[0,-13],1:[0,-13],side:[0,-13]},
+ legs(R,d,ph,sx,sy,PT,SD,S,hv,c){if(window.skLegs)skLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
+ hov:(t,mv)=>window.skHov?skHov(t,mv):0,lean:(mv,d)=>window.skLean?skLean(mv,d):0,
+ draw(R,d,f,b,t,pt,c){if(window.skDraw)skDraw('clown',R,d,f,b,t,pt,c)}}
 ];
 // nguoi ngoi tren thu cuoi
 function drawRide(g,x,y,o,mi,t){

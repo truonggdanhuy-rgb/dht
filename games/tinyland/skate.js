@@ -14,7 +14,11 @@
 const PI=Math.PI,sin=Math.sin,cos=Math.cos,rnd=Math.round,sqrt=Math.sqrt,hyp=Math.hypot;
 const SKPAL={
  orange:{edge:'#d9320f',deck:'#ff7a1a',deckL:'#ff9a3a',mid:'#ffb02e',flame:'#ffd23a',flameL:'#fff08a',under:'#b82a0c',
-         truck:'#9aa3b5',truckD:'#5d667a',wheel:'#3b4ff0',wheelL:'#7f92ff',wheelD:'#232fb0',hub:'#ffffff'}
+         truck:'#9aa3b5',truckD:'#5d667a',wheel:'#3b4ff0',wheelL:'#7f92ff',wheelD:'#232fb0',hub:'#ffffff'},
+ // ván HỀ: mặt ván trắng – đỏ – xanh – vàng, bánh xe vàng, có BONG BÓNG buộc ở đuôi ván (balloon)
+ clown:{edge:'#3b32d6',deck:'#ffffff',deckL:'#ffffff',mid:'#ffd23a',flame:'#e8303a',flameL:'#3b9bff',under:'#2c24b0',
+         truck:'#9aa3b5',truckD:'#5d667a',wheel:'#ffd23a',wheelL:'#fff3a0',wheelD:'#d99a14',hub:'#e8303a',
+         balloon:{b:'#e8303a',l:'#ff9a9a',d:'#a8161e',s:'#f5f5fa'}}
 };
 // ---------- nhịp hành động khi đứng yên ----------
 // 2.0-2.4s: chân sau NHẤC lên, đưa RA TRƯỚC • 2.4-3.2s: dậm xuống ĐẦU (mũi) ván → đuôi ván hất lên • 3.2-3.6s: thu chân về chỗ cũ
@@ -43,6 +47,15 @@ function skDraw(key,R,d,f,b,t,pt,c){
  if(pt)return;
  const P=SKPAL[key]||SKPAL.orange,mv=c.mv,side=d>1,p=phase(t,mv),tl=p.tilt;
  if(mv&&side)for(let i=0;i<3;i++){const u=(t*3+i/3)%1;R('rgba(255,255,255,'+(.55*(1-u)).toFixed(2)+')',-16-rnd(u*8),-6+i*2,3-rnd(u*2),1)}
+ // BONG BÓNG buộc ở đuôi ván (chỉ ván có P.balloon): bồng bềnh phía sau, bị gió thổi dạt ra sau khi đi
+ if(P.balloon){const B=P.balloon,w=Math.sin(t*2.1),bx=-21-(mv?5:0)+rnd(w*1.5),by=-22+rnd(Math.sin(t*1.6)*2)+(mv?3:0),tx=XL+1,ty=DK+kick(XL)+yo(tl,XL);
+  // dây: từ đuôi ván lên bong bóng (đường thẳng bậc thang)
+  for(let i=0;i<=8;i++){const q=i/8;R(B.s,rnd(tx+(bx+4-tx)*q+Math.sin(q*6+t*3)*1.2),rnd(ty+(by+11-ty)*q),1,1)}
+  // thân bong bóng 9x11 hình oval + nút thắt + bóng sáng
+  R(B.b,bx+2,by,5,1);R(B.b,bx+1,by+1,7,1);R(B.b,bx,by+2,9,6);R(B.b,bx+1,by+8,7,1);R(B.b,bx+2,by+9,5,1);R(B.b,bx+3,by+10,3,1);
+  R(B.d,bx+6,by+3,3,5);R(B.d,bx+4,by+8,4,1);R(B.d,bx+3,by+10,3,1);R(B.d,bx+5,by+9,2,1);
+  R(B.l,bx+2,by+2,2,3);R(B.l,bx+3,by+1,2,1);R('#ffffff',bx+2,by+2,1,1);
+  R(B.d,bx+4,by+11,2,1)}
  // bánh xe 3x2 + trục xe
  for(const wx of WX){const y=yo(tl,wx);
   R(P.truck,wx-1,-3+y,3,1);R(P.truckD,wx,-3+y,2,1);

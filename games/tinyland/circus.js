@@ -201,7 +201,8 @@ const CL_ITEMS=[
  {k:'phuthuy',n:'Phù Thủy Mộng Mơ',d:'Mũ phù thủy hồng cao, vành rất rộng • Nam nữ đều mặc • Không che mặt',pr:{xu:5000,qv:800,dia:5}},
  // m:1 = THÚ CƯỠI (k = khóa trong MOUNTS, lưu ở ST.own.m). Giá 0 thì dòng đó tự ẩn.
  {k:'unicycle',m:1,n:'Xe đạp 1 bánh',d:'Thú cưỡi • Đạp xe 1 bánh cao to, yên đen, vành bạc',pr:{xu:8000,qv:0,dia:0}},
- {k:'skate_orange',m:1,n:'Ván trượt cam',d:'Thú cưỡi • Đứng lướt trên ván cam, bánh xe xanh',pr:{xu:1000,qv:300,dia:2}}];
+ {k:'skate_orange',m:1,n:'Ván trượt cam',d:'Thú cưỡi • Đứng lướt trên ván cam, bánh xe xanh',pr:{xu:1000,qv:300,dia:2}},
+ {k:'skate_clown',m:1,n:'Ván trượt hề',pr:{xu:1000,qv:400,dia:2}}];
 const vtk=k=>k=='hacvt'||k=='bachvt'||k=='phuthuy';   // mũ rất cao nên khung xem trước cao hơn
 const wtk=k=>k=='phuthuy';   // Phù Thủy Mộng Mơ: vành mũ rộng ~32 điểm ảnh nên khung xem trước rộng hơn
 const clTab=k=>{const it=CL_ITEMS.find(x=>x.k==k);return it&&it.m?'m':'s'};   // m = thú cưỡi, s = set
