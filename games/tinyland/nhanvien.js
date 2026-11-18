@@ -190,7 +190,7 @@ SETFX.nvks=(u,o,S,K)=>{
 };
 
 // ---------- 5) TÓC NHÂN VIÊN KHÁCH SẠN ----------
-HAIRFX.nvks=(u,o,K)=>{
+const hairMaker=(PK,WH,decor)=>(u,o,K)=>{
  const{side,Rt,back}=K,P=mkP(u,side&&!Rt,40,0),mv=!!o.mv,
   t=performance.now()/1000,sw=mv?Math.sin(t*8)*.7:0;         // tóc đung đưa khi đi
  const strand=(x,y,k,ph)=>Math.sin(x*k+Math.sin(y*.45)*1.3+(ph||0));
@@ -267,7 +267,7 @@ HAIRFX.nvks=(u,o,K)=>{
    return sh5((r-.9)*3.2+(y-8)*.04-.5,WH)};
   paint(P,0,2,40,22,band);
   // nơ đen cài hai bên (nhìn trước: nghiêng nhẹ)
-  paint(P,0,1,40,18,lay(bowF(9.6,10.4,.95,-1.6),bowF(30.4,10.4,.95,1.6)));
+  decor(P,0,back);
  }else if(back){
   const band=(x,y)=>{if(y>17.4)return null;const r=ring(x,y,20,16.4,12.6,10.6),th=Math.atan2((y-16.4)/10.6,(x-20)/12.6);
    const outer=1.04+.075*Math.abs(Math.sin(th*10)),inner=.76;
@@ -275,7 +275,7 @@ HAIRFX.nvks=(u,o,K)=>{
    if(r>outer-.045)return WH[4];if(r>outer-.1)return WH[3];if(Math.abs(Math.sin(th*10+.35))>.93)return WH[3];
    return sh5((r-.9)*3.2+(y-8)*.04-.5,WH)};
   paint(P,0,2,40,22,band);
-  paint(P,0,1,40,18,lay(bowF(9.6,10.4,.95,-1.6),bowF(30.4,10.4,.95,1.6)));
+  decor(P,0,back);
  }else{
   const band=(x,y)=>{if(y>17.6)return null;const r=ring(x,y,17.4,16.2,12,10.4),th=Math.atan2((y-16.2)/10.4,(x-17.4)/12);
    const outer=1.05+.075*Math.abs(Math.sin(th*10)),inner=.78;
@@ -283,7 +283,55 @@ HAIRFX.nvks=(u,o,K)=>{
    if(r>outer-.045)return WH[4];if(r>outer-.1)return WH[3];if(Math.abs(Math.sin(th*10+.35))>.93)return WH[3];
    return sh5((r-.9)*3.2+(y-8)*.04-.5,WH)};
   paint(P,0,2,36,22,band);
-  paint(P,0,1,40,18,lay(bowF(11.4,9.6,.95,0)));        // nơ cài phía gần
+  decor(P,1,0);
  }
 };
+
+// ---- trang trí của Tóc Nhân viên khách sạn: 2 nơ đen cài hai bên ----
+const decorBow=(P,side)=>{
+ if(!side)paint(P,0,1,40,18,lay(bowF(9.6,10.4,.95,-1.6),bowF(30.4,10.4,.95,1.6)));
+ else paint(P,0,1,40,18,bowF(11.4,9.6,.95,0));
+};
+HAIRFX.nvks=hairMaker(PK,WH,decorBow);
+
+/* ===================================================================================
+   🦌 TÓC ĐÔNG XÙ — dựa trên Tóc Nhân viên khách sạn: tóc TRẮNG TUYẾT xù bồng, băng đô ren băng giá,
+   2 SỪNG TUẦN LỘC thay cho 2 nơ, 1 BÔNG HOA TUYẾT cài trên tóc.
+   • Đổi ở gian hàng ÔNG GIÀ NOEL (Làng tuyết) bằng 3 ❄️ Huy hiệu tuyết (bd:3).
+     Muốn đổi giá: sửa bd:3 ở dòng HAIRS.push bên dưới. Món này KHÔNG bán ở Shop Phố xá (ach:1).
+   • Món nằm trong snow-village.js: SBSHOP có dòng {t:'h',k:'nvdx'}.
+   =================================================================================== */
+const SN=['#ffffff','#f7fbff','#e7f2fb','#c9dff0','#9fbfd9'],       // tóc trắng tuyết (bóng xanh băng rất nhẹ)
+      WI=['#fbfeff','#e6f4ff','#cde4f6','#a6cbe6','#7aaad0'],       // ren băng giá
+      AN=['#e0b27a','#c08a52','#9a6a3c','#744828','#4a2a16'];       // sừng nâu
+// bông hoa tuyết: 6 nhánh + nhánh con, tâm trắng
+const flakeF=(cx,cy,r)=>(x,y)=>{const dx=x-cx,dy=y-cy,d=Math.hypot(dx,dy);if(d>r+.6)return null;
+ if(d<.95)return '#ffffff';
+ const seg=(px,py,x1,y1,x2,y2)=>{const vx=x2-x1,vy=y2-y1,t=clamp(((px-x1)*vx+(py-y1)*vy)/(vx*vx+vy*vy),0,1);return Math.hypot(px-x1-t*vx,py-y1-t*vy)};
+ let best=9;
+ for(let k=0;k<6;k++){const a=k*Math.PI/3,ca=Math.cos(a),sa=Math.sin(a),
+   P1=(l,p)=>[cx+l*ca-p*sa,cy+l*sa+p*ca];
+  const e=P1(r,0),m=P1(r*.58,0),b1=P1(r*.84,r*.3),b2=P1(r*.84,-r*.3);
+  best=Math.min(best,seg(x,y,cx,cy,e[0],e[1]),seg(x,y,m[0],m[1],b1[0],b1[1]),seg(x,y,m[0],m[1],b2[0],b2[1]))}
+ if(best>.56)return null;return d<r*.42?'#d8f1ff':(d<r*.75?'#8ccbf2':'#62aee6')};
+// sừng tuần lộc: thân cong + 2 nhánh; sd=1 trái, -1 phải (nhìn trước/sau)
+const antlerF=(bx,by,dir,sc,p)=>{p=p||AN;sc=sc||1;
+ const X=(l)=>bx+dir*l*sc,Y=(l)=>by-l*sc;
+ const beam=rib(t=>[bx-dir*(5.2*t+1.1*Math.sin(t*3.1))*sc,by-(12.6*t)*sc,(2.0-.7*t)*sc],p);
+ const t1=rib(t=>[bx-dir*(2.7+3.3*t)*sc*-1+dir*0,by-(5.4+4.4*t)*sc,(1.5-.6*t)*sc],p);          // nhánh trong, hướng lên
+ const t2=rib(t=>[bx-dir*(4.2+2.9*t)*sc,by-(9.3+1.8*t)*sc,(1.45-.6*t)*sc],p);                    // nhánh ngoài
+ const tuft=blob(bx,by+.4,2.9*sc,2.1*sc,SN,.3,.8);
+ return lay(tuft,beam,t1,t2)};
+const decorSnow=(P,side,back)=>{
+ const flake=(cx,cy)=>flakeF(cx,cy,3.5);
+ if(!side){
+  paint(P,0,-6,40,20,lay(antlerF(10.4,11.4,1,1),antlerF(29.6,11.4,-1,1)));
+  if(!back)paint(P,22,11,36,25,flake(29,17.4));else paint(P,22,11,36,25,flake(30,17.2));
+ }else{
+  paint(P,0,-6,40,20,lay(antlerF(11.6,10.6,1,1),antlerF(15.6,10.8,1,.8,[AN[1],AN[2],AN[3],AN[4],AN[4]])));
+  paint(P,6,10,26,26,flake(14.6,17.6));
+ }
+};
+HAIRFX.nvdx=hairMaker(SN,WI,decorSnow);
+if(!HAIRS.some(h=>h.k=='nvdx'))HAIRS.push({n:'Tóc Đông xù',k:'nvdx',c:'#eef6fc',ach:1,bd:3});
 })();

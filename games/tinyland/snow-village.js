@@ -232,7 +232,7 @@ function santaAct(){const d=new Date().toDateString();
   return toast('🎅 Ho ho ho! Bạn nhận được 1 ❄️ Huy hiệu tuyết!\nĐang có '+ST.sb+' huy hiệu • bấm lại ông để xem gian hàng')}
  santaPanel()}   // mở gian hàng ông Noel: nhắc 2 giây
 /* ---- Gian hàng đổi Huy hiệu tuyết: thêm món mới = thêm 1 dòng vào SBSHOP (loại 'p' pet / 's' set / 'h' tóc-mũ / 'a' phụ kiện / 'x' hành động; k = khóa trong PETS/SETS/HAIRS/ACCS, riêng 'x' là id trong ACTS; giá = bd) ---- */
-const SBSHOP=[{t:'p',k:'ginger'},{t:'p',k:'snowcloud'},{t:'h',k:'earfur'},{t:'x',k:'bell'},{t:'a',k:'gift'},{t:'a',k:'snowbub'},{t:'s',k:'wintm'},{t:'s',k:'wintf'}];
+const SBSHOP=[{t:'p',k:'ginger'},{t:'p',k:'snowcloud'},{t:'h',k:'earfur'},{t:'x',k:'bell'},{t:'a',k:'gift'},{t:'a',k:'snowbub'},{t:'s',k:'wintm'},{t:'s',k:'wintf'},{t:'h',k:'nvdx'}];
 const sbArr=t=>t=='p'?PETS:t=='s'?SETS:t=='h'?HAIRS:t=='x'?ACTS:ACCS;
 const sbItem=q=>{const A=sbArr(q.t),i=A.findIndex(x=>(q.t=='x'?x.id:x.k)==q.k);return i<0?null:{t:q.t,i,it:A[i]}};
 const sbOwn=m=>m.t=='x'?!!(ST.acts&&ST.acts[m.it.id]):(ST.own&&ST.own[m.t]||[]).includes(m.i);
