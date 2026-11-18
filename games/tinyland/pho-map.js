@@ -779,7 +779,7 @@ function shDraw(g,k,ix,o,t,big){
  else{g.save();g.scale(2,2);drawPet(g,11,24,0,0,0,t,ix);g.restore()}}
 function shPaint(){const A=ST.av,t=performance.now()/1000;document.querySelectorAll('canvas.shc').forEach(c=>{const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);shDraw(g,SH_TAB,+c.dataset.i,{d:0,a:0,mv:0,sit:0,hair:A.h,set:A.s,e:A.e},t,0)})}
 window.psItem=i=>{if(typeof ownE=='function')ownE();SH_I=i;const S=SHOP[SH_TAB],x=S.all()[i],has=ST.own[SH_TAB].includes(i),pr=price(SH_TAB,i);PS.view='item';
- const eq=ST.av[SH_TAB]==i;
+ const eq=(SH_TAB=='a'&&ACCS[i]&&ACCS[i].t=='wing'?ST.av.w:ST.av[SH_TAB])==i;
  openUI(head(S.t+' — '+x.n)+'<div style="text-align:center"><canvas id="shp" width="110" height="92" style="width:220px;height:184px;max-width:100%;image-rendering:pixelated;background:linear-gradient(#d6e8f2,#e8efd6 70%);border:2px solid #7a4a26;cursor:pointer" onclick="SH_DIR=(SH_DIR+1)%4"></canvas><div class="mut" style="margin:2px 0 6px">Chạm vào hình để xoay • bạn có 🪙 <b>'+fmtXu(ST.xu)+'</b> Xu'+(x.cb?' • QV <b>'+fmtXu(ST.qv|0)+'</b> • 💎 <b>'+(ST.dia|0)+'</b>':'')+'</div></div>'+
  '<div class="pf">'+(has?'<button class="b" onclick="psUse('+i+')">'+(eq?'✓ Đang dùng':'✨ Dùng ngay')+'</button>':'<button class="b" onclick="psBuy('+i+')">'+(x.cb?'🛍️ Mua — '+cbTxt(x.cb):'🪙 Mua — '+pr.toLocaleString('vi-VN')+' Xu')+'</button>')+'<button class="b" onclick="psShop()">⬅ Quay lại</button></div>');
  if(!shRaf)shLoop()};
@@ -795,7 +795,7 @@ window.psBuy=i=>{if(typeof ownE=='function')ownE();const k=SH_TAB,pr=price(k,i),
   ST.xu-=cb.xu;ST.qv=(ST.qv|0)-cb.qv;ST.dia=(ST.dia|0)-cb.dia;own.push(i);xuUp();save();toast('🛍️ Đã mua '+SHOP[k].all()[i].n+'!');return psItem(i)}
  if(ST.xu<pr)return toast('🪙 Chưa đủ Xu — còn thiếu '+(pr-ST.xu).toLocaleString('vi-VN')+' Xu');
  ST.xu-=pr;own.push(i);xuUp();save();toast('🛍️ Đã mua '+SHOP[k].all()[i].n+'!');psItem(i)};
-window.psUse=i=>{const k=SH_TAB;if(!ST.own[k].includes(i))return;ST.av[k]=i;if(k=='m'&&Pl.sit){Pl.sit=0;Pl.mv=0}if(k=='p')petReset();save();toast('✨ Đã dùng '+SHOP[k].all()[i].n);psItem(i)};
+window.psUse=i=>{const k=SH_TAB;if(!ST.own[k].includes(i))return;if(k=='a'&&ACCS[i]&&ACCS[i].t=='wing')ST.av.w=i;else ST.av[k]=i;if(k=='m'&&Pl.sit){Pl.sit=0;Pl.mv=0}if(k=='p')petReset();save();toast('✨ Đã dùng '+SHOP[k].all()[i].n);psItem(i)};
 
 // ============================================================
 //  TIỆM NỘI THẤT (giá theo độ đẹp: 100–4000 Xu). Mua → vào Túi nội thất (ST.hm.i), mở khi ở trong nhà.

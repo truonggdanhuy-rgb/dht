@@ -109,7 +109,7 @@ function fx(R,kind,t,cx,cy,sp,tips){
 
 // ---------- móc vào hệ cánh + balo có sẵn ----------
 const oldBack=window.WingBack,oldFront=window.WingFront;
-const tailOf=o=>{if(!(o.acc>=0)||typeof ACCS=='undefined')return null;const A=ACCS[o.acc];return A&&A.tail?A:null};
+const tailOf=o=>{if(typeof ACCS=='undefined')return null;const i=wgIx(o);if(!(i>=0))return null;const A=ACCS[i];return A&&A.tail?A:null};
 const bobOf=o=>{const f=o.mv?Math.floor(o.a*9)%4:0;return o.nobob?0:o.mv?((f==1||f==3)?-1:0):0};
 const swOf=(o,t)=>o.mv?rnd(sin(t*9)*3):rnd(sin(t*1.8)*2);
 

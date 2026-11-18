@@ -209,7 +209,7 @@ function pumpkinDraw(R,d,f,b,t,pt,c){
 window.WINGS={eagle:(R,view,t,mv,k)=>drawWing('eagle',R,view,t,mv,k),ocean:(R,view,t,mv,k)=>drawWing('ocean',R,view,t,mv,k)};
 window.pumpkinDraw=pumpkinDraw;
 const bobOf=o=>{const f=o.mv?Math.floor(o.a*9)%4:0;return o.nobob?0:o.mv?((f==1||f==3)?-1:0):0};
-const wingOf=o=>{if(!(o.acc>=0)||typeof ACCS=='undefined')return null;const A=ACCS[o.acc];return A&&A.t=='wing'?A:null};
+const wingOf=o=>{if(typeof ACCS=='undefined')return null;const i=wgIx(o);if(!(i>=0))return null;const A=ACCS[i];return A&&A.t=='wing'&&A.wing?A:null};
 // nhìn trước: cánh nằm SAU thân → vẽ trước khi vẽ nhân vật; nhìn ngang: chỉ cánh xa nằm sau thân
 window.WingBack=function(r,o,k){
  if(k.rd||k.sit)return;const A=wingOf(o);if(!A)return;const bob=bobOf(o),t=performance.now()/1000,R=(c,x,y,w,h)=>r(c,x,y+bob,w,h);
@@ -225,14 +225,14 @@ window.WingFront=function(r,o,c){
 function rows(arr,own,cls,buy,wear,cur){
  return arr.map((x,i)=>{if(!x.dia)return '';const have=(own||[]).includes(i),ok=(ST.dia|0)>=x.dia;
   return '<div class="dcd"><canvas class="'+cls+'" data-i="'+i+'" width="144" height="176"></canvas><b>'+x.n+'</b>'+
-   (have?'<button class="b" onclick="'+wear+'('+i+')">'+(cur==i?'✓ Đang dùng':'✓ Đã có • Dùng')+'</button>'
+   (have?'<button class="b" onclick="'+wear+'('+i+')">'+((typeof cur=='function'?cur(i):cur==i)?'✓ Đang dùng':'✓ Đã có • Dùng')+'</button>'
         :'<button class="b" style="'+(ok?'':'opacity:.6')+'" onclick="'+buy+'('+i+')">💎 '+x.dia+'</button>')+'</div>'}).join('')}
-window.diaWingRows=()=>rows(ACCS,ST.own.a,'dsc dac','diaBuyA','diaWearA',ST.av.a);
+window.diaWingRows=()=>rows(ACCS,ST.own.a,'dsc dac','diaBuyA','diaWearA',i=>(ACCS[i].t=='wing'?ST.av.w:ST.av.a)==i);
 window.diaMountRows=()=>rows(MOUNTS,ST.own.m,'dsc dmc','diaBuyM','diaWearM',ST.av.m);
 window.diaBuyA=i=>{const x=ACCS[i];if(!x||!x.dia||ST.own.a.includes(i))return;
  if((ST.dia|0)<x.dia)return toast('💎 Chưa đủ kim cương — cần '+x.dia+', bạn có '+(ST.dia|0));
- ST.dia-=x.dia;ST.own.a.push(i);xuUp();save();toast('🎉 Đã mua '+x.n+'!\nMở 🎒 Túi → Phụ kiện để đeo');diaShop()};
-window.diaWearA=i=>{if(!ST.own.a.includes(i))return;ST.av.a=ST.av.a==i?-1:i;save();toast(ST.av.a==i?'✨ Đã đeo '+ACCS[i].n+'\n(cánh ẩn khi cưỡi thú / ngồi nghỉ)':'Đã tháo '+ACCS[i].n);diaShop()};
+ ST.dia-=x.dia;ST.own.a.push(i);xuUp();save();toast('🎉 Đã mua '+x.n+'!\nMở 🎒 Túi → '+(x.t=='wing'?'Cánh':'Phụ kiện')+' để đeo');diaShop()};
+window.diaWearA=i=>{if(!ST.own.a.includes(i))return;const k=ACCS[i].t=='wing'?'w':'a';ST.av[k]=ST.av[k]==i?-1:i;save();toast(ST.av[k]==i?'✨ Đã đeo '+ACCS[i].n+'\n(ẩn khi cưỡi thú / ngồi nghỉ)':'Đã tháo '+ACCS[i].n);diaShop()};
 window.diaBuyM=i=>{const x=MOUNTS[i];if(!x||!x.dia||ST.own.m.includes(i))return;
  if((ST.dia|0)<x.dia)return toast('💎 Chưa đủ kim cương — cần '+x.dia+', bạn có '+(ST.dia|0));
  ST.dia-=x.dia;ST.own.m.push(i);xuUp();save();toast('🎉 Đã mua '+x.n+'!\nMở 🎒 Túi → Thú cưỡi để dùng');diaShop()};

@@ -17,7 +17,7 @@ const PAL={
  bunny:{body:'#ff8eae',hi:'#ffb9d0',lo:'#e0608a',strap:'#d4547e',pocket:'#ffffff',pocketLo:'#e6dce4',earIn:'#ffd3e0',eye:'#3a2a30',nose:'#ff7aa0',cheek:'#ffb0c4'},
  peng: {body:'#202c4e',hi:'#35477c',lo:'#131b33',strap:'#131b33',pocket:'#ffd23a',pocketLo:'#e3a51c',eyeW:'#ffffff',eye:'#101010',beak:'#ff9a1a',zip:'#7a5a10'}
 };
-const bagOf=o=>{if(!(o.acc>=0)||typeof ACCS=='undefined')return null;const A=ACCS[o.acc];return A&&A.bag?A:null};
+const bagOf=o=>{if(typeof ACCS=='undefined')return null;const i=wgIx(o);if(!(i>=0))return null;const A=ACCS[i];return A&&A.bag?A:null};
 const bobOf=o=>{const f=o.mv?Math.floor(o.a*9)%4:0;return o.nobob?0:o.mv?((f==1||f==3)?-1:0):0};
 
 // ---------- hình dáng thân balo (nhìn sau): 12 cột x 10 hàng, bo góc ----------
