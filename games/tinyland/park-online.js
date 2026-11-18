@@ -13,7 +13,7 @@ const ME={id:Math.random().toString(36).slice(2,9),ts:0,q:-1,qt:0,z:-1,zt:0};
 let sb=null,ch=null,lastT=performance.now();
 
 // ---------- tên nhân vật (bấm avatar góc phải) ----------
-window.nameBox=()=>'<div style="display:flex;gap:4px;margin-bottom:8px"><input id="pnm" maxlength="12" value="'+escH(ST.name)+'" placeholder="Tên (tối đa 12 ký tự)" style="flex:1;min-width:0;font:inherit;padding:5px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" onclick="setNm()">Lưu tên</button></div>';
+window.nameBox=()=>'<div style="display:flex;gap:4px;margin-bottom:8px"><input id="pnm" maxlength="12" value="'+escH(ST.name)+'" placeholder="Tên (tối đa 12 ký tự)" style="flex:1;min-width:0;font:inherit;padding:5px;border:2px solid #7a4a26;background:#fff8e0"><button class="b" onclick="setNm()">Lưu tên</button></div><button class="b" id="lowfxb" onclick="lowfxBtn()" style="width:100%;margin-bottom:8px">'+(window.lowfxLabel?lowfxLabel():'⚡ Giảm lag')+'</button>';
 window.setNm=()=>{const n=clean($('pnm').value);if(!n)return toast('Tên không được để trống');ST.name=n;save();toast('✅ Tên nhân vật: '+n);track();if(window.cardSync)cardSync()};
 
 // ---------- vẽ tên + bong bóng chat trên đầu ----------
