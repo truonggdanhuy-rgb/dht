@@ -5163,7 +5163,7 @@ function soilTile(m,v){const k='s'+m+'_'+v;if(PCV[k])return PCV[k];
  });return PCV[k]=c}
 const FMK={path:new Set(),fence:new Set(),fence2:new Set(),soil:new Set()};
 const maskOf=(k,tx,ty)=>{const S=FMK[k];return(S.has(tx+','+(ty-1))?1:0)|(S.has((tx+1)+','+ty)?2:0)|(S.has(tx+','+(ty+1))?4:0)|(S.has((tx-1)+','+ty)?8:0)};
-window.fmKRebuild=()=>{for(const k in FMK)FMK[k].clear();for(const o of ST.fm.p){if(o[0]=='de'&&o[1]=='gate'){FMK.fence2.add(o[2]+','+o[3]);FMK.fence2.add((o[2]+2)+','+o[3])}else if(o[0]=='de'&&FMK[o[1]])FMK[o[1]].add(o[2]+','+o[3]);else if(o[0]=='pl')FMK.soil.add(o[2]+','+o[3])}};
+window.fmKRebuild=()=>{for(const k in FMK)FMK[k].clear();for(const o of ST.fm.p){if(o[0]=='de'&&o[1]=='gate'){FMK.fence2.add(o[2]+','+o[3]);FMK.fence2.add((o[2]+3)+','+o[3])}else if(o[0]=='de'&&FMK[o[1]])FMK[o[1]].add(o[2]+','+o[3]);else if(o[0]=='pl')FMK.soil.add(o[2]+','+o[3])}};
 window.pathTile=pathTile;window.fenceTile=fenceTile;window.soilTile=soilTile;window.maskOf=maskOf;
 window.FMDX={
  path:(tx,ty)=>{const X=tx*T,Y=ty*T;return{im:pathTile(maskOf('path',tx,ty),(tx*7+ty*13)%3),x:X,y:Y,by:-4.4,hb:Y-1,fw:1,fh:1,so:0}},
@@ -5200,8 +5200,8 @@ function fenceTile2(m){if(F2[m])return F2[m];
  });return F2[m]=c}
 
 /* ---- Cổng thư giãn 3x1: đi xuyên qua được, chim đậu, hoa leo ---- */
-const GW=52,GH=56;
-const gArch=x=>11+Math.round(5*Math.pow((x-26)/20,2));
+const GW=68,GH=76,GCX=34;/* 4 ô = 64px + lề 2px mỗi bên */
+const gArch=x=>13+Math.round(8*Math.pow((x-GCX)/29,2));
 const bloomL=(r,x,y,c,d,m)=>{r(c,x-1,y-3,3,2);r(c,x-1,y+2,3,2);r(c,x-3,y-1,2,3);r(c,x+2,y-1,2,3);r(c,x-2,y-2,2,2);r(c,x+1,y-2,2,2);r(c,x-2,y+1,2,2);r(c,x+1,y+1,2,2);
  r(d,x+2,y-1,2,3);r(d,x-1,y+3,3,1);r(d,x+1,y+2,2,1);r(d,x+2,y+1,1,2);r(m,x-1,y-1,3,3);r('#c0661a',x,y,1,1);r('#fff',x-2,y-2,1,1);r('rgba(255,255,255,.6)',x-1,y-3,1,1)};
 const bloomM=(r,x,y,c,d,m)=>{r(c,x-1,y-2,3,5);r(c,x-2,y-1,5,3);r(d,x+1,y+1,2,1);r(d,x,y+2,2,1);r(m,x,y,1,1);r('#fff',x-1,y-1,1,1)};
@@ -5210,36 +5210,40 @@ const GL={m:'#58b455',l:'#8fdc78',d:'#3a8a3f',k:'#2c6e34'};
 const leaf=(r,x,y,f)=>{r(GL.m,x,y,3,2);r(GL.l,x,y,1,1);r(GL.d,x+2,y+1,1,1);if(f)r(GL.l,x+1,y-1,1,1)};
 const FLC={pk:['#ff9ec4','#e8689b','#ffd23f'],co:['#ff8f80','#e0605a','#ffe38a'],ye:['#ffe27a','#e8b83a','#ff9f45'],wh:['#ffffff','#d6daf0','#ffd23f'],la:['#d6b4ff','#a982e6','#ffe38a']};
 const gateBase=r=>{
- /* bóng */
- E(r,'rgba(0,0,0,.18)',26,54,25,2);
- /* mái vòm cong (xà gỗ) */
- for(let x=6;x<=45;x++){const y=gArch(x);r(WD.l,x,y,1,1);r(WD.m,x,y+1,1,2);r(WD.d,x,y+3,1,1)}
- for(let x=7;x<=44;x+=6){const y=gArch(x);r(WD.k,x,y+1,1,2)}
- /* nẹp góc */
- for(let i=0;i<6;i++){r('#b98350',10+i,24-i,1,2);r('#b98350',41-i,24-i,1,2);r(WD.k,10+i,26-i,1,1);r(WD.k,41-i,26-i,1,1)}
- /* 2 cột */
- for(const x of[4,42]){
-  r(WD.l,x+1,9,4,1);r(WD.m,x+2,8,2,1);r(WD.l,x+2,7,2,1);r(WD.d,x+3,9,1,1);
-  r(WD.l,x-1,11,8,1);r(WD.m,x-1,12,8,2);r(WD.d,x-1,14,8,1);r(WD.k,x-1,15,8,1);
-  r(WD.m,x,15,6,35);r(WD.l,x,15,1,35);r('#e4b778',x+1,15,1,35);r(WD.d,x+4,15,2,35);r(WD.k,x+5,15,1,35);
-  for(const y of[24,33,42])r(WD.k,x,y,6,1);
-  r('#e6e1d6',x-1,50,8,1);r('#c9c3b8',x-1,51,8,2);r('#9f998c',x-1,53,8,1);r('#b3ad9f',x+3,51,1,2)}
- /* dây leo trên xà */
- for(let x=6;x<=45;x+=3){const y=gArch(x)-1+Math.round(H_(x,5)*2-1);leaf(r,x,y,H_(x,9)<.5)}
- /* dây rủ xuống */
- for(const[x,len]of[[11,13],[14,7],[18,10],[22,5],[30,6],[34,11],[38,8],[40,14]]){const y0=gArch(x)+4;
-  r(GL.k,x+1,y0,1,len);for(let i=2;i<len;i+=4)leaf(r,x+(i%8<4?-1:2),y0+i,i%3==0)}
- /* dây leo quấn quanh cột */
- for(const x of[4,42]){for(let y=18;y<49;y+=4){const k=(y>>2)%2;leaf(r,x+(k?-2:4),y,k);r(GL.k,x+(k?1:3),y+1,2,1)}
-  r(GL.k,x+2,16,2,33)}
+ const PL=6,PR=GW-PL-7,PB=GH-4;/* trụ trái x=6..12, trụ phải x=55..61; PB = chân trụ */
+ E(r,'rgba(0,0,0,.18)',GCX,GH-3,32,2);
+ /* xà vòm: 2 lớp gỗ, sáng trên tối dưới, có vân */
+ for(let x=PL;x<=PR+6;x++){const y=gArch(x);r(WD.l,x,y,1,1);r(WD.m,x,y+1,1,3);r('#dcad6c',x,y+4,1,1);r(WD.d,x,y+5,1,1);r(WD.k,x,y+6,1,1)}
+ for(let x=PL+3;x<=PR+3;x+=5){const y=gArch(x);r('#c9985a',x,y+2,1,2)}
+ /* nẹp chéo hai góc */
+ for(let i=0;i<9;i++){const y=gArch(PL+7+i)+7+i;r(WD.m,PL+7+i,y,1,3);r(WD.l,PL+7+i,y,1,1);r(WD.k,PL+7+i,y+3,1,1);
+  const x2=PR-1-i;r(WD.m,x2,gArch(x2)+7+i,1,3);r(WD.l,x2,gArch(x2)+7+i,1,1);r(WD.k,x2,gArch(x2)+10+i,1,1)}
+ /* 2 trụ: thân thẳng có vân + nắp đỉnh nhô + chân đá */
+ for(const x of[PL,PR]){
+  r(WD.l,x+1,12,5,1);r(WD.m,x+2,11,3,1);r(WD.l,x+2,10,3,1);r(WD.l,x+3,9,1,1);
+  r(WD.l,x-1,14,9,1);r(WD.m,x-1,15,9,2);r(WD.d,x-1,17,9,1);r(WD.k,x-1,18,9,1);
+  r(WD.m,x,19,7,PB-19);r(WD.l,x,19,1,PB-19);r('#f0cf92',x+1,19,1,PB-19);r(WD.d,x+5,19,2,PB-19);r(WD.k,x+6,19,1,PB-19);
+  for(const y of[30,42,54])r(WD.k,x,y,7,1);
+  for(const y of[26,38,50,62])r('#c9985a',x+3,y,1,5);
+  r('#e9e4d9',x-1,PB,9,1);r('#cdc7bb',x-1,PB+1,9,2);r('#a29c8f',x-1,PB+3,9,1);r('#b8b2a4',x+3,PB+1,1,2)}
+ /* hoa văn vòng tròn gỗ ở giữa xà */
+ E(r,WD.d,GCX,gArch(GCX)+3,5,4);E(r,WD.m,GCX,gArch(GCX)+3,4,3);E(r,WD.l,GCX-1,gArch(GCX)+2,2,1);
+ /* lá leo phủ xà: cụm tròn nhiều tông */
+ for(let x=PL+2;x<=PR+4;x+=4){const y=gArch(x)-1+Math.round(H_(x,5)*2-1);
+  E(r,GL.d,x,y+1,3,2);E(r,GL.m,x,y,3,2);E(r,GL.l,x-1,y-1,2,1);if(H_(x,9)<.5)r(GL.l,x+1,y-2,1,1)}
+ /* dây rủ xuống từ xà (dài ngắn khác nhau) */
+ for(const[x,len]of[[16,15],[19,8],[23,12],[28,6],[40,7],[45,13],[49,9],[52,16]]){const y0=gArch(x)+7;
+  r(GL.k,x,y0,1,len);for(let i=2;i<len;i+=3)E(r,i%2?GL.m:GL.l,x+(i%6<3?-1:1),y0+i,2,1)}
+ /* dây leo quấn quanh trụ */
+ for(const x of[PL,PR]){r(GL.k,x+3,19,1,PB-19);for(let y=21;y<PB-3;y+=5){const k=(y/5|0)%2;E(r,GL.m,x+(k?-1:7),y,2,2);E(r,GL.l,x+(k?-2:7),y-1,1,1);r(GL.k,x+(k?1:4),y+1,2,1)}}
  /* cỏ + hoa nhỏ dưới chân */
- for(const bx of[2,10,40,48]){for(let i=0;i<5;i++){const x=bx+i-1,h=2+Math.round(H_(x,2)*3);r(i%2?GL.m:GL.l,x,53-h,1,h)}}
- bloomS(r,12,51,'#ffffff','#ffd23f');bloomS(r,3,50,'#ff9ec4','#ffe38a');bloomS(r,39,51,'#ffe27a','#ff9f45');bloomS(r,49,50,'#d6b4ff','#ffe38a');
- /* hoa leo to */
+ for(const bx of[1,15,48,63]){for(let i=0;i<6;i++){const x=bx+i-1,h=2+Math.round(H_(x,2)*3);r(i%2?GL.m:GL.l,x,PB-h+1,1,h)}}
+ bloomS(r,17,PB-1,'#ffffff','#ffd23f');bloomS(r,3,PB-3,'#ff9ec4','#ffe38a');bloomS(r,50,PB-1,'#ffe27a','#ff9f45');bloomS(r,65,PB-3,'#d6b4ff','#ffe38a');
+ /* hoa leo to + vừa + nhỏ, rải đều xà và trụ */
  const L=(x,y,k)=>bloomL(r,x,y,...FLC[k]),M=(x,y,k)=>bloomM(r,x,y,...FLC[k]);
- L(26,8,'pk');L(8,20,'co');L(44,21,'la');L(7,34,'ye');L(45,35,'pk');L(8,46,'la');L(44,46,'co');
- M(14,15,'wh');M(38,15,'ye');M(19,14,'pk');M(33,14,'la');M(6,27,'wh');M(46,28,'ye');M(7,41,'pk');M(45,41,'wh');M(12,22,'pk');M(40,23,'co');
- [[16,19,'co'],[36,19,'pk'],[24,16,'wh'],[28,16,'ye'],[3,22,'pk'],[49,24,'wh'],[3,38,'la'],[49,39,'pk'],[12,30,'wh'],[41,30,'la']].forEach(([x,y,k])=>bloomS(r,x,y,FLC[k][0],FLC[k][2]))};
+ L(GCX,9,'pk');L(10,24,'co');L(58,25,'la');L(9,40,'ye');L(59,41,'pk');L(10,56,'la');L(58,57,'co');L(22,14,'ye');L(46,14,'wh');
+ M(15,19,'wh');M(53,19,'ye');M(27,13,'pk');M(41,13,'la');M(8,32,'wh');M(60,33,'ye');M(9,48,'pk');M(59,49,'wh');M(14,27,'pk');M(54,28,'co');M(34,17,'wh');
+ [[19,18,'co'],[49,18,'pk'],[30,12,'wh'],[38,12,'ye'],[4,28,'pk'],[64,30,'wh'],[4,46,'la'],[64,47,'pk'],[14,38,'wh'],[54,40,'la'],[24,16,'la'],[44,16,'co']].forEach(([x,y,k])=>bloomS(r,x,y,FLC[k][0],FLC[k][2]))};
 S_.gateB=mk(GW,GH,(g,r)=>gateBase(r));
 /* chim: 2 con, thân xanh + thân vàng */
 const bird2=(f,P)=>outl(mk(9,9,(g,r)=>{
@@ -5250,7 +5254,7 @@ const bird2=(f,P)=>outl(mk(9,9,(g,r)=>{
  r('#c0852a',3,7,1,1);r('#c0852a',5,7,1,1)}));
 const flipC=c=>{const o=document.createElement('canvas');o.width=c.width;o.height=c.height;const g=o.getContext('2d');g.translate(c.width,0);g.scale(-1,1);g.drawImage(c,0,0);return o};
 const PB1={b:'#4a8fe0',h:'#7fb8f5',v:'#fff1d0',t:'#2f64b0',w2:'#a8d0fa'},PB2={b:'#f0b82a',h:'#ffe27a',v:'#fff6cc',t:'#c0861a',w2:'#fff0a0'};
-const GBIRDS=[{x:16,P:PB1,fl:0,ph:0},{x:34,P:PB2,fl:1,ph:2.6}].map(o=>({...o,fr:[0,1,2].map(f=>{const c=bird2(f,o.P);return o.fl?flipC(c):c})}));
+const GBIRDS=[{x:20,P:PB1,fl:0,ph:0},{x:46,P:PB2,fl:1,ph:2.6}].map(o=>({...o,fr:[0,1,2].map(f=>{const c=bird2(f,o.P);return o.fl?flipC(c):c})}));
 S_.gate=mk(GW,GH,(g,r)=>{gateBase(r);for(const b of GBIRDS)g.drawImage(b.fr[0],b.x-1,gArch(b.x+4)-9)});
 
 /* ---- Bụi xương rồng pastel: 3 dáng, chung một nền sỏi liền nhau khi xếp hàng ngang ---- */
@@ -5289,7 +5293,7 @@ Object.assign(window.FMDX,{
  cactus:(tx,ty)=>{const X=tx*T,Y=ty*T,by=(ty+1)*T-1;return{im:cactusTile(maskOf('cactus',tx,ty),(tx*7+ty*13)%3),x:X,y:Y-10,by,hb:by,fw:1,fh:1,so:1}},
  gate:(tx,ty)=>{const X=tx*T,Y=ty*T;if(!S_.gateO)S_.gateO=outl(S_.gate);const o=S_.gateO;
   /* so:0 = nhân vật đi xuyên qua được; by nằm giữa ô để đi qua cổng vẫn không bị cột che lỗi */
-  return{im:o,x:Math.round(X+24-S_.gate.width/2)-1,y:(ty+1)*T-1-S_.gate.height-1,by:Y+9,hb:(ty+1)*T-1,fw:3,fh:1,so:0}}});
+  return{im:o,x:Math.round(X+32-S_.gate.width/2)-1,y:(ty+1)*T-1-S_.gate.height-1,by:Y+9,hb:(ty+1)*T-1,fw:4,fh:1,so:0}}});
 S_.fence2T=fenceTile2(10);S_.cactusT=cactusTile(0,1);
 /* ================= DECOR TAI THỎ: hàng rào tai thỏ (2x1, 80 Xu) + cổng tai thỏ (4x1, 300 Xu) =================
    Màu trắng ngà + tai hồng nhạt. Hàng rào chỉ có chiều ngang; hai đầu thanh ngang chạm mép ô nên đặt cạnh nhau liền thành một hàng. */
@@ -5335,44 +5339,6 @@ S_.fence2T=fenceTile2(10);S_.cactusT=cactusTile(0,1);
   fencerb:(tx,ty)=>{const X=tx*T,by=(ty+1)*T-1;return{im:S_.fenceRb,x:X,y:by-FB-2,by,hb:by,fw:2,fh:1,so:1}},
   gaterb:(tx,ty)=>{const X=tx*T,Y=ty*T;return{im:S_.gateRb,x:Math.round(X+32-S_.gateRb.width/2),y:(ty+1)*T-1-S_.gateRb.height+2,by:Y+9,hb:(ty+1)*T-1,fw:4,fh:1,so:0}}});
 }
-
-/* ================= HÀNG RÀO THƯ GIÃN 4x1 (vẽ lại, cao hơn, mịn hơn) =================
-   64x38px: 8 thanh đứng đầu nhọn, 2 thanh ngang có đinh, 3 cột có nắp tròn. Hai đầu khớp nhau nên đặt nối đuôi liền mạch. */
-{const FW=64,FH=40,FB=37;
- const Wd={l:'#f7e3b5',m:'#e6bb7c',m2:'#dcad6c',d:'#bb8647',k:'#7a4e27',g:'#cf9d5b'};
- const edgeOnly=c=>{const w=c.width,h=c.height,o=document.createElement('canvas');o.width=w;o.height=h;const g=o.getContext('2d'),s=c.getContext('2d').getImageData(0,0,w,h).data,
-   A=(x,y)=>x>=0&&x<w&&y>=0&&y<h&&s[(y*w+x)*4+3]>10;g.fillStyle='rgba(70,44,20,.7)';
-  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(!A(x,y)&&(A(x-1,y)||A(x+1,y)||A(x,y-1)||A(x,y+1)))g.fillRect(x,y,1,1);
-  g.drawImage(c,0,0);return o};
- /* một thanh đứng đầu nhọn: x = cột trái, t = đỉnh, w = rộng, b = chân */
- const picket=(r,x,t,w,b,v)=>{const m=v?Wd.m2:Wd.m;
-  r(m,x+((w-2)>>1),t,2,1);r(m,x+1,t+1,w-2,1);r(Wd.l,x+((w-2)>>1),t,1,1);
-  r(m,x,t+2,w,b-t-2);r(Wd.l,x,t+2,1,b-t-2);r(Wd.l,x+1,t+1,1,1);
-  r(Wd.d,x+w-1,t+2,1,b-t-2);r(Wd.d,x+w-2,t+1,1,1);
-  r(Wd.g,x+2,t+5,1,6);r(Wd.g,x+3,t+16,1,5);/* vân gỗ */
-  r(Wd.k,x,b-1,w,1)};
- const post=(r,x)=>{/* cột 6px, cao hơn thanh đứng, nắp tròn */
-  r(Wd.m,x,5,6,FB-5);r(Wd.l,x,5,2,FB-5);r(Wd.d,x+4,5,2,FB-5);r(Wd.k,x+5,5,1,FB-5);r(Wd.g,x+2,12,1,8);r(Wd.g,x+3,24,1,6);
-  r(Wd.l,x-1,3,8,2);r(Wd.m,x-1,5,8,1);r(Wd.d,x-1,6,8,1);/* nắp */
-  r(Wd.m,x,1,6,2);r(Wd.l,x+1,1,3,1);r(Wd.l,x,2,1,1);r(Wd.d,x+5,2,1,1);r(Wd.l,x+2,0,2,1);
-  r(Wd.k,x,FB-1,6,1)};
- S_.fence2T4=edgeOnly(mk(FW,FH,(g,r)=>{
-  r('rgba(0,0,0,.15)',0,FB,FW,2);
-  /* thanh đứng: cao thấp lệch nhẹ cho tự nhiên (lặp lại mỗi 64px nên nối tiếp vẫn đều) */
-  for(let i=0;i<8;i++){const x=1+i*8,hh=[0,1,0,2,0,1,0,2][i];picket(r,x,8+hh,6,FB,i%2)}
-  /* 2 thanh ngang chạy suốt ô, nằm đè lên thanh đứng */
-  for(const y of[FB-24,FB-11]){r(Wd.m,0,y,FW,4);r(Wd.l,0,y,FW,1);r(Wd.d,0,y+3,FW,1);r(Wd.k,0,y+4,FW,1);
-   for(let x=0;x<FW;x+=8){r(Wd.k,x+3,y+1,1,1);r('rgba(255,255,255,.5)',x+3,y,1,1)}}
-  /* 3 cột: hai nửa ở 2 mép + 1 cột giữa */
-  post(r,-3);post(r,29);post(r,61);
-  /* cỏ nhỏ + hoa dưới chân */
-  for(const x of[10,22,44,54]){r('#6cc058',x,FB-2,1,2);r('#8fdc78',x+1,FB-3,1,3);r('#4a9a37',x+2,FB-2,1,2)}
-  r('#ffffff',23,FB-4,1,1);r('#ffd23f',23,FB-3,1,1);r('#ff9ec4',46,FB-4,1,1);r('#ffd23f',46,FB-3,1,1)}));
- S_.fence2T=S_.fence2T4;
- Object.assign(window.FMDX,{
-  fence2:(tx,ty)=>{const X=tx*T,by=(ty+1)*T-1;return{im:S_.fence2T4,x:X,y:by-FB-2,by,hb:by,fw:4,fh:1,so:1}}});
-}
-
 
 /* ================= DECOR ĐÈN NÔNG TRẠI (1x1, 150 Xu) =================
    Cột mảnh cao, đỉnh có hai đèn lồng nhỏ hai bên, cùng màu trắng ngà với hàng rào tai thỏ. Ánh đèn nhấp nháy nhẹ. */
@@ -5605,7 +5571,7 @@ Object.assign(FMD,{
  sapnuoc:['Sạp quán nước',()=>S_.sapnuoc,2,1,1,'v',3000],saprau:['Sạp rau',()=>S_.saprau,2,1,1,'v',3000],
  giaphoi:['Giá phơi đồ',()=>S_.giaphoi,4,1,1,'v',1500],tochim:['Tổ chim',()=>S_.tochim,1,1,1,'v',200],
  giengmai:['Giếng có mái',()=>S_.giengmai,1,1,1,'v',500],giankho:['Giàn phơi khô',()=>S_.giankho,4,1,1,'v',500],gianholo:['Giàn hồ lô',()=>S_.gianholo,5,1,1,'v',1000],
- fence2:['Hàng rào thư giãn',()=>S_.fence2T,4,1,1,'p',80],gate:['Cổng thư giãn',()=>S_.gate,3,1,0,'p',500],fencerb:['Hàng rào tai thỏ',()=>S_.fenceRb,2,1,1,'p',80],gaterb:['Cổng tai thỏ',()=>S_.gateRb,4,1,0,'p',300],cactus:['Bụi xương rồng',()=>S_.cactusT,1,1,1,'b',100],farmlamp:['Đèn nông trại',()=>S_.farmlamp,1,1,1,'v',150],denlong:['Đèn lồng',()=>S_.denlong,1,1,1,'v',1000],
+ fence2:['Hàng rào thư giãn',()=>S_.fence2T,1,1,1,'p',20],gate:['Cổng thư giãn',()=>S_.gate,4,1,0,'p',500],fencerb:['Hàng rào tai thỏ',()=>S_.fenceRb,2,1,1,'p',80],gaterb:['Cổng tai thỏ',()=>S_.gateRb,4,1,0,'p',300],cactus:['Bụi xương rồng',()=>S_.cactusT,1,1,1,'b',100],farmlamp:['Đèn nông trại',()=>S_.farmlamp,1,1,1,'v',150],denlong:['Đèn lồng',()=>S_.denlong,1,1,1,'v',1000],
  bantrua:['Bàn nghỉ trưa',()=>S_.bantrua,4,1,1,'v',300],ghetrua:['Ghế nghỉ trưa',()=>S_.ghetrua,1,1,1,'v',80],
  bonsai1:['Chậu bonsai 1',()=>S_.bonsai1,1,1,1,'b',200],bonsai2:['Chậu bonsai 2',()=>S_.bonsai2,1,1,1,'b',200],bonsai3:['Chậu bonsai 3',()=>S_.bonsai3,1,1,1,'b',200]});
 const FMCAT=[['p','🛤️ Lối đi & hàng rào'],['k','🏡 Công trình'],['c','🌳 Cây cối'],['b','🌸 Bụi & hoa'],['v','🧺 Vật dụng']];
@@ -5700,9 +5666,6 @@ function fmInit(){let f=ST.fm;
   else if(kd=='bee'){if(!(id>=0&&id<BEEN))return false}else if(kd=='mi'){if(id!==0)return false}else if(kd=='ma'){if(!MACHS[id])return false}else if(kd=='tr'){if(!FRUITS[id])return false}else if(kd=='de'){if(!FMD[id])return false}else return false;
   if(kd!='de'){const k=kd+id;if(seen[k])return false;seen[k]=1}return true});
  for(const k of Object.keys(f.d))if(!FMD[k]||!(f.d[k]>0))delete f.d[k];
- if(!f.m3){f.m3=1;/* hàng rào thư giãn đổi từ 1x1 sang 4x1: gom các mảnh cũ trên bản đồ về thùng (4 mảnh cũ = 1 mảnh mới, làm tròn lên) */
-  const old=f.p.filter(o=>o[0]=='de'&&o[1]=='fence2').length;
-  if(old){f.p=f.p.filter(o=>!(o[0]=='de'&&o[1]=='fence2'));f.d.fence2=(f.d.fence2||0)+Math.ceil(old/4)}}
  if(!f.m2){f.m2=1;/* lần đầu: đặt 4 tổ ong + máy đào ở chỗ quen thuộc (tìm chỗ trống gần đó nếu bị vướng đồ khác) */
   const occ=mkG();for(const o of f.p){const a=fmArt(o[0],o[1],o[2],o[3]);for(let y=o[3];y<o[3]+a.fh;y++)for(let x=o[2];x<o[2]+a.fw;x++)if(y>=0&&y<H&&x>=0&&x<W)occ[y][x]=1}
   const fit=(kd,id,tx,ty)=>{const a=fmArt(kd,id,0,0),ok=(x,y)=>{for(let j=y;j<y+a.fh;j++)for(let i=x;i<x+a.fw;i++)if(j<0||j>=H||i<0||i>=W||FMN[j][i]||occ[j][i])return 0;return 1};
@@ -5746,7 +5709,7 @@ function fmStart(kd,id){closeUI();if(FMSEL&&FMSEL.o)ST.fm.p.push(FMSEL.o);if(!FM
  toast('👆 Chạm ô muốn đặt (xanh = được)\nChạm lần nữa hoặc bấm ✔ Đặt • vuốt để xem rộng hơn')}
 function fmTap(wx,wy){const s=FMSEL;
  if(s){const a=fmArt(s.k,s.id,0,0),tx=Math.floor(wx/T)-((a.fw-1)>>1),ty=Math.floor(wy/T)-(a.fh-1);
-  if(tx==s.tx&&ty==s.ty)return fmDo(0);s.tx=tx;s.ty=ty;if(s.k=='de'&&!s.o&&(s.id=='path'||s.id=='fence'||s.id=='cactus'))return fmDo(0);return}
+  if(tx==s.tx&&ty==s.ty)return fmDo(0);s.tx=tx;s.ty=ty;if(s.k=='de'&&!s.o&&(s.id=='path'||s.id=='fence'||s.id=='fence2'||s.id=='cactus'))return fmDo(0);return}
  const tx=Math.floor(wx/T),ty=Math.floor(wy/T);let bi=-1,bh=-1e9;
  ST.fm.p.forEach((o,i)=>{const a=fmArt(o[0],o[1],o[2],o[3]);let hit=tx>=o[2]&&tx<o[2]+a.fw&&ty>=o[3]&&ty<o[3]+a.fh,sc=a.hb+(hit?1e5:0);
   if(!hit&&o[0]!='pl'&&o[0]!='po'&&wx>=a.x&&wx<a.x+a.im.width&&wy>=a.y&&wy<a.y+a.im.height)hit=true;
