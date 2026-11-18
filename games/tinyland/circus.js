@@ -194,14 +194,14 @@ const CL_ITEMS=[
  {k:'clown',  n:'Hề Quái Đản',  d:'Nón hề cao 2 màu • Không che mặt',               pr:{xu:1500,qv:500,dia:5}},
  {k:'hanbokm',n:'Hanbok (Nam)', d:'Nón gat cao viền đỏ, áo đỏ thêu rắn • Không che mặt', pr:{xu:5000,qv:500,dia:2}},
  {k:'hanbokf',n:'Hanbok (Nữ)',  d:'Búi củ hành cài trâm, áo đỏ thêu rắn • Không che mặt', pr:{xu:5000,qv:500,dia:2}},
- {k:'skatem',n:'Skater phố (Nam)',d:'Mũ lưỡi trai đội ngược, hoodie vàng, sneaker • Không che mặt',pr:{xu:3000,qv:200,dia:1}},
- {k:'skatef',n:'Skater phố (Nữ)',d:'Đuôi ngựa scrunchie hồng, hoodie vàng, sneaker • Không che mặt',pr:{xu:3000,qv:200,dia:1}},
  {k:'hacvt',n:'Hắc Vô Thường',d:'Mũ cao vút đen, áo choàng đen dài, thè lưỡi dài • Không che mặt',pr:{xu:5000,qv:1000,dia:5}},
  {k:'bachvt',n:'Bạch Vô Thường',d:'Mũ cao vút trắng, áo choàng trắng dài, thè lưỡi dài • Không che mặt',pr:{xu:5000,qv:1000,dia:5}},
+ {k:'phuthuy',n:'Phù Thủy Mộng Mơ',d:'Mũ phù thủy hồng cao, vành rất rộng • Nam nữ đều mặc • Không che mặt',pr:{xu:5000,qv:800,dia:5}},
  // m:1 = THÚ CƯỠI (k = khóa trong MOUNTS, lưu ở ST.own.m). Giá 0 thì dòng đó tự ẩn.
  {k:'unicycle',m:1,n:'Xe đạp 1 bánh',d:'Thú cưỡi • Đạp xe 1 bánh cao to, yên đen, vành bạc',pr:{xu:8000,qv:0,dia:0}},
  {k:'skate_orange',m:1,n:'Ván trượt cam',d:'Thú cưỡi • Đứng lướt trên ván cam, bánh xe xanh',pr:{xu:1000,qv:300,dia:2}}];
-const vtk=k=>k=='hacvt'||k=='bachvt';   // Hắc/Bạch Vô Thường: mũ rất cao nên khung xem trước cao hơn
+const vtk=k=>k=='hacvt'||k=='bachvt'||k=='phuthuy';   // mũ rất cao nên khung xem trước cao hơn
+const wtk=k=>k=='phuthuy';   // Phù Thủy Mộng Mơ: vành mũ rộng ~32 điểm ảnh nên khung xem trước rộng hơn
 const clTab=k=>{const it=CL_ITEMS.find(x=>x.k==k);return it&&it.m?'m':'s'};   // m = thú cưỡi, s = set
 const clIdx=k=>(clTab(k)=='m'?MOUNTS:SETS).findIndex(x=>x.k==k);
 const clOwn=k=>{const i=clIdx(k),tb=clTab(k);return i>=0&&!!(ST.own&&ST.own[tb]&&ST.own[tb].includes(i))};
@@ -234,7 +234,7 @@ window.clownShopUI=()=>{CLV='list';
   '<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+
   CL_ITEMS.map(it=>{const own=clOwn(it.k);
    return '<button class="sq'+(own?' z':'')+'" onclick="clownItem(\''+it.k+'\')" style="padding:6px 3px;gap:3px">'+
-    (it.m?'<canvas class="clv" data-k="'+it.k+'" data-z="1" width="72" height="68" style="width:88px;height:83px;max-width:100%;image-rendering:pixelated;border-radius:8px;background:linear-gradient(#e4dcfa,#f6eefc 70%,#dcccf0 70%)"></canvas>':'<canvas class="clv" data-k="'+it.k+'" data-z="2" width="52" height="'+(vtk(it.k)?92:66)+'" style="width:78px;height:'+(vtk(it.k)?138:99)+'px;max-width:100%;image-rendering:pixelated;border-radius:8px;background:linear-gradient(#e4dcfa,#f6eefc 70%,#dcccf0 70%)"></canvas>')+
+    (it.m?'<canvas class="clv" data-k="'+it.k+'" data-z="1" width="72" height="68" style="width:88px;height:83px;max-width:100%;image-rendering:pixelated;border-radius:8px;background:linear-gradient(#e4dcfa,#f6eefc 70%,#dcccf0 70%)"></canvas>':'<canvas class="clv" data-k="'+it.k+'" data-z="2" width="'+(wtk(it.k)?84:52)+'" height="'+(vtk(it.k)?92:66)+'" style="width:'+(wtk(it.k)?126:78)+'px;height:'+(vtk(it.k)?138:99)+'px;max-width:100%;image-rendering:pixelated;border-radius:8px;background:linear-gradient(#e4dcfa,#f6eefc 70%,#dcccf0 70%)"></canvas>')+
     '<b>'+it.n+'</b>'+
     (own?'<small>✓ Đã có</small>':'<span style="display:flex;flex-direction:column;align-items:center;gap:1px;margin-top:1px">'+clPriceRows(it)+'</span>')+
     '</button>'}).join('')+'</div>'+
