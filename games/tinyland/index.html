@@ -106,6 +106,16 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 .ft b{font-size:10px;line-height:1.3;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal;text-align:center;word-break:break-word}
 .ft small{font-size:10px;color:#7a4a26;font-weight:800;line-height:1.3;margin-top:auto;padding-top:1px}
 .ft i{position:absolute;right:1px;top:0;font-style:normal;font-size:10px;font-weight:800;background:#e8b86a;border:1px solid #7a4a26;padding:0 3px;border-radius:6px;line-height:1.25}
+/* ===== Panel Cài đặt (setui): xanh lá dịu mắt ===== */
+#ui.setui{background:linear-gradient(170deg,#e9f5e6 0%,#f1f7e6 60%,#eaf4de 100%);border-color:#4a8f68;box-shadow:0 3px 0 #2f6a4b;color:#2b4a38}
+#ui.setui .mut{color:#3b6a4e}
+#ui.setui .b{background:#bfe0c6;border-color:#4a8f68;box-shadow:0 2px 0 #2f6a4b;color:#1f4a35}
+#ui.setui .b:active{box-shadow:none}
+#ui.setui .b.x{background:#d3ecd8}
+#ui.setui .sq{background:#d6eddb;border-color:#4a8f68;box-shadow:0 2px 0 #2f6a4b;color:#1f4a35}
+#ui.setui .sq small{color:#3b6a4e}
+#ui.setui input{background:#f7fff4!important;border:2px solid #4a8f68!important;color:#1f4a35;border-radius:0;outline:none}
+#ui.setui input:focus{border-color:#2f6a4b!important;box-shadow:0 0 0 2px rgba(74,143,104,.25)}
 /* ===== Panel máy chế biến (mchui): 3 ô vuông + lưới món ===== */
 #ui.mchui{background:linear-gradient(170deg,#e9f7ea 0%,#f4f8e4 60%,#fff4d9 100%);border-color:#3f8f6a;box-shadow:0 3px 0 #2c6a4e;color:#2b4a38}
 #ui.mchui .b.x{background:#cfe9d6;border-color:#3f8f6a;box-shadow:0 2px 0 #2c6a4e;color:#24543d}
@@ -157,14 +167,14 @@ canvas#c{position:fixed;left:0;top:0;display:block;width:100vw;height:100vh;heig
 <canvas id="c"></canvas>
 <div id="hud">
  <div id="hleft">
- <div class="hb" id="hpanel" onclick="infoUI()" style="cursor:pointer"><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><canvas id="hav" width="20" height="20" style="width:44px;height:44px;image-rendering:pixelated;background:linear-gradient(#bfe6ff,#d9f0b8);border:2px solid #7a4a26;border-radius:8px"></canvas><span id="hlv" style="display:none">Lv.1</span><div style="display:none"><div id="hlb"></div></div></div><span id="hxu">0</span></div>
+ <div class="hb" id="hpanel" onclick="idUI()" title="Thẻ" style="cursor:pointer"><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><canvas id="hav" width="20" height="20" style="width:44px;height:44px;image-rendering:pixelated;background:linear-gradient(#bfe6ff,#d9f0b8);border:2px solid #7a4a26;border-radius:8px"></canvas><span id="hlv" style="display:none">Lv.1</span><div style="display:none"><div id="hlb"></div></div></div><span id="hxu">0</span></div>
  <div id="hevrow"><button class="hb" id="hev" onclick="nqUI()">📜<small>N.Vụ NPC</small></button><button class="hb" id="hbb" onclick="bbUI()">🍼<small>Bé bỏng</small></button></div>
  </div>
  <div id="hgrid">
   <button class="hb" onclick="mapUI()">🗺️<small>Map</small></button>
   <button class="hb" onclick="bagUI()">🎒<small>Túi</small></button>
   <button class="hb" onclick="khoHub()">📦<small>Kho</small></button>
-  <button class="hb" onclick="idUI()" title="Căn cước Tinyland">🪪<small>Thẻ</small></button>
+  <button class="hb" onclick="setUI()" title="Cài đặt">⚙️<small>Cài đặt</small></button>
   <button class="hb" id="hact" onclick="actUI()"><small style="font-size:8.5px;line-height:1.05;text-align:center">Hành<br>động</small></button>
   <button class="hb" id="htb" onclick="tbaoUI()">🔔<small>T.Báo</small></button>
  </div>
@@ -2603,7 +2613,7 @@ function lvUi(){const e=$('hlv');if(!e)return;const mx=ST.lv>=100;e.textContent=
 function addExp(n){if(ST.lv>=100){ST.exp=0;return ''}let up=0;ST.exp+=n;while(ST.lv<100&&ST.exp>=lvNeed(ST.lv)){ST.exp-=lvNeed(ST.lv);ST.lv++;up++}if(ST.lv>=100)ST.exp=0;lvUi();return up?'\n🎉 Lên cấp '+ST.lv+'!':''}
 const head=t=>'<div class="uh"><span>'+t+'</span><button class="b x" onclick="closeUI()">X</button></div>';
 var UIT=0;
-function openUI(h){$('ui').classList.remove('wui','tgn','bbui','bkui','gdui','lotui','nxui','sdui','mchui');if(!UI)UIT=performance.now();UI=1;MUI=-1;BUI=0;$('ui').style.top='';$('ui').innerHTML=h;$('ui').style.display='block';try{fmBarUp()}catch(e){}}
+function openUI(h){$('ui').classList.remove('wui','tgn','bbui','bkui','gdui','lotui','nxui','sdui','mchui','setui');if(!UI)UIT=performance.now();UI=1;MUI=-1;BUI=0;$('ui').style.top='';$('ui').innerHTML=h;$('ui').style.display='block';try{fmBarUp()}catch(e){}}
 function closeUI(){UI=0;MUI=-1;$('ui').style.display='none';save();try{barUp()}catch(e){}try{fmBarUp()}catch(e){}}
 const rd=h=>Math.hypot(Math.max(h[0]-Pl.x,0,Pl.x-h[0]-h[2]),Math.max(h[1]-Pl.y,0,Pl.y-h[1]-h[3]));
 function act(h){const a=h[5];if(!a)return toast(h[4]);if(a.startsWith('sign:')){const q=a.split(':');return signEdit(+q[1],+q[2])}if(a.startsWith('cv:'))return cvAct(a.slice(3),h);if(a.startsWith('bench:')){const q=a.split(':');return benchSit(+q[1],+q[2])}if(a.startsWith('fmsit:')){const q=a.split(':');return fmSit(+q[1],+q[2],+q[3])}if(a.startsWith('sitf:')){const q=a.split(':');SEAT.x=+q[1];SEAT.y=+q[2];return sitGo()}if(a=='sit')return sitGo();if(a=='gate')return switchMap('nt');if(a=='chb')return chbAct();if(a=='qb')return qUI();if(a=='mk')return mkOpen();if(a=='home')return switchMap('hm');if(a.startsWith('hm:'))return hmAct(a.slice(3));if(a=='tug')return tugGame();if(a=='hd')return hdAct();if(a=='bench')return benchAct();if(a=='nc')return ncAct();if(a=='ln')return lnAct();if(a=='wr')return wrAct();if(a=='rr')return rrGame();if(a=='santa')return santaAct();if(a=='nxh')return nxHouse();if(a.startsWith('nxd:'))return nxFeedAct(+a.slice(4));if(a.startsWith('wchair:'))return wChair(a);if(a=='gift')return giftAct();if(a=='tl')return tlAct();if(a=='bl')return blAct();const[t,v]=a.split(':');
@@ -3308,16 +3318,24 @@ function readyN(){const t=now();let n=0;
  ST.plots.forEach(p=>{if(p&&t>=p.t+CROPS[p.c][2]*MIN)n++});ST.pots.forEach(p=>{if(p&&t>=p.t+POTS[p.c][2]*MIN)n++});
  Object.keys(FRUITS).forEach(k=>{if(treeN(k)>0)n++});ST.pen.forEach(s=>{if(s&&t>=s.t)n++});
  ST.nets.forEach(q=>{if(q&&t>=q.t)n++});if(fmOn('mi',0)&&ST.mine&&t>=ST.mine.t)n++;for(let i=0;i<BEEN;i++)if(fmOn('bee',i)&&beeN(i)>0)n++;return n}
-function infoUI(){
- const slot=(e,n,sm)=>'<div class="sq" style="cursor:default"><span class="e">'+e+'</span><b>'+n+'</b><small>'+sm+'</small></div>';
- const grow=ST.plots.filter(Boolean).length+ST.pots.filter(Boolean).length,rn=readyN();
- let h=head('ℹ️ Thông tin')+nameBox()+accBox()+'<div class="sg">'+slot('🪙',fmtXu(ST.xu),'Xu')+slot('⭐','Lv.'+ST.lv,ST.lv>=100?'Tối đa':ST.exp+'/'+lvNeed(ST.lv)+' EXP')+slot('🌱',grow,'Đang trồng')+slot('💎',ST.dia|0,'Kim cương')+slot('🎟️',ST.tk|0,'Vé quay')+'</div>';
- h+='<div class="mut">'+(rn?'✨ Có <b>'+rn+'</b> nơi đã sẵn sàng thu hoạch!':'Chưa có gì chín — cứ thong thả nhé.')+'</div>';
- const top=[...khoList('ns').map(i=>['ns',...i]),...khoList('vp').map(i=>['vp',...i])].map(i=>({w:i[0],e:ic(i[2],i[3]),n:i[3],c:ST[i[0]][i[1]]||0})).filter(x=>x.c>0).sort((a,b)=>b.c-a.c).slice(0,8);
- h+='<div class="mut"><b>Đang có nhiều nhất</b></div>';
- h+=top.length?'<div class="sg">'+top.map(x=>'<button class="sq" onclick="kho(\''+x.w+'\')"><span class="e">'+x.e+'</span><b>x'+x.c+'</b><small>'+x.n+'</small></button>').join('')+'</div>':'<div class="mut">Túi trống — hãy trồng trọt hoặc chăn nuôi!</div>';
- h+='<div class="pf"><button class="b" onclick="harvestAll()">🧺 Thu hoạch hết</button><button class="b" onclick="khoHub()">📦 Kho</button></div>';
- openUI(h)}
+/* ---------- PANEL CÀI ĐẶT (nút ⚙️ góc phải; màu xanh lá) ----------
+   Tên + đổi tên + Giảm lag (nameBox, park-online.js) • tài khoản + Nhập code + Về DHT (accBox) • vật phẩm nhận từ nhiệm vụ / đăng nhập.
+   Thêm vật phẩm mới: thêm 1 dòng vào mảng B bên dưới. (Avatar góc phải giờ mở Thẻ = idUI trong idcard.js.) */
+function setUI(){
+  const n=v=>fmtXu(v|0);
+  const B=[
+    ['❄️',n(ST.sb),'Huy hiệu tuyết'],
+    ['🎟️',n(ST.tk),'Vé quay'],
+    ['🧸',n(ST.ti&&ST.ti.tk),'Vé Tí Nị'],
+    ['🎫',n(ST.tn&&ST.tn.tk),'Phiếu Tiên Giới'],
+    ['🧩',n(ST.tn&&ST.tn.pc),'Mảnh ghép Tiên Nữ'],
+    ['⭐',n(ST.pr&&ST.pr.st),'Mảnh sao'],
+    ['❄️',n(ST.pr&&ST.pr.sn),'Mảnh tuyết']];
+  const slot=x=>'<div class="sq" style="cursor:default"><span class="e">'+x[0]+'</span><b>'+x[1]+'</b><small>'+x[2]+'</small></div>';
+  openUI(head('⚙️ Cài đặt')+nameBox()+accBox()+'<div class="mut"><b>🎁 Vật phẩm sự kiện</b> <small>(nhận từ nhiệm vụ / đăng nhập)</small></div><div class="sg">'+B.map(slot).join('')+'</div>');
+  $('ui').classList.add('setui');
+}
+function infoUI(){setUI()}   // tên cũ, giữ lại cho khỏi lỗi nếu file khác còn gọi
 
 // ---------- tui nhan vat: Toc / Set / Thu cuoi / Pet ----------
 ST.av=Object.assign({h:0,s:0,m:-1,p:0,e:0,a:-1,w:-1},ST.av||{});
