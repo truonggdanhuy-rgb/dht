@@ -1,8 +1,10 @@
 /* ===================================================================================
    THANMUA.JS — 🌧️ MASCOT THẦN MƯA (Mùa 2 của Thái tử Ba Tư) — CẤP 1
    • Nhận ở Thái tử Ba Tư (Phố xá), Mùa 2. Phải nâng Quyền trượng Thủy Thần lên CẤP 3 mới ghép được (xem perso.js).
-   • Cấp 1 = SETS 'thanmua1'. Cấp 2 = 'thanmua2', cấp 3 = 'thanmua3' (SẼ THÊM SAU, dùng chung hàm vẽ drawTM,
-     chỉ cần push thêm SETS có tmlv:2 / tmlv:3 và thêm hiệu ứng ở chỗ ghi "CẤP 2+" bên dưới).
+   • Cấp 1/2/3 = SETS 'thanmua1/2/3' (tmlv:1/2/3), dùng chung hàm vẽ drawTM.
+   Cấp 2: vầng sáng lung linh hơn, chạy nhanh như cưỡi thú (tmSpd=1.8), bong bóng bể thì nước chảy phủ nón.
+   Cấp 3: gồm cấp 2 + tà áo dài hơn + cứ 4 giây có tinh linh nước bay quanh người + chạy cực nhanh (tmSpd=2.5).
+   Chỉnh tốc độ: sửa 2 số trong hàm window.tmSpd ở cuối file.
    • Nét riêng: nón chóp trắng ngà, đỉnh nón thổi BONG BÓNG NƯỚC phình ra rồi bể; khăn che mũi miệng (chỉ thấy đôi mắt
      xanh biển — biểu cảm riêng, KHÔNG dùng biểu cảm của người chơi); tóc bạc xanh dài; váy dài toàn NƯỚC TRONG SUỐT có
      ánh sáng chạy ngang, họa tiết sóng, hạt nước hất lên lấp lánh; tà áo dài ra phía sau khi đi ngang (thướt tha).
@@ -17,6 +19,14 @@ if(typeof SETS==='undefined'||typeof MASCOT_DRAW==='undefined')return;
 if(!SETS.some(s=>s.k=='thanmua1')){
  SETS.push({n:'Mascot Thần Mưa',k:'thanmua1',mascot:'thanmua',tmlv:1,vt:'tm',wide:1,
   ds:'Nón chóp có bong bóng nước phình ra rồi bể, khăn che mũi miệng chỉ lộ đôi mắt xanh biển, váy dài bằng nước trong suốt, tà áo thướt tha phía sau. Có biểu cảm riêng. Phụ kiện cầm tay vẫn hiện.',
+  sh:'#8fd0f2',pt:'#8fd0f2',rpt:'#8fd0f2',shoe:'#cdeeff',scarf:'#8fd0f5'});
+}
+if(!SETS.some(s=>s.k=='thanmua2')){
+ SETS.push({n:'Mascot Thần Mưa (Cấp 2)',k:'thanmua2',mascot:'thanmua',tmlv:2,vt:'tm',wide:1,
+  ds:'Cấp 2: vầng sáng trên đầu lung linh hơn, chạy nhanh như cưỡi thú, bong bóng bể thì nước chảy phủ lên nón.',
+  sh:'#8fd0f2',pt:'#8fd0f2',rpt:'#8fd0f2',shoe:'#cdeeff',scarf:'#8fd0f5'});
+ SETS.push({n:'Mascot Thần Mưa (Cấp 3)',k:'thanmua3',mascot:'thanmua',tmlv:3,vt:'tm',wide:1,
+  ds:'Cấp 3: tà áo dài hơn, cứ 4 giây có tinh linh nước bay quanh người, chạy cực nhanh.',
   sh:'#8fd0f2',pt:'#8fd0f2',rpt:'#8fd0f2',shoe:'#cdeeff',scarf:'#8fd0f5'});
 }
 
@@ -39,13 +49,20 @@ function drawTM(r,u,o,S,k){
  const {side,Rt,back,sit,rd,lg}=k,mv=!!o.mv,t=performance.now()/1000;
  const LV=S.tmlv||1;                                       // cấp 1/2/3 (cấp 2+ sẽ thêm hiệu ứng sau)
  const M=(c,x,y,w,h)=>u(c,Rt?x:20-x-w,y,w,h);              // nhìn ngang (tự lật khi quay trái)
- const sway=Math.sin(t*2.2)*.35+(mv?lg*.7:0);
+ const sway=Math.sin(t*2.2)*.35+(mv?lg*.7:0),bp=(t%3.6)/3.6;
  if(!sit&&!rd&&!o.nosh)E(r,'rgba(0,0,0,.16)',10,30,8,2);
 
  // ===== vầng sáng mỏng sau nón =====
  const halo=cxs=>{const n=46;for(let i=0;i<n;i++){const an=i/n*TAU,x=cxs+Math.cos(an)*11.2,y=2.5+Math.sin(an)*10.6;
    u(i%6==0?'rgba(255,255,255,.95)':'rgba(240,252,255,.5)',q(x),q(y),i%6==0?1:.5,i%6==0?1:.5)}
-  for(let i=0;i<30;i++){const an=i/30*TAU,x=cxs+Math.cos(an)*9.4,y=2.5+Math.sin(an)*8.9;u('rgba(150,214,250,.34)',q(x),q(y),.5,.5)}};
+  for(let i=0;i<30;i++){const an=i/30*TAU,x=cxs+Math.cos(an)*9.4,y=2.5+Math.sin(an)*8.9;u('rgba(150,214,250,.34)',q(x),q(y),.5,.5)}
+  if(LV>=2){ // CẤP 2: vầng sáng lung linh — quầng nước mờ, vòng ngoài thứ hai, 8 tia sáng xoay + lấp lánh nhấp nháy
+   for(let dy=-10;dy<=10;dy+=.5){const w=Math.sqrt(Math.max(0,100-dy*dy));u('rgba(190,236,255,'+(.09+.05*Math.sin(t*2+dy)).toFixed(3)+')',q(cxs-w),q(2.5+dy),q(w*2),.5)}
+   for(let i=0;i<64;i++){const an=i/64*TAU,m=1+.03*Math.sin(an*6+t*2.5);u(i%8==0?'rgba(255,255,255,.95)':'rgba(190,236,255,.55)',q(cxs+Math.cos(an)*13*m),q(2.5+Math.sin(an)*12.4*m),.5,.5)}
+   for(let i=0;i<8;i++){const an=t*.7+i*TAU/8,x=cxs+Math.cos(an)*12.1,y=2.5+Math.sin(an)*11.5,v=.5+.5*Math.sin(t*4+i*1.7);
+    u('rgba(255,255,255,'+(.55+.45*v).toFixed(2)+')',q(x),q(y),1,1);if(v>.6){u('rgba(255,255,255,.8)',q(x-1),q(y),3,.5);u('rgba(255,255,255,.8)',q(x),q(y-1),1,3)}}
+   for(let i=0;i<5;i++){const e=(t*.5+i*.2)%1,an=i*1.9,x=cxs+Math.cos(an)*(9+e*2),y=2.5+Math.sin(an)*(9+e*2)-e*5;u('rgba(220,248,255,'+(1-e).toFixed(2)+')',q(x),q(y),.5,.5)}
+  }};
 
  // ===== nón chóp (đỉnh có bong bóng, tua hạt treo hai bên vành) =====
  const hat=(cxs,mode)=>{
@@ -54,6 +71,12 @@ function drawTM(r,u,o,S,k){
   u(HATD,cxs-9,6.5,18,.5);
   for(let y=AP;y<BY;y+=.5){const hw=.5+(y-AP)*1.18;u(HAT,cxs-hw,y,hw*2,.5);u(HATL,cxs-hw,y,hw*.55,.5);u(HATD,cxs+hw*.42,y,hw*.58,.5)}
   [.5,2.3,4].forEach(y=>{const hw=.5+(y-AP)*1.18;u(HATR,cxs-hw+.5,y,hw*2-1,.5)});
+  if(LV>=2&&bp>.8){ // CẤP 2: bong bóng bể → nước chảy phủ xuống nón rồi nhỏ giọt ở mép vành
+   const f=Math.min(1,(bp-.8)/.14),fade=bp>.93?Math.max(0,1-(bp-.93)/.07):1;
+   for(let y=AP;y<BY;y+=.5){if(y>AP+f*(BY-AP)*1.15)break;const hw=.5+(y-AP)*1.18;
+    u('rgba(110,200,250,'+(.55*fade).toFixed(2)+')',cxs-hw,y,hw*2,.5);
+    for(let k=0;k<4;k++){const sx=cxs-hw+hw*2*((k+.5)/4)+Math.sin(t*5+y*.8+k)*.4;u('rgba(255,255,255,'+(.85*fade).toFixed(2)+')',q(sx),y,.5,.5)}}
+   if(f>=1)for(let i=0;i<6;i++){const e=(t*1.6+i*.31)%1;u('rgba(170,228,255,'+(fade*(1-e)).toFixed(2)+')',q(cxs-8+i*3.2),q(7.3+e*3),.5,1)}}
   u(HATB,cxs-5.2,4.5,10.4,.5);u(HATB,cxs-6.5,5,13,.5);
   u('#fff',cxs-.5,AP,1,.5);
   if(mode!='b'){[-7.5,-3.5,0,3.5,7.5].forEach((dx,i)=>{u('#7fd0f4',cxs+dx-.5,5.5+(i%2?0:.5),1,1);u('#fff',cxs+dx-.5,5.5+(i%2?0:.5),.5,.5)})}
@@ -63,6 +86,21 @@ function drawTM(r,u,o,S,k){
    for(let j=0;j<L;j+=1.5){const sw=Math.sin(t*2.4+i*1.3+j*.5)*(mv?.8:.45);
     u(j%3?'#7fd0f4':'#eef4fa',q(cxs+dx+sw),7.2+j,1,1);u('rgba(255,255,255,.9)',q(cxs+dx+sw),7.2+j,.5,.5)}});
  };
+
+ // ===== CẤP 3: tinh linh nước (4 giây một lần) xuất hiện bên cạnh, bay quanh người rồi tan biến =====
+ const spirit=(cxs,front)=>{
+  if(LV<3)return;const T=4,sp=(t%T)/T,V=.78;if(sp>V)return;
+  const g=sp/V,a=Math.min(1,g*7,(1-g)*7),AL=(rgb,v)=>'rgba('+rgb+','+Math.max(0,v).toFixed(2)+')';
+  const pos=an=>({x:cxs+Math.cos(an)*14,y:17+Math.sin(an)*5.5-Math.sin(g*Math.PI)*4,z:Math.sin(an)}),an0=g*TAU*1.6+.5,P=pos(an0);
+  if((P.z>=0)!==!!front)return;
+  for(let i=1;i<=7;i++){const Q=pos(an0-i*.17);u(AL('170,232,255',a*(1-i/8)*.7),q(Q.x),q(Q.y+1),i<3?1:.5,i<3?1:.5)}
+  const x=P.x,y=P.y,fl=Math.sin(t*16)>0?1:0;
+  for(let dy=-2.5;dy<=2.5;dy+=.5){const w=2.5*Math.sqrt(Math.max(0,1-dy*dy/7.3));u(AL('120,205,250',.88*a),q(x-w),q(y+dy),Math.max(.5,q(w*2)),.5)}
+  u(AL('120,205,250',.88*a),x-.5,y-3.5,1,.5);u(AL('225,250,255',a),x-1.5,y-1.5,1,2);u(AL('50,130,210',a),x+1,y,1.5,2);
+  u('#ffffff',x-1,y-.5,1,1);u('#ffffff',x+.5,y-.5,1,1);u('#1a3f8f',x-.5,y-.5,.5,.5);u('#1a3f8f',x+1,y-.5,.5,.5);u(AL('255,160,190',a*.7),x-.5,y+1,1,.5);
+  u(AL('215,246,255',.85*a),x-4.5,y-2+(fl?-1:0),2,1);u(AL('215,246,255',.85*a),x+3,y-2+(fl?-1:0),2,1);   // cánh nhỏ vẫy
+  u(AL('150,220,252',.7*a),x-.5,y+3,1,1);u(AL('150,220,252',.5*a),x+(fl?.5:-.5),y+4,1,.5);
+  if(g<.1||g>.9){const e=g<.1?g/.1:(1-g)/.1;for(let i=0;i<8;i++){const an=i*.785,d=(1-e)*5+2;u(AL('255,255,255',.9*a+.1),q(x+Math.cos(an)*d),q(y+Math.sin(an)*d),.5,.5)}}};
 
  // ===== bong bóng thổi ở đỉnh nón: phình ra → rung → BỂ =====
  const bubble=bx=>{
@@ -123,7 +161,9 @@ function drawTM(r,u,o,S,k){
   u('#ffffff',x0,y0,3,2);u(EYE,x0+.5,y0,2,2);u(EYED,x0+.5,y0,2,.5);u(EYEL,x0+.5,y0+1.5,2,.5);u('#fff',x0+.5,y0+.5,.5,.5);u(LASH,x0-.5,y0-.5,3.5,.5)};
 
  if(!side){
+  spirit(10,0);
   halo(10);
+  if(LV>=3){for(const sg of[-1,1])for(let j=0;j<8;j++){const s=Math.sin(t*3+j*.7+sg)*(.5+j*.1);u(W.edge,q(10+sg*8.7+s+sg*j*.12),q(22.5+j),1,.5);if(j%2)u(W.foam,q(10+sg*8.7+s+sg*j*.12),q(22.5+j),.5,.5)}}
   if(back){
    // tóc dài phía sau lưng
    u(HR[0],4,5,12,9);
@@ -160,18 +200,20 @@ function drawTM(r,u,o,S,k){
   hat(10,back?'b':'f');
   bubble(10);
   splash();
+  spirit(10,1);
  }else{
   // ---------- nhìn ngang (tà áo bay ra sau) ----------
   const cxs=Rt?9:11;
+  spirit(cxs,0);
   halo(cxs);
   // tóc dài bay ra sau
   const amp=mv?1.2:.5;
   for(let y=5;y<=23;y++){const wv=Math.sin(t*(mv?5:2.2)-y*.45)*amp*(y>10?(y-10)/13:0),tr=y>12?(y-12)*(mv?.55:.25):0;
    M(HR[0],1.5-tr+wv,y,7.5+tr*.3,1);if(y%3==0)M(HR[1],2-tr+wv,y,1.5,1);M(HR[2],1.5-tr+wv,y,.5,1)}
   // ---- TÀ ÁO DÀI RA SAU (nước trong suốt, vẫy theo bước đi) ----
-  const N=mv?19:9,spd=mv?6:2.5;
+  const N=mv?(LV>=3?27:19):(LV>=3?13:9),spd=mv?6:2.5;
   for(let j=0;j<=N;j++){
-   const x=5-j,yc=25.5+Math.sin(t*spd-j*.55)*(.4+j*(mv?.16:.07))-j*(mv?.3:.08),th=Math.max(.8,4.4*(1-j/(N+1.5))),y0=Math.max(15,yc-th),y1=Math.min(30.5,yc+th);
+   const x=5-j,yc=Math.max(17,25.5+Math.sin(t*spd-j*.55)*(.4+j*(mv?.16:.07))-j*(mv?.3:.08)),th=Math.max(.8,4.4*(1-j/(N+1.5))),y0=Math.max(15,yc-th),y1=Math.min(30.5,yc+th);
    M(W.base,x,q(y0),1,q(y1-y0)||.5);M(W.lt,x,q(y0),1,.5);M(W.dk,x,q(y1-.5),1,.5);
    if(j%4==1)M(W.foam,x,q(yc-th*.4),1,.5);
    if(j>=N-2)M(W.foam,x,q(yc),1,.5)}
@@ -204,9 +246,11 @@ function drawTM(r,u,o,S,k){
   hat(cxs,'s');
   bubble(cxs);
   splash();
+  spirit(cxs,1);
  }
- // CẤP 2+: chỗ thêm hiệu ứng (LV>=2 / LV>=3) — tạm thời để trống
 }
 window.drawMascotTM=drawTM;
+// tốc độ chạy khi mặc Mascot Thần Mưa (nhân với tốc độ gốc; thú cưỡi 'Trâu Việt' là 1.8). Chỉ tính khi KHÔNG cưỡi thú.
+window.tmSpd=function(){try{const S=SETS[ST.av.s];return S&&S.tmlv==2?1.8:S&&S.tmlv==3?2.5:1}catch(e){return 1}};
 MASCOT_DRAW.thanmua=drawTM;
 })();

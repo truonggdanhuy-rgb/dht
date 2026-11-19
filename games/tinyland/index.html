@@ -6188,7 +6188,7 @@ let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||ke
 if(HMA){HMA.t+=dt;if(HMA.t>HMA.d||(HMA.t>.7&&(ptr||dx||dy)))hmEnd();dx=dy=0;goal=null;ptr=null}if(UI){dx=dy=0;goal=null;ptr=null}if(dx||dy)goal=null;
 if(!dx&&!dy&&ptr&&!ptr.pan&&!FMODE&&performance.now()-ptr.t>150){ptr.walk=1;goal=null;const gx=ptr.x/S+camX-Pl.x,gy=ptr.y/S+camY-Pl.y,L=Math.hypot(gx,gy);if(L>4){dx=gx/L;dy=gy/L}}
 else if(!dx&&!dy&&goal){const gx=goal.x-Pl.x,gy=goal.y-Pl.y,L=Math.hypot(gx,gy);goal.t+=dt;if(L<3||goal.t>4)goal=null;else{dx=gx/L;dy=gy/L}}
-if((dx||dy)&&!Pl.sit){const L=Math.hypot(dx,dy);dx/=L;dy/=L;const sp=78*(CVON&&CV.boat?.72*(Date.now()<(+ST.toanU||0)?1.6:1):1)*(HUNGRY?.3:(ST.av.m>=0?MOUNTS[ST.av.m].spd:(window.spdBuff&&spdBuff()?1.4:1)))*dt,ox=Pl.x,oy=Pl.y;
+if((dx||dy)&&!Pl.sit){const L=Math.hypot(dx,dy);dx/=L;dy/=L;const sp=78*(CVON&&CV.boat?.72*(Date.now()<(+ST.toanU||0)?1.6:1):1)*(HUNGRY?.3:(ST.av.m>=0?MOUNTS[ST.av.m].spd:Math.max(window.spdBuff&&spdBuff()?1.4:1,window.tmSpd?tmSpd():1)))*dt,ox=Pl.x,oy=Pl.y;
  if(can(Pl.x+dx*sp,Pl.y))Pl.x+=dx*sp;if(can(Pl.x,Pl.y+dy*sp))Pl.y+=dy*sp;
  Pl.mv=Math.abs(Pl.x-ox)+Math.abs(Pl.y-oy)>.01;if(!Pl.mv)goal=null;Pl.a+=dt*(ST.av.m>=0?1.5:1);
  Pl.d=Math.abs(dx)>Math.abs(dy)?(dx<0?2:3):(dy<0?1:0)}else Pl.mv=0;
@@ -6831,7 +6831,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="cunboi.js?v=20261117"></script>
 <script src="thongbao.js?v=20261117b"></script>
 <script src="gianhang.js?v=20261116"></script>
-<script src="perso.js?v=20261119a"></script>
+<script src="perso.js?v=20261119b"></script>
  <script src="xdeer.js?v=1"></script>
  <script src="phuthuy.js?v=20261210"></script>
  <script src="tetmount.js?v=1"></script>
@@ -6846,7 +6846,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
   <script src="hdface.js?v=20261220"></script>   <!-- biểu cảm HD (PHẢI để SAU hdkit.js; xóa 2 dòng này là về mặt cũ) -->
   <script src="boyboy.js?v=20261301"></script>   <!-- Set Boyboy + Tóc Boyboy (HD). PHẢI để CUỐI CÙNG, sau hdkit.js & hdface.js -->
   <script src="duvit.js?v=20261301"></script>   <!-- Dù vịt vàng (phụ kiện cầm tay) + khung dù UMB. Nạp SAU boyboy.js -->
-  <script src="thanmua.js?v=1"></script>   <!-- Mascot Thần Mưa (Mùa 2 Thái tử Ba Tư). Nạp SAU boyboy.js -->
+  <script src="thanmua.js?v=2"></script>   <!-- Mascot Thần Mưa (Mùa 2 Thái tử Ba Tư). Nạp SAU boyboy.js -->
   <script src="tiennu2.js?v=20261301"></script>   <!-- Tiên nữ vẽ lại (tóc, dải lụa, váy). Xóa dòng này = quay về Tiên nữ cũ -->
   <script src="chanhxa.js?v=1"></script>
 <script src="tiecngu-pho.js?v=1"></script>

@@ -25,10 +25,10 @@ const UPG=[
  {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:2,star:40, snow:40, xu:10000,dia:0},
  {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:3,star:60,snow:60,xu:30000,dia:10},
  /* MÙA 2 — Mascot Thần Mưa (là SET: set:1). req = điều kiện: phải nâng vật phẩm mùa 1 lên đủ cấp mới ghép được.
-    Cấp 2 và 3 đang lock:true (sắp ra mắt). Khi vẽ xong cấp 2/3: bỏ lock:true và thêm SETS 'thanmua2' / 'thanmua3' trong thanmua.js */
+    Giá cấp 2/3 giống Quyền trượng. Xem trước trong panel luôn hiện hình cấp CAO NHẤT. */
  {season:2,id:'thanmua',name:'Mascot Thần Mưa',set:1,req:{id:'scepter',lv:3},lv:1,star:10,snow:10,xu:0,    dia:0},
- {season:2,id:'thanmua',name:'Mascot Thần Mưa',set:1,req:{id:'scepter',lv:3},lv:2,star:40,snow:40,xu:10000,dia:0,lock:1},
- {season:2,id:'thanmua',name:'Mascot Thần Mưa',set:1,req:{id:'scepter',lv:3},lv:3,star:60,snow:60,xu:30000,dia:10,lock:1}];
+ {season:2,id:'thanmua',name:'Mascot Thần Mưa',set:1,req:{id:'scepter',lv:3},lv:2,star:40,snow:40,xu:10000,dia:0},
+ {season:2,id:'thanmua',name:'Mascot Thần Mưa',set:1,req:{id:'scepter',lv:3},lv:3,star:60,snow:60,xu:30000,dia:10}];
 const SOON=[3];                // các mùa sắp ra mắt: hiện "Coming soon" trong panel (khi có vật phẩm mùa đó trong UPG thì tự hiện vật phẩm thay thế)
 /* Vị trí điểm cuốc cố định (tọa độ chân) */
 const PTS={
@@ -178,7 +178,7 @@ function css(){if(document.getElementById('prcss'))return;const s=document.creat
  '.prt{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px;font-weight:900;color:#ffe27a}.prt small{font-size:12px;font-weight:700;color:#e9f6ff}'+
  '.prk{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;margin-top:5px;color:#fff8e0}.ok{color:#a8ffc4;font-weight:800}.no{color:#ffc4c4;font-weight:800}'+
  '.prb{display:block;width:100%;margin-top:7px;padding:7px;border:2px solid #b8861c;border-radius:9px;background:linear-gradient(#fff0a0,#f0b630);color:#4a2a00;font-weight:900;font-size:13px;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.25)}'+
- '.prv{display:block;margin:4px auto 2px;width:180px;height:184px;max-width:100%;image-rendering:pixelated;background:radial-gradient(ellipse at 50% 88%,rgba(255,255,255,.28),rgba(255,255,255,0) 62%)}'+
+ '.prv{display:block;margin:4px auto 2px;width:240px;height:184px;max-width:100%;image-rendering:pixelated;background:radial-gradient(ellipse at 50% 88%,rgba(255,255,255,.28),rgba(255,255,255,0) 62%)}'+
  '.prb[disabled]{background:linear-gradient(#cfc8ea,#a79fd0);color:#5a5280;border-color:#8a82b8;cursor:not-allowed;box-shadow:none}';
  document.head.appendChild(s)}
 let tmr=0;
@@ -197,7 +197,7 @@ function prince(){css();fixOwn();const p=P(),L=cardLeft();
   for(const id of ids){const R=rowsOf(id),lv=lvOf(id),nx=R.find(u=>u.lv==lv+1);
    const rq=reqOf(id),rok=reqOk(id);
    h+='<div class="prc"><div class="prt"><span>'+(isSet(id)?'🌧️ ':'🔱 ')+R[0].name+'</span><small>'+(lv?'Cấp '+lv+(nx?'':' (tối đa)'):'Chưa có')+'</small></div>';
-   if(isSet(id))h+='<canvas class="prv" width="180" height="184" data-id="'+id+'"></canvas>';
+   if(isSet(id))h+='<canvas class="prv" width="240" height="184" data-id="'+id+'"></canvas>';
    if(rq&&!lv)h+='<div class="prk" style="justify-content:center"><span class="'+(rok?'ok':'no')+'">'+(rok?'✔':'🔒')+' Điều kiện: '+rowsOf(rq.id)[0].name+' cấp '+rq.lv+' ('+Math.min(lvOf(rq.id),rq.lv)+'/'+rq.lv+')</span></div>';
    if(nx){h+='<div class="prk">'+chip('⭐',p.st,nx.star)+chip('❄️',p.sn,nx.snow)+(nx.xu?chip('🪙',ST.xu|0,nx.xu):'')+(nx.dia?chip('💎',ST.dia|0,nx.dia):'')+'</div>';
     h+=nx.lock?'<button class="prb" disabled>🔒 Sắp ra mắt</button>':'<button class="prb" onclick="PERSO.up(\''+id+'\')"'+(can(nx)?'':' disabled')+'>'+(lv?'Nâng lên cấp '+nx.lv:(rok?'Ghép vật phẩm':'🔒 Cần '+rowsOf(rq.id)[0].name+' cấp '+rq.lv))+'</button>'}
@@ -209,10 +209,10 @@ let prvRaf=0;
 function startPrv(){cancelAnimationFrame(prvRaf);const cs=[...document.querySelectorAll('canvas.prv')];if(!cs.length)return;
  const loop=()=>{if(!UI||!document.body.contains(cs[0]))return;
   const t=performance.now()/1000;
-  cs.forEach(c=>{const idx=SETS.findIndex(a=>a.k==c.dataset.id+'1');if(idx<0)return;
+  cs.forEach(c=>{const mx=Math.max(...rowsOf(c.dataset.id).map(u=>u.lv));let idx=-1;for(let l=mx;l>=1&&idx<0;l--)idx=SETS.findIndex(a=>a.k==c.dataset.id+l);if(idx<0)return;
    const g=c.getContext('2d'),ph=Math.floor(t/3.2)%3,d=ph==0?0:ph==1?3:1;
    g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,c.width,c.height);g.imageSmoothingEnabled=false;
-   g.save();g.scale(4,4);try{drawAv(g,16,14,{d,a:t,mv:1,sit:0,hair:0,set:idx,e:0,acc:-1,wg:-1})}catch(e){}g.restore()});
+   g.save();g.scale(4,4);try{drawAv(g,24,14,{d,a:t,mv:1,sit:0,hair:0,set:idx,e:0,acc:-1,wg:-1})}catch(e){}g.restore()});
   prvRaf=requestAnimationFrame(loop)};
  loop()}
 function buyCard(){const p=P();if((ST.qv|0)<CARD_PRICE)return toast('Không đủ xu quái vật! Cần '+CARD_PRICE);
