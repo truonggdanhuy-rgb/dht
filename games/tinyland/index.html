@@ -1740,7 +1740,7 @@ const ACCS=[{n:'Lồng đèn trăng rằm',k:'moon',t:'hang',art:accMoon},{n:'Xe
  {n:'Gậy Nấm pháp sư',k:'mushstaff',t:'hold',dia:5,art:(P)=>window.accMushStaff&&accMushStaff(P)},
  {n:'Guitar điện',k:'guitar',t:'hold',art:(P)=>accEGuitar(P)},
  // 16-18 = Quyền trượng Thủy Thần cấp 1/2/3 (nhận ở Thái tử Ba Tư, KHÔNG bán ở shop). Hình vẽ + nâng cấp: perso.js. Mỗi cấp 1 mục để người chơi khác tự thấy đúng cấp qua số phụ kiện sẵn có.
- {n:'Quyền trượng Thủy Thần cấp 1',k:'scepter1',t:'hold',ach:1,sc:1,art:(P)=>window.PERSO&&PERSO.art(P,1)},{n:'Quyền trượng Thủy Thần cấp 2',k:'scepter2',t:'hold',ach:1,sc:2,art:(P)=>window.PERSO&&PERSO.art(P,2)},{n:'Quyền trượng Thủy Thần cấp 3',k:'scepter3',t:'hold',ach:1,sc:3,art:(P)=>window.PERSO&&PERSO.art(P,3)},
+ {n:'Quyền trượng Thủy Thần cấp 1',k:'scepter1',t:'hold',ach:1,up:1,sc:1,art:(P)=>window.PERSO&&PERSO.art(P,1)},{n:'Quyền trượng Thủy Thần cấp 2',k:'scepter2',t:'hold',ach:1,up:1,sc:2,art:(P)=>window.PERSO&&PERSO.art(P,2)},{n:'Quyền trượng Thủy Thần cấp 3',k:'scepter3',t:'hold',ach:1,up:1,sc:3,art:(P)=>window.PERSO&&PERSO.art(P,3)},
  // 19-21 = 🎒 BALO (t:'wing' = đeo sau lưng như cánh, vẽ đè lên tóc; bag = loại balo; 2000 Xu/cái ở Shop Phố xá — SHOP.a.pr trong pho-map.js; hình vẽ: balo.js)
  {n:'Balo Ong mật',k:'bagbee',t:'wing',bag:'bee'},{n:'Balo Thỏ hồng',k:'bagbunny',t:'wing',bag:'bunny'},{n:'Balo Cánh cụt',k:'bagpeng',t:'wing',bag:'peng'},
  // 22-23 = 🦊 ĐUÔI HỒ LY (t:'wing' = đeo sau lưng như cánh, vẽ đè lên tóc; tail = loại đuôi; 💎15/cái ở Shop kim cương mục Phụ kiện; hình vẽ: duoi.js)
@@ -6798,7 +6798,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 
 </script>
 <script src="park-map.js?v=20261219"></script>
-<script src="pho-map.js?v=20261218bc"></script>
+<script src="pho-map.js?v=20261219a"></script>
 <script src="broomkit.js?v=20261118"></script>
 <script src="circus.js?v=20261219"></script>
 <script src="sea-map.js?v=20261220a"></script>
@@ -6846,7 +6846,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
   <script src="hdface.js?v=20261220"></script>   <!-- biểu cảm HD (PHẢI để SAU hdkit.js; xóa 2 dòng này là về mặt cũ) -->
   <script src="boyboy.js?v=20261301"></script>   <!-- Set Boyboy + Tóc Boyboy (HD). PHẢI để CUỐI CÙNG, sau hdkit.js & hdface.js -->
   <script src="duvit.js?v=20261301"></script>   <!-- Dù vịt vàng (phụ kiện cầm tay) + khung dù UMB. Nạp SAU boyboy.js -->
-  <script src="thanmua.js?v=2"></script>   <!-- Mascot Thần Mưa (Mùa 2 Thái tử Ba Tư). Nạp SAU boyboy.js -->
+  <script src="thanmua.js?v=3"></script>   <!-- Mascot Thần Mưa (Mùa 2 Thái tử Ba Tư). Nạp SAU boyboy.js -->
   <script src="tiennu2.js?v=20261301"></script>   <!-- Tiên nữ vẽ lại (tóc, dải lụa, váy). Xóa dòng này = quay về Tiên nữ cũ -->
   <script src="chanhxa.js?v=1"></script>
 <script src="tiecngu-pho.js?v=1"></script>

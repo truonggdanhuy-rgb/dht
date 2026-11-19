@@ -763,7 +763,7 @@ const cbTxt=(cb,short)=>short?'🪙'+cb.xu.toLocaleString('vi-VN')+' • QV '+cb
 let SH_TAB='m',SH_I=-1,SH_DIR=0,shRaf=0;
 window.psShop=(tab)=>{if(typeof ownE=='function')ownE();if(tab)SH_TAB=tab;PS.view='shop';SH_I=-1;const S=SHOP[SH_TAB],L=S.all(),own=ST.own[SH_TAB],mt=SH_TAB=='m';
  let h=head('🏘️ Shop Phố xá')+'<div class="mut">🪙 Bạn có <b>'+fmtXu(ST.xu)+'</b> Xu</div><div class="tabs" style="flex-wrap:wrap">'+['m','p','s','h','e','a'].map(k=>'<button class="b'+(k==SH_TAB?' on':'')+'" onclick="psShop(\''+k+'\')">'+SHOP[k].t+'</button>').join('')+'</div>';
- h+='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+L.map((x,i)=>{const has=own.includes(i);if((x.ach&&!has)||x.dia||x.cl)return '';
+ h+='<div class="sg" style="grid-template-columns:repeat(3,1fr)">'+L.map((x,i)=>{const has=own.includes(i);if((x.ach&&!has)||x.dia||x.cl||x.up)return '';   // x.up = vật phẩm NÂNG CẤP (Thái tử Ba Tư) -> không bao giờ hiện trong shop
   return '<button class="sq'+(has?' z':'')+'" onclick="psItem('+i+')"><canvas class="shc" data-i="'+i+'" width="'+(mt?72:44)+'" height="'+(mt?68:SH_TAB=='p'?52:44)+'" style="width:'+(mt?88:57)+'px;height:'+(mt?83:SH_TAB=='p'?68:57)+'px;image-rendering:pixelated"></canvas><b>'+x.n+'</b><small>'+(has?'✓ Đã có':x.cb?cbTxt(x.cb,1):'🪙 '+price(SH_TAB,i).toLocaleString('vi-VN'))+'</small></button>'}).join('')+'</div>';
  h+='<div class="mut">Đồ đã mua nằm trong 🎒 Túi. Chạm vào món để xem thử & mua.</div>';
  openUI(h);shPaint()};
@@ -788,6 +788,7 @@ function shLoop(){const c=$('shp');if(!c||!UI||PS.view!='item'){shRaf=0;return}c
 window.psBuy=i=>{if(typeof ownE=='function')ownE();const k=SH_TAB,pr=price(k,i),own=ST.own[k];if(own.includes(i))return psItem(i);
  if(SHOP[k].all()[i].cl)return toast('🤡 Món này bán ở Tiệm Chú Hề (Xe Hề, Phố xá)');
  if(SHOP[k].all()[i].dia)return toast('💎 Món này bán bằng kim cương ở Trùm kim cương (Shop kim cương)');
+ if(SHOP[k].all()[i].up)return toast('👑 Vật phẩm nâng cấp — chỉ nhận ở Thái tử Ba Tư (Phố xá)');
  if(SHOP[k].all()[i].ach)return toast(SHOP[k].all()[i].bd?'❄️ Món này đổi bằng Huy hiệu tuyết ở Ông già Noel (Làng tuyết)':'🏆 Pet này chỉ nhận được từ mốc quà trong Thẻ');
  const cb=SHOP[k].all()[i].cb;
  if(cb){const need=[];if(ST.xu<cb.xu)need.push((cb.xu-ST.xu).toLocaleString('vi-VN')+' Xu');if((ST.qv|0)<cb.qv)need.push((cb.qv-(ST.qv|0)).toLocaleString('vi-VN')+' xu quái vật');if((ST.dia|0)<cb.dia)need.push((cb.dia-(ST.dia|0))+' 💎');

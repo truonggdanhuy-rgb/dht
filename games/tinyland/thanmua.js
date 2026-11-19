@@ -1,7 +1,7 @@
 /* ===================================================================================
    THANMUA.JS — 🌧️ MASCOT THẦN MƯA (Mùa 2 của Thái tử Ba Tư) — CẤP 1
    • Nhận ở Thái tử Ba Tư (Phố xá), Mùa 2. Phải nâng Quyền trượng Thủy Thần lên CẤP 3 mới ghép được (xem perso.js).
-   • Cấp 1/2/3 = SETS 'thanmua1/2/3' (tmlv:1/2/3), dùng chung hàm vẽ drawTM.
+   • Cấp 1/2/3 = SETS (ach:1,up:1 => KHÔNG BÁN ở shop, chỉ nhận/nâng ở Thái tử Ba Tư; mỗi lần nâng thì bản cũ bị thay bằng cấp mới) 'thanmua1/2/3' (tmlv:1/2/3), dùng chung hàm vẽ drawTM.
    Cấp 2: vầng sáng lung linh hơn, chạy nhanh như cưỡi thú (tmSpd=1.8), bong bóng bể thì nước chảy phủ nón.
    Cấp 3: gồm cấp 2 + tà áo dài hơn + cứ 4 giây có tinh linh nước bay quanh người + chạy cực nhanh (tmSpd=2.5).
    Chỉnh tốc độ: sửa 2 số trong hàm window.tmSpd ở cuối file.
@@ -17,15 +17,15 @@ if(typeof SETS==='undefined'||typeof MASCOT_DRAW==='undefined')return;
 
 // ---------- 1) khai báo (chỉ thêm 1 lần, luôn đẩy vào CUỐI mảng) ----------
 if(!SETS.some(s=>s.k=='thanmua1')){
- SETS.push({n:'Mascot Thần Mưa',k:'thanmua1',mascot:'thanmua',tmlv:1,vt:'tm',wide:1,
+ SETS.push({n:'Mascot Thần Mưa',k:'thanmua1',mascot:'thanmua',tmlv:1,vt:'tm',wide:1,ach:1,up:1,
   ds:'Nón chóp có bong bóng nước phình ra rồi bể, khăn che mũi miệng chỉ lộ đôi mắt xanh biển, váy dài bằng nước trong suốt, tà áo thướt tha phía sau. Có biểu cảm riêng. Phụ kiện cầm tay vẫn hiện.',
   sh:'#8fd0f2',pt:'#8fd0f2',rpt:'#8fd0f2',shoe:'#cdeeff',scarf:'#8fd0f5'});
 }
 if(!SETS.some(s=>s.k=='thanmua2')){
- SETS.push({n:'Mascot Thần Mưa (Cấp 2)',k:'thanmua2',mascot:'thanmua',tmlv:2,vt:'tm',wide:1,
+ SETS.push({n:'Mascot Thần Mưa (Cấp 2)',k:'thanmua2',mascot:'thanmua',tmlv:2,vt:'tm',wide:1,ach:1,up:1,
   ds:'Cấp 2: vầng sáng trên đầu lung linh hơn, chạy nhanh như cưỡi thú, bong bóng bể thì nước chảy phủ lên nón.',
   sh:'#8fd0f2',pt:'#8fd0f2',rpt:'#8fd0f2',shoe:'#cdeeff',scarf:'#8fd0f5'});
- SETS.push({n:'Mascot Thần Mưa (Cấp 3)',k:'thanmua3',mascot:'thanmua',tmlv:3,vt:'tm',wide:1,
+ SETS.push({n:'Mascot Thần Mưa (Cấp 3)',k:'thanmua3',mascot:'thanmua',tmlv:3,vt:'tm',wide:1,ach:1,up:1,
   ds:'Cấp 3: tà áo dài hơn, cứ 4 giây có tinh linh nước bay quanh người, chạy cực nhanh.',
   sh:'#8fd0f2',pt:'#8fd0f2',rpt:'#8fd0f2',shoe:'#cdeeff',scarf:'#8fd0f5'});
 }
