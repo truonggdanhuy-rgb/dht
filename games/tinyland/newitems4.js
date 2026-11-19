@@ -1,5 +1,6 @@
 /* ===================================================================================
    NEWITEMS4.JS — 🎪 Thú cưỡi XE ĐẠP 1 BÁNH (k:'unicycle' đen, k:'unicycle_blue' xanh) — 8000 Xu, Tiệm Chú Hề
+   v3.1: đứng yên nhìn ngang → chân chống đất duỗi THẲNG xuống đất (trước bị gập đùi, nhìn lạ).
    v3 (vẽ lại hoàn toàn):
    • THẤP & VỪA NGƯỜI: yên cao -15 (trước là -24). Bánh bán kính 5.8, chân người dài ~6.6/đoạn → gối gập tự nhiên,
      KHÔNG còn bị kéo dài/biến dạng. Đứng yên: người hạ 2px, chân chống chạm đất vẫn còn hơi gập.
@@ -190,7 +191,8 @@ function uniLegs(R,d,ph,sx,sy,PT,SD,S,hv,c){
   const far=ped(th+PI),near=ped(th);
   let p=leg2(R,PTs,sx+1,hy,far[0]-1,far[1]-2,LEG);shoe(p[0]+1,p[1]);          // chân xa (tối hơn) luôn gác bàn đạp
   if(mv){p=leg2(R,PT,sx+1,hy,near[0]-1,near[1]-2,LEG);shoe(p[0]+1,p[1])}
-  else{p=leg2(R,PT,sx+1,hy,sx+5,-3,LEG);shoe(p[0]+1,-2)}                       // chân gần chống xuống đất
+  else{const hx=sx+1,ky=rnd((hy-3)/2);                                           // chân gần chống xuống đất: CHÂN THẲNG, đứng thẳng đứng từ hông xuống đất (không gập đùi)
+   pxl(R,PT,hx,hy,hx,ky,3);pxl(R,PT,hx,ky,hx,-3,3);R(shade(PT,.25),hx,hy,1,-3-hy+3);shoe(hx+1,-2)}
  }else{
   // ---- nhìn trước / sau ----
   const pyR=HY+(mv?sin(th)*CR:0),pyL=HY-(mv?sin(th)*CR:0);
