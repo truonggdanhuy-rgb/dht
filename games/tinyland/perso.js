@@ -23,8 +23,13 @@ const SWING_EVERY=5;           // mỗi bao nhiêu giây vung gậy ném bóng n
 const UPG=[
  {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:1,star:10, snow:10, xu:0,    dia:0},
  {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:2,star:40, snow:40, xu:10000,dia:0},
- {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:3,star:60,snow:60,xu:30000,dia:10}];
-const SOON=[2];                // các mùa sắp ra mắt: hiện "Coming soon" trong panel (khi có vật phẩm mùa đó trong UPG thì tự hiện vật phẩm thay thế)
+ {season:1,id:'scepter',name:'Quyền trượng Thủy Thần',lv:3,star:60,snow:60,xu:30000,dia:10},
+ /* MÙA 2 — Mascot Thần Mưa (là SET: set:1). req = điều kiện: phải nâng vật phẩm mùa 1 lên đủ cấp mới ghép được.
+    Cấp 2 và 3 đang lock:true (sắp ra mắt). Khi vẽ xong cấp 2/3: bỏ lock:true và thêm SETS 'thanmua2' / 'thanmua3' trong thanmua.js */
+ {season:2,id:'thanmua',name:'Mascot Thần Mưa',set:1,req:{id:'scepter',lv:3},lv:1,star:10,snow:10,xu:0,    dia:0},
+ {season:2,id:'thanmua',name:'Mascot Thần Mưa',set:1,req:{id:'scepter',lv:3},lv:2,star:40,snow:40,xu:10000,dia:0,lock:1},
+ {season:2,id:'thanmua',name:'Mascot Thần Mưa',set:1,req:{id:'scepter',lv:3},lv:3,star:60,snow:60,xu:30000,dia:10,lock:1}];
+const SOON=[3];                // các mùa sắp ra mắt: hiện "Coming soon" trong panel (khi có vật phẩm mùa đó trong UPG thì tự hiện vật phẩm thay thế)
 /* Vị trí điểm cuốc cố định (tọa độ chân) */
 const PTS={
  wt:[[95,178],[350,238],[520,182],[350,338],[565,278],[130,285],[200,372],[470,392]].map(a=>({x:a[0],y:a[1],hide:0,dig:0})),
@@ -38,17 +43,23 @@ const now=()=>Date.now();
 const cardLeft=()=>Math.max(0,P().t-now());
 const fmtT=ms=>{const s=Math.ceil(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60;return (h?h+' giờ ':'')+(h||m?m+' phút ':'')+c+' giây'};
 const N=n=>fmtXu(n|0);
-const sci=(id,l)=>ACCS.findIndex(a=>a.k==id+l);
+const isSet=id=>{const u=UPG.find(x=>x.id==id);return !!(u&&u.set)};
+const sci=(id,l)=>isSet(id)?SETS.findIndex(a=>a.k==id+l):ACCS.findIndex(a=>a.k==id+l);
+const OW=id=>isSet(id)?(ST.own.s||(ST.own.s=[])):ST.own.a;      // danh sách đồ đã có (set hoặc phụ kiện)
+const AVK=id=>isSet(id)?'s':'a';                                // khóa đang mặc trong ST.av
+const reqOf=id=>rowsOf(id)[0].req;
+const reqOk=id=>{const q=reqOf(id);return !q||lvOf(q.id)>=q.lv};
 const IDS=()=>[...new Set(UPG.slice().sort((a,b)=>a.season-b.season).map(u=>u.id))];
 const lvOf=id=>id=='scepter'?P().lv:(((P().it||{})[id])|0);
 const rowsOf=id=>UPG.filter(u=>u.id==id).sort((a,b)=>a.lv-b.lv);
 /* đặt cấp vật phẩm: bản cũ bị loại, đang trang bị thì đổi cấp tại chỗ */
 function setLv(id,lv){const p=P();let wore=0;
- for(let l=1;l<=9;l++){const i=sci(id,l);if(i<0)continue;const k=ST.own.a.indexOf(i);if(k>=0)ST.own.a.splice(k,1);if(ST.av.a==i){wore=1;ST.av.a=-1}}
+ const own=OW(id),ak=AVK(id);
+ for(let l=1;l<=9;l++){const i=sci(id,l);if(i<0)continue;const k=own.indexOf(i);if(k>=0)own.splice(k,1);if(ST.av[ak]==i){wore=1;ST.av[ak]=ak=='a'?-1:0}}
  if(id=='scepter')p.lv=lv;else{p.it=p.it||{};p.it[id]=lv}
- const ni=sci(id,lv);if(ni>=0){ST.own.a.push(ni);if(wore)ST.av.a=ni}}
+ const ni=sci(id,lv);if(ni>=0){own.push(ni);if(wore)ST.av[ak]=ni}}
 /* nếu dữ liệu có vật phẩm mà thiếu trong Túi (vd. tải lại) thì bổ sung */
-function fixOwn(){for(const id of IDS()){const l=lvOf(id);if(l>0){const i=sci(id,l);if(i>=0&&!ST.own.a.includes(i))ST.own.a.push(i)}}}
+function fixOwn(){for(const id of IDS()){const l=lvOf(id);if(l>0){const i=sci(id,l);if(i>=0&&!OW(id).includes(i))OW(id).push(i)}}}
 
 /* ---------- hình vẽ nhỏ ---------- */
 const rgba=(c,a)=>'rgba('+c+','+a+')';
@@ -167,12 +178,13 @@ function css(){if(document.getElementById('prcss'))return;const s=document.creat
  '.prt{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px;font-weight:900;color:#ffe27a}.prt small{font-size:12px;font-weight:700;color:#e9f6ff}'+
  '.prk{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;margin-top:5px;color:#fff8e0}.ok{color:#a8ffc4;font-weight:800}.no{color:#ffc4c4;font-weight:800}'+
  '.prb{display:block;width:100%;margin-top:7px;padding:7px;border:2px solid #b8861c;border-radius:9px;background:linear-gradient(#fff0a0,#f0b630);color:#4a2a00;font-weight:900;font-size:13px;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.25)}'+
+ '.prv{display:block;margin:4px auto 2px;width:180px;height:184px;max-width:100%;image-rendering:pixelated;background:radial-gradient(ellipse at 50% 88%,rgba(255,255,255,.28),rgba(255,255,255,0) 62%)}'+
  '.prb[disabled]{background:linear-gradient(#cfc8ea,#a79fd0);color:#5a5280;border-color:#8a82b8;cursor:not-allowed;box-shadow:none}';
  document.head.appendChild(s)}
 let tmr=0;
 function prince(){css();fixOwn();const p=P(),L=cardLeft();
  const chip=(ic,have,n)=>'<span>'+ic+' <span class="'+(have>=n?'ok':'no')+'">'+N(have)+'/'+N(n)+'</span></span>';
- const can=u=>p.st>=u.star&&p.sn>=u.snow&&(ST.xu|0)>=u.xu&&(ST.dia|0)>=u.dia;
+ const can=u=>reqOk(u.id)&&p.st>=u.star&&p.sn>=u.snow&&(ST.xu|0)>=u.xu&&(ST.dia|0)>=u.dia;
  let h='<div class="prp" id="prp"><div class="prh"><span>👑 Thái tử Ba Tư</span><button class="b x" onclick="closeUI()">X</button></div>'+
  '<ol class="prg"><li>Thuê <b>Thẻ cuốc</b> 1 giờ ở đây.</li><li>Sang <b>Làng Tuyết</b> đào người tuyết ❄️ và <b>Làng Lễ hội</b> đào ngôi sao ⭐ để nhận mảnh.</li><li>Mang mảnh về đây để nâng cấp vật phẩm.</li></ol>'+
  '<div class="prc"><div class="prt"><span>⛏️ Thẻ cuốc</span><small>Còn lại: <b id="prl">'+(L>0?fmtT(L):'chưa có thẻ')+'</b></small></div>'+
@@ -183,19 +195,33 @@ function prince(){css();fixOwn();const p=P(),L=cardLeft();
   h+='<div class="prs">Mùa '+se+(ids.length?': '+ids.map(id=>rowsOf(id)[0].name).join(', '):'')+'</div>';
   if(!ids.length){h+='<div class="prc soon"><div class="prt" style="justify-content:center">✨ Coming soon</div><div class="prk" style="justify-content:center">Bạn đợi nhé!</div></div>';continue}
   for(const id of ids){const R=rowsOf(id),lv=lvOf(id),nx=R.find(u=>u.lv==lv+1);
-   h+='<div class="prc"><div class="prt"><span>🔱 '+R[0].name+'</span><small>'+(lv?'Cấp '+lv+(nx?'':' (tối đa)'):'Chưa có')+'</small></div>';
+   const rq=reqOf(id),rok=reqOk(id);
+   h+='<div class="prc"><div class="prt"><span>'+(isSet(id)?'🌧️ ':'🔱 ')+R[0].name+'</span><small>'+(lv?'Cấp '+lv+(nx?'':' (tối đa)'):'Chưa có')+'</small></div>';
+   if(isSet(id))h+='<canvas class="prv" width="180" height="184" data-id="'+id+'"></canvas>';
+   if(rq&&!lv)h+='<div class="prk" style="justify-content:center"><span class="'+(rok?'ok':'no')+'">'+(rok?'✔':'🔒')+' Điều kiện: '+rowsOf(rq.id)[0].name+' cấp '+rq.lv+' ('+Math.min(lvOf(rq.id),rq.lv)+'/'+rq.lv+')</span></div>';
    if(nx){h+='<div class="prk">'+chip('⭐',p.st,nx.star)+chip('❄️',p.sn,nx.snow)+(nx.xu?chip('🪙',ST.xu|0,nx.xu):'')+(nx.dia?chip('💎',ST.dia|0,nx.dia):'')+'</div>';
-    h+=nx.lock?'<button class="prb" disabled>🔒 Sắp ra mắt</button>':'<button class="prb" onclick="PERSO.up(\''+id+'\')"'+(can(nx)?'':' disabled')+'>'+(lv?'Nâng lên cấp '+nx.lv:'Ghép vật phẩm')+'</button>'}
+    h+=nx.lock?'<button class="prb" disabled>🔒 Sắp ra mắt</button>':'<button class="prb" onclick="PERSO.up(\''+id+'\')"'+(can(nx)?'':' disabled')+'>'+(lv?'Nâng lên cấp '+nx.lv:(rok?'Ghép vật phẩm':'🔒 Cần '+rowsOf(rq.id)[0].name+' cấp '+rq.lv))+'</button>'}
    else h+='<div class="prk ok">Đã đạt cấp cao nhất</div>';
    h+='</div>'}}
  h+='</div>';
- openUI(h);clearInterval(tmr);tmr=setInterval(()=>{const e=$('prl');if(!UI||!e){clearInterval(tmr);return}const l=cardLeft();e.textContent=l>0?fmtT(l):'chưa có thẻ';if(l<=0&&e.dataset.x!='1'){e.dataset.x='1';prince()}},1000)}
+ openUI(h);startPrv();clearInterval(tmr);tmr=setInterval(()=>{const e=$('prl');if(!UI||!e){clearInterval(tmr);return}const l=cardLeft();e.textContent=l>0?fmtT(l):'chưa có thẻ';if(l<=0&&e.dataset.x!='1'){e.dataset.x='1';prince()}},1000)}
+let prvRaf=0;
+function startPrv(){cancelAnimationFrame(prvRaf);const cs=[...document.querySelectorAll('canvas.prv')];if(!cs.length)return;
+ const loop=()=>{if(!UI||!document.body.contains(cs[0]))return;
+  const t=performance.now()/1000;
+  cs.forEach(c=>{const idx=SETS.findIndex(a=>a.k==c.dataset.id+'1');if(idx<0)return;
+   const g=c.getContext('2d'),ph=Math.floor(t/3.2)%3,d=ph==0?0:ph==1?3:1;
+   g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,c.width,c.height);g.imageSmoothingEnabled=false;
+   g.save();g.scale(4,4);try{drawAv(g,16,14,{d,a:t,mv:1,sit:0,hair:0,set:idx,e:0,acc:-1,wg:-1})}catch(e){}g.restore()});
+  prvRaf=requestAnimationFrame(loop)};
+ loop()}
 function buyCard(){const p=P();if((ST.qv|0)<CARD_PRICE)return toast('Không đủ xu quái vật! Cần '+CARD_PRICE);
  ST.qv-=CARD_PRICE;p.t=Math.max(now(),p.t)+CARD_MS;xuUp();save();toast('⛏️ Đã thuê Thẻ cuốc +1 giờ');prince()}
 function up(id){const p=P(),u=rowsOf(id).find(x=>x.lv==lvOf(id)+1);if(!u||u.lock)return;
+ if(!reqOk(id)){const q=reqOf(id);return toast('Cần nâng '+rowsOf(q.id)[0].name+' lên cấp '+q.lv+' trước')}
  if(!(p.st>=u.star&&p.sn>=u.snow&&(ST.xu|0)>=u.xu&&(ST.dia|0)>=u.dia))return toast('Chưa đủ nguyên liệu');
  p.st-=u.star;p.sn-=u.snow;ST.xu-=u.xu;ST.dia-=u.dia;setLv(id,u.lv);xuUp();save();
- toast(u.lv==1?'🔱 Nhận '+u.name+'!\nMở 🎒 Túi › Phụ kiện để trang bị':'✨ '+u.name+' lên cấp '+u.lv+'!');prince()}
+ toast(u.lv==1?(isSet(id)?'🌧️ Nhận '+u.name+'!\nMở 🎒 Túi › Set để mặc':'🔱 Nhận '+u.name+'!\nMở 🎒 Túi › Phụ kiện để trang bị'):'✨ '+u.name+' lên cấp '+u.lv+'!');prince()}
 
 /* ===== HIỆU ỨNG CẤP 2+ (vẽ ở độ mịn 0.5 pixel game, được phép tràn khung nhân vật) =====
    Muốn chỉnh to/nhỏ vòng tròn: đổi RING_RX / RING_RY ngay dưới đây. */
