@@ -208,14 +208,15 @@ const CL_ITEMS=[
  {k:'phuthuy',n:'Phù Thủy Mộng Mơ',d:'Mũ phù thủy hồng cao, vành rất rộng • Nam nữ đều mặc • Không che mặt',pr:{xu:2000,qv:800,dia:5}},
   {k:'tamm',n:'Tiểu ác ma (Nam)',d:'Tóc trắng ngắn, thái dương nâu, 2 sừng đỏ chớp điện, áo khoác đen thánh giá • Biểu cảm lạnh lùng cố định',pr:{xu:2000,qv:1000,dia:10}},
   {k:'tamf',n:'Tiểu ác ma (Nữ)',d:'Tóc trắng muốt dài, 2 sừng đỏ chớp điện, áo khoác đen thánh giá • Biểu cảm lạnh lùng cố định',pr:{xu:2000,qv:1000,dia:10}},
+ {k:'gaubong',n:'Gấu nâu bông xù',d:'Đồ gấu bông nâu xù, mũ trùm 2 tai tròn, 🐻 trồi lên quanh người • Nam nữ đều mặc • Không che mặt',pr:{xu:2000,qv:1000,dia:5}},
  // m:1 = THÚ CƯỠI (k = khóa trong MOUNTS, lưu ở ST.own.m). Giá 0 thì dòng đó tự ẩn.
  {k:'unicycle',m:1,n:'Xe đạp 1 bánh',d:'Thú cưỡi • Đạp xe 1 bánh cao to, yên đen, vành bạc',pr:{xu:8000,qv:0,dia:0}},
  {k:'skate_orange',m:1,n:'Ván trượt cam',d:'Thú cưỡi • Đứng lướt trên ván cam, bánh xe xanh',pr:{xu:1000,qv:300,dia:2}},
  {k:'skate_clown',m:1,n:'Ván trượt hề',pr:{xu:1000,qv:400,dia:2}},
  {k:'unicycle_blue',m:1,n:'Xe đạp 1 bánh xanh',pr:{xu:8000,qv:0,dia:0}},
  {k:'broom_witch',m:1,n:'Chổi bay phù thủy',d:'Thú cưỡi • Chổi bay dài, ngồi bay lơ lửng trên mặt đất, sao nhỏ treo ở đầu cán',pr:{xu:1000,qv:500,dia:3}}];
-const vtk=k=>k=='hacvt'||k=='bachvt'||k=='phuthuy'||k=='mushm'||k=='mushf'||k=='tamm'||k=='tamf';   // mũ rất cao nên khung xem trước cao hơn
-const wtk=k=>k=='phuthuy'||k=='tamm'||k=='tamf';   // Phù Thủy Mộng Mơ: vành mũ rộng ~32 điểm ảnh nên khung xem trước rộng hơn
+const vtk=k=>k=='hacvt'||k=='bachvt'||k=='phuthuy'||k=='mushm'||k=='mushf'||k=='tamm'||k=='tamf'||k=='gaubong';   // mũ rất cao nên khung xem trước cao hơn
+const wtk=k=>k=='phuthuy'||k=='tamm'||k=='tamf'||k=='gaubong';   // Phù Thủy Mộng Mơ: vành mũ rộng ~32 điểm ảnh nên khung xem trước rộng hơn
 const clTab=k=>{const it=CL_ITEMS.find(x=>x.k==k);return it&&it.m?'m':it&&it.h?'h':'s'};   // m = thú cưỡi, h = tóc, s = set   // m = thú cưỡi, s = set
 const clIdx=k=>{const t=clTab(k);if(t=='m')return MOUNTS.findIndex(x=>x.k==k);if(t=='h'){const q=k.split(':');return HAIRS.findIndex(x=>x.k==q[0]&&x.pc==q[1])}return SETS.findIndex(x=>x.k==k)};
 const clPk=k=>SETS.findIndex(x=>x.k==(/:m$/.test(k||'')?'pinkcoolm':'pinkcool'));   // tóc Pinkcool xem trước bằng Set Pinkcool cùng giới
