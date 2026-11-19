@@ -63,7 +63,7 @@ function tetDraw(R,d,f,b,t,pt,c){
    // ảnh: tâm mặt bệ (ax,ay) đặt tại (0,-13) = chỗ chân người chạm
    for(const [x,y,w,col] of L)RR(col,mir?s.ax-x-w:x-s.ax,y-s.ay-13,w,1);
   }
-  standLegs(RR,d,S,mv,t);
+  // (không vẽ chân ảo nữa: nhân vật đứng thật — cờ stand:1)
  }else{
   // lớp trước: vài cánh hoa rơi nhẹ quanh bệ
   for(let i=0;i<5;i++){
@@ -76,7 +76,7 @@ window.tetDraw=tetDraw;
 
 // đăng ký vào CUỐI mảng MOUNTS (như Trăng khuyết)
 if(typeof MOUNTS!=='undefined'&&!MOUNTS.some(m=>m.k==='tetspring'))
- MOUNTS.push({n:'Bệ Xuân Tết',k:'tetspring',dia:20,hw:12,drop:0,spd:2.4,nobob:1,acc:1,sh:[0,0],seat:{0:[0,-19],1:[0,-19],side:[0,-19]},
+ MOUNTS.push({n:'Bệ Xuân Tết',k:'tetspring',stand:1,dia:20,hw:12,drop:0,spd:2.4,nobob:1,acc:1,sh:[0,0],seat:{0:[0,-19],1:[0,-19],side:[0,-19]},
   legs(){},hov:(t,mv)=>tetHov(t,mv),
   draw(R,d,f,b,t,pt,c){tetDraw(R,d,f,b,t,pt,c)}});
 })();

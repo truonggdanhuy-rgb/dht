@@ -509,7 +509,7 @@ function cakeDraw(R,d,f,b,t,pt,c){
    cakeRoll(RR,-13,-17,t);
    cakeCupcake(RR,15,-11);
   }
-  standLegs(RR,d,S,mv,t)
+  // (không vẽ chân ảo nữa: nhân vật đứng thật, chân tự vẽ theo set/mascot — xem drawRide, cờ stand:1)
  }else{
   // lớp trước: kẹo bọc + kẹo bông bay quanh bệ, lấp lánh
   const A=t*1.3,bobv=rnd(sin(t*2.6)*1.5);
@@ -556,7 +556,7 @@ function wheelDraw(R,d,f,b,t,pt,c){
   // lửa lớp sau (cháy phía sau chân)
   cxs.forEach((cx,i)=>flameBlock(RR,cx,cy-1,rad-1,17,t,i*3.1));
   cxs.forEach(cx=>wheelRing(RR,cx,cy,rad,ang,t));
-  standLegs(RR,d,S,mv,t);
+  // (không vẽ chân ảo nữa: nhân vật đứng thật — cờ stand:1)
  }else{
   // lửa lớp trước: ôm quanh mép trên bánh xe, liếm lên mắt cá chân
   cxs.forEach((cx,i)=>{flameBlock(RR,cx,cy-rad+2,rad-2,8,t,i*4.7+1.3);

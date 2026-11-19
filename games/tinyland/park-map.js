@@ -673,7 +673,7 @@ const hbob=i=>Math.sin(performance.now()/1000*5+i);
 window.cvLiftMe=()=>CV.hz>=0?22+Math.round(Math.abs(hbob(CV.hz))*3):0;
 window.cvRockMe=()=>CV.hz>=0?Math.round(hbob(CV.hz)*3):0;
 // khoảng cách từ chân tới dòng tên: tính theo chỗ ngồi (seat) riêng của từng thú cưỡi + hướng nhìn
-window.tagOff=(m,d)=>{if(m==null||m<0)return 34;const M=MOUNTS[m];if(!M)return 44;const s=M.seat[d>1?'side':d]||M.seat[0];return 28-s[1]};
+window.tagOff=(m,d)=>{if(m==null||m<0)return 34;const M=MOUNTS[m];if(!M)return 44;const s=M.seat[d>1?'side':d]||M.seat[0];return 28-s[1]+(M.stand?1:0)};   // thú cưỡi đứng: +1 vì mặt bệ nhún nhẹ lên (người cao hơn chút) -> tên vẫn cách đầu như đi bộ
 window.cvHeadPos=()=>CV.boat?({x:Math.round(Pl.x),y:Math.round(Pl.y)-36}):({x:Math.round(Pl.x)+cvRockMe(),y:Math.round(Pl.y)-cvLiftMe()-(Pl.sit?34:tagOff(ST.av.m,Pl.d))});
 
 function trySeat(i){const s=CV.seats[i];if(!s||Pl.sit||CV.seat>=0)return;
