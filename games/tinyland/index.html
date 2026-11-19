@@ -2105,7 +2105,7 @@ const MOUNTS=[{n:'Trâu Việt',hw:9,drop:8,spd:1.8,seat:{0:[0,-22],1:[0,-22],si
  draw(R,d,f,b,t,pt,c){if(window.wheelDraw)wheelDraw(R,d,f,b,t,pt,c)}},
 // ===== Xe đạp 1 bánh (8000 Xu ở Tiệm Chú Hề — cl:1 = không hiện ở Shop Phố xá; hình vẽ nằm ở newitems4.js; món mới LUÔN thêm vào CUỐI mảng MOUNTS) =====
 // đi: đạp xe • đứng yên: nghiêng người chống 1 chân (lean = độ nghiêng, hov = hạ người)
-{n:'Xe đạp 1 bánh',k:'unicycle',cl:1,hw:4,drop:0,spd:2.2,nobob:1,sh:[13,9],seat:{0:[0,-24],1:[0,-24],side:[-1,-24]},
+{n:'Xe đạp 1 bánh',k:'unicycle',cl:1,hw:4,drop:0,spd:2.2,nobob:1,sh:[11,8],seat:{0:[0,-15],1:[0,-15],side:[-1,-15]},
  legs(R,d,ph,sx,sy,PT,SD,S,hv,c){if(window.uniLegs)uniLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
  hov:(t,mv)=>window.uniHov?uniHov(t,mv):0,lean:(mv,d)=>window.uniLean?uniLean(mv,d):0,
  draw(R,d,f,b,t,pt,c){if(window.uniDraw)uniDraw(R,d,f,b,t,pt,c)}},
@@ -2121,7 +2121,7 @@ const MOUNTS=[{n:'Trâu Việt',hw:9,drop:8,spd:1.8,seat:{0:[0,-22],1:[0,-22],si
  hov:(t,mv)=>window.skHov?skHov(t,mv):0,lean:(mv,d)=>window.skLean?skLean(mv,d):0,
  draw(R,d,f,b,t,pt,c){if(window.skDraw)skDraw('clown',R,d,f,b,t,pt,c)}},
 // ===== 🚲 Xe đạp 1 bánh xanh dương (8000 Xu ở Tiệm Chú Hề; cùng hình vẽ với xe đen trong newitems4.js, chỉ khác bảng màu 'blue') =====
-{n:'Xe đạp 1 bánh xanh',k:'unicycle_blue',cl:1,hw:4,drop:0,spd:2.2,nobob:1,sh:[13,9],seat:{0:[0,-24],1:[0,-24],side:[-1,-24]},
+{n:'Xe đạp 1 bánh xanh',k:'unicycle_blue',cl:1,hw:4,drop:0,spd:2.2,nobob:1,sh:[11,8],seat:{0:[0,-15],1:[0,-15],side:[-1,-15]},
  legs(R,d,ph,sx,sy,PT,SD,S,hv,c){if(window.uniLegs)uniLegs(R,d,ph,sx,sy,PT,SD,S,hv,c)},
  hov:(t,mv)=>window.uniHov?uniHov(t,mv):0,lean:(mv,d)=>window.uniLean?uniLean(mv,d):0,
  draw(R,d,f,b,t,pt,c){if(window.uniDraw)uniDraw(R,d,f,b,t,pt,c,'blue')}},
@@ -6764,7 +6764,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="newitems2.js?v=20261116"></script>
 <script src="baby.js?v=20261219"></script>
 <script src="newitems3.js?v=20261211"></script>
-<script src="newitems4.js?v=20261117"></script>
+<script src="newitems4.js?v=20261119"></script>
 <script src="skate.js?v=20261118"></script>
 <script src="balo.js?v=20261203"></script>
 <script src="duoi.js?v=20261219"></script>
