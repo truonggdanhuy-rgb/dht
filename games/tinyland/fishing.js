@@ -170,6 +170,9 @@ function put(g,id,x,y,w,t,fx){const s=get(id),h=Math.round(w*s.height/s.width),m
 const bag=()=>{ST.qvm=(ST.qvm&&typeof ST.qvm=='object'&&!Array.isArray(ST.qvm))?ST.qvm:{};
  for(const o in OLD_ID){if(o in ST.qvm){ST.qvm[OLD_ID[o]]=(ST.qvm[OLD_ID[o]]|0)+(ST.qvm[o]|0);delete ST.qvm[o]}}
  return ST.qvm};
+const hist=()=>{ST.qvh=(ST.qvh&&typeof ST.qvh=='object'&&!Array.isArray(ST.qvh))?ST.qvh:{};
+ for(const o in OLD_ID){if(o in ST.qvh){ST.qvh[OLD_ID[o]]=(ST.qvh[OLD_ID[o]]|0)+(ST.qvh[o]|0);delete ST.qvh[o]}}
+ return ST.qvh};
 const total=()=>Object.values(bag()).reduce((a,b)=>a+(b|0),0);
 const MQ=window.MQ={};
 MQ.items=()=>{const b=bag();const L=MON.map((m,i)=>({n:m.n,idx:i,r:m.r,c:b[m.id]|0})).filter(x=>x.c>0).sort((a,b)=>b.r-a.r||a.idx-b.idx).map(x=>({n:x.n,idx:x.idx,sm:'x'+x.c}));
@@ -253,7 +256,8 @@ setInterval(()=>{const n=Date.now();
  sunHud()},1000);
 
 // ---------- CSS ----------
-{const s=document.createElement('style');s.textContent='#mqb{position:relative;width:30px;flex:none;background:#d9c28a;border:2px solid #7a4a26;opacity:.4}#mqb.on{opacity:1}#mqz{position:absolute;left:0;right:0;background:#5fe36a;box-shadow:0 0 10px #c8ff8a inset,0 0 8px #8dff7a;display:none}#mqk{position:absolute;left:-5px;right:-5px;height:6px;margin-top:-3px;background:#fff;border:1px solid #333;display:none}.mqr{display:flex;align-items:center;gap:8px}.mqr canvas{width:54px;height:44px;image-rendering:pixelated;background:#cfeeff;border:1px solid #c9a06a;flex:none}.mqr .t{flex:1;min-width:0;font-size:12px;line-height:1.3}.mqr .bt{display:flex;flex-direction:column;gap:3px}';document.head.appendChild(s)}
+{const s=document.createElement('style');s.textContent='#mqb{position:relative;width:30px;flex:none;background:#d9c28a;border:2px solid #7a4a26;opacity:.4}#mqb.on{opacity:1}#mqz{position:absolute;left:0;right:0;background:#5fe36a;box-shadow:0 0 10px #c8ff8a inset,0 0 8px #8dff7a;display:none}#mqk{position:absolute;left:-5px;right:-5px;height:6px;margin-top:-3px;background:#fff;border:1px solid #333;display:none}.mqr{display:flex;align-items:center;gap:8px}.mqr canvas{width:54px;height:44px;image-rendering:pixelated;background:#cfeeff;border:1px solid #c9a06a;flex:none}.mqr .t{flex:1;min-width:0;font-size:12px;line-height:1.3}.mqr .bt{display:flex;flex-direction:column;gap:3px}'+
+'.fbgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}.fbcard{background:#fff8e6;border:1.5px solid #c9a06a;border-radius:8px;padding:6px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px}.fbcard.none{opacity:.76;background:#f5ecd4}.fbcard canvas{width:64px;height:48px;image-rendering:pixelated;background:#d8f1ff;border:1px solid #8bb8cf;border-radius:6px}.fbcard .fn{font-size:12px;font-weight:800;line-height:1.2;color:#3a2412}.fbcard .fr{font-size:10px;font-weight:800;padding:1px 6px;border-radius:6px;background:#e6f4ff;color:#1b6288}.fbcard .fr.r1{background:#fff1c2;color:#9a5f00}.fbcard .fr.r2{background:#ffe0f4;color:#991a6d}.fbcard .fs{font-size:11px;line-height:1.35;color:#5a3d24;margin-top:1px}';document.head.appendChild(s)}
 
 // ============================================================
 //  KHUNG CÂU
@@ -303,8 +307,8 @@ function startBite(){F.ph='bite';F.t=0;const R=RAR[F.rar];F.zone=R.zone;F.zx=rr(
 const markPos=()=>Math.abs(((F.t*F.spd+F.p0)%2)-1);
 function hideBar(){const z=$('mqz'),k=$('mqk'),b=$('mqb');if(z)z.style.display='none';if(k)k.style.display='none';if(b)b.classList.remove('on')}
 function pull(){const p=markPos(),ok=p>=F.zx-.015&&p<=F.zx+F.zone+.015;
- if(ok){const m=F.mon,b=bag();b[m.id]=(b[m.id]|0)+1;try{tnProg('mon')}catch(e){}let bonus='';try{const zn=window.seaZoneHere&&seaZoneHere();if(zn&&Math.random()<ZB)bonus=giveBonus()}catch(e){}try{save()}catch(e){}
-  try{sunCatch()}catch(e){}let broke=false;try{broke=rodRoll()}catch(e){}F.ph='win';F.t=0;F.parts=[];for(let i=0;i<(m.r==2?46:m.r==1?18:9);i++)F.parts.push({a:rr(0,6.283),v:rr(20,m.r==2?70:46),l:rr(.5,1.3),t:0,c:m.r==2?['#fff','#ffe27a','#ffcf3a','#ffb0e8'][i%4]:m.r==1?'#ffe27a':'#bfe8ff'});
+ if(ok){const m=F.mon,b=bag(),h=hist();b[m.id]=(b[m.id]|0)+1;h[m.id]=(h[m.id]|0)+1;try{tnProg('mon')}catch(e){}let bonus='';try{const zn=atSea()&&window.seaZoneHere&&seaZoneHere();if(zn&&Math.random()<ZB)bonus=giveBonus()}catch(e){}try{save()}catch(e){}
+  try{if(atSea())sunCatch()}catch(e){}let broke=false;try{broke=rodRoll()}catch(e){}F.ph='win';F.t=0;F.parts=[];for(let i=0;i<(m.r==2?46:m.r==1?18:9);i++)F.parts.push({a:rr(0,6.283),v:rr(20,m.r==2?70:46),l:rr(.5,1.3),t:0,c:m.r==2?['#fff','#ffe27a','#ffcf3a','#ffb0e8'][i%4]:m.r==1?'#ffe27a':'#bfe8ff'});
   F.rip.push({x:HX,t:0});hideBar();
   say('🎉 Câu được <b style="color:'+RAR[m.r].col+';text-shadow:0 0 1px #000">'+m.n+'</b> ('+RAR[m.r].n.toLowerCase()+')!<br><small>Đã vào Túi › Biển • bán ở Shop quái vật: '+m.p+' xu quái vật</small>'+(bonus?'<br>'+bonus:'')+(broke?'<br><b style="color:#c4382e">🔧 Cần câu bị hư rồi!</b>':''),'#2a7a2a');
   const bt=$('mqg');if(bt)bt.textContent='🎣 CÂU TIẾP';cnt();rodBtn();
@@ -411,13 +415,28 @@ MQ.shop=()=>{if(window.bnShop)window.bnShop();else closeUI()};
 // ============================================================
 //  CẦN CÂU MỚI (canca.js) dùng chung các hàm bên trong file này
 // ============================================================
-function award(m){   // câu trúng 1 quái: vào Túi, nhiệm vụ, quà vùng tối, rát da, cần hư (giống cách cũ)
- const b=bag();b[m.id]=(b[m.id]|0)+1;try{tnProg('mon')}catch(e){}
- let bonus=false;try{const zn=window.seaZoneHere&&seaZoneHere();if(zn&&Math.random()<ZB){giveBonus();bonus=true}}catch(e){}
- try{save()}catch(e){}try{sunCatch()}catch(e){}let broke=false;try{broke=rodRoll()}catch(e){}
+function award(m){   // câu trúng 1 quái: vào Túi, lịch sử Fishbook, nhiệm vụ, quà vùng tối (chỉ ngoài biển), rát da (chỉ ngoài biển), cần hư
+ const b=bag(),h=hist();b[m.id]=(b[m.id]|0)+1;h[m.id]=(h[m.id]|0)+1;try{tnProg('mon')}catch(e){}
+ let bonus=false;if(atSea()){try{const zn=window.seaZoneHere&&seaZoneHere();if(zn&&Math.random()<ZB){giveBonus();bonus=true}}catch(e){}}
+ try{save()}catch(e){}if(atSea()){try{sunCatch()}catch(e){}}let broke=false;try{broke=rodRoll()}catch(e){}
  if(m.r==2)toast('✨🐢 WOW! Bạn câu được KIM QUY huyền thoại!');if(broke)toast('🔧 Cần câu bị hư! Sửa tốn '+ROD_FIX+' xu quái vật');
  return{bonus,broke}}
-MQ.core={ART,mkS,MON,RAR,rollMon,award,shadow,put,fxGold,burning,atSea,rodBroken,ROD_FIX,sunHud};
+MQ.fishbookUI=()=>{F=null;const b=bag(),h=hist();
+ const rows=MON.map((m,i)=>{const own=b[m.id]|0,caught=Math.max(h[m.id]|0,own);return{m,i,own,caught}}).sort((a,c)=>a.m.r-c.m.r||a.i-c.i);
+ const unlocked=rows.filter(x=>x.caught>0).length,sumCaught=rows.reduce((s,x)=>s+x.caught,0);
+ let html=head('📖 Fishbook ('+unlocked+'/'+rows.length+' loài)')+
+  '<div class="mut" style="text-align:center">Tổng đã câu: <b>'+sumCaught+' con</b> • Đang giữ: <b>'+total()+' con</b></div>'+
+  '<div class="fbgrid">'+rows.map(x=>{
+   const m=x.m,rcls=m.r==2?'r2':m.r==1?'r1':'';
+   return '<div class="fbcard'+(x.caught?'':' none')+'">'+
+    '<canvas class="mqf" data-id="'+m.id+'" width="64" height="48"></canvas>'+
+    '<div class="fn">'+m.n+'</div>'+
+    '<div class="fr '+rcls+'">'+RAR[m.r].n+' • '+m.p+' xu</div>'+
+    '<div class="fs">Đang có: <b>'+x.own+'</b><br>Đã câu được: <b>'+x.caught+' con</b></div>'+
+   '</div>'}).join('')+'</div>';
+ openUI(html);
+ document.querySelectorAll('canvas.mqf').forEach(c=>{const g=c.getContext('2d'),ix=idxOf(c.dataset.id);if(ix>=0)put(g,c.dataset.id,32,24,MON[ix].r==2?48:36,0,false)})};
+MQ.core={ART,mkS,MON,RAR,rollMon,award,shadow,put,fxGold,burning,atSea,rodBroken,ROD_FIX,sunHud,hist};
 })();
 
 /* ============================================================

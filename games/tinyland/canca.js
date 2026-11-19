@@ -56,8 +56,10 @@ function rodDraw(R,hy,o){
  return[Math.round(tx),hy+Math.round(ty)]}
 // cầm khi đi bộ ngoài đất liền (hàm art của ACCS) — cần chỉa nhẹ ra ngoài, không che mặt/tóc
 function landArt(P,i){
- const side=P.side,R=side?(c,x,y,w,h)=>P.R(c,x+2,y,w,h):P.R;
- rodDraw(R,P.hy,{i,th:side?TH_SIDE:TH_FRONT,bd:.6*Math.sin(P.t*1.8)})}
+ const side=P.side,me=!!(P.o&&P.o._me),dxOff=side?2:0,R=side?(c,x,y,w,h)=>P.R(c,x+2,y,w,h):P.R;
+ const p=me?pose():{dth:0,bd:.6*Math.sin(P.t*1.8)};
+ const tp=rodDraw(R,P.hy,{i,th:(side?TH_SIDE:TH_FRONT)+p.dth,bd:p.bd});
+ if(me&&P.xy&&P.o._wx!=null){const[px,py]=P.xy(tp[0]+dxOff,tp[1]);S.tip={x:P.o._wx+px,y:P.o._wy+py}}}
 
 // ============================================================
 //  PHAO + DÂY + SÓNG (vẽ trực tiếp lên cx, toạ độ thế giới)
@@ -78,7 +80,8 @@ function thinLine(x0,y0,x1,y1,sag){cx.fillStyle='rgba(255,255,255,.82)';
 //  TRẠNG THÁI CÂU
 //  idle -> cast (vụt cần, phao bay) -> wait -> shadow (bóng cá lại gần) -> nib (rỉa) -> bite (cắn! bấm KÉO) -> reel -> idle
 // ============================================================
-const S={ph:'idle',t:0,fx:0,fy:0,dir:1,mon:null,rar:0,sh:null,dip:0,rip:[],nb:0,wait:0,tip:null,rel:null,rx:0,ry:0,res:null,last:performance.now(),rt:0};
+const S={ph:'idle',t:0,fx:0,fy:0,dir:1,mon:null,rar:0,sh:null,dip:0,rip:[],nb:0,wait:0,tip:null,rel:null,rx:0,ry:0,res:null,last:performance.now(),rt:0,mode:'sea'};
+const atPond=()=>{try{if(typeof MAP==='undefined'||MAP!=='nt'||!window.POND_NT||Pl.sit||ST.av.m>=0)return false;const P=window.POND_NT,dx=Math.max(P.x-Pl.x,0,Pl.x-(P.x+P.w)),dy=Math.max(P.y-Pl.y,0,Pl.y-(P.y+P.h));return Math.hypot(dx,dy)<=28}catch(e){return false}};
 const reset=()=>{S.ph='idle';S.t=0;S.sh=null;S.rip=[];S.dip=0;S.res=null;S.tip=null};
 const tipNow=()=>S.tip||{x:Pl.x+S.dir*16,y:Pl.y-30};
 function floatPos(){   // [x,y,air]
@@ -118,12 +121,21 @@ function seaDraw(rx,ry,dir,stand,i){
 //  HÀNH ĐỘNG
 // ============================================================
 function cast(){
- if(C.burning())return toast('☀️ Da đang rát, chưa câu được');
- if(Pl.mv||(typeof goal!=='undefined'&&goal))return toast('⛵ Dừng thuyền lại rồi hãy quăng cần nhé');
- const dir=CV.bdir||1,sol=window.cvBoatSolid;let fx=0,fy=0,ok=false;
- for(const d of DIST){const x=Pl.x+dir*d,y=Pl.y+5;if(!(sol&&(sol(x,y)||sol(x+dir*10,y)))){fx=x;fy=y;ok=true;break}}
- if(!ok)return toast('🏝️ Phía trước sát bờ rồi, lái ra chỗ nước thoáng rồi quăng nhé');
- S.ph='cast';S.t=0;S.fx=fx;S.fy=fy;S.dir=dir;S.sh=null;S.mon=null;S.dip=0;S.rip=[];S.rel=null}
+ const sea=C.atSea(),pond=!sea&&atPond();
+ if(!sea&&!pond)return;
+ if(sea&&C.burning())return toast('☀️ Da đang rát, chưa câu được');
+ if(Pl.mv||(typeof goal!=='undefined'&&goal))return toast(sea?'⛵ Dừng thuyền lại rồi hãy quăng cần nhé':'🚶 Đứng yên lại rồi hãy quăng cần nhé');
+ if(sea){
+  const dir=CV.bdir||1,sol=window.cvBoatSolid;let fx=0,fy=0,ok=false;
+  for(const d of DIST){const x=Pl.x+dir*d,y=Pl.y+5;if(!(sol&&(sol(x,y)||sol(x+dir*10,y)))){fx=x;fy=y;ok=true;break}}
+  if(!ok)return toast('🏝️ Phía trước sát bờ rồi, lái ra chỗ nước thoáng rồi quăng nhé');
+  S.mode='sea';S.fx=fx;S.fy=fy;S.dir=dir;
+ }else{
+  const P=window.POND_NT,dx=P.cx-Pl.x,dy=P.cy-Pl.y;
+  Pl.d=Math.abs(dx)>Math.abs(dy)?(dx<0?2:3):(dy<0?1:0);
+  S.mode='pond';S.fx=P.cx+rr(-2,2);S.fy=P.cy+rr(-1,1);S.dir=dx>=0?1:-1;
+ }
+ S.ph='cast';S.t=0;S.sh=null;S.mon=null;S.dip=0;S.rip=[];S.rel=null}
 function startReel(msg){
  if(msg)toast(msg);
  const f=floatPos();S.rx=f[0];S.ry=f[1];S.ph='reel';S.t=0;S.dip=0;if(S.sh)S.sh.flee=1}
@@ -134,7 +146,7 @@ function pullOK(){
  toast('🎉 Câu được '+ic+m.n+' ('+RA.n.toLowerCase()+')!\nĐã vào Túi › Biển • bán '+m.p+' xu quái vật'+(r.bonus?'\n🎁 Quà vùng nước tối đã vào Kho/Túi':'')+(r.broke?'\n🔧 Cần câu bị hư! Sửa tốn '+C.ROD_FIX+' xu quái vật':''));
  startReel();S.rx=S.fx;S.ry=S.fy}
 function act(){
- if(!C.atSea())return;
+ if(!C.atSea()&&!atPond())return;
  if(eq()<0)return hint(true);
  const p=S.ph;
  if(C.rodBroken()&&(p=='idle'||p=='reel'))return MQ.repair();
@@ -142,7 +154,14 @@ function act(){
  if(p=='bite')return pullOK();
  if(p=='wait'||p=='shadow'||p=='nib')return startReel(p=='wait'?'':'💨 Kéo sớm quá, cá sợ bơi mất!')}
 RODX.act=act;RODX.S=S;
-addEventListener('keydown',e=>{if(e.repeat||!(e.key=='e'||e.key=='E'))return;if(typeof UI!=='undefined'&&UI)return;const t=e.target&&e.target.tagName;if(t=='INPUT'||t=='TEXTAREA')return;act()});
+RODX.pondAct=()=>{
+ if(ST.av.m>=0)return toast('🐴 Xuống khỏi thú cưỡi rồi hãy câu ở Hồ câu nhé');
+ if(Pl.sit)return toast('🪑 Đứng dậy rồi hãy câu ở Hồ câu nhé');
+ if(!atPond())return toast('🎣 Tiến lại gần Hồ câu rồi mới quăng cần được nhé');
+ if(eq()<0)return hint(true);
+ Pl.mv=0;if(typeof goal!=='undefined')goal=null;
+ act()};
+addEventListener('keydown',e=>{if(e.repeat||!(e.key=='e'||e.key=='E'))return;if(typeof UI!=='undefined'&&UI)return;const t=e.target&&e.target.tagName;if(t=='INPUT'||t=='TEXTAREA')return;if(C.atSea())act()});
 
 // ============================================================
 //  CẬP NHẬT (mỗi khung hình khi đang vẽ thuyền ngoài biển)
@@ -171,22 +190,36 @@ function step(dt){
   S.dip=Math.min(8,S.dip+dt*30);s.x=S.fx-s.dir*([7,12,19][S.rar]+2)+Math.sin(S.t*30)*1.2;s.y=S.fy+3+Math.sin(S.t*22)*1.2;
   S.bt=(S.bt||0)+dt;if(S.bt>.16){S.bt=0;S.rip.push({x:S.fx,y:S.fy,t:.3})}
   if(S.t>FT[S.rar].win){toast('💨 Chậm quá, cá nhả mồi bơi mất. Quăng lại nhé!');startReel()}}
- else if(p=='reel'&&S.t>=.45){S.ph='idle';S.t=0}}
+ else if(p=='reel'&&S.t>=.45){S.ph='idle';S.t=0}
+ if(S.mode==='pond'&&window.POND_NT&&s){
+  const P=window.POND_NT;
+  s.x=Math.max(P.x0+8,Math.min(P.x1-8,s.x));
+  s.y=Math.max(P.y0+7,Math.min(P.y1-7,s.y));
+ }}
 function spawn(){
- const m=C.rollMon();S.mon=m;S.rar=m.r;const side=Math.random()<.5?-1:1,sx=S.fx+side*56,sy=S.fy+rr(-10,12);
+ const m=C.rollMon();S.mon=m;S.rar=m.r;const side=Math.random()<.5?-1:1;
+ let sx=S.fx+side*56,sy=S.fy+rr(-10,12);
+ if(S.mode==='pond'&&window.POND_NT){
+  const P=window.POND_NT;
+  sx=Math.max(P.x0+14,Math.min(P.x1-14,S.fx+side*32));
+  sy=Math.max(P.y0+10,Math.min(P.y1-10,S.fy+rr(-9,9)));
+ }
  S.sh={x:sx,y:sy,fx:sx,fy:sy,a:0,dir:-side};S.ph='shadow';S.t=0}
 
 // ============================================================
-//  VẼ TRONG THẾ GIỚI (sau khi thuyền + nhân vật đã vẽ)
+//  VẼ TRONG THẾ GIỚI (sau khi thuyền + nhân vật đã vẽ; hoặc trên Hồ câu)
 // ============================================================
-function draw(tm){
- const i=Math.max(0,eq()),p=S.ph,s=S.sh;
+function drawWater(tm){
+ const p=S.ph,s=S.sh;
  if(s&&p!='idle'||s&&s.flee)C.shadow(cx,s.x,s.y,S.rar,s.dir,s.a,tm);          // bóng cá dưới nước
  if(p!='idle'){
   // sóng gợn quanh phao khi có cá lại gần
   if(p=='shadow'||p=='nib'||p=='bite'){const k=p=='bite'?1.5:1;
    ring(S.fx,S.fy,(5+2*Math.sin(tm*5))*k,.34);ring(S.fx,S.fy,(8+3*Math.sin(tm*4+1))*k,.2)}
-  for(const q of S.rip)ring(q.x,q.y,2+q.t*14,.8*(1-q.t/1.1));
+  for(const q of S.rip)ring(q.x,q.y,2+q.t*14,.8*(1-q.t/1.1))}}
+function drawUpper(tm){
+ const i=Math.max(0,eq()),p=S.ph;
+ if(p!='idle'){
   // dây (mỏng) + phao
   const f=floatPos(),tp=tipNow(),fy=f[1]-f[2]+(p=='cast'||p=='reel'?0:S.dip);
   const sag=p=='bite'?1.5:p=='cast'||p=='reel'?5:4;
@@ -202,11 +235,25 @@ function draw(tm){
   if(u>=1){cx.font='bold 10px Nunito,"Segoe UI",Arial,sans-serif';cx.textAlign='center';cx.lineJoin='round';cx.lineWidth=3;cx.strokeStyle='#14233a';
    const ly=Math.round(y-w*.4-8);cx.strokeText(m.n,Math.round(x),ly);cx.fillStyle=RAR[m.r].col;cx.fillText(m.n,Math.round(x),ly)}
   cx.restore()}}
+function draw(tm){drawWater(tm);drawUpper(tm)}
 function world(){
  const n=performance.now();let dt=Math.min(.05,(n-S.last)/1000||0);S.last=n;
  if(typeof UI!=='undefined'&&UI)dt=0;                                           // mở Túi/Shop thì tạm dừng
  if(S.ph=='idle'&&!S.sh&&!S.res)return;
  step(dt);draw(n/1000)}
+window.cancaPondGround=tm=>{
+ if(S.mode!=='pond'||!window.POND_NT)return;
+ if(S.ph=='idle'&&!S.sh&&!S.rip.length)return;
+ const P=window.POND_NT;
+ cx.save();cx.beginPath();cx.rect(P.x0,P.y0,P.x1-P.x0,P.y1-P.y0);cx.clip();
+ drawWater(tm);
+ cx.restore()};
+window.cancaLandTick=tm=>{
+ const n=performance.now();let dt=Math.min(.05,(n-S.last)/1000||0);S.last=n;
+ if(typeof UI!=='undefined'&&UI)dt=0;
+ if(S.mode!=='pond')return;
+ if(S.ph=='idle'&&!S.sh&&!S.res)return;
+ step(dt);drawUpper(tm)};
 {const bm0=window.cvBoatMe;
  if(typeof bm0==='function')window.cvBoatMe=function(){S.tip=null;const r=bm0.apply(this,arguments);try{if(typeof MAP!=='undefined'&&MAP=='bn'&&CV.boat)world()}catch(e){console.warn('canca',e)}return r}}
 
@@ -228,11 +275,11 @@ function paintRod(g,c,i){
   if(!(ix>=ROD_ID&&ix<ROD_ID+RODS.length))return hd0(ix);
   const i=ix-ROD_ID,A=ST.av,ai=rodIx(i);if(ai<0)return;
   if(A.a===ai){const pv=ST.rodPrev;A.a=(pv>=0&&pv!==ai&&ST.own&&ST.own.a&&ST.own.a.includes(pv))?pv:-1;ST.rodPrev=-1;toast('🎒 Đã cất '+RODS[i].n)}
-  else{ST.rodPrev=A.a;A.a=ai;try{MQ.clear()}catch(e){}toast('🎣 Đang cầm '+RODS[i].n+'\nLên thuyền ra biển, bấm nút tròn bên phải để quăng cần'+(A.m>=0?'\n(Xuống khỏi thú cưỡi thì cần mới hiện)':''))}
+  else{ST.rodPrev=A.a;A.a=ai;try{MQ.clear()}catch(e){}toast('🎣 Đang cầm '+RODS[i].n+'\nLên thuyền ra biển hoặc tới Hồ câu (nông trại), bấm nút tròn bên phải để quăng cần'+(A.m>=0?'\n(Xuống khỏi thú cưỡi thì cần mới hiện)':''))}
   try{save()}catch(e){}try{bagUI()}catch(e){}}}
 
 // ============================================================
-//  NÚT TRÒN QUĂNG / KÉO (bên phải màn hình, chỉ hiện khi đang trên thuyền ngoài biển)
+//  NÚT TRÒN QUĂNG / KÉO (ngoài biển + cạnh Hồ câu) + NÚT FISHBOOK (map Biển)
 // ============================================================
 {const st=document.createElement('style');
  st.textContent='#rodbtn{position:fixed;right:max(14px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);width:80px;height:80px;border-radius:50%;z-index:25;display:none;flex-direction:column;align-items:center;justify-content:center;padding:0;font:900 13px Nunito,"Segoe UI",Arial,sans-serif;color:#3a2412;background:radial-gradient(circle at 35% 28%,#fff7cc,#ffd75a 72%);border:3px solid #7a4a26;box-shadow:0 4px 0 #7a4a26,0 7px 12px rgba(0,0,0,.28);touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer;-webkit-tap-highlight-color:transparent}'+
@@ -241,18 +288,28 @@ function paintRod(g,c,i){
  '#rodbtn.w{background:radial-gradient(circle at 35% 28%,#f0f8ff,#9fd0f0 72%)}'+
  '#rodbtn.b{background:radial-gradient(circle at 35% 28%,#ffd6cc,#ff5a3c 72%);color:#fff;text-shadow:0 1px 0 #8a2010;animation:rodp .26s infinite alternate}'+
  '#rodbtn.off{filter:grayscale(.85);opacity:.72}'+
- '@keyframes rodp{from{transform:translateY(-50%) scale(1)}to{transform:translateY(-50%) scale(1.13)}}';
+ '@keyframes rodp{from{transform:translateY(-50%) scale(1)}to{transform:translateY(-50%) scale(1.13)}}'+
+ '#fishbook-btn{position:fixed;right:calc(52px + env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:25;display:none;align-items:center;gap:5px;padding:7px 11px;border-radius:10px;font:800 12.5px Nunito,"Segoe UI",Arial,sans-serif;color:#3a2412;background:linear-gradient(180deg,#fff7d6,#f4ce78);border:2.5px solid #7a4a26;box-shadow:0 3px 0 #4e2f16,0 5px 10px rgba(0,0,0,.22);cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}'+
+ '#fishbook-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #4e2f16}';
  document.head.appendChild(st);
  const B=document.createElement('button');B.id='rodbtn';B.type='button';B.innerHTML='<span class="ic">🎣</span><span class="tx">QUĂNG</span>';
  B.onpointerdown=e=>{e.preventDefault();e.stopPropagation();act();upd()};document.body.appendChild(B);
+ const FB=document.createElement('button');FB.id='fishbook-btn';FB.type='button';FB.innerHTML='<span>📖</span><span>Fishbook</span>';
+ ['pointerdown','pointerup','touchstart'].forEach(ev=>FB.addEventListener(ev,e=>e.stopPropagation()));
+ FB.onclick=e=>{e.preventDefault();e.stopPropagation();if(MQ.fishbookUI)MQ.fishbookUI();upd()};
+ document.body.appendChild(FB);
  let lk='',hinted=0;
  function upd(){
-  const sea=C.atSea(),show=sea&&!(typeof UI!=='undefined'&&UI);
-  if(!sea){if(S.ph!='idle'||S.sh||S.res)reset();hinted=0}
+  const sea=C.atSea(),pond=!sea&&atPond(),canZone=sea||pond,uiOpen=typeof UI!=='undefined'&&UI;
+  const fmodeOn=typeof FMODE!=='undefined'&&FMODE;
+  const show=canZone&&!uiOpen&&!(pond&&fmodeOn);
+  const showFB=typeof MAP!=='undefined'&&MAP==='bn'&&!uiOpen;
+  FB.style.display=showFB?'inline-flex':'none';
+  if(!canZone||(pond&&fmodeOn)){if(S.ph!='idle'||S.sh||S.res)reset();hinted=0}
   else{
    if(S.ph!='idle'&&eq()<0){reset();toast('🎒 Bạn đã cất cần câu')}
-   else if(S.ph!='idle'&&S.ph!='reel'&&Pl.mv)startReel('⛵ Thuyền di chuyển nên cần được thu về')
-   if(!hinted&&eq()<0){hinted=1;hint(true)}}
+   else if(S.ph!='idle'&&S.ph!='reel'&&Pl.mv)startReel(sea?'⛵ Thuyền di chuyển nên cần được thu về':'🚶 Bạn di chuyển nên cần được thu về')
+   if(sea&&!hinted&&eq()<0){hinted=1;hint(true)}}
   B.style.display=show?'flex':'none';if(!show)return;
   const p=S.ph;let cls='',ic='🎣',tx='QUĂNG';
   if(eq()<0){cls='off';tx='Chưa có cần'}
