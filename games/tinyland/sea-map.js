@@ -451,7 +451,8 @@ const dockSpot=()=>({x:PIER.x1+44,y:Math.round((PIER.y0+PIER.y1)/2)});
 const mirror=(x,dir,fn)=>{cx.save();cx.translate(x,0);if(dir<0)cx.scale(-1,1);cx.translate(-x,0);fn();cx.restore()};
 
 // cần câu cắm bên cạnh mạn thuyền (chỉ để trang trí — không có món "cần câu")
-function seaRod(x,yy,dir,tm,ox){mirror(x,dir,()=>{ox=ox|0;   // ox: dời chân cần câu ra phía đuôi (Thuyền tre dùng -11)
+function seaRod(x,yy,dir,tm,ox){if(window.RODX)return;   // canca.js đã nạp: nhân vật tự cầm cần, bỏ cần cắm trang trí
+ mirror(x,dir,()=>{ox=ox|0;   // ox: dời chân cần câu ra phía đuôi (Thuyền tre dùng -11)
  const bx=x-9+ox,by=yy-5,tx=x-26+ox,ty=yy-33,bo=Math.round(Math.sin(tm*3+x));
  line(r,'#5e3f20',bx,by,tx,ty,2);line(r,'#a9844c',bx,by-1,tx,ty-1,1);
  r('#6a6a72',bx+1,by-5,3,3);r('#d8d8e0',bx+1,by-5,1,1);r('#ffd23f',tx-1,ty-1,2,2);

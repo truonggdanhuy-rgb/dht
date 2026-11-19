@@ -415,4 +415,15 @@ MQ.sellAll=()=>{const b=bag();let sum=0,n=0;for(const m of MON){const c=b[m.id]|
  if((b[KQ_ID]|0)>0&&!(SC=='all'&&performance.now()<SCT)){SC='all';SCT=performance.now()+4000;toast('⚠️ Trong túi có Kim Quy! Bấm lần nữa để bán tất cả');return}
  for(const m of MON)b[m.id]=0;ST.qv=(ST.qv|0)+sum;SC=null;try{xuUp()}catch(e){}try{save()}catch(e){}toast('💰 Bán '+n+' quái vật → +'+fmtXu(sum)+' Xu quái vật');MQ.sellUI()};
 MQ.shop=()=>{if(window.bnShop)window.bnShop();else closeUI()};
+
+// ============================================================
+//  CẦN CÂU MỚI (canca.js) dùng chung các hàm bên trong file này
+// ============================================================
+function award(m){   // câu trúng 1 quái: vào Túi, nhiệm vụ, quà vùng tối, rát da, cần hư (giống cách cũ)
+ const b=bag();b[m.id]=(b[m.id]|0)+1;try{tnProg('mon')}catch(e){}
+ let bonus=false;try{const zn=window.seaZoneHere&&seaZoneHere();if(zn&&Math.random()<ZB){giveBonus();bonus=true}}catch(e){}
+ try{save()}catch(e){}try{sunCatch()}catch(e){}let broke=false;try{broke=rodRoll()}catch(e){}
+ if(m.r==2)toast('✨🐢 WOW! Bạn câu được KIM QUY huyền thoại!');if(broke)toast('🔧 Cần câu bị hư! Sửa tốn '+ROD_FIX+' xu quái vật');
+ return{bonus,broke}}
+MQ.core={MON,RAR,rollMon,award,shadow,put,fxGold,burning,atSea,rodBroken,ROD_FIX,sunHud};
 })();
