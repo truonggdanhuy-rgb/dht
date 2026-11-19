@@ -3756,13 +3756,14 @@ function cdToggle(){const w=$('cdw');w.style.display=w.style.display=='flex'?'no
 function cdGo(){const v=($('cdi').value||'').trim().toLowerCase();
  if(v=='huyhuy03'){ST.codes=(ST.codes&&typeof ST.codes=='object')?ST.codes:{};
   // code vĩnh viễn: nhập bao nhiêu lần cũng được, lần nào cũng nhận thưởng
-  ST.codes.huyhuy03=(ST.codes.huyhuy03|0)+1;window.IDNOEARN=1;ST.xu+=10000;window.IDNOEARN=0;ST.qv=(ST.qv|0)+5000;ST.pr=(ST.pr&&typeof ST.pr=='object')?ST.pr:{};ST.pr.st=(ST.pr.st|0)+100;ST.pr.sn=(ST.pr.sn|0)+100;
-  xuUp();save();closeUI();return toast('🔑 Nhập code thành công!\n+10000 Xu • +5000 xu quái vật\n+100 ⭐ mảnh sao • +100 ❄️ mảnh tuyết')}
+  ST.codes.huyhuy03=(ST.codes.huyhuy03|0)+1;window.IDNOEARN=1;ST.xu+=80000;window.IDNOEARN=0;ST.qv=(ST.qv|0)+5000;ST.sb=(ST.sb|0)+50;
+  ST.pr=(ST.pr&&typeof ST.pr=='object')?ST.pr:{};ST.pr.st=(ST.pr.st|0)+50;ST.pr.sn=(ST.pr.sn|0)+50;
+  tiEnsure().tk+=50;tnEnsure().tk+=50;
+  xuUp();save();closeUI();return toast('🔑 Nhập code thành công!\n+80000 Xu • +5000 xu quái vật • +50 ❄️ huy hiệu tuyết\n+50 ⭐ mảnh sao • +50 ❄️ mảnh tuyết • +50 🧸 Vé Tí Nị • +50 🎫 Tiên Giới')}
  if(v!='adminhuy')return toast('❌ Code không đúng');
  khoList('ns').forEach(i=>add('ns',i[0],1));[...VPI.map(v=>v[0]),...PRODS.map(p=>p.id)].forEach(k=>add('vp',k,1));
- window.IDNOEARN=1;ST.xu+=10000;window.IDNOEARN=0;
- ST.dia=(ST.dia|0)+100;ST.sb=(ST.sb|0)+50;ST.qv=(ST.qv|0)+10000;
- xuUp();save();closeUI();toast('🔑 Đã nhận +1 mọi vật phẩm, 10000 Xu\n+100 💎 kim cương • +50 ❄️ huy hiệu tuyết • +10000 xu quái vật')}
+ ST.dia=(ST.dia|0)+100;
+ xuUp();save();closeUI();toast('🔑 Đã nhận +1 mọi nông sản & vật phẩm\n+100 💎 kim cương')}
 // ---------- TU LUU: tai khoan DHT lo viec dong bo dam may (xem DHT/app.js) ----------
 const escH=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 setInterval(persist,1500);
@@ -7349,4 +7350,5 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
   <script src="tinhha.js?v=1"></script>   <!-- Mascot Tinh Hà Vũ Trụ (Shop Phố xá 3.500 Xu) -->
   <script src="dora2.js?v=1"></script>   <!-- Mascot Doraemon vẽ pixel lại -->
   <script src="alien.js?v=1"></script>   <!-- Mascot Khách Lạ Vũ Trụ (Shop Phố xá 5.000 Xu) -->
+  <script src="girlkho.js?v=1"></script>   <!-- Mascot Girl Khờ (Tiệm Chú Hề: 2.000 Xu + 400 Xu quái vật + 5 Kim cương) -->
 </body></html>

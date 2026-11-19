@@ -138,12 +138,12 @@ if(typeof MASCOT_DRAW!='undefined')MASCOT_DRAW.gaubong=drawBear;
 //  HIỆU ỨNG: vài chú 🐻 (emoji) trồi lên quanh người — vẽ SAU khi vẽ xong nhân vật
 //  (bọc drawAv, không sửa index.html; cùng cách với boyboy.js)
 // ==================================================================================
-const GB_N=5,            // số "chỗ" emoji hoạt động luân phiên (tối đa ~3 chú hiện cùng lúc)
-      GB_L=3.6,          // chu kỳ mỗi chú (giây)
-      GB_SIZE=7.5,       // cỡ emoji (đơn vị điểm ảnh game)
-      GB_SHOW=.62;       // phần chu kỳ mà chú gấu hiện ra
+const GB_N=4,            // số "chỗ" emoji hoạt động luân phiên (gọn, đỡ rối mắt)
+      GB_L=3.8,          // chu kỳ mỗi chú (giây)
+      GB_SIZE=4.2,       // cỡ emoji nhỏ gọn (đơn vị điểm ảnh game)
+      GB_SHOW=.55;       // phần chu kỳ mà chú gấu hiện ra
 // các vị trí quanh người (tọa độ theo khung nhân vật 20x31) — né vùng khuôn mặt
-const GB_POS=[[-3,7],[23,7],[0,-3],[20,-3],[-4,17],[24,17],[-3,27],[23,27],[10,-6],[5,31],[15,31]];
+const GB_POS=[[-2,8],[22,8],[1,-2],[19,-2],[-3,17],[23,17],[-2,26],[22,26],[10,-5],[5,30],[15,30]];
 const GB_FONT='"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
 const popEase=x=>{const c=1.70158,t=x-1;return 1+(c+1)*t*t*t+c*t*t};   // easeOutBack: bật nảy lên
 
@@ -157,8 +157,8 @@ function bearFx(g,ox,oy,o){
   const s=kk<.22?popEase(kk/.22):kk>.78?Math.max(0,(1-kk)/.22):1;   // phình lên → giữ → thu nhỏ
   if(s<=.02)continue;
   const p=GB_POS[(c*GB_N+i)%GB_POS.length];
-  const rise=(1-Math.min(1,s))*3;                                  // trồi lên từ dưới
-  g.globalAlpha=Math.min(1,s*1.6);
+  const rise=(1-Math.min(1,s))*2.2;                                // trồi lên từ dưới
+  g.globalAlpha=Math.min(.88,s*1.5);
   g.font=(GB_SIZE*s).toFixed(2)+'px '+GB_FONT;
   g.fillText('🐻',ox+p[0],oy+p[1]+rise);
  }

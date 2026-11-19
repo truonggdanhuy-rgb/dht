@@ -33,6 +33,7 @@ outfits.js, congso.js, aulac.js, aulac2.js, park-map.js, pho-map.js, broomkit.js
 | food-icons.js | 14 | TINYLAND — Icon vẽ SVG cho các món nấu từ máy chế biến (thay emoji dùng chung). |
 | frames.js ⛔ | 929 |  |
 | gianhang.js | 13 | GIAN HÀNG NGƯỜI CHƠI — Tinyland |
+| girlkho.js | 7 | GIRLKHO.JS — 👓🎀 Mascot GIRL KHỜ (Tiệm Chú Hề: 2.000 Xu + 400 Xu quái vật + 5 Kim cương) |
 | hanbok.js | 10 | HANBOK.JS — 🧧 Mascot HANBOK TẾT RẮN (Nam / Nữ) — 2 set, THÂN GIỐNG HỆT NHAU, chỉ khác phần ĐẦU |
 | hauvuong.js | 17 | HAUVUONG.JS — Mascot MỸ HẦU VƯƠNG (Tôn Ngộ Không) — bán ở Shop kim cương 💎15 (cùng giá set Ma đồng giáng thế / |
 | hdface.js | 21 | HDFACE.JS — BIỂU CẢM HD (vẽ độ phân giải cao K=4) cho mặt mặc định + biểu cảm 1..7 và 9 |

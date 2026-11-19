@@ -603,14 +603,14 @@ function build(){
  hit(964,100,84,56,'🏠 Nhà dân — cửa đã đóng then cài');hit(1056,100,78,56,'🏠 Nhà dân — quần áo phơi thơm mùi nắng');hit(1142,100,90,56,'🏠 Nhà dân — cửa cuốn đã kéo xuống');hit(1240,100,82,56,'🏠 Nhà dân — chắc cả nhà đi chợ rồi');hit(1330,100,106,56,'🏠 Nhà dân — chó nhà nào sủa gâu gâu đâu đó');
  // ===== VỈA HÈ TRÊN (y156–268): hàng quán, bàn ghế, xe bánh mì, trà đá, người đi dạo / tập thể dục =====
  for(const x of[262,632,862,1150,1400])put(mkPole(),x,268,[x-3,258,x+3,268]);
- for(const x of[160,440,726,1010,1290])put(mkLamp(),x,266,[x-2,260,x+2,266]);
+ for(const x of[440,726,1010,1290])put(mkLamp(),x,266,[x-2,260,x+2,266]);
  // MIẾU: 2 tượng sư tử đá đứng hai bên thềm miếu (để trống lối giữa cho người chơi đi vào)
  put(mkLion('ball'),20,176,[10,166,30,178]);hit(4,140,32,38,'🦁 Tượng sư tử đá canh giữ miếu','cv:ps:mieu',[96,176]);
  put(mkLion('cub'),164,176,[154,166,174,178]);hit(148,140,32,38,'🦁 Tượng sư tử đá canh giữ miếu','cv:ps:mieu',[96,176]);
  // bàn ghế nhựa (người chơi ngồi được) — dời hết lên vỉa hè
  const ptab=(x,by,ci,sc)=>{put(TBL[ci],x,by,[x-12,by-8,x+12,by]);for(const dx of[-24,24]){const i=seats.length;put(STL[sc[dx<0?0:1]],x+dx,by+3);
    seats.push({x:x+dx,y:by-1,by:by+3,sy:by+16,kind:'stool'});hit(x+dx-8,by-12,16,15,'🪑 Ghế nhựa vỉa hè — bấm E để ngồi','cv:seat:'+i,[x+dx,by+16])}};
- ptab(216,244,1,[2,0]);ptab(402,244,0,[0,1]);ptab(580,246,0,[2,1]);ptab(910,246,1,[0,2]);ptab(1096,246,2,[1,0]);ptab(1290,246,0,[2,1]);
+ ptab(402,244,0,[0,1]);ptab(580,246,0,[2,1]);ptab(910,246,1,[0,2]);ptab(1096,246,2,[1,0]);ptab(1290,246,0,[2,1]);
  hit(368,222,70,34,'🪑 Bàn ghế nhựa vỉa hè');
  // xe bánh mì
  put(mkBmCart(),500,258,[464,242,536,258]);

@@ -42,89 +42,171 @@ const shadeC=(h,k)=>window.shade?shade(h,k):h;
 // ===================================================================================
 function drawBunny(r,u,o,S,k){
  const {side,Rt,back,sit,rd,lg}=k,t=performance.now()/1000,fem=S.bn=='f',mv=!!o.mv;
- const WH='#fbfcff',WL='#ffffff',WS='#e3e9f7',WD='#c4cee6',OL='#9aa7c8',PN='#ffb9ce',PD='#f58db0',
-  SK='#ffdec6',SKD='#f1b996',IR='#ea3b78',IRL='#ff8ab0',IRD='#a8174f',LS='#5a1b38',BL='#ffadc2',
-  BR='#4b2b30',NS='#2a1f30',TH='#fffdf3',THO='#aab5d2',
-  HR='#f3d9a0',HRL='#fff0c6',HRD='#dcbb7c',RB='#ff6fa8';
+ const WH='#fbfcff',WL='#ffffff',WS='#dce5f5',WD='#b9c7e2',OL='#8c9cc0',
+       PN='#ffc2d6',PD='#f58fb2',RB='#ff6fa8',RBL='#ffa8ca',
+       IB='#bfe3ff',IBL='#ebf6ff',IBD='#7ab6e8',
+       SK='#f1c08a',SKD='#d99e6a',
+       EY='#4e333c',NS='#ff82a8',
+       // tóc Nữ: vàng mật ong dịu; tóc Nam: nâu hạt dẻ gọn gàng
+       HF='#f4cf82',HFL='#ffebb8',HFD='#cfa04e',
+       HM='#5c4338',HML='#7d5e4f',HMD='#3c2922';
  const M=(c,x,y,w,h)=>u(c,Rt?x:20-x-w,y,w,h);
- const SY=(c,x,y,w,h)=>{u(c,x,y,w,h);u(c,20-x-w,y,w,h)};                 // đối xứng qua trục giữa (nhìn thẳng)
+ const SY=(c,x,y,w,h)=>{u(c,x,y,w,h);u(c,20-x-w,y,w,h)};
  const fill=(c,L,m)=>L.forEach(q=>{const h=q[3]||1;m?M(c,q[1],q[0],q[2]-q[1],h):u(c,q[1],q[0],q[2]-q[1],h)});
- const sway=mv?rnd(sin(t*10)*1):rnd(sin(t*1.7)*.6);
- if(!sit&&!rd)E(r,'rgba(0,0,0,.2)',10,30,8,2);
- // ---- chân ----
- const leg=(x,lift)=>{r(WH,x,24,4,5-lift);r(WS,x+3,24,1,5-lift);r(S.shoe,x,29-lift,4,1);r(PN,x+1,28-lift,2,1)};
+ const sway=mv?rnd(sin(t*8)*.8):rnd(sin(t*1.8)*.5);
+
+ if(!sit&&!rd&&!o.nosh)E(r,'rgba(0,0,0,.2)',10,30,8,2);
+
+ // ---- chân gọn gàng + đệm thỏ hồng ----
+ const leg=(x,lift)=>{
+  const h=3-lift;
+  r(WH,x,24,4,h);r(WL,x,24,1,h);r(WS,x+3,24,1,h);
+  r(WH,x,27-lift,4,2);r(S.shoe||WD,x,29-lift,4,1);
+  if(!side&&!back)r(PN,x+1,28-lift,2,1);
+  if(side){const tx=Rt?x+4:x-1;r(WH,tx,28-lift,1,1);r(S.shoe||WD,tx,29-lift,1,1)}
+ };
  if(rd){}
- else if(sit)leg(5,0),leg(11,0);
+ else if(sit){leg(5,0);leg(11,0)}
  else if(!side){if(lg>0){leg(11,0);leg(5,1)}else if(lg<0){leg(5,0);leg(11,1)}else{leg(5,0);leg(11,0)}}
  else{const sx=lg*(Rt?2:-2),a=7+sx,b=9-sx;if(lg>0){leg(b,0);leg(a,1)}else if(lg<0){leg(a,0);leg(b,1)}else{leg(a,0);leg(b,0)}}
- // ---- bím tóc (nữ): to, buông hai bên người (vẽ SAU tay để nằm ngoài cánh tay) ----
- const braid=(left,ph)=>{
-  const Y0=9,Y1=26;
-  for(let y=Y0;y<=Y1;y++){const i=y-Y0,sh=rnd(sin(t*(mv?6:1.6)+i*.3+ph)*(i>5?(mv?1.4:.5):.2)),
-    x0=i<3?1:i<5?0:i<7?-1:-2,w=i<3?3:(Y1-y<2?3:4)+(i>5&&i<14?1:0),
-    px=left?x0+sh:20-x0-w-sh,c=(i>>1)%2?HRD:HR;
-   u(c,px,y,w,1);u(HRL,left?px:px+w-1,y,1,1);if(i%4==1)u(HRD,left?px+w-1:px,y,1,1)}
-  const e=rnd(sin(t*(mv?6:1.6)+ph)*1),bx=left?-2+e:18-e;
-  u(RB,bx,Y1+1,4,1);u('#ff9cc2',left?bx:bx+3,Y1+1,1,1);u(RB,bx+1,Y1+2,2,1);u(HR,bx+1,Y1+3,2,1)};
+
+ // ---- tay áo trắng bông + cổ tay xanh băng (hỗ trợ giơ tay o.aup) ----
+ const arm=(x,ay)=>{
+  u(WH,x,15+ay,3,5);u(WL,x,15+ay,1,5);u(WS,x+2,15+ay,1,5);
+  u(IB,x,20+ay,3,1);u(WH,x,21+ay,3,2);u(WD,x,22+ay,3,1);
+ };
+ const armUp=(x,h)=>{
+  const ty=17-h;
+  u(WH,x,ty,3,2);u(IB,x,ty+2,3,1);u(WH,x,ty+3,3,3);u(WS,x+2,ty+3,1,3);
+ };
+
+ // ---- lọn tóc Nữ hai bên vai (gọn gàng ngang ngực, KHÔNG to thô lủng lẳng tới chân) ----
+ const girlLocks=(ph)=>{
+  const d=mv?rnd(sin(t*7+ph)*.6):0;
+  // lọn trái (x=4..5) & phải (x=14..15) ôm nhẹ dọc hai bên cổ áo
+  u(HF,4,10,1,4);u(HF,15,10,1,4);
+  u(HFL,4,11,1,1);u(HFL,15,11,1,1);
+  u(HF,4+d,14,2,3);u(HFL,4+d,14,1,2);u(HFD,5+d,15,1,2);
+  u(HF,14-d,14,2,3);u(HFL,14-d,14,1,2);u(HFD,15-d,15,1,2);
+  u(HFD,4+d,17,1,1);u(HFD,15-d,17,1,1);
+  // 2 nơ hồng pastel xinh trên vai tóc
+  u(RB,4+d,13,2,1);u(RBL,4+d,13,1,1);
+  u(RB,14-d,13,2,1);u(RBL,15-d,13,1,1);
+ };
+
  if(!side){
-  // đuôi thỏ phía sau
-  if(back){u(WL,7,20,6,4);u(WS,7,23,6,1);u(WS,12,21,1,2);u(WH,8,20,3,1);u(OL,6,21,1,2);u(OL,13,21,1,2)}
-  // thân
-  fill(WH,MSTD.BF);u(WS,14,16,2,9);u(WS,6,25,8,1);u(WL,5,16,2,8);u(WD,6,14,8,1);
-  if(!back){u('#a9d8ff',9,17,2,1);u('#a9d8ff',8,18,4,1);u('#a9d8ff',9,19,2,1);u('#e4f4ff',9,18,1,1)}   // hoa tuyết nhỏ trước ngực
-  const arm=(x,ay)=>{u(WH,x,16+ay,3,6);u(WL,x,16+ay,1,6);u(WS,x+2,16+ay,1,6);u(WD,x,21+ay,3,1);u(WH,x,22+ay,3,1)};
-  arm(1,lg);arm(16,-lg);
-  if(fem){braid(1,0);braid(0,1.7)}
-  // ---- tai ----
-  const ear=(sgn)=>{const m=(c,x,y,w,h)=>sgn<0?u(c,x,y,w,h):u(c,20-x-w,y,w,h),tw=sgn<0?sway:-sway;
-   // hình tai: [y, x0, x1] (nghiêng ra ngoài ở chóp), tai cao tới y-3
-   const E2=[[-2,3,5],[-1,3,6],[0,3,6],[1,3,6],[2,3,6],[3,4,7],[4,4,7],[5,4,7]];
-   m(OL,3+tw,-3,3,1);
-   E2.forEach(([y,x0,x1],i)=>{const ox=i<2?tw:0;m(OL,x0-1+ox,y,1,1);m(WH,x0+ox,y,x1-x0+1,1);m(WL,x0+ox,y,1,1);m(WS,x1+ox,y,1,1);if(i>=2)m(OL,x1+1,y,0,0)});
-   m(OL,4,5,1,1);
-   if(!back){m(PD,4,-1,2,1);m(PN,4,0,2,1);m(PN,4,1,2,1);m(PN,4,2,2,1);m(PD,5,3,2,1);m(PN,5,4,2,1);m(PD,5,5,1,1)}};
-  ear(-1);ear(1);
-  // ---- mũ trùm (đầu) ----
-  fill(WH,MSTD.HF);u(WL,5,5,3,1);u(WL,3,7,1,3);
-  SY(WS,15,6,1,6);u(WS,4,12,12,1);u(WD,6,13,8,1);SY(WD,15,12,1,1);
-  SY(OL,3,6,1,1);                                        // viền mũ hai bên
-  if(back){ // nhìn sau: mũ trùm trơn + dải ngang
-   u(WS,5,9,10,1);u(WD,5,10,10,1)
+  // ---- thân bộ đồ thỏ tuyết ----
+  fill(WH,[[15,5,15],[16,4,16,7],[23,5,15]]);
+  if(!rd)u(WH,6,24,8,1);
+  u(WL,5,16,2,7);u(WS,14,16,2,7);u(WS,6,23,8,1);
+  if(back){
+   // đuôi bông tròn trắng xù sau lưng
+   u(WL,8,20,4,3);u(WH,9,19,2,1);u(WS,8,23,4,1);u(OL,7,21,1,2);u(OL,12,21,1,2);
+   u(WD,6,14,8,1);
+   if(fem){
+    // 2 lọn tóc vàng nhỏ thắt nơ hồng ló nhẹ dưới vành mũ sau gáy
+    u(HF,5,13,2,4);u(HFL,5,14,1,2);u(HFD,6,16,1,1);
+    u(HF,13,13,2,4);u(HFL,13,14,1,2);u(HFD,14,16,1,1);
+    u(RB,5,13,2,1);u(RB,13,13,2,1);
+   }
   }else{
-   // mặt thỏ trên mũ
-   SY(BR,6,6,1,2);SY(WL,6,6,1,1);                         // 2 mắt thỏ nhỏ (chấm)
-   u(WS,8,6,4,1);u(NS,9,7,2,1);u(WS,8,7,1,1);u(WS,11,7,1,1);
-   u(THO,8,8,1,1);u(TH,9,8,2,1);u(THO,11,8,1,1);u(THO,10,8,1,1);   // 2 răng cửa
-   // mặt người
-   u(SK,6,9,8,1);u(SK,5,10,10,3);u(SK,6,13,8,1);u(SKD,6,13,8,1);u(SKD,5,12,1,1);u(SKD,14,12,1,1);
-   if(fem){u(HR,5,9,2,1);u(HR,13,9,2,1);u(HRL,6,9,1,1);u(HR,5,10,1,2);u(HR,14,10,1,2);u(HRD,5,11,1,1);u(HRD,14,11,1,1);u(HR,7,4,6,1);u(HRL,8,4,2,1);u(HRD,7,5,6,1)}
-   SY(BL,3,10,2,2);                                       // má hồng trên mũ
-   SY('#c8245f',6,10,3,1);SY(IR,6,11,3,1);SY(IRL,6,12,3,1);SY(IRD,8,11,1,1);u(LS,5,10,1,1);u(LS,14,10,1,1);
-   u(WL,6,10,1,1);u(WL,11,10,1,1);u('#ffd0e0',7,11,1,1);u('#ffd0e0',12,11,1,1);
-   u('#e58a7a',9,12,2,1);u(BL,5,12,1,1);u(BL,14,12,1,1)
+   // cổ áo xanh băng + bụng kem trắng + chi tiết riêng Nam/Nữ
+   u(IBL,6,14,8,1);u(IB,6,15,8,1);
+   u(WL,7,16,6,6);u(WS,8,21,4,1);
+   if(fem){
+    u(RB,9,15,2,1);u(RBL,9,15,1,1);u(PD,9,16,1,1);u(PD,10,16,1,1); // nơ hồng trước cổ
+    u(IB,9,18,2,1);u(IBL,9,17,1,1);
+   }else{
+    u(IBD,9,15,2,1);u(IB,8,17,4,1);u(IB,9,16,2,3);u(IBL,9,17,1,1); // bông tuyết xanh băng
+   }
+  }
+  if(o.aup){o.aup[0]!=null?armUp(2,o.aup[0]):arm(2,lg);armUp(15,o.aup[1])}
+  else{arm(2,lg);arm(15,-lg)}
+  if(fem&&!back)girlLocks(0);
+
+  // ---- đôi tai thỏ dài mềm mại (y=-3..5) ----
+  const ear=(sgn)=>{
+   const m=(c,x,y,w,h)=>sgn<0?u(c,x,y,w,h):u(c,20-x-w,y,w,h),tw=sgn<0?sway:-sway;
+   const E2=[[-2,4,6],[-1,4,6],[0,4,7],[1,4,7],[2,4,7],[3,5,7],[4,5,7],[5,5,7]];
+   m(OL,4+tw,-3,2,1);
+   E2.forEach(([y,x0,x1],i)=>{
+    const ox=i<3?tw:0;
+    m(OL,x0-1+ox,y,1,1);m(WH,x0+ox,y,x1-x0+1,1);m(WL,x0+ox,y,1,1);m(WS,x1+ox,y,1,1);
+   });
+   if(!back){
+    m(PD,5+tw,-1,1,1);m(PN,5+tw,0,1,2);m(PN,5,2,1,2);m(PD,6,3,1,2);m(PN,5,4,1,1);
+   }
+  };
+  ear(-1);ear(1);
+
+  // ---- mũ trùm đầu thỏ tuyết ----
+  fill(WH,MSTD.HF);
+  u(WL,6,4,5,1);u(WL,4,5,2,2);u(WL,3,7,1,3);
+  SY(WS,15,6,1,6);u(WS,4,12,12,1);u(WD,6,13,8,1);
+  if(back){
+   u(WS,5,9,10,1);u(WD,6,10,8,1);
+  }else{
+   // mặt thỏ nhỏ nhắn dễ thương trên trán mũ (mắt tròn + mũi hồng tí hon)
+   SY(EY,6,5,1,2);SY(WL,6,5,1,1);
+   u(NS,9,6,2,1);u(PN,8,7,1,1);u(PN,11,7,1,1);
+   // khung mặt người viền lông sáng
+   u(WL,6,7,8,1);SY(WL,5,8,1,1);SY(WL,4,9,1,4);
+   fill(SK,[[8,6,14],[9,5,15,4],[13,6,14]]);
+   u(SKD,6,13,8,1);u(SKD,5,12,1,1);u(SKD,14,12,1,1);
+   // tóc bên trong mũ: Nữ mái vàng tỉa gọn rẽ nhẹ; Nam mái nâu gọn
+   if(fem){
+    u(HF,6,8,8,1);u(HFL,7,8,3,1);u(HFL,11,8,2,1);
+    u(HF,5,9,3,1);u(HF,12,9,3,1);u(HFD,8,9,1,1);u(HFD,11,9,1,1);
+    u(HF,5,10,1,2);u(HF,14,10,1,2);
+   }else{
+    u(HM,6,8,8,1);u(HML,7,8,4,1);
+    u(HM,5,9,2,1);u(HMD,8,9,1,1);u(HM,10,9,1,1);u(HM,13,9,2,1);
+    u(HM,5,10,1,2);u(HM,14,10,1,2);
+   }
+   // khuôn mặt & biểu cảm chuẩn người chơi
+   if(o.e>0&&typeof faceFx==='function')faceFx(u,o.e,0,0);
+   else if(typeof faceDef==='function')faceDef(u,0,0);
   }
  }else{
-  // ---- nhìn ngang ----
-  if(back){}
-  M(WL,2,21,3,3);M(WS,2,23,3,1);M(WS,4,22,1,1);          // đuôi thỏ
-  if(fem){for(let y=9;y<=26;y++){const i=y-9,sh=rnd(sin(t*(mv?6:1.6)+i*.3)*(i>5?1.5:.4)),w=i<3?3:(26-y<2?3:5);M((i>>1)%2?HRD:HR,(i<3?3:0)+sh,y,w,1);M(HRL,(i<3?3:0)+sh,y,1,1)}
-   const e=rnd(sin(t*(mv?6:1.6))*1.5);M(RB,0+e,27,5,1);M('#ff9cc2',0+e,27,1,1);M(HR,1+e,28,3,1);M(HRD,1+e,29,2,1)}
-  fill(WH,MSTD.BS,1);M(WL,6,16,2,8);M(WS,13,16,2,8);M(WS,6,25,8,1);M(WD,6,14,7,1);
-  // ---- tai (2 tai chồng nhau, tai xa lệch sau) ----
+  // ---- nhìn ngang (vẽ hướng PHẢI, M tự lật khi quay TRÁI) ----
+  M(WL,3,20,3,3);M(WS,3,22,3,1);                                   // đuôi bông phía sau
+  fill(WH,[[15,6,14],[16,5,15,7],[23,6,14]]);
+  if(!rd)M(WH,7,24,7,1);
+  M(WL,6,16,2,7);M(WS,13,16,2,7);M(WD,6,14,7,1);
+  M(IBL,7,14,6,1);M(IB,10,15,4,1);
+  if(fem)M(RB,13,15,2,1);
+
+  // đôi tai thỏ nhìn ngang
   const tw=sway;
-  M(OL,3+tw,-3,2,1);for(let y=-2;y<=5;y++){const x0=y<=1?2:y<=3?3:4,ox=y<=-1?tw:0;M(OL,x0-1+ox,y,1,1);M(WH,x0+ox,y,3,1);M(WS,x0+2+ox,y,1,1)}
-  M(OL,8-tw,-3,2,1);for(let y=-2;y<=5;y++){const x0=y<=1?7:8,ox=y<=-1?-tw:0;M(OL,x0-1+ox,y,1,1);M(WH,x0+ox,y,3,1);M(WL,x0+ox,y,1,1);M(WS,x0+2+ox,y,1,1);M(OL,x0+3+ox,y,1,1);if(y>=-1&&y<=4)M(PN,x0+1+ox,y,1,1)}
-  M(PD,8,-1,1,1);M(PD,9,5,1,1);
-  // ---- mũ trùm ----
-  fill(WH,MSTD.HS,1);M(WL,4,8,1,3);M(WS,4,12,10,1);M(WD,6,13,7,1);
-  M(BR,11,6,1,2);M(WL,11,6,1,1);                         // mắt thỏ
-  M(NS,14,7,1,1);M(WS,13,7,1,1);M(THO,14,8,1,1);M(TH,13,8,1,1);M(THO,12,8,1,1);   // mũi + răng
-  M(SK,10,9,5,1);M(SK,9,10,6,3);M(SK,10,13,4,1);M(SKD,10,13,4,1);
-  if(fem){M(HR,9,9,3,1);M(HR,9,10,1,2);M(HR,10,4,6,1);M(HRL,10,4,2,1)}
-  M(BL,9,11,2,2);                                         // má hồng
-  M(LS,12,10,2,1);M(IR,12,11,2,2);M(IRL,12,12,1,1);M(WL,12,11,1,1);M('#ffd0e0',13,11,1,1);
-  M('#e58a7a',14,12,1,1);
-  const am=rnd(lg);M(WH,8+am,16,3,6);M(WL,8+am,16,1,6);M(WS,10+am,16,1,6);M(WD,8+am,21,3,1);M(WH,8+am,22,3,1);
+  M(OL,4+tw,-3,2,1);
+  for(let y=-2;y<=5;y++){const x0=y<=1?3:4,ox=y<=0?tw:0;M(OL,x0-1+ox,y,1,1);M(WH,x0+ox,y,3,1);M(WS,x0+2+ox,y,1,1)}
+  M(OL,8-tw,-3,2,1);
+  for(let y=-2;y<=5;y++){const x0=y<=1?7:8,ox=y<=0?-tw:0;M(OL,x0-1+ox,y,1,1);M(WH,x0+ox,y,3,1);M(WL,x0+ox,y,1,1);M(WS,x0+2+ox,y,1,1);if(y>=-1&&y<=4)M(PN,x0+1+ox,y,1,1)}
+
+  // mũ trùm nhìn ngang
+  fill(WH,MSTD.HS,1);M(WL,4,7,2,3);M(WS,4,12,10,1);M(WD,6,13,7,1);
+  M(EY,12,5,1,2);M(WL,12,5,1,1);M(NS,14,6,1,1);                   // mắt & mũi thỏ trên mũ
+  M(WL,8,7,6,1);M(WL,7,8,1,5);
+  fill(SK,[[8,9,14],[9,8,15,4],[13,9,14]],1);
+  M(SKD,9,13,5,1);
+
+  if(fem){
+   M(HF,9,8,5,1);M(HFL,10,8,3,1);M(HF,8,9,3,1);M(HF,13,9,1,1);
+   M(HF,8,10,2,3);M(HF,7,12,2,4);M(HFL,8,13,1,2);M(HFD,7,16,2,1); // lọn tóc vàng buông gọn ngang vai
+   M(RB,8,12,2,1);M(RBL,8,12,1,1);
+  }else{
+   M(HM,9,8,5,1);M(HML,10,8,3,1);M(HM,8,9,2,1);M(HM,13,9,1,1);
+   M(HM,8,10,1,2);
+  }
+
+  if(o.e>0&&typeof faceFx==='function')faceFx(u,o.e,1,Rt);
+  else if(typeof faceDef==='function')faceDef(u,1,Rt);
+
+  const am=rnd(lg);
+  if(!o.noarm){
+   M(WH,8+am,15,3,5);M(WL,8+am,15,1,5);M(WS,10+am,15,1,5);
+   M(IB,8+am,20,3,1);M(WH,8+am,21,3,2);M(WD,8+am,22,3,1);
+  }
  }
 }
 window.drawMascotBunny=drawBunny;
