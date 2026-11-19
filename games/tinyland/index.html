@@ -212,7 +212,9 @@ const TREES=[];TREES.forEach(([k,x,by])=>blk(Math.floor(x/T),Math.ceil(by/T)-1,M
 blk(42,22,43,22);blk(50,22,51,22);blk(43,27,46,27);blk(56,27,59,27);/* (đã gỡ 3 ô cản vô hình giữa bãi cỏ bên phải chuồng heo) */
 const bankE=x=>RY+Math.round(3*Math.sin(x/9)+2*Math.sin(x/4.3));
 // ---------- nen tinh ----------
+const SKYB=new Image();SKYB.src='bg-sky.png?v=1';   // dải nền trời + núi + làng cây (ảnh bg-sky.png 1728x112, vẽ phía sau bản đồ Nông trại)
 const A=mk(PX,PY,(g,r)=>{
+const R0=r;r=()=>{};   // tắt nền trời/núi vẽ tay cũ (vẫn gọi rnd để các phần sau giữ nguyên bố cục); dùng ảnh bg-sky.png thay thế
 const SC=['#2e5fa8','#3a74bc','#4b8acc','#63a0d8','#7fb5e4','#9ccbee','#bcdcef','#dcecf0','#f0eec4'];
 for(let y=0;y<112;y+=2)for(let x=0;x<PX;x+=2){const t=Math.max(0,Math.min(1,(y+Math.sin(x/210)*6)/110));
  let v=t*8+((((x>>1)^(y>>1))&1)?0.45:0);if(v<0)v=0;if(v>7.99)v=7.99;r(SC[v|0],x,y,2,2)}
@@ -233,10 +235,15 @@ for(let x=64;x<PX;x+=96){r('#9a8a5a',x,86,2,26);r('#b8a86a',x,86,1,26)}
 for(const x of[130,395,425,720,940,975]){r('#c0503a',x-1,76,14,4);r('#a83e28',x-1,80,14,1);r('#e8d8b0',x+1,80,10,5);r('#8a7a5a',x+4,82,2,2);r('#8a7a5a',x+8,82,2,2)}
 r('#8a7458',556,66,8,18);r('#c0503a',552,62,16,4);r('#5a4a3a',554,66,12,2);r('#5a4a3a',556,72,8,1);r('#5a4a3a',556,78,8,1);
 for(const x of[60,230,330,508,640,820,1010]){r('#3a6a4a',x,70,1,11);E(r,'#3a6a4a',x,70,5,2);r('#4a7a56',x-5,71,4,1);r('#4a7a56',x+2,71,4,1);r('#4a7a56',x-2,68,3,1);r('#4a7a56',x+1,68,3,1)}
+r=R0;   // bật lại vẽ từ hàng tre trở đi
 const bam=(x,top,base,dk,lt,lf)=>{r(dk,x,top,2,base-top);r(lt,x,top,1,base-top);for(let y=top+4;y<base;y+=6)r('#2a6a2a',x-1,y,4,1);
  for(let j=0;j<4;j++){const y=top+j*5,ln=ri(4,7);r(lf,x-ln,y+2,ln,1);r(lf,x+2,y+1,ln,1);r(lf,x-2,y-1,3,1)}};
+r=()=>{};/* hàng tre phía sau (cao) tắt đi để thấy rõ nền mới; vẫn gọi rnd như cũ */
 for(let x=0;x<PX;x+=ri(14,34)){const n=ri(2,4);for(let k=0;k<n;k++)bam(x+k*3+ri(0,1),86+ri(-6,4),118,'#2f7a35','#3f9a3c','#2f8a3a')}
+r=R0;
+r=()=>{};/* hàng tre phía trước cũng tắt (vẫn gọi rnd như cũ) */
 for(let x=6;x<PX;x+=ri(18,42))bam(x,100+ri(-5,5),128,'#4aa23c','#8bd45e','#58b648');
+r=R0;
 r('rgba(20,45,20,.12)',0,116,PX,6);
 const GP=['#3f8a30','#4a9a37','#55a83d','#61b544','#6dc04b','#79ca53','#85d35b','#8fd862'];
 for(let y=112;y<PY;y+=4)for(let x=0;x<PX;x+=4){const n=Math.sin(x/53+Math.sin(y/37))*.45+Math.sin((x+y)/29)*.3+Math.sin(y/17+x/71)*.2+Math.sin(x/167)*Math.sin(y/139)*.6+(rnd()-.5)*.4;
@@ -6263,7 +6270,7 @@ cx.imageSmoothingEnabled=false;
 cx.save();
 cx.translate(-Math.round(camX),-Math.round(camY));
 const fh=MAP=='nt';
-if(MAP=='cv'||MAP=='ps'||MAP=='bn')cvDrawBG(tm);else if(MAP=='hm')cx.drawImage(HB,0,0,HW,HH);else{if(MAP=='wt')drawWExt(tm);cx.drawImage(fh?A:MAP=='wt'?WB:B2,0,0);if(MAP=='wt')drawWFx(tm)}
+if(MAP=='cv'||MAP=='ps'||MAP=='bn')cvDrawBG(tm);else if(MAP=='hm')cx.drawImage(HB,0,0,HW,HH);else{if(MAP=='wt')drawWExt(tm);if(fh&&SKYB.complete&&SKYB.naturalWidth)cx.drawImage(SKYB,0,0);cx.drawImage(fh?A:MAP=='wt'?WB:B2,0,0);if(MAP=='wt')drawWFx(tm)}
 if(MAP!='wt'&&MAP!='hm'&&MAP!='cv'&&MAP!='ps'&&MAP!='bn'){for(const c of CL)cx.drawImage(CLD[c.im],Math.round(c.x),Math.round(c.y));
 drawSwallows(tm);drawFlock(tm)}
 if(fh){
