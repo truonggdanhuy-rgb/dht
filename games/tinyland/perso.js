@@ -366,11 +366,11 @@ const FISH=[
 const PLANTS=[
  {a:200,rf:.88,k:0},{a:243,rf:.80,k:1},{a:297,rf:.84,k:2},{a:338,rf:.90,k:0},
  {a:22, rf:.92,k:1},{a:158,rf:.92,k:2},{a:124,rf:.90,k:0},{a:57, rf:.90,k:1}];
-let pg=0,pgT=0;
-function pondFx(X,Y,tm,ok,front){
- if(!front){const dt=Math.min(100,pgT?tm-pgT:0);pgT=tm;
-  if(ok&&!Pl.mv)pg=Math.min(1,pg+dt/POND_GROW_MS);else pg=Math.max(0,pg-dt/450)}
- const gq=Math.floor(pg*4)/4;if(!ok||gq<=0)return;
+const SELF={pg:0,pgT:0,get mv(){return Pl.mv}};     // trạng thái cây mọc của bản thân; người chơi khác có trạng thái riêng (o._pf)
+function pondFx(X,Y,tm,ok,front,S){S=S||SELF;
+ if(!front){const dt=Math.min(100,S.pgT?tm-S.pgT:0);S.pgT=tm;
+  if(ok&&!S.mv)S.pg=Math.min(1,S.pg+dt/POND_GROW_MS);else S.pg=Math.max(0,S.pg-dt/450)}
+ const gq=Math.floor(S.pg*4)/4;if(!ok||gq<=0)return;
  const step=Math.floor(tm/200),sw=Math.floor(tm/400),RX=RING_RX,RY=RING_RY,f0=cx.fillStyle,a0=cx.globalAlpha;
  const R=(c,x,y,w,h)=>{cx.fillStyle=c;cx.fillRect(x,y,w||1,h||1)};
  if(!front){
@@ -404,7 +404,7 @@ function pondFx(X,Y,tm,ok,front){
 const dp0=window.drawPlayer;
 window.drawPlayer=function(){
  let lv=0;try{const A=ST.av;if(A&&A.m<0&&A.a>=0&&!Pl.sit&&!(HMA&&HMA.hide)&&!(CVON&&CV.boat)){lv=A.a==sci('scepter',3)?3:A.a==sci('scepter',2)?2:0}}catch(e){}
- if(!lv){TRL.length=0;tlx=null;pg=0;pgT=0;return dp0.apply(this,arguments)}
+ if(!lv){TRL.length=0;tlx=null;SELF.pg=0;SELF.pgT=0;return dp0.apply(this,arguments)}
  const tm=performance.now(),X=Math.round(Pl.x),Y=Math.round(Pl.y);
  // vòng tròn ma thuật dưới chân (phía sau nhân vật), tràn ra ngoài khung nhân vật; không vẽ khi đang làm hành động đặc biệt
  let drew=0;try{if(!(typeof ACT!=='undefined'&&ACT)){const g=cx.fillStyle;ringFx((c,x,y,w,h)=>{cx.fillStyle=c;cx.fillRect(X+x,Y+y,w,h)},tm/1000,0);cx.fillStyle=g;drew=1}}catch(e){}
@@ -435,6 +435,35 @@ function hookBag(){
  window.bagUI=function(t){const r0=bg0.apply(this,arguments);try{fixOwn();if(AVTAB=='a'){const p=P(),g=document.querySelector('#ui .sg');
    if(g)g.insertAdjacentHTML('afterend','<div class="mut">⭐ Mảnh sao: <b>'+p.st+'</b> • ❄️ Mảnh tuyết: <b>'+p.sn+'</b> — dùng để ghép & nâng cấp Quyền trượng Thủy Thần ở Thái tử Ba Tư (Phố xá).'+(p.lv?'<br>🔱 Bấm vào Quyền trượng để trang bị, bấm lại để cất.':'')+'</div>')}}catch(e){}return r0}}
 
+/* ===== NGƯỜI CHƠI KHÁC cũng thấy hiệu ứng (vòng nước ở cấp 2+, cá / cây / dấu chân / bóng nước quanh người ở cấp 3) =====
+   Dữ liệu mạng vẫn chỉ là số thứ tự phụ kiện sẵn có, máy người xem tự vẽ theo vị trí của người đó. */
+function rTrail(S,X,Y,tm,mv,d){
+ if(S.tlx==null){S.tlx=X;S.tly=Y}
+ if(mv&&Math.hypot(X-S.tlx,Y-S.tly)>=9){S.tls=-S.tls;const hz=d>1;S.trl.push({x:X+(hz?(d==3?-4:4):S.tls*3),y:Y+(hz?S.tls*2:(d==1?2:-1)),t:tm});S.tlx=X;S.tly=Y;if(S.trl.length>16)S.trl.shift()}
+ else if(!mv){S.tlx=X;S.tly=Y}
+ for(let i=S.trl.length-1;i>=0;i--){const q=S.trl[i],a=(tm-q.t)/1000;
+  if(a>1.8){S.trl.splice(i,1);continue}
+  if(a<.3){dome(q.x,q.y,1+Math.round(a/.3*2),1+Math.round(a/.3),.9)}
+  else if(a<1.5){dome(q.x,q.y-(a>1.3?1:0),3,2,a>1.3?.6:.95)}
+  else{const e=(a-1.5)/.3,al=(1-e).toFixed(2);cx.fillStyle='rgba(200,240,255,'+al+')';
+   for(const[ox,oy]of[[-1,-1],[1,-1],[-1,1],[1,1]]){cx.fillRect(Math.round(q.x+ox*(2+e*4)),Math.round(q.y+oy*(1+e*3)),1,1)}}}}
+function rfx(o,lv,front){
+ const tm=performance.now(),X=Math.round(o.x),Y=Math.round(o.y);
+ if(X<camX-60||X>camX+vw+60||Y<camY-60||Y>camY+vh+70)return;
+ const f0=cx.fillStyle;
+ if(!front)ringFx((c,x,y,w,h)=>{cx.fillStyle=c;cx.fillRect(X+x,Y+y,w,h)},tm/1000,0);
+ if(lv>=3){const S=o._pf||(o._pf={pg:0,pgT:0,mv:0,trl:[],tlx:null,tly:0,tls:1});S.mv=o.mv?1:0;
+  if(!front)rTrail(S,X,Y,tm,S.mv,o.d);
+  pondFx(X,Y,tm,1,front,S);orbits(X,Y,tm,front)}
+ cx.fillStyle=f0}
+function hookOthers(){const po0=window.cvPushOthers;if(!po0)return;
+ window.cvPushOthers=function(L,tm){const r0=po0.apply(this,arguments);
+  try{const i3=sci('scepter',3),i2=sci('scepter',2);
+   for(const o of CV.others.values()){
+    if(o.bt||o.m>=0||o.seat>=0||o.hz>=0||o.ac)continue;
+    const lv=o.acc===i3&&i3>=0?3:o.acc===i2&&i2>=0?2:0;if(!lv)continue;
+    L.push([o.y-.05,()=>rfx(o,lv,0)]);L.push([o.y+.05,()=>rfx(o,lv,1)])}}catch(e){}
+  return r0}}
 /* ===== gắn vào game ===== */
 function prAct(a,h){const q=a.split(':');
  if(q[0]=='prince')return prince();
@@ -452,6 +481,6 @@ const standAt=(M,p)=>{const bad=(x,y)=>{const tx=Math.floor(x/16),ty=Math.floor(
 // Làng Tuyết & Làng Lễ hội
 [['wt',WT,drawSnowman,'⛄ Người tuyết — bấm để cuốc Mảnh tuyết (cần Thẻ cuốc)'],['lh',LH,drawStar,'⭐ Ngôi sao lấp lánh — bấm để cuốc Mảnh sao (cần Thẻ cuốc)']].forEach(([key,M,fn,msg])=>{
  PTS[key].forEach((p,i)=>{M.sp.push({by:p.y+2,d:()=>fn(p)});M.hits.push(key=='lh'?[p.x-20,p.y-40,40,48,msg,'cv:pr:dig:'+key+':'+i,standAt(M,p)]:[p.x-12,p.y-26,24,32,msg,'cv:pr:dig:'+key+':'+i,standAt(M,p)])})});
-hookBag();
+hookBag();hookOthers();
 window.PERSO={art,buyCard,up,prince,PTS,UPG};
 })();
