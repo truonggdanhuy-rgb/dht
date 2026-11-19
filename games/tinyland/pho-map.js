@@ -164,6 +164,59 @@ const mkMieu=()=>mk(184,150,(g,r)=>{
  for(const x of[24,160]){r('#6b5a48',x,50,1,6);E(r,'#e58a7a',x,60,5,5);r(GD,x-3,55,6,1);r(GD,x-3,66,6,1)}
  for(const x of[46,138]){r('#6b5a48',x,76,1,4);E(r,'#e58a7a',x,84,4,4)}
  r('#b8a98f',8,122,10,18);r('#d4c8b0',8,122,10,3);r('#b8a98f',166,122,10,18);r('#d4c8b0',166,122,10,3)});
+// ===== MIẾU: cây bồ đề treo cờ lễ hội + 2 tượng sư tử đá (thay cây anh đào + lư hương cũ) =====
+// Cây: tán xanh nhiều lớp, lá hình tim có đuôi nhọn, rễ khí thả xuống, dải lụa đỏ quấn thân, 2 dây cờ lễ hội + 2 đèn lồng đỏ. Vẽ bằng hsh (không đụng rn) nên không làm lệch các cây khác.
+const mkBodhi=()=>mk(64,96,(g,r)=>{
+ const W=64,H=96,cxp=32,TR='#6b4a2e',TL='#8d6a46',TD='#4e3520';
+ E(r,'rgba(0,0,0,.16)',cxp,H-2,20,2);
+ // thân + gốc loe
+ for(let y=50;y<=H-3;y++){const fl=y>H-14?Math.round((y-(H-14))*.8):0,hw=4+Math.round((y-50)*.04)+fl;
+  r(TR,cxp-hw,y,hw*2,1);r(TL,cxp-hw,y,2,1);r(TD,cxp+hw-2,y,2,1);if(y%6==0&&y<H-14)r(TD,cxp-1+((y/6)%2?1:-2),y,1,3)}
+ // rễ phụ chạm đất
+ r(TR,cxp-14,H-5,5,3);r(TD,cxp-14,H-3,5,1);r(TR,cxp+9,H-5,5,3);r(TD,cxp+9,H-3,5,1);
+ // tán lá
+ const GD='#2c6a3a',GM='#3d8c48',GL='#5cb257',GH='#8fd978';
+ const bl=[[32,30,22,19],[15,38,13,11],[49,38,13,11],[22,19,14,11],[42,19,14,11],[32,45,15,9],[8,31,8,8],[56,31,8,8]];
+ for(const[x,y,a,b]of bl)E(r,GD,x,y+3,a,b);for(const[x,y,a,b]of bl)E(r,GM,x,y,a,b);for(const[x,y,a,b]of bl)E(r,GL,x-a*.18,y-b*.3,a*.62,b*.55);
+ const inb=(x,y)=>bl.some(([a,b,p,q])=>((x-a)/p)**2+((y-b)/q)**2<.9);
+ // lá hình tim
+ for(let i=0;i<140;i++){const x=Math.floor(hsh(i,1)*(W-3)),y=Math.floor(hsh(i,2)*52),t=hsh(i,3);if(!inb(x+1,y+1))continue;
+  const c=t<.34?GH:t<.7?GL:GD;r(c,x,y,1,1);r(c,x+2,y,1,1);r(c,x,y+1,3,1);r(c,x+1,y+2,1,1)}
+ // đuôi lá nhọn rủ xuống mép dưới tán
+ for(let x=5;x<=59;x+=3){let yb=-1;for(let y=60;y>14;y--)if(inb(x,y)){yb=y;break}if(yb>0){r(GM,x,yb,1,3);r(GD,x,yb+3,1,1)}}
+ // rễ khí thả xuống
+ for(const x of[19,26,38,45]){const L=12+Math.floor(hsh(x,7)*10);for(let y=52;y<52+L;y++)r(y>52+L-3?TD:'#7a5636',x+(y%7==0?1:0),y,1,1)}
+ // dải lụa đỏ quấn thân
+ {const y=H-30,hw=4+Math.round((y-50)*.04);r('#c8283a',cxp-hw,y,hw*2,3);r('#e8545a',cxp-hw,y,hw*2,1);r('#9c1c2a',cxp-hw,y+2,hw*2,1);r('#f2c230',cxp+hw-3,y,2,5);r('#c8283a',cxp+hw-3,y+5,2,3)}
+ // 2 dây cờ lễ hội (cờ đuôi nheo đỏ / vàng / xanh / trắng / lam)
+ const FC=['#e0343a','#f4c430','#2fa86a','#fbf6e8','#3a7bd5'];
+ const bunt=(x0,x1,y0,sag,off)=>{const n=x1-x0;let k=0;
+  for(let i=0;i<=n;i++){const u=i/n,y=y0+Math.round(sag*Math.sin(Math.PI*u));r('#f3ead0',x0+i,y,1,1);
+   if(i%6==3){const c=FC[(k+off)%5];k++;for(let j=0;j<5;j++)r(c,x0+i-2+(j>>1),y+1+j,Math.max(1,5-j),1)}}};
+ bunt(1,62,28,8,0);bunt(4,59,43,7,2);
+ // 2 đèn lồng đỏ
+ for(const[x,y]of[[11,52],[53,50]]){r('#d8c8a0',x,y-6,1,6);r('#f2c230',x-2,y,5,1);r('#c8283a',x-3,y+1,7,6);r('#e8545a',x-3,y+1,2,6);r('#9c1c2a',x+2,y+1,2,6);r('#f2c230',x-2,y+7,5,1);r('#f2c230',x,y+8,1,3)}
+});
+// tượng sư tử đá (kind 'ball' = cầu bên phải • 'cub' = sư tử con bên trái) — cổ quàng lụa đỏ + chuông vàng
+const mkLion=kind=>mk(30,40,(g,r)=>{
+ const S='#cfc8b6',SL='#e8e2d2',SD='#a39b88',SX='#7d7664',MN='#b0a890';
+ E(r,'rgba(0,0,0,.18)',15,39,13,1);
+ r('#d8d0be',2,32,26,2);r('#bdb5a2',2,34,26,3);r('#9a9280',3,37,24,2);
+ // thân + chân trước
+ E(r,S,15,27,9,6);E(r,SL,13,25,5,3);E(r,S,15,22,6,5);
+ r(S,10,24,4,9);r(S,17,24,4,9);r(SD,14,24,2,9);r(SL,9,31,6,2);r(SL,16,31,6,2);r(SD,11,32,1,1);r(SD,13,32,1,1);r(SD,18,32,1,1);r(SD,20,32,1,1);
+ // bờm xoăn quanh đầu
+ for(let k=0;k<12;k++){const a=k*Math.PI/6,x=Math.round(15+Math.cos(a)*9),y=Math.round(12+Math.sin(a)*8);E(r,MN,x,y,3,3);r(SL,x-1,y-1,1,1)}
+ E(r,S,15,12,7,7);r(S,7,5,3,3);r(S,20,5,3,3);r(SD,8,6,1,1);r(SD,21,6,1,1);
+ // mặt
+ r(SX,10,9,4,1);r(SX,16,9,4,1);r(SX,11,10,2,2);r(SX,17,10,2,2);r(SL,11,10,1,1);r(SL,17,10,1,1);
+ r(SX,14,13,3,2);r(SD,13,15,5,1);r('#8a3a30',12,16,7,3);r('#fff',12,16,1,1);r('#fff',18,16,1,1);r('#fff',14,18,1,1);r('#fff',16,18,1,1);
+ E(r,SL,15,21,3,1);
+ // lụa đỏ + chuông
+ r('#c8283a',9,19,13,2);r('#e8545a',9,19,13,1);E(r,'#f2c230',15,23,2,2);r('#fff3a0',14,22,1,1);
+ if(kind=='ball'){E(r,SD,25,30,3,3);E(r,SL,24,29,2,2);r(SX,22,30,6,1)}
+ else{E(r,S,5,29,4,3);E(r,S,5,25,3,3);r(S,2,22,2,2);r(S,7,22,2,2);r(SX,4,25,1,1);r(SX,7,25,1,1);r(SX,5,27,2,1);r('#c8283a',3,28,5,1)}
+});
 const mkBurner=()=>mk(30,36,(g,r)=>{r('rgba(0,0,0,.16)',3,33,24,2);r('#8d6b3f',5,22,20,10);r('#b58d52',5,22,20,2);r('#6b4f2d',5,30,20,2);r('#8d6b3f',3,19,24,4);r('#b58d52',3,19,24,1);r('#6b4f2d',8,32,3,3);r('#6b4f2d',19,32,3,3);r('#d9cfba',7,19,16,2)});
 const mkTable=c=>mk(26,20,(g,r)=>{E(r,'rgba(0,0,0,.18)',13,19,12,1);r(c[1],4,8,2,11);r(c[1],20,8,2,11);r(c[1],12,10,2,9);E(r,c[0],13,7,12,4);E(r,c[2],13,6,11,3);
  r('#f2f6f8',8,3,3,4);r('#b8d6e6',8,4,3,3);r('#f2f6f8',15,3,3,4);r('#f4dca8',16,4,1,2);r('#c9877a',19,1,3,6);r('#f0f0e8',19,3,3,1)});
@@ -510,9 +563,10 @@ function build(){
  // ===== VỈA HÈ TRÊN (y156–268): hàng quán, bàn ghế, xe bánh mì, trà đá, người đi dạo / tập thể dục =====
  for(const x of[262,632,862,1150,1400])put(mkPole(),x,268,[x-3,258,x+3,268]);
  for(const x of[160,440,726,1010,1290])put(mkLamp(),x,266,[x-2,260,x+2,266]);
- put(T_BOU,50,232,[36,218,66,232]);hit(26,166,48,66,'🌸 Giàn hoa giấy rực rỡ');
- put(mkBurner(),96,214,[82,204,110,214]);
- hit(80,184,32,32,'🪔 Lư hương trước miếu — vào miếu để thắp nhang nhé','cv:ps:mieu',[96,226]);
+ // MIẾU: cây bồ đề treo cờ lễ hội bên trái + 2 tượng sư tử đá hai bên lối vào (đã bỏ cây anh đào + lư hương chắn lối)
+ put(mkBodhi(),34,232,[24,222,42,232]);hit(0,140,68,92,'🌳 Cây bồ đề — treo cờ lễ hội trước miếu');
+ put(mkLion('ball'),76,186,[68,176,79,188]);hit(62,152,28,36,'🦁 Tượng sư tử đá canh giữ miếu','cv:ps:mieu',[96,176]);
+ put(mkLion('cub'),120,186,[114,176,127,188]);hit(106,152,28,36,'🦁 Tượng sư tử đá canh giữ miếu','cv:ps:mieu',[96,176]);
  // bàn ghế nhựa (người chơi ngồi được) — dời hết lên vỉa hè
  const ptab=(x,by,ci,sc)=>{put(TBL[ci],x,by,[x-12,by-8,x+12,by]);for(const dx of[-24,24]){const i=seats.length;put(STL[sc[dx<0?0:1]],x+dx,by+3);
    seats.push({x:x+dx,y:by-1,by:by+3,sy:by+16,kind:'stool'});hit(x+dx-8,by-12,16,15,'🪑 Ghế nhựa vỉa hè — bấm E để ngồi','cv:seat:'+i,[x+dx,by+16])}};
@@ -617,8 +671,8 @@ PS.fx=psFx;
 function psFx(tm,dt){
  if(CV.cur!='ps')return;
  wires();
- // hơi nước: xe bánh mì + nhang miếu
- stT-=dt;if(stT<=0){stT=.35;STEAM.push({x:496+Math.random()*24,y:210,t:0,c:'255,255,255',v:8},{x:93+Math.random()*6,y:202,t:0,c:'230,225,215',v:10})}
+ // hơi nước: xe bánh mì
+ stT-=dt;if(stT<=0){stT=.35;STEAM.push({x:496+Math.random()*24,y:210,t:0,c:'255,255,255',v:8})}
  for(let i=STEAM.length-1;i>=0;i--){const s=STEAM[i];s.t+=dt;s.y-=s.v*dt;s.x+=Math.sin(s.t*2+i)*5*dt;if(s.t>2.2){STEAM.splice(i,1);continue}
   if(s.x<camX-6||s.x>camX+vw+6||s.y<camY-6||s.y>camY+vh+6)continue;cx.fillStyle='rgba('+s.c+','+(.5*(1-s.t/2.2)).toFixed(2)+')';cx.fillRect(Math.round(s.x),Math.round(s.y),3,2)}
  // thoại thưa thớt
