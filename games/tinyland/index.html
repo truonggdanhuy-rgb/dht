@@ -3276,7 +3276,7 @@ MACHS.forEach(m=>m.rec.forEach(o=>{o.ing=o.txt.split(' + ').map(s=>{const q=s.ma
 
 // ---------- logic may ----------
 let MUI=-1;
-ST.mq=Array.from({length:MACHS.length},(_,i)=>{const q=(ST.mq&&ST.mq[i])||[],a=[q[0]||null,q[1]||null,q[2]||null],n0=now();a.forEach(it=>{if(it&&it.s>n0){it.e=n0+(it.e-it.s);it.s=n0}});return a});
+ST.mq=Array.from({length:MACHS.length},(_,i)=>{const q=(ST.mq&&ST.mq[i])||[],a=[0,1,2,3,4,5].map(j=>q[j]||null),n0=now()/* 6 ô nấu (ô 4-6 mở khóa bằng Xu, xem mach-slots.js) */;a.forEach(it=>{if(it&&it.s>n0){it.e=n0+(it.e-it.s);it.s=n0}});return a});
 ST.pen=Array.isArray(ST.pen)&&ST.pen.length==4?ST.pen:[null,null,null,null];
 delete ST.bait;ST.tr=ST.tr||{};ST.pots=Array.isArray(ST.pots)&&ST.pots.length==20?ST.pots:Array(20).fill(null);
 Object.keys(FRUITS).forEach(k=>{if(ST.tr[k]==null&&ST.tree&&typeof ST.tree[k]=='number'&&ST.tree[k]>0)ST.tr[k]=ST.tree[k]-FRUITS[k][2]*MIN});
@@ -6852,4 +6852,5 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="toc-dientrai-khoitrang.js?v=1"></script>
 <script src="bag-ui.js?v=1"></script>   <!-- Giao diện Túi mới: mở rộng panel, tìm đồ, cỡ ô. Xóa dòng này = quay về túi cũ -->
 <script src="farm-ui.js?v=1"></script>   <!-- Shop + Thùng nông trại mới (màu sáng, mua nhiều lần, gộp vật tư vào danh sách). Xóa dòng này = quay về cũ -->
+<script src="mach-slots.js?v=1"></script>   <!-- Mở thêm ô nấu 4-6 (10.000/20.000/30.000 Xu) cho mọi máy. Xóa dòng này = quay về 3 ô -->
 </body></html>
