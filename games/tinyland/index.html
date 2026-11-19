@@ -5910,6 +5910,296 @@ Object.assign(window.FMANI,{
  coixay:(a,X,Y)=>{cx.drawImage(oWm,a.x,a.y);wmBl(cx,a.x+1+26,a.y+1+24,performance.now()/1000*.9,4,21,'mill')},
  tuabin:(a,X,Y)=>{cx.drawImage(oTb,a.x,a.y);wmBl(cx,a.x+1+20,a.y+1+21,performance.now()/1000*2.4,3,19,'turb')}});
 
+/* ================= DECOR CÂY TREO CỜ (1x1, 600 Xu) =================
+   Cây bồ đề tán xanh nhiều lớp, lá hình tim, rễ khí thả xuống, dải lụa đỏ quấn thân, 2 dây cờ lễ hội + 2 đèn lồng đỏ.
+   (Chuyển từ Phố xá — trước miếu cầu phúc — sang bán ở Shop nông trại.) Ảnh tĩnh, vẽ 1 lần. */
+{const W=64,H=96,cxp=32,hs=(a,b)=>{let h=Math.imul((a|0)*374761393+(b|0)*668265263|0,1274126177);h^=h>>>13;return((h>>>0)%1000)/1000};
+ S_.caytreoco=mk(W,H,(g,r)=>{
+  const TR='#6b4a2e',TL='#8d6a46',TD='#4e3520';
+  E(r,'rgba(0,0,0,.16)',cxp,H-2,20,2);
+  /* thân + gốc loe */
+  for(let y=50;y<=H-3;y++){const fl=y>H-14?Math.round((y-(H-14))*.8):0,hw=4+Math.round((y-50)*.04)+fl;
+   r(TR,cxp-hw,y,hw*2,1);r(TL,cxp-hw,y,2,1);r(TD,cxp+hw-2,y,2,1);if(y%6==0&&y<H-14)r(TD,cxp-1+((y/6)%2?1:-2),y,1,3)}
+  r(TR,cxp-14,H-5,5,3);r(TD,cxp-14,H-3,5,1);r(TR,cxp+9,H-5,5,3);r(TD,cxp+9,H-3,5,1);
+  /* tán lá */
+  const GD='#2c6a3a',GM='#3d8c48',GL='#5cb257',GH='#8fd978';
+  const bl=[[32,30,22,19],[15,38,13,11],[49,38,13,11],[22,19,14,11],[42,19,14,11],[32,45,15,9],[8,31,8,8],[56,31,8,8]];
+  for(const[x,y,a,b]of bl)E(r,GD,x,y+3,a,b);for(const[x,y,a,b]of bl)E(r,GM,x,y,a,b);for(const[x,y,a,b]of bl)E(r,GL,x-a*.18,y-b*.3,a*.62,b*.55);
+  const inb=(x,y)=>bl.some(([a,b,p,q])=>((x-a)/p)**2+((y-b)/q)**2<.9);
+  for(let i=0;i<140;i++){const x=Math.floor(hs(i,1)*(W-3)),y=Math.floor(hs(i,2)*52),t=hs(i,3);if(!inb(x+1,y+1))continue;
+   const c=t<.34?GH:t<.7?GL:GD;r(c,x,y,1,1);r(c,x+2,y,1,1);r(c,x,y+1,3,1);r(c,x+1,y+2,1,1)}
+  for(let x=5;x<=59;x+=3){let yb=-1;for(let y=60;y>14;y--)if(inb(x,y)){yb=y;break}if(yb>0){r(GM,x,yb,1,3);r(GD,x,yb+3,1,1)}}
+  /* rễ khí thả xuống */
+  for(const x of[19,26,38,45]){const L=12+Math.floor(hs(x,7)*10);for(let y=52;y<52+L;y++)r(y>52+L-3?TD:'#7a5636',x+(y%7==0?1:0),y,1,1)}
+  /* dải lụa đỏ quấn thân */
+  {const y=H-30,hw=4+Math.round((y-50)*.04);r('#c8283a',cxp-hw,y,hw*2,3);r('#e8545a',cxp-hw,y,hw*2,1);r('#9c1c2a',cxp-hw,y+2,hw*2,1);r('#f2c230',cxp+hw-3,y,2,5);r('#c8283a',cxp+hw-3,y+5,2,3)}
+  /* 2 dây cờ lễ hội */
+  const FC=['#e0343a','#f4c430','#2fa86a','#fbf6e8','#3a7bd5'];
+  const bunt=(x0,x1,y0,sag,off)=>{const n=x1-x0;let k=0;
+   for(let i=0;i<=n;i++){const u=i/n,y=y0+Math.round(sag*Math.sin(Math.PI*u));r('#f3ead0',x0+i,y,1,1);
+    if(i%6==3){const c=FC[(k+off)%5];k++;for(let j=0;j<5;j++)r(c,x0+i-2+(j>>1),y+1+j,Math.max(1,5-j),1)}}};
+  bunt(1,62,28,8,0);bunt(4,59,43,7,2);
+  /* 2 đèn lồng đỏ */
+  for(const[x,y]of[[11,52],[53,50]]){r('#d8c8a0',x,y-6,1,6);r('#f2c230',x-2,y,5,1);r('#c8283a',x-3,y+1,7,6);r('#e8545a',x-3,y+1,2,6);r('#9c1c2a',x+2,y+1,2,6);r('#f2c230',x-2,y+7,5,1);r('#f2c230',x,y+8,1,3)}
+ })}
+
+/* ================= BỘ DECOR TẾT VIỆT (mai, đào, quất, cây nêu, liễn đỏ, bánh chưng, mâm ngũ quả, đèn lồng, cổng chào) =================
+   Mọi ảnh vẽ 1 lần bằng canvas (tĩnh, không tốn CPU lúc chơi). Giá & kích thước khai báo trong FMD (tab 🧧 Tết Việt). */
+{const HS=(a,b)=>{let h=Math.imul((a|0)*374761393+(b|0)*668265263+1013904223|0,1274126177);h^=h>>>13;h=Math.imul(h,1103515245);h^=h>>>16;return(h>>>0)/4294967296};
+ const GD='#e6c15a',GDL='#fff0a8',GDD='#a8842a';
+ /* ---------- chậu (3 kiểu men) ---------- */
+ const POTS={
+  blue:{b:'#f2f7fb',l:'#ffffff',d:'#c4d3e3',x:'#2f5fa8',x2:'#5b8fd8',rim:'#2f5fa8'},
+  red:{b:'#c0392f',l:'#e8604f',d:'#8e2420',x:'#e6c15a',x2:'#fff0a8',rim:'#e6c15a'},
+  clay:{b:'#b8683e',l:'#dc8f60',d:'#8a4a2a',x:'#e6c15a',x2:'#fff0a8',rim:'#e6c15a'}};
+ const pot=(r,cx,y0,w,wb,h,st)=>{const P=POTS[st];
+  E(r,'rgba(0,0,0,.18)',cx,y0+h,Math.round(w/2)+3,2);
+  for(let i=0;i<h;i++){const bw=Math.round(w-(w-wb)*Math.min(1,i/(h-3))),x=cx-(bw>>1);
+   r(P.b,x,y0+i,bw,1);r(P.l,x+1,y0+i,Math.max(1,bw>>3),1);r(P.d,x+bw-Math.max(2,bw>>3),y0+i,Math.max(2,bw>>3),1)}
+  /* vành miệng chậu */
+  r(P.rim,cx-(w>>1)-2,y0,w+4,3);r(P.l,cx-(w>>1)-2,y0,w+4,1);r(P.d,cx-(w>>1)-2,y0+3,w+4,1);
+  /* hoa văn */
+  if(st=='blue'){const my=y0+4+((h-8)>>1);
+   for(let x=cx-(w>>1)+2;x<cx+(w>>1)-2;x+=4){r(P.x,x,y0+5,3,1);r(P.x2,x+1,y0+6,1,1)}
+   for(let k=0;k<4;k++){r(P.x,cx-k,my+k,k*2+1,1);r(P.x,cx-k,my+6-k,k*2+1,1)}
+   r(P.l,cx,my+2,1,3);r(P.x2,cx-1,my+3,3,1);
+   for(const dx of[-9,9]){if(Math.abs(dx)<(w>>1)-2){r(P.x2,cx+dx-1,my+3,3,1);r(P.x2,cx+dx,my+2,1,3)}}
+   r(P.x,cx-(w>>1)+2,y0+h-4,w-4,1);r(P.x2,cx-(w>>1)+3,y0+h-3,w-6,1)}
+  else{r(P.x,cx-(w>>1)+1,y0+4,w-2,2);r(P.x2,cx-(w>>1)+1,y0+4,w-2,1);
+   const my=y0+h-7;for(let x=cx-(w>>1)+3;x<cx+(w>>1)-3;x+=5){r(P.x,x,my,3,3);r(P.x2,x,my,1,1);r(P.d,x+1,my+1,1,1)}}
+  /* chân chậu + đất */
+  r(P.d,cx-(wb>>1)-1,y0+h-1,wb+2,1);
+  E(r,'#4a3524',cx,y0,Math.round(w/2)-1,1);for(let i=0;i<5;i++)r(i%2?'#5f8a3c':'#7aa84a',cx-(w>>1)+3+Math.round(HS(i,y0)*(w-8)),y0-1,2,1)};
+ /* ---------- cành (đường cong bậc 2, nhỏ dần) ---------- */
+ const curve=(r,P,t0,t1,C,sd)=>{const n=Math.max(8,Math.ceil((Math.hypot(P[1][0]-P[0][0],P[1][1]-P[0][1])+Math.hypot(P[2][0]-P[1][0],P[2][1]-P[1][1]))*1.3)),pts=[];
+  for(let i=0;i<=n;i++){const t=i/n,u=1-t;pts.push([u*u*P[0][0]+2*u*t*P[1][0]+t*t*P[2][0],u*u*P[0][1]+2*u*t*P[1][1]+t*t*P[2][1],Math.max(1,Math.round(t0+(t1-t0)*t))])}
+  for(const[x,y,th]of pts)r(C[1],Math.round(x-th/2),Math.round(y-th/2),th,th);
+  for(const[x,y,th]of pts)if(th>=3){const a=Math.round(x-th/2),b=Math.round(y-th/2);r(C[0],a,b,1,th);r(C[2],a+th-1,b,1,th)}
+  for(let i=0;i<pts.length;i+=3){const[x,y,th]=pts[i];if(th>=4&&HS(i,sd)<.7){r(C[2],Math.round(x-th/2)+1+Math.floor(HS(i,5+sd)*(th-2)),Math.round(y),1,2);if(HS(i,9)<.3)r('#7c9a4e',Math.round(x-th/2)+1,Math.round(y)+1,2,1)}}
+  return t=>pts[Math.max(0,Math.min(n,Math.round(t*n)))]};
+ /* ---------- hoa ---------- */
+ const FL={mai:{rows:['.YYY.','YLLYY','YLCLY','YYLLY','.YSY.'],c:{Y:'#ffd23a',L:'#fff29a',S:'#e9a01a',C:'#e8641a'},base:'#ffd23a'},
+  dao:{rows:['.PPP.','PLLPP','PLCLP','PPLLP','.PSP.'],c:{P:'#ff8fb1',L:'#ffd3df',S:'#e0507e',C:'#ffe08a'},base:'#ff8fb1'}};
+ const flower=(r,x,y,k,sz)=>{const F=FL[k];
+  if(sz==0){r(F.c.S,x,y,2,2);r(F.c.L,x,y,1,1);return}
+  if(sz==1){r(F.base,x+1,y,1,3);r(F.base,x,y+1,3,1);r(F.c.C,x+1,y+1,1,1);r(F.c.L,x+1,y,1,1);return}
+  for(let j=0;j<5;j++)for(let i=0;i<5;i++){const ch=F.rows[j][i];if(ch!='.')r(F.c[ch],x+i,y+j,1,1)}};
+ const leaf=(r,x,y,c1,c2)=>{r(c1,x,y,3,1);r(c2,x+1,y-1,2,1);r(c1,x+2,y-2,1,1)};
+ /* ---------- đồ treo: lì xì, dây đỏ + tua, đèn lồng nhỏ ---------- */
+ const lixi=(r,x,y,len)=>{r('#c8283a',x,y,1,len);const ex=x-2,ey=y+len;
+  r('#e0343a',ex,ey,5,7);r('#ff6a5a',ex,ey,1,7);r('#a81f1a',ex+4,ey,1,7);r('#b82428',ex,ey,5,1);r('#b82428',ex+1,ey+1,3,1);r('#b82428',ex+2,ey+2,1,1);
+  r(GD,ex+1,ey+3,3,3);r(GDL,ex+2,ey+4,1,1);r(GDD,ex+1,ey+5,3,1);r(GD,ex,ey+6,5,1)};
+ const dayDo=(r,x,y,len,ph)=>{let xx=x;for(let i=0;i<len;i++){xx=x+Math.round(Math.sin(i*.35+ph)*1.2);r('#d8283a',xx,y+i,1,1);if(i%3==0)r('#ff7a6a',xx,y+i,1,1)}
+  const yy=y+len;r(GD,xx-1,yy,3,2);r(GDL,xx-1,yy,1,1);r(GDD,xx,yy+1,2,1);
+  for(const o of[-1,0,1]){r('#d8283a',xx+o,yy+2,1,5);r('#a81f1a',xx+o,yy+5,1,2)}r(GD,xx-1,yy+2,3,1)};
+ const denNho=(r,x,y,len)=>{r('#c8283a',x,y,1,len);const ex=x-3,ey=y+len;r(GD,ex+1,ey,5,1);E(r,'#a81f1a',x,ey+4,3,3);E(r,'#e0343a',x,ey+4,2,2);r('#ffb347',x,ey+3,1,2);r(GD,ex+1,ey+7,5,1);r('#d8283a',x,ey+8,1,3)};
+ /* ---------- cây mai / đào ---------- */
+ const blossom=o=>mk(o.W,o.H,(g,r)=>{
+  pot(r,o.cx,o.potY,o.pw,o.pwb,o.ph,o.pot);
+  const fns=[],hang=[];
+  for(const[i,p]of o.paths.entries()){let P=p.P;if(p.from){const f=fns[p.from[0]](p.from[1]);P=[[f[0],f[1]],p.P[0],p.P[1]]}
+   fns[i]=curve(r,P,p.t0,p.t1,o.bark,i)}
+  /* lá non */
+  if(o.leaf)for(const[i,p]of o.paths.entries()){if(p.t0>4)continue;for(let k=0;k<o.leaf;k++){const q=fns[i](.25+HS(i,k+40)*.75);leaf(r,Math.round(q[0]+(HS(i,k+60)-.5)*10),Math.round(q[1]+(HS(i,k+70)-.5)*8),o.lf[0],o.lf[1])}}
+  /* hoa dọc cành */
+  for(const[i,p]of o.paths.entries()){if(p.nf===0)continue;const n=p.nf||Math.max(5,Math.round((p.t0+1)*3.4));
+   for(let k=0;k<n;k++){const q=fns[i](p.fs!=null?p.fs+(1-p.fs)*(k/(n-1||1)):.3+.7*(k/(n-1||1)));
+    const R=o.R,x=q[0]+(HS(i*31+k,1)-.5)*R*2,y=q[1]+(HS(i*31+k,2)-.5)*R*2,t=HS(i*31+k,3);
+    flower(r,Math.round(x-2),Math.round(y-2),o.kind,t<.62?2:t<.9?1:0)}
+   const q=fns[i](1);flower(r,Math.round(q[0]-2),Math.round(q[1]-2),o.kind,2);flower(r,Math.round(q[0]+2),Math.round(q[1]-4),o.kind,1);flower(r,Math.round(q[0]-4),Math.round(q[1]+1),o.kind,0)}
+  /* đồ treo */
+  for(const h of o.hang){const q=fns[h[1]](h[2]),x=Math.round(q[0]),y=Math.round(q[1]);
+   if(h[0]=='lx')lixi(r,x,y,h[3]);else if(h[0]=='day')dayDo(r,x,y,h[3],h[4]||0);else denNho(r,x,y,h[3])}
+ });
+ const BM={bark:['#7d6650','#5a4636','#3a2a20']},BD={bark:['#9a5a48','#6b3a2e','#44241c']};
+ /* mai nhỏ / đào nhỏ (1x1) */
+ const small=(kind,pc,bark,lf)=>blossom({W:44,H:62,cx:22,potY:46,pw:18,pwb:12,ph:15,pot:pc,kind,bark,R:4,leaf:kind=='dao'?5:2,lf,
+  paths:[{P:[[22,47],[17,39],[22,29]],t0:5,t1:3,nf:0},
+   {P:[[20,36],[12,33],[8,21]],t0:4,t1:2},{P:[[22,31],[31,29],[35,18]],t0:4,t1:2},{P:[[22,29],[20,20],[24,8]],t0:3,t1:2},
+   {from:[1,.9],P:[[8,18],[12,12]],t0:2,t1:1},{from:[2,.9],P:[[38,14],[33,9]],t0:2,t1:1}],
+  hang:[['lx',1,.62,6],['lx',2,.78,5],['day',3,.5,10,1]]});
+ S_.tetmai1=small('mai','blue',BM.bark,['#5fa84a','#8fd06a']);
+ S_.tetdao1=small('dao','red',BD.bark,['#5cae48','#8fd06a']);
+ /* mai lớn / đào lớn (2x2, cao ~4 ô) */
+ const big=(kind,pc,bark,lf,den)=>blossom({W:96,H:122,cx:48,potY:101,pw:30,pwb:20,ph:20,pot:pc,kind,bark,R:5,leaf:kind=='dao'?9:3,lf,
+  paths:[{P:[[47,103],[37,86],[49,66]],t0:8,t1:4,nf:0},
+   {P:[[45,84],[28,80],[14,58]],t0:5,t1:2},{P:[[48,76],[68,74],[84,56]],t0:5,t1:2},{P:[[49,68],[38,50],[28,30]],t0:5,t1:2},
+   {P:[[50,66],[64,48],[70,26]],t0:5,t1:2},{P:[[49,64],[54,40],[46,12]],t0:4,t1:2},
+   {from:[1,1],P:[[8,54],[6,44]],t0:2,t1:1},{from:[1,1],P:[[22,50],[20,42]],t0:2,t1:1},
+   {from:[2,1],P:[[90,52],[90,42]],t0:2,t1:1},{from:[2,1],P:[[78,48],[76,40]],t0:2,t1:1},
+   {from:[3,1],P:[[20,28],[16,20]],t0:2,t1:1},{from:[3,1],P:[[32,22],[38,18]],t0:2,t1:1},
+   {from:[4,1],P:[[78,24],[80,16]],t0:2,t1:1},{from:[4,1],P:[[66,18],[60,12]],t0:2,t1:1},
+   {from:[1,.45],P:[[26,66],[22,64]],t0:2,t1:1},{from:[2,.5],P:[[70,66],[76,66]],t0:2,t1:1},
+   {from:[3,.55],P:[[44,38],[48,32]],t0:2,t1:1},{from:[4,.5],P:[[62,40],[58,34]],t0:2,t1:1}],
+  hang:[['lx',1,.78,8],['lx',2,.85,7],['lx',3,.8,12],['lx',4,.7,10],['lx',5,.55,9],['lx',2,.5,9],['day',1,.55,18,0],['day',4,.92,22,2],['day',3,.5,16,4],['day',2,.7,12,1]].concat(den?[['den',5,.85,6],['den',2,.95,8]]:[])});
+ S_.tetmai2=big('mai','blue',BM.bark,['#5fa84a','#8fd06a'],0);
+ S_.tetdao2=big('dao','red',BD.bark,['#5cae48','#8fd06a'],1);
+ /* ---------- quất ---------- */
+ const quat=o=>mk(o.W,o.H,(g,r)=>{const cx=o.cx;
+  pot(r,cx,o.potY,o.pw,o.pwb,o.ph,o.pot);
+  r('#6b4a2e',cx-2,o.potY-o.trh,4,o.trh);r('#8d6a46',cx-2,o.potY-o.trh,1,o.trh);r('#4e3520',cx+1,o.potY-o.trh,1,o.trh);
+  const GD2='#2c6a3a',GM='#3d8c48',GL='#5cb257',GH='#93de7c';
+  const bl=o.bl;for(const[x,y,a,b]of bl)E(r,GD2,x,y+2,a,b);for(const[x,y,a,b]of bl)E(r,GM,x,y,a,b);for(const[x,y,a,b]of bl)E(r,GL,x-a*.18,y-b*.3,a*.64,b*.56);
+  const inb=(x,y)=>bl.some(([a,b,p,q])=>((x-a)/p)**2+((y-b)/q)**2<.85);
+  for(let i=0;i<o.nl;i++){const x=Math.floor(HS(i,11)*o.W),y=Math.floor(HS(i,12)*o.H*.8);if(!inb(x,y))continue;const t=HS(i,13);const c=t<.3?GH:t<.65?GL:GD2;r(c,x,y,2,1);r(c,x+1,y+1,2,1)}
+  /* trái quất */
+  let k=0;for(let i=0;i<o.nf*14&&k<o.nf;i++){const x=Math.floor(HS(i,21)*(o.W-6))+1,y=Math.floor(HS(i,22)*o.H*.8);if(!inb(x+1,y+1)||!inb(x+3,y+3))continue;k++;
+   r('#d9700a',x,y+1,4,2);r('#ff9d1a',x+1,y,2,4);r('#ff9d1a',x,y+1,4,2);r('#ffc24a',x+1,y+1,1,1);r('#d9700a',x+1,y+3,2,1);r('#4a8a3a',x+1,y-1,1,1)}
+  /* nơ đỏ + lì xì */
+  const by=o.potY-6;r('#c8283a',cx-5,by,4,3);r('#c8283a',cx+1,by,4,3);r('#e8545a',cx-5,by,4,1);r('#e8545a',cx+1,by,4,1);r(GD,cx-1,by,2,3);r('#c8283a',cx-2,by+3,1,5);r('#c8283a',cx+1,by+3,1,5);
+  for(const h of o.hang){if(h[0]=='lx')lixi(r,h[1],h[2],h[3]);else dayDo(r,h[1],h[2],h[3],h[4]||0)}});
+ S_.tetquat1=quat({W:44,H:62,cx:22,potY:47,pw:18,pwb:12,ph:14,pot:'clay',trh:6,nl:120,nf:16,
+  bl:[[22,24,15,14],[11,30,8,8],[33,30,8,8],[16,14,8,7],[28,14,8,7]],hang:[['lx',9,31,5],['lx',35,30,4]]});
+ S_.tetquat2=quat({W:92,H:112,cx:46,potY:92,pw:28,pwb:19,ph:19,pot:'red',trh:12,nl:620,nf:90,
+  bl:[[46,44,34,32],[22,56,18,18],[70,56,18,18],[32,24,20,16],[60,24,20,16],[46,16,16,13],[12,48,9,9],[80,48,9,9]],
+  hang:[['lx',24,58,10],['lx',66,60,9],['lx',46,66,12],['day',34,72,10,1],['day',58,74,12,3],['lx',16,44,8]]});
+ /* ================= CÂY NÊU (1x1) ================= */
+ S_.tetneu=mk(40,118,(g,r)=>{
+  const BG='#7cc05a',BM='#5a9a3c',BD='#3a6e28',BL='#b4e08a';
+  E(r,'rgba(0,0,0,.14)',20,116,13,2);
+  /* vòng vôi bột trắng dưới gốc */
+  E(r,'rgba(255,255,255,.75)',20,113,15,3);E(r,'rgba(235,235,225,.9)',20,113,11,2);E(r,'rgba(255,255,255,.8)',20,113,7,1);
+  for(const x of[9,14,26,31])r('rgba(150,150,140,.6)',x,112,1,2);
+  /* thân tre: đốt + sọc sáng */
+  for(let y=12;y<=113;y++){const w=y<30?3:4,x=20-(w>>1);r(BM,x,y,w,1);r(BL,x,y,1,1);r(BD,x+w-1,y,1,1)}
+  for(let y=26;y<=108;y+=17){r(BD,17,y,7,1);r(BG,17,y+1,7,1);r(BD,18,y+2,5,1)}
+  /* dải lụa đỏ-vàng buộc quanh thân */
+  for(let y=36;y<=96;y+=10){r('#d8283a',16,y,8,3);r('#ff7a6a',16,y,8,1);r('#a81f1a',16,y+2,8,1);r(GD,16,y+3,8,1);r('#d8283a',23,y+3,1,4);r('#a81f1a',23,y+5,1,2)}
+  /* ngọn tre: lá xòe + cờ đuôi nheo */
+  const lf=(x0,y0,dx,dy,c)=>{for(let i=0;i<=10;i++){const t=i/10;r(c,Math.round(x0+dx*t*10),Math.round(y0+dy*t*10+ t*t*8),i<6?2:1,1)}};
+  lf(20,12,-1.3,-.6,'#4a8a3a');lf(20,12,1.3,-.6,'#4a8a3a');lf(20,12,-.9,-1,'#63b85a');lf(20,12,.9,-1,'#63b85a');lf(20,12,-1.6,0,'#3f7a32');lf(20,12,1.6,0,'#3f7a32');lf(20,12,0,-1.1,'#7acb68');
+  r(GD,19,7,3,3);r(GDL,19,7,1,1);
+  for(let i=0;i<14;i++){const h=Math.round(1+i*.45);r('#e0343a',22+i,4+Math.round(Math.sin(i*.5)*1.2),1,h);r(GD,22+i,4+Math.round(Math.sin(i*.5)*1.2),1,1)}
+  /* xà ngang + đồ treo */
+  r('#8a5a2e',6,22,28,2);r('#b98550',6,22,28,1);r(GD,5,21,2,4);r(GD,33,21,2,4);
+  /* khánh đất nung */
+  for(const[x,l]of[[9,9],[13,12],[17,8]]){r('#c8a870',x,24,1,3);r('#b8683e',x-1,27,3,l);r('#dc8f60',x-1,27,1,l);r('#8a4a2a',x+1,27,1,l);r('#6b3a20',x-1,27+l,3,1)}
+  lixi(r,27,24,5);
+  /* cá chép giấy */
+  {const x=29,y=34;r('#c8a870',x+4,24,1,10);E(r,'#ff6a2a',x+4,y+4,4,2);r('#ffb347',x+2,y+3,4,1);r('#c8283a',x+7,y+3,3,3);r('#c8283a',x+8,y+2,2,5);r('#1a1a1a',x+2,y+3,1,1);r('#e0343a',x+3,y+6,4,1);r(GD,x+4,y+4,1,1)}
+  dayDo(r,16,38,14,2);
+ });
+ /* ================= LIỄN ĐỎ PHÚC – LỘC (2x1) ================= */
+ S_.tetliendo=mk(46,66,(g,r)=>{
+  E(r,'rgba(0,0,0,.15)',23,64,19,2);
+  const WD=['#b98550','#8a5a2e','#5a3a1c'];
+  /* trụ gỗ + chân đế */
+  for(const x of[3,41]){r(WD[1],x,6,3,56);r(WD[0],x,6,1,56);r(WD[2],x+2,6,1,56);r(WD[1],x-2,60,7,3);r(WD[0],x-2,60,7,1);r(GD,x-1,4,5,3);r(GDL,x-1,4,5,1)}
+  r(WD[1],3,7,41,3);r(WD[0],3,7,41,1);r(WD[2],3,9,41,1);
+  /* 2 tấm liễn */
+  for(const[x,txt,n]of[[8,'PHÚC',4],[26,'LỘC',3]]){
+   r('#7a1b1f',x-1,10,13,46);r(GD,x-1,10,13,1);r(GD,x-1,55,13,1);r(GD,x-1,10,1,46);r(GD,x+11,10,1,46);
+   r('#d8283a',x,11,11,44);r('#ff6a5a',x,11,1,44);r('#a81f1a',x+10,11,1,44);
+   r('#f0b040',x+1,12,9,1);r('#f0b040',x+1,53,9,1);
+   g.textAlign='center';g.font='900 9px Nunito, "Segoe UI", sans-serif';
+   for(let i=0;i<n;i++){const ty=24+i*9+(n==3?4:0);g.fillStyle='#6b0f14';g.fillText(txt[i],x+6,ty+1);g.fillStyle='#ffe27a';g.fillText(txt[i],x+5.5,ty)}
+   if(n==3){E(r,GD,x+5,50,3,3);E(r,'#d8283a',x+5,50,2,2)}
+   for(let k=0;k<3;k++){r(GD,x+1+k*4,56,1,1);r('#d8283a',x+1+k*4,57,1,4);r('#a81f1a',x+1+k*4,59,1,2)}
+   r(GD,x+4,56,3,2)}
+ });
+ /* ================= BÁNH CHƯNG (1x1) ================= */
+ S_.tetchung=mk(38,38,(g,r)=>{
+  E(r,'rgba(0,0,0,.16)',19,36,16,2);
+  /* mâm gỗ */
+  E(r,'#6b4220',19,31,17,4);E(r,'#8a5a2e',19,30,17,3);E(r,'#b98550',19,29,15,2);E(r,'#5a3a1c',19,34,12,1);
+  const banh=(x,y)=>{
+   for(let j=0;j<4;j++)r(j%2?'#74b852':'#7cc25a',x+4-j,y+j,13,1);
+   r('#3e8a3a',x,y+4,13,10);r('#4aa046',x,y+4,13,1);r('#6cc058',x,y+4,1,10);
+   for(let k=0;k<4;k++)r('#2c6a2e',x+13+k,y+4-k,1,10);
+   for(let y2=y+6;y2<y+14;y2+=3)r('#357a36',x+1,y2,11,1);
+   /* lạt giang buộc chéo */
+   for(const lx of[4,8]){r('#f0e2a0',x+lx,y+4,1,10);r('#b8a060',x+lx+1,y+4,1,10);for(let j=0;j<4;j++){r('#f0e2a0',x+lx+4-j,y+j,1,1)}}
+   r('#f0e2a0',x,y+8,13,1);r('#b8a060',x,y+9,13,1);for(let k=0;k<4;k++)r('#d8c880',x+13+k,y+8-k,1,1);
+   r(GD,x+5,y+7,3,3);r(GDL,x+5,y+7,1,1)};
+  banh(2,17);banh(18,17);banh(10,6);
+  /* cành đào + lì xì tựa bên */
+  r('#6b3a2e',3,10,1,8);r('#6b3a2e',4,12,3,1);for(const[x,y]of[[1,8],[4,6],[6,10],[0,12]])flower(r,x,y,'dao',1);flower(r,2,3,'dao',0);
+  r('#e0343a',31,12,5,9);r('#ff6a5a',31,12,1,9);r('#a81f1a',35,12,1,9);r(GD,32,15,3,3);r(GDL,33,16,1,1);r(GD,31,20,5,1)
+ });
+ /* ================= MÂM NGŨ QUẢ (1x1) ================= */
+ S_.tetngu=mk(36,46,(g,r)=>{
+  E(r,'rgba(0,0,0,.16)',18,44,14,2);
+  /* đế + chân mâm bồng */
+  E(r,'#8e2420',18,42,11,2);E(r,'#c0392f',18,41,10,2);r(GD,8,40,20,1);
+  r('#a82a26',15,34,6,7);r('#e0594a',15,34,1,7);r(GD,14,36,8,1);r(GDL,14,36,2,1);
+  /* mâm */
+  for(let i=0;i<7;i++){const w=30-i*2,x=18-(w>>1);r(i<1?GD:'#c0392f',x,26+i,w,1);if(i>0){r('#e0594a',x,26+i,2,1);r('#8e2420',x+w-2,26+i,2,1)}}
+  r(GDL,4,26,28,1);r(GD,6,32,24,1);for(let x=8;x<29;x+=4)r(GD,x,29,2,2);
+  /* quả: bưởi trên đỉnh */
+  E(r,'#a4b83a',18,10,7,7);E(r,'#c8dc5a',18,9,6,6);E(r,'#e4f088',16,7,2,2);r('#7a8a2a',22,13,3,1);r('#4a8a3a',17,2,2,2);r('#63b85a',19,1,3,2);
+  /* chuối bên trái */
+  for(let k=0;k<5;k++){const x=4+k*2,y=20-Math.round(Math.sin(k*.6)*0)+k;r('#e8b820',x,y,3,8-k);r('#ffe05a',x,y,1,8-k);r('#b88a10',x+2,y,1,8-k);r('#5a4a1a',x+1,y+8-k,1,1)}
+  r('#4a6a2a',4,18,10,2);r('#4a6a2a',3,19,2,3);
+  /* cam / quýt bên phải */
+  for(const[x,y,c]of[[26,22,'#ff8a1a'],[22,24,'#ff9a2a'],[29,26,'#ff9a2a']]){E(r,'#d96a0a',x,y+1,4,4);E(r,c,x,y,4,4);r('#ffd08a',x-2,y-2,2,1);r('#4a8a3a',x,y-4,1,1)}
+  /* lựu + hồng ở giữa trước */
+  E(r,'#a81f2a',14,25,4,4);E(r,'#d8283a',14,24,4,4);r('#ff8a7a',12,22,2,1);r('#a81f2a',13,19,3,2);r('#d8283a',12,20,1,1);r('#d8283a',15,20,1,1);
+  E(r,'#e0561a',21,15,4,4);E(r,'#ff7a2a',21,14,4,4);r('#ffb070',19,12,2,1);r('#4a8a3a',19,10,4,2)
+ });
+ /* ================= DÀN ĐÈN LỒNG (4x1) ================= */
+ S_.tetlong=mk(80,76,(g,r)=>{
+  E(r,'rgba(0,0,0,.14)',8,74,9,2);E(r,'rgba(0,0,0,.14)',72,74,9,2);
+  const BM='#5a9a3c',BD='#3a6e28',BL='#b4e08a',BG='#7cc05a';
+  for(const x of[6,70]){
+   for(let y=8;y<=71;y++){r(BM,x,y,4,1);r(BL,x,y,1,1);r(BD,x+3,y,1,1)}
+   for(let y=18;y<=66;y+=16){r(BD,x-1,y,6,1);r(BG,x-1,y+1,6,1)}
+   r('#9a9a92',x-3,66,10,6);r('#c8c8c0',x-3,66,10,1);r('#7a7a72',x-3,71,10,1);
+   r(GD,x,4,4,5);r(GDL,x,4,1,2);r('#c8283a',x+4,3,7,1);r('#e0343a',x+4,4,6,3);r(GD,x+4,3,1,5)}
+  /* dây chính võng xuống */
+  const pts=[];for(let x=9;x<=71;x++){const t=(x-9)/62,y=12+Math.round(9*Math.sin(Math.PI*t));pts.push([x,y]);r('#d8283a',x,y,1,1);r(GD,x,y+1,1,1)}
+  const lanterns=[[15,1],[27,0],[40,1],[53,0],[65,1]];
+  lanterns.forEach(([x,big],i)=>{const y=pts[x-9][1]+2,Ry=big?8:6,Rx=big?6:5,len=big?3:5,cy=y+len+Ry;
+   r(GD,x-1,y,2,len);r(GD,x-Rx+2,y+len,Rx*2-3,1);
+   E(r,'#a81f1a',x,cy,Rx+1,Ry);E(r,'#d9302a',x,cy,Rx,Ry-1);E(r,'#ff6a3a',x,cy,Rx-1,Ry-2);E(r,'#ffb347',x,cy,Rx-2,Ry-4);E(r,'#ffe9a0',x,cy-1,1,Ry-6);
+   for(const dx of[-Rx+2,Rx-2]){r('#a81f1a',x+dx,cy-Ry+2,1,Ry*2-3)}
+   r(GD,x-Rx+1,cy,Rx*2-1,1);r('#fff4c8',x-Rx+2,cy-Ry+3,1,2);
+   r(GD,x-Rx+2,cy+Ry-1,Rx*2-3,1);r(GD,x-1,cy+Ry,2,2);
+   for(const o of[-1,0,1])r('#d8283a',x+o,cy+Ry+2,1,big?6:4);
+   /* đồng tiền / lì xì xen kẽ giữa các đèn */
+   if(i<lanterns.length-1){const mx=Math.round((x+lanterns[i+1][0])/2),my=pts[mx-9][1]+1;r('#c8283a',mx,my,1,4);E(r,GD,mx,my+6,2,2);E(r,'#a8842a',mx,my+6,1,1)}})
+ });
+ /* ================= CỔNG CHÀO TẾT (4x1) ================= */
+ S_.tetcong=mk(88,104,(g,r)=>{
+  const RD='#c0392f',RDL='#e0594a',RDD='#8e2420',SN='#cfc8b8',SNL='#e8e2d4',SND='#a9a190';
+  const R1='#efb09b',R2='#dc8b74',R3='#c0694f',R4='#8f4538',CX=44;
+  E(r,'rgba(0,0,0,.15)',44,102,40,2);
+  /* trụ đỏ + đế đá */
+  for(const x of[6,70]){
+   r(RD,x,46,10,52);r(RDL,x+1,46,2,52);r(RDD,x+8,46,2,52);
+   for(const y of[52,88]){r(GD,x-1,y,12,2);r(GDL,x-1,y,12,1)}
+   r(SN,x-2,94,14,6);r(SNL,x-2,94,14,1);r(SND,x-2,99,14,1);r('#bdb5a2',x-3,98,16,3);r(SNL,x-3,98,16,1)}
+  /* phù điêu dọc trụ: thoi vàng */
+  for(const x of[11,75]){for(let y=62;y<84;y+=8){r(GD,x-2,y+2,5,1);r(GD,x-1,y+1,3,3);r(GD,x,y,1,5);r(GDL,x,y+2,1,1)}}
+  /* xà ngang + hoành phi */
+  r(RDD,2,44,84,4);r(RD,2,44,84,2);r(GD,2,46,84,1);
+  r('#43291d',17,26,54,24);r(GDD,16,25,56,26);r(GD,17,26,54,24);r(GDL,17,26,54,1);r('#7a1b1f',19,28,50,20);r('#a22a2e',19,28,50,1);
+  for(const[x,y]of[[20,29],[66,29],[20,45],[66,45]])r(GD,x,y,2,2);
+  g.textAlign='center';g.font='900 8px Nunito, "Segoe UI", sans-serif';
+  g.fillStyle='#4a0d10';g.fillText('CHÚC MỪNG',CX+.5,37.5,44);g.fillText('NĂM MỚI',CX+.5,46.5,44);
+  g.fillStyle='#ffe27a';g.fillText('CHÚC MỪNG',CX,37,44);g.fillText('NĂM MỚI',CX,46,44);
+  /* mái ngói hai tầng */
+  const roof=(top,hh,hT,hB,pw)=>{const half=i=>hT+(hB-hT)*Math.pow(i/(hh-1),pw);
+   for(let i=0;i<hh;i++){const h=Math.round(half(i)),x0=CX-h,w=h*2,y=top+i,m=i%3;r(m==0?R3:m==1?R2:R1,x0,y,w,1);
+    if(m==1){const off=((i/3)|0)%2*2;for(let x=x0+off;x<x0+w;x+=4){r(R3,x,y,1,1);r(R1,x+1,y,1,1)}}
+    r(R4,x0,y,1,1);r(R4,x0+w-1,y,1,1)}
+   const hb=Math.round(half(hh-1)),x0=CX-hb,x1=CX+hb,yb=top+hh;r(R4,x0,yb,hb*2,1);
+   for(let x=x0+2;x<x1-2;x+=5){r('#f4dda6',x,yb+1,3,2);r('#fff1c8',x,yb+1,1,1);r('#b8603e',x,yb+3,3,1)}
+   for(let k=0;k<=7;k++){const py=yb-3-Math.round(k*.35+k*k*.07),th=Math.max(2,4-(k>>1));
+    r(R2,x0-k,py,2,th);r(R1,x0-k,py,2,1);r(R4,x0-k,py+th,2,1);r(R2,x1+k-2,py,2,th);r(R1,x1+k-2,py,2,1);r(R4,x1+k-2,py+th,2,1)}};
+  roof(12,14,16,40,1.5);
+  roof(2,11,10,22,1.5);
+  r(R4,CX-14,12,28,2);r(GD,CX-2,-0,0,0);
+  E(r,GDD,CX,3,3,3);E(r,GD,CX,3,2,2);r(GDL,CX-1,2,1,1);
+  /* đèn lồng treo dưới xà */
+  for(const x of[22,66]){r('#c8283a',x,50,1,5);r(GD,x-2,55,5,1);E(r,'#a81f1a',x,62,5,6);E(r,'#d9302a',x,62,4,5);E(r,'#ff6a3a',x,62,3,4);E(r,'#ffd37a',x,61,1,2);r(GD,x-2,68,5,1);r(GD,x,69,1,2);for(const o of[-1,1])r('#d8283a',x+o,71,1,5)}
+  /* cành mai (trái) + đào (phải) vắt trên trụ */
+  for(const[k,x0,s]of[['mai',8,1],['dao',72,-1]]){
+   r('#6b4a2e',x0+3,38,2,10);r('#6b4a2e',x0+3+s*2,40,4,1);
+   for(const[dx,dy,sz]of[[-4,34,2],[1,31,2],[6,35,2],[-1,40,1],[7,41,1],[3,27,1],[-5,40,0],[0,37,1]])flower(r,x0+dx*s*(s<0?-1:1)+(s<0?-4:0),dy,k,sz)}
+ });
+
+}
+
 const FMP=10;/* giá mọi món decor: 10 Xu */
 const FMD={
  cau:['Cây cau',()=>S_.cau,1,1,1,'c'],chuoi:['Cây chuối',()=>S_.chuoi,1,1,1,'c'],ban:['Cây bàng',()=>S_.ban,1,1,1,'c'],dua:['Cây dừa',()=>S_.dua,1,1,1,'c'],nipa:['Dừa nước',()=>S_.nipa,1,1,0,'c'],
@@ -5937,8 +6227,13 @@ Object.assign(FMD,{
  ccvong:['Chong chóng cầu vồng',()=>S_.ccvong,1,1,1,'v',100],cc4:['Chong chóng 4 cánh',()=>S_.cc4,1,1,1,'v',100],
  bontru:['Bồn trữ nước',()=>S_.bontru,2,2,1,'v',500],
  aonho:['Ao cá thủy sinh nhỏ',()=>S_.aonho,4,4,1,'k',500],aolon:['Ao cá thủy sinh lớn',()=>S_.aolon,6,6,1,'k',1000],
- bienhieu:['Bảng hiệu nông trại',()=>S_.bienhieu,4,2,1,'v',1500],thungruou:['Thùng rượu gỗ sồi',()=>S_.thungruou,2,1,1,'v',500]});
-const FMCAT=[['p','🛤️ Lối đi & hàng rào'],['k','🏡 Công trình'],['c','🌳 Cây cối'],['b','🌸 Bụi & hoa'],['v','🧺 Vật dụng']];
+ bienhieu:['Bảng hiệu nông trại',()=>S_.bienhieu,4,2,1,'v',1500],thungruou:['Thùng rượu gỗ sồi',()=>S_.thungruou,2,1,1,'v',500],
+ caytreoco:['Cây treo cờ',()=>S_.caytreoco,1,1,1,'c',600],
+ tetmai1:['Chậu mai nhỏ',()=>S_.tetmai1,1,1,1,'t',200],tetdao1:['Chậu đào nhỏ',()=>S_.tetdao1,1,1,1,'t',200],tetquat1:['Chậu quất',()=>S_.tetquat1,1,1,1,'t',300],
+ tetchung:['Bánh chưng',()=>S_.tetchung,1,1,1,'t',400],tetngu:['Mâm ngũ quả',()=>S_.tetngu,1,1,1,'t',500],tetliendo:['Liễn đỏ Phúc – Lộc',()=>S_.tetliendo,2,1,1,'t',600],
+ tetneu:['Cây nêu ngày Tết',()=>S_.tetneu,1,1,1,'t',800],tetlong:['Dàn đèn lồng Tết',()=>S_.tetlong,4,1,0,'t',1200],tetquat2:['Cây quất lớn',()=>S_.tetquat2,2,2,1,'t',1500],
+ tetmai2:['Cây mai vàng lớn',()=>S_.tetmai2,2,2,1,'t',2500],tetdao2:['Cây đào hồng lớn',()=>S_.tetdao2,2,2,1,'t',2500],tetcong:['Cổng chào Tết',()=>S_.tetcong,4,1,0,'t',3000]});
+const FMCAT=[['t','🧧 Tết Việt'],['p','🛤️ Lối đi & hàng rào'],['k','🏡 Công trình'],['c','🌳 Cây cối'],['b','🌸 Bụi & hoa'],['v','🧺 Vật dụng']];
 const FMRAW={},FMOUT={},FMTH={};
 const fmRaw=k=>FMRAW[k]||(FMRAW[k]=FMD[k][1]());
 const fmOut=k=>FMOUT['d'+k]||(FMOUT['d'+k]=outl(fmRaw(k)));
@@ -6816,7 +7111,7 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 
 </script>
 <script src="park-map.js?v=20261219"></script>
-<script src="pho-map.js?v=20261219a"></script>
+<script src="pho-map.js?v=20261219b"></script>
 <script src="broomkit.js?v=20261118"></script>
 <script src="circus.js?v=20261219"></script>
 <script src="sea-map.js?v=20261221a"></script>
