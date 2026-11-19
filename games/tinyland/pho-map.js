@@ -148,54 +148,95 @@ const mkGoldShop=(w,h)=>mk(w,h,(g,r)=>{
  for(const px of[0,w-6]){r(GDD,px,h-9,6,8);r(GD,px,h-9,6,2);r('#6fae78',px,h-15,6,6);r('#8fcf98',px+1,h-15,2,2);r(GDL,px+3,h-14,2,2)}
  r('rgba(0,0,0,.1)',0,h-2,w,2)});
 
+// ===== MIẾU CẦU PHÚC (vẽ lại): mái 2 tầng cong vút, đầu ngói, lưỡng long chầu nguyệt, hoành phi, cửa đỏ đinh vàng, thảm đỏ + bậc đá =====
+// Ảnh tĩnh: dựng 1 lần bằng canvas rồi chỉ drawImage → không tốn CPU lúc chơi.
 const mkMieu=()=>mk(184,150,(g,r)=>{
- const RD='#c4675a',RDD='#a24f45',GD='#e2c36b',CR='#f0e4cc',TL='#cf8f7b';
- r('#d9d0c0',4,140,176,10);r('#e8e0d2',4,140,176,2);r('#cfc6b6',12,132,160,8);r('#e8e0d2',12,132,160,1);
- r(CR,22,74,140,58);r(shade(CR,.1),22,74,3,58);r(shade(CR,-.14),159,74,3,58);
- for(const x of[22,60,118,156]){r(RD,x,74,6,58);r('#d98578',x,74,2,58);r(RDD,x+4,74,2,58);r('#6b5a48',x-1,128,8,4)}
- r('#7d4a3a',66,86,52,46);r(RD,68,88,24,44);r(RD,92,88,24,44);r(RDD,91,88,2,44);for(const[x,y]of[[78,106],[86,106],[96,106],[104,106],[78,116],[86,116],[96,116],[104,116]])r(GD,x,y,3,3);
- r(RDD,66,82,52,5);r(GD,66,82,52,1);
- r('#8a2f27',70,66,44,14);r(GD,70,66,44,1);r(GD,70,79,44,1);r(GD,70,66,1,14);r(GD,113,66,1,14);
- g.textAlign='center';g.font='800 8px Nunito, sans-serif';g.fillStyle='#ffe9a0';g.fillText('MIẾU CẦU PHÚC',92,76,40);
- const roof=(x0,x1,y0,hh)=>{for(let i=0;i<hh;i++){const ex=Math.round(i*.35),up=i<5?Math.round((5-i)*1.4):0;r(i%4==3?'#b87a68':i%2?TL:'#d8a08c',x0+ex-up,y0+i,x1-x0-ex*2+up*2,1)}
-  r('#b87a68',x0-6,y0+hh-1,x1-x0+12,3);r('#e8b8a6',x0-6,y0+hh-1,x1-x0+12,1);for(let x=x0;x<x1;x+=6)r('#e8b8a6',x,y0+hh+2,4,2)};
- roof(14,170,52,24);roof(40,144,22,32);
- r('#8f6a46',88,10,8,12);r(GD,86,8,12,4);E(r,GD,92,6,3,3);
- for(const x of[24,160]){r('#6b5a48',x,50,1,6);E(r,'#e58a7a',x,60,5,5);r(GD,x-3,55,6,1);r(GD,x-3,66,6,1)}
- for(const x of[46,138]){r('#6b5a48',x,76,1,4);E(r,'#e58a7a',x,84,4,4)}
- r('#b8a98f',8,122,10,18);r('#d4c8b0',8,122,10,3);r('#b8a98f',166,122,10,18);r('#d4c8b0',166,122,10,3)});
-// ===== MIẾU: cây bồ đề treo cờ lễ hội + 2 tượng sư tử đá (thay cây anh đào + lư hương cũ) =====
-// Cây: tán xanh nhiều lớp, lá hình tim có đuôi nhọn, rễ khí thả xuống, dải lụa đỏ quấn thân, 2 dây cờ lễ hội + 2 đèn lồng đỏ. Vẽ bằng hsh (không đụng rn) nên không làm lệch các cây khác.
-const mkBodhi=()=>mk(64,96,(g,r)=>{
- const W=64,H=96,cxp=32,TR='#6b4a2e',TL='#8d6a46',TD='#4e3520';
- E(r,'rgba(0,0,0,.16)',cxp,H-2,20,2);
- // thân + gốc loe
- for(let y=50;y<=H-3;y++){const fl=y>H-14?Math.round((y-(H-14))*.8):0,hw=4+Math.round((y-50)*.04)+fl;
-  r(TR,cxp-hw,y,hw*2,1);r(TL,cxp-hw,y,2,1);r(TD,cxp+hw-2,y,2,1);if(y%6==0&&y<H-14)r(TD,cxp-1+((y/6)%2?1:-2),y,1,3)}
- // rễ phụ chạm đất
- r(TR,cxp-14,H-5,5,3);r(TD,cxp-14,H-3,5,1);r(TR,cxp+9,H-5,5,3);r(TD,cxp+9,H-3,5,1);
- // tán lá
- const GD='#2c6a3a',GM='#3d8c48',GL='#5cb257',GH='#8fd978';
- const bl=[[32,30,22,19],[15,38,13,11],[49,38,13,11],[22,19,14,11],[42,19,14,11],[32,45,15,9],[8,31,8,8],[56,31,8,8]];
- for(const[x,y,a,b]of bl)E(r,GD,x,y+3,a,b);for(const[x,y,a,b]of bl)E(r,GM,x,y,a,b);for(const[x,y,a,b]of bl)E(r,GL,x-a*.18,y-b*.3,a*.62,b*.55);
- const inb=(x,y)=>bl.some(([a,b,p,q])=>((x-a)/p)**2+((y-b)/q)**2<.9);
- // lá hình tim
- for(let i=0;i<140;i++){const x=Math.floor(hsh(i,1)*(W-3)),y=Math.floor(hsh(i,2)*52),t=hsh(i,3);if(!inb(x+1,y+1))continue;
-  const c=t<.34?GH:t<.7?GL:GD;r(c,x,y,1,1);r(c,x+2,y,1,1);r(c,x,y+1,3,1);r(c,x+1,y+2,1,1)}
- // đuôi lá nhọn rủ xuống mép dưới tán
- for(let x=5;x<=59;x+=3){let yb=-1;for(let y=60;y>14;y--)if(inb(x,y)){yb=y;break}if(yb>0){r(GM,x,yb,1,3);r(GD,x,yb+3,1,1)}}
- // rễ khí thả xuống
- for(const x of[19,26,38,45]){const L=12+Math.floor(hsh(x,7)*10);for(let y=52;y<52+L;y++)r(y>52+L-3?TD:'#7a5636',x+(y%7==0?1:0),y,1,1)}
- // dải lụa đỏ quấn thân
- {const y=H-30,hw=4+Math.round((y-50)*.04);r('#c8283a',cxp-hw,y,hw*2,3);r('#e8545a',cxp-hw,y,hw*2,1);r('#9c1c2a',cxp-hw,y+2,hw*2,1);r('#f2c230',cxp+hw-3,y,2,5);r('#c8283a',cxp+hw-3,y+5,2,3)}
- // 2 dây cờ lễ hội (cờ đuôi nheo đỏ / vàng / xanh / trắng / lam)
- const FC=['#e0343a','#f4c430','#2fa86a','#fbf6e8','#3a7bd5'];
- const bunt=(x0,x1,y0,sag,off)=>{const n=x1-x0;let k=0;
-  for(let i=0;i<=n;i++){const u=i/n,y=y0+Math.round(sag*Math.sin(Math.PI*u));r('#f3ead0',x0+i,y,1,1);
-   if(i%6==3){const c=FC[(k+off)%5];k++;for(let j=0;j<5;j++)r(c,x0+i-2+(j>>1),y+1+j,Math.max(1,5-j),1)}}};
- bunt(1,62,28,8,0);bunt(4,59,43,7,2);
- // 2 đèn lồng đỏ
- for(const[x,y]of[[11,52],[53,50]]){r('#d8c8a0',x,y-6,1,6);r('#f2c230',x-2,y,5,1);r('#c8283a',x-3,y+1,7,6);r('#e8545a',x-3,y+1,2,6);r('#9c1c2a',x+2,y+1,2,6);r('#f2c230',x-2,y+7,5,1);r('#f2c230',x,y+8,1,3)}
+ const CX=92;
+ const RD='#c0392f',RDL='#e0594a',RDD='#8e2420',GD='#e6c15a',GDL='#fff0a8',GDD='#a8842a';
+ const WL='#f6ecd6',WLS='#e8dcc0',WLD='#d2c4a2',SN='#cfc8b8',SNL='#e8e2d4',SND='#a9a190';
+ const R1='#efb09b',R2='#dc8b74',R3='#c0694f',R4='#8f4538',WD='#6b4a34',WDD='#43291d';
+ // ---------- bậc đá + nền ----------
+ r(SND,8,148,168,2);r(SN,8,146,168,2);r(SNL,8,146,168,1);
+ r(SND,14,145,156,1);r(SN,14,142,156,3);r(SNL,14,142,156,1);
+ r(SND,20,141,144,1);r(SN,20,138,144,3);r(SNL,20,138,144,1);
+ r(SN,22,128,140,10);r(SNL,22,128,140,1);r('#bdb5a2',22,136,140,2);r(SND,22,137,140,1);
+ for(let x=34;x<160;x+=14)r(SND,x,131,1,6);
+ // thảm đỏ từ cửa xuống bậc
+ for(let y=128;y<150;y++){const w=Math.round(38+(y-128)*.9),x=CX-(w>>1);r('#b8313a',x,y,w,1);r(GD,x,y,1,1);r(GD,x+w-1,y,1,1);if(y%4==0)r('#d4505a',x+2,y,w-4,1)}
+ // ---------- thân nhà ----------
+ r(WL,24,90,136,38);r(WLS,24,90,136,2);r(WLD,24,116,136,12);r(SND,24,116,136,1);
+ for(let x=26;x<160;x+=8)r('rgba(120,90,50,.10)',x,118,1,10);
+ // cửa sổ lá sách hai bên
+ for(const wx of[36,133]){
+  r(WDD,wx-1,95,18,24);r('#2a1210',wx,96,16,22);
+  for(let x=wx;x<wx+16;x+=4){r(RD,x,96,1,22)}
+  for(let y=96;y<118;y+=4){r(RD,wx,y,16,1)}
+  r(RDL,wx,96,16,1);r(GD,wx+7,106,2,2);r(GDL,wx+7,106,1,1);
+  r('#e2d6b8',wx-2,119,20,2);r(SND,wx-2,121,20,1)}
+ // cột đỏ
+ for(const x of[24,56,121,153]){r(RD,x,88,8,40);r(RDL,x+1,88,2,40);r(RDD,x+6,88,2,40);
+  r(GD,x-1,92,10,2);r(GDL,x-1,92,10,1);r(WDD,x-1,88,10,3);
+  r(SND,x-1,122,10,6);r(SNL,x-1,122,10,1);r(SN,x-2,126,12,2)}
+ // cửa chính: khung gỗ + 2 cánh đỏ đinh vàng
+ r(WDD,64,93,56,35);r(WD,65,94,54,34);r('#2a1210',66,95,52,7);
+ for(let x=68;x<116;x+=3)r(GD,x,96,1,5);
+ r(GD,66,102,52,1);r(GDD,66,103,52,1);
+ for(const lx of[67,93]){r(RD,lx,104,25,24);r(RDL,lx,104,25,1);r(RDL,lx,104,1,24);r(RDD,lx+24,104,1,24);r(RDD,lx+2,106,21,1);
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++){const sx=lx+4+i*7,sy=108+j*7;r(GDD,sx,sy+1,4,3);r(GD,sx,sy,4,3);r(GDL,sx,sy,1,1)}}
+ r(RDD,91,104,2,24);r(GD,89,113,2,5);r(GD,93,113,2,5);r(GDL,89,113,1,2);r(GDL,93,113,1,2);
+ r(SND,66,127,52,1);
+ // phào xà ngang + bóng mái đổ xuống tường
+ r(RDD,20,86,144,4);r(RD,20,86,144,2);r(GD,20,88,144,1);r(GDD,20,89,144,1);
+ for(let x=22;x<164;x+=6){r(WD,x,84,3,2)}
+ r('rgba(60,20,10,.20)',24,90,136,4);
+ // ---------- gác chuông: tường + 2 cửa tròn + hoành phi ----------
+ r(WL,44,46,96,15);r(WLS,44,46,96,2);r(WLD,44,59,96,2);
+ for(const x of[44,134]){r(RD,x,46,6,15);r(RDL,x+1,46,1,15);r(RDD,x+4,46,2,15)}
+ for(const wx of[57,127]){E(r,GDD,wx,53,6,6);E(r,GD,wx,53,5,5);E(r,'#2a1210',wx,53,4,4);r(RD,wx-4,53,9,1);r(RD,wx,49,1,9);r(GDL,wx-4,50,2,1)}
+ r(GDD,65,46,54,14);r(GD,66,47,52,12);r(GDL,66,47,52,1);r('#7a1b1f',67,48,50,10);r('#a22a2e',67,48,50,1);
+ g.textAlign='center';g.font='900 7px Nunito, "Segoe UI", sans-serif';g.fillStyle='#4a0d10';g.fillText('MIẾU CẦU PHÚC',CX+.5,56.5,46);g.fillStyle='#ffe9a0';g.fillText('MIẾU CẦU PHÚC',CX,56,46);
+ // ---------- hàm vẽ mái cong ----------
+ const roof=(top,hh,hTop,hBot,pw)=>{
+  const half=i=>hTop+(hBot-hTop)*Math.pow(i/(hh-1),pw);
+  for(let i=0;i<hh;i++){const h=Math.round(half(i)),x0=CX-h,w=h*2,y=top+i,m=i%3;
+   r(m==0?R3:m==1?R2:R1,x0,y,w,1);
+   if(m==1){const off=((i/3)|0)%2*2;for(let x=x0+off;x<x0+w;x+=4){r(R3,x,y,1,1);r(R1,x+1,y,1,1)}}
+   if(m==2){const off=((i/3)|0)%2*2;for(let x=x0+off;x<x0+w;x+=4)r(R2,x,y,1,1)}
+   r(R4,x0,y,1,1);r(R4,x0+w-1,y,1,1)}
+  const hb=Math.round(half(hh-1)),x0=CX-hb,x1=CX+hb,yb=top+hh;
+  r(R4,x0,yb,hb*2,1);r(R3,x0+1,yb-1,hb*2-2,1);
+  // đầu ngói tròn (men vàng ngà) dọc mép mái
+  for(let x=x0+2;x<x1-2;x+=5){r('#f4dda6',x,yb+1,3,2);r('#fff1c8',x,yb+1,1,1);r('#b8603e',x,yb+3,3,1)}
+  // đầu mái vểnh cong lên (dày, cong dần, liền với mái)
+  for(let k=0;k<=10;k++){const py=yb-3-Math.round(k*.35+k*k*.07),th=Math.max(2,5-(k>>1)),w=2;
+   for(const sd of[-1,1]){const px=sd<0?x0-k:x1+k-w;
+    r(R2,px,py,w,th);r(R1,px,py,w,1);r(R4,px,py+th,w,1);if(k>0)r(R3,px+(sd<0?w-1:0),py+1,1,th-1)}}
+  {const ty=yb-3-Math.round(10*.35+100*.07)-2;r(GD,x0-12,ty,3,3);r(GDL,x0-12,ty,1,1);r(GD,x1+9,ty,3,3);r(GDL,x1+9,ty,1,1)}};
+ roof(58,26,48,80,1.6);
+ roof(20,26,26,62,1.7);
+ // ---------- nóc: đường bờ nóc + lưỡng long chầu nguyệt ----------
+ r(R4,58,17,68,6);r(R3,58,17,68,4);r(R1,58,17,68,1);r(R2,58,18,68,1);
+ for(let x=60;x<126;x+=4){r(R4,x,19,1,3)}
+ r(GDD,58,22,68,1);
+ // kìm (đuôi cá) cong vút hai đầu nóc
+ for(const s of[-1,1]){const bx=s<0?56:126;
+  r(GDD,bx,14,4,8);r(GD,bx,14,3,8);r(GD,bx+s,10,3,5);r(GD,bx+s*2,7,3,4);r(GD,bx+s*3,5,3,3);r(GD,bx+s*2,3,3,3);r(GD,bx+s*1,2,2,2);
+  r(GDL,bx,14,1,7);r(GDL,bx+s,10,1,4);r(GDL,bx+s*2,7,1,3);r(GDL,bx+s*3,5,1,2);r(RD,bx+s*2+(s<0?1:0),4,1,1)}
+ // vầng trăng giữa nóc (có hào quang)
+ E(r,'rgba(255,240,170,.35)',CX,11,11,10);E(r,GDD,CX,11,9,9);E(r,GD,CX,11,8,8);E(r,GDL,CX,11,6,6);E(r,'#fff6c8',CX,11,4,4);r('#fffbe0',CX-2,8,2,2);
+ r(GDD,CX-3,17,7,3);r(GD,CX-3,17,7,1);
+ // hai con rồng chầu hai bên: thân uốn sóng liền nét, đầu hướng vào trăng
+ for(const s of[-1,1]){
+  for(let dx=13;dx<=36;dx++){const yy=14+Math.round(2*Math.sin(dx*.55)),x=CX+s*dx;r(GDD,x,yy+2,1,1);r(GD,x,yy,1,2);r(GDL,x,yy,1,1);if(dx%4==1)r(GD,x,yy-2,1,2)}
+  for(let k=0;k<5;k++){r(GD,CX+s*(36+(k>>1)),13-k,1,2);r(GDL,CX+s*(36+(k>>1)),13-k,1,1)}
+  r(GD,CX+s*13-(s<0?2:0),11,3,5);r(GD,CX+s*11-(s<0?3:0),12,3,3);r(GDL,CX+s*13-(s<0?2:0),11,3,1);r(RD,CX+s*12,12,1,1);r(GDD,CX+s*10-(s<0?1:0),14,2,1);
+  r(GD,CX+s*14-(s<0?1:0),9,1,3);r(GD,CX+s*16-(s<0?1:0),10,1,2)}
+ // ---------- đèn lồng đỏ treo mái hiên ----------
+ for(const x of[22,162]){r('#d8c8a0',x,84,1,6);r(GD,x-2,90,5,1);E(r,'#a81f1a',x,98,5,6);E(r,'#d9302a',x,98,4,5);E(r,'#ff6a3a',x,98,3,4);E(r,'#ffd37a',x,97,1,2);
+  r('#a81f1a',x-2,95,1,7);r('#a81f1a',x+2,95,1,7);r(GD,x-2,104,5,1);r(GD,x,105,1,3);r('#d9302a',x-1,108,1,3);r('#d9302a',x+1,108,1,3)}
+ // chậu cúc vàng hai bên bậc thềm
+ for(const x of[34,150]){r('#a9654a',x-5,121,10,7);r('#c98466',x-5,121,10,2);r('#7a4430',x-5,127,10,1);
+  E(r,'#3e8a44',x,118,6,3);for(const[dx,c]of[[-3,'#f6c02e'],[0,'#ffd84a'],[3,'#f08a2e'],[-1,'#fff0a0']])E(r,c,x+dx,115+(dx&1),2,2)}
 });
 // tượng sư tử đá (kind 'ball' = cầu bên phải • 'cub' = sư tử con bên trái) — cổ quàng lụa đỏ + chuông vàng
 const mkLion=kind=>mk(30,40,(g,r)=>{
@@ -523,7 +564,7 @@ function walker(w){w.hx=null;dyn(w.k=='vend'?w.y+1.5:w.y+(w.k=='dog'?1:0),()=>dr
 function build(){
  PS.built=1;PS.bg=buildBG();const sp=PS.sp,seats=PS.seats;
  // ----- hàng nhà phố (san sát) -----
- put(mkMieu(),96,160,[4,0,190,162]);
+ put(mkMieu(),96,160,[4,0,182,162]);
  const SN=(t,bg,fg,n,m)=>({t,bg,fg,n,m});
  const H=[
   [188,76,118,{wall:PAL.cream,aw:['#cfe0cf','#f4f0e4'],tank:1,shelf:['#c98a52','#7db3a7','#e09a62','#d9a468'],sign:SN('NỘI THẤT','#cfe3cf','#4c6f52','#7dffb0','')}],
@@ -563,10 +604,9 @@ function build(){
  // ===== VỈA HÈ TRÊN (y156–268): hàng quán, bàn ghế, xe bánh mì, trà đá, người đi dạo / tập thể dục =====
  for(const x of[262,632,862,1150,1400])put(mkPole(),x,268,[x-3,258,x+3,268]);
  for(const x of[160,440,726,1010,1290])put(mkLamp(),x,266,[x-2,260,x+2,266]);
- // MIẾU: cây bồ đề treo cờ lễ hội bên trái + 2 tượng sư tử đá hai bên lối vào (đã bỏ cây anh đào + lư hương chắn lối)
- put(mkBodhi(),34,232,[24,222,42,232]);hit(0,140,68,92,'🌳 Cây bồ đề — treo cờ lễ hội trước miếu');
- put(mkLion('ball'),76,186,[68,176,79,188]);hit(62,152,28,36,'🦁 Tượng sư tử đá canh giữ miếu','cv:ps:mieu',[96,176]);
- put(mkLion('cub'),120,186,[114,176,127,188]);hit(106,152,28,36,'🦁 Tượng sư tử đá canh giữ miếu','cv:ps:mieu',[96,176]);
+ // MIẾU: 2 tượng sư tử đá đứng hai bên thềm miếu (để trống lối giữa cho người chơi đi vào)
+ put(mkLion('ball'),20,176,[10,166,30,178]);hit(4,140,32,38,'🦁 Tượng sư tử đá canh giữ miếu','cv:ps:mieu',[96,176]);
+ put(mkLion('cub'),164,176,[154,166,174,178]);hit(148,140,32,38,'🦁 Tượng sư tử đá canh giữ miếu','cv:ps:mieu',[96,176]);
  // bàn ghế nhựa (người chơi ngồi được) — dời hết lên vỉa hè
  const ptab=(x,by,ci,sc)=>{put(TBL[ci],x,by,[x-12,by-8,x+12,by]);for(const dx of[-24,24]){const i=seats.length;put(STL[sc[dx<0?0:1]],x+dx,by+3);
    seats.push({x:x+dx,y:by-1,by:by+3,sy:by+16,kind:'stool'});hit(x+dx-8,by-12,16,15,'🪑 Ghế nhựa vỉa hè — bấm E để ngồi','cv:seat:'+i,[x+dx,by+16])}};
