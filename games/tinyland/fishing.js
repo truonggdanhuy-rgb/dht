@@ -172,27 +172,19 @@ const bag=()=>{ST.qvm=(ST.qvm&&typeof ST.qvm=='object'&&!Array.isArray(ST.qvm))?
  return ST.qvm};
 const total=()=>Object.values(bag()).reduce((a,b)=>a+(b|0),0);
 const MQ=window.MQ={};
-MQ.items=()=>{const b=bag();const L=MON.map((m,i)=>({n:m.n,idx:i,r:m.r,c:b[m.id]|0})).filter(x=>x.c>0).sort((a,b)=>b.r-a.r||a.idx-b.idx).map(x=>({n:x.n,idx:x.idx,sm:'x'+x.c+(HOLD===x.idx?' • đang cầm':'')}));
+MQ.items=()=>{const b=bag();const L=MON.map((m,i)=>({n:m.n,idx:i,r:m.r,c:b[m.id]|0})).filter(x=>x.c>0).sort((a,b)=>b.r-a.r||a.idx-b.idx).map(x=>({n:x.n,idx:x.idx,sm:'x'+x.c}));
  const k=ST.kcn|0;if(k>0)L.push({n:'Kem chống nắng',idx:SUN_ID,sm:'x'+k+(protLeft()>0?' • đang bảo vệ':'')});
  for(const id of[101,102,103]){const c=(ST.pot&&ST.pot[POTK[id]])|0;if(c>0)L.push({n:POTN[id],idx:id,sm:'x'+c+(id==103&&toanLeft()>0?' • đang có tác dụng':'')})}return L};
 MQ.paint=(g,ix,c)=>{if(POTK[ix]){const sm=g.imageSmoothingEnabled;g.imageSmoothingEnabled=false;const s=potSpr(POTK[ix]),w=Math.round(c.width*.55),h=Math.round(w*s.height/s.width);g.drawImage(s,Math.round(c.width/2-w/2),Math.round(c.height/2-h/2),w,h);g.imageSmoothingEnabled=sm;return}
  if(ix===SUN_ID){const sm=g.imageSmoothingEnabled;g.imageSmoothingEnabled=false;const s=sunSpr(),w=Math.round(c.width*.55),h=Math.round(w*s.height/s.width);g.drawImage(s,Math.round(c.width/2-w/2),Math.round(c.height/2-h/2),w,h);g.imageSmoothingEnabled=sm;return}
  if(ix<0||!MON[ix])return;const t=performance.now()/1000;put(g,MON[ix].id,c.width/2,c.height/2,MON[ix].r==2?34:30,t)};
 
-// ---------- cầm trên tay ----------
-let HOLD=null;
-MQ.hold=i=>{if(i===SUN_ID)return useSun();if(POTK[i])return usePot(i);if(!MON[i])return;HOLD=i;window.MQH=1;closeUI();toast('🖐️ Bạn đang cầm '+MON[i].n+' trên tay (di chuyển để cất)')};
-MQ.clear=()=>{HOLD=null;window.MQH=0};
-const HC={};
-MQ.drawHold=(X,Y,d)=>{if(HOLD==null)return;const m=MON[HOLD],t=performance.now()/1000,w=m.r==2?22:m.r==1?17:15,
- off=d==2?-11:d==3?11:d==1?-12:12,bx=X+off,by=Y-5+Math.round(Math.sin(t*3)*1);
- const s=get(m.id),h=Math.round(w*s.height/s.width);
- if(m.r==2)fxGold(cx,bx,by-h/2,t,w*.75,false);
- let o=HC[m.id+w];if(!o&&typeof outl=='function'){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(s,0,0,w,h);o=HC[m.id+w]=outl(c)}
- const sm=cx.imageSmoothingEnabled;cx.imageSmoothingEnabled=false;
- if(o)cx.drawImage(o,Math.round(bx-o.width/2),Math.round(by-o.height));else cx.drawImage(s,Math.round(bx-w/2),Math.round(by-h),w,h);
- cx.imageSmoothingEnabled=sm};
-setInterval(()=>{if(HOLD==null)return;try{if(Pl.mv||(ST.av&&ST.av.m>=0)||Pl.sit||(typeof ACT!=='undefined'&&ACT))MQ.clear()}catch(e){}},80);
+// ---------- (đã bỏ tính năng cầm quái vật trên tay để giảm animation) ----------
+// index.html / sea-map.js vẫn gọi MQ.clear, MQ.drawHold, window.MQH nên giữ lại bản rỗng cho khỏi lỗi.
+window.MQH=0;
+MQ.clear=()=>{};
+MQ.drawHold=()=>{};
+MQ.hold=i=>{if(i===SUN_ID)return useSun();if(POTK[i])return usePot(i);if(MON[i])toast('💰 '+MON[i].n+' bán được ở Shop quái vật nhé')};
 
 // ---------- CẦN CÂU HƯ (tiền sink) ----------
 // Mỗi lần câu được quái tính +1 (ST.rodN). Chỉ khi đã câu TRÊN ROD_N con kể từ lần sửa gần nhất mới có tỉ lệ ROD_P bị hư sau mỗi con (ngẫu nhiên, không cố định).
@@ -425,5 +417,5 @@ function award(m){   // câu trúng 1 quái: vào Túi, nhiệm vụ, quà vùng
  try{save()}catch(e){}try{sunCatch()}catch(e){}let broke=false;try{broke=rodRoll()}catch(e){}
  if(m.r==2)toast('✨🐢 WOW! Bạn câu được KIM QUY huyền thoại!');if(broke)toast('🔧 Cần câu bị hư! Sửa tốn '+ROD_FIX+' xu quái vật');
  return{bonus,broke}}
-MQ.core={MON,RAR,rollMon,award,shadow,put,fxGold,burning,atSea,rodBroken,ROD_FIX,sunHud};
+MQ.core={ART,mkS,MON,RAR,rollMon,award,shadow,put,fxGold,burning,atSea,rodBroken,ROD_FIX,sunHud};
 })();
