@@ -238,7 +238,7 @@ const mkSignPost=()=>mk(56,64,(g,r)=>{E(r,'rgba(0,0,0,.2)',28,62,14,2);
  r('#2c1c0e',2,2,52,30);r('#f6e7b4',4,4,48,26);r('#d9c28a',4,26,48,4);
  g.textAlign='center';g.font='900 9px Nunito, "Segoe UI", sans-serif';g.fillStyle='#3a6a8a';g.fillText('BẾN THUYỀN',28,15,44);
  g.font='900 8px Nunito, "Segoe UI", sans-serif';g.fillStyle='#1a8f9c';g.fillText('RA BIỂN ⛵',28,26,44)});
-const mkBuoy=()=>mk(14,20,(g,r)=>{E(r,'rgba(0,30,60,.25)',7,17,6,2);r('#e0584a',3,5,8,11);r('#fff6e0',3,9,8,3);r('#c4382e',3,14,8,2);r('#fff',4,6,2,3);r('#6a6a72',6,0,2,5);r('#ffd23f',5,0,4,2)});
+const mkBuoy=()=>mk(16,24,(g,r)=>{E(r,'rgba(0,30,60,.26)',8,21,7,2);r('#8d5228',3,16,10,4);r('#c8854c',4,16,8,2);r('#fff6e0',4,19,8,1);r('#474b54',5,5,1,11);r('#474b54',10,5,1,11);r('#ffe066',6,6,4,9);r('#fffbe0',7,7,2,6);r('#d94b3b',3,4,10,2);r('#ff7866',4,3,8,1);r('#ffd23f',7,1,2,2)});
 const mkSail=()=>mk(34,34,(g,r)=>{r('#8a5a30',3,26,28,4);r('#6b4220',5,30,24,2);r('#5e3f20',16,4,2,24);
  for(let i=0;i<20;i++)r('#fff6e8',17,6+i,Math.max(1,Math.round(i*.7)),1);for(let i=0;i<16;i++)r('#ffe4b0',15-Math.round(i*.5),10+i,Math.round(i*.5)+1,1);r('#e0584a',16,3,6,2)});
 const mkTuft=()=>mk(14,12,(g,r)=>{for(const[x,h]of[[2,7],[5,10],[8,8],[11,6]]){line(r,'#6fa84e',x,11,x+(x>6?1:-1),11-h,1);r('#8dc767',x,11-h,1,2)}});
@@ -339,8 +339,8 @@ function build(){
  for(const c of[{y:610,x0:22,x1:78,ph:0},{y:850,x0:26,x1:92,ph:4}])dyn(c.y+.5,()=>drawCrab(c,tmNow()));
  hit(10,596,76,22,'🦀 Chú cua nhỏ đang đi ngang — tách tách tách');hit(14,836,88,22,'🦀 Cua đồng chạy ngang bờ cát');
  // --- thả phao + đá ngoài biển + thuyền buồm xa xa + đảo nhỏ ---
- for(const[x,y]of[[560,300],[640,640],[900,860],[820,180],[1250,470],[1500,760],[1800,300],[2100,640],[2500,420],[2750,880]].filter(p=>p[0]<BGW)){const bo=outl(mkBuoy()),ph=x*.013;dyn(y,()=>{const t=tmNow();cx.drawImage(bo,x-8,Math.round(y-18+Math.sin(t*1.7+ph)*1.5));
-  const a=.18+.12*Math.sin(t*1.7+ph);r('rgba(255,255,255,'+a.toFixed(2)+')',x-8,y+1,16,1)});hit(x-9,y-20,18,22,'🔴 Phao tiêu — đánh dấu luồng biển')}
+ for(const[x,y]of[[560,300],[640,640],[900,860],[820,180],[1250,470],[1500,760],[1800,300],[2100,640],[2500,420],[2750,880]].filter(p=>p[0]<BGW)){const bo=outl(mkBuoy()),ph=x*.013;dyn(y,()=>{const t=tmNow();cx.drawImage(bo,x-9,Math.round(y-22+Math.sin(t*1.7+ph)*1.5));
+  const a=.2+.12*Math.sin(t*1.7+ph);r('rgba(255,255,255,'+a.toFixed(2)+')',x-9,y+1,18,1)});hit(x-10,y-24,20,26,'🏮 Phao đèn biển — tự bật sáng rực rỡ vào ban đêm')}
  // --- đảo nhỏ có dừa (thay cho ghềnh đá cũ; chỉ là vật cản, không bấm được) ---
  {const ik=mkIslet();BROCK.forEach(([x,y,w,h],i)=>{if(x>BGW)return;const cx0=Math.round(x+w/2),cy0=Math.round(y+h/2)+2,ph=i*1.7;
   dyn(cy0-6,()=>{const t=tmNow(),a=.35+.2*Math.sin(t*1.8+ph);

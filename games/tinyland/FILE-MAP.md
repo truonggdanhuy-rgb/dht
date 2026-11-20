@@ -38,6 +38,7 @@ outfits.js, congso.js, aulac.js, aulac2.js, park-map.js, pho-map.js, broomkit.js
 | hauvuong.js | 17 | HAUVUONG.JS — Mascot MỸ HẦU VƯƠNG (Tôn Ngộ Không) — bán ở Shop kim cương 💎15 (cùng giá set Ma đồng giáng thế / |
 | hdface.js | 21 | HDFACE.JS — BIỂU CẢM HD (vẽ độ phân giải cao K=4) cho mặt mặc định + biểu cảm 1..7 và 9 |
 | hdkit.js | 5 | HDKIT.JS — BỘ MÁY VẼ "ĐỒ HỌA CAO" (K=4) cho set / mascot của tinyland |
+| hoaibao.js | 16 | HOAIBAO.JS — 🌟 SET HOÀI BÃO: Set Nam/Nữ + Tóc Nam/Nữ (4 món, 2.000 Xu/món ở Shop Phố xá) |
 | idcard.js ⛔ | 380 | ===== Căn cước Tinyland (thẻ thông tin cá nhân) ===== |
 | lowfx.js | 2 | LOWFX.JS — Tự giảm đồ họa cho máy yếu (Phố xá, Lễ hội... bị lag) |
 | mau-hd-mascot.js | 1 | MẪU MASCOT HD (nhìn trước) — copy file này làm điểm xuất phát cho set mới. Cần hdkit.js nạp TRƯỚC. |
@@ -46,6 +47,7 @@ outfits.js, congso.js, aulac.js, aulac2.js, park-map.js, pho-map.js, broomkit.js
 | newitems2.js | 41 | NEWITEMS2.JS — Đồ mới: |
 | newitems3.js | 15 | NEWITEMS3.JS — Đồ mới: |
 | newitems4.js | 7 | NEWITEMS4.JS — Đồ mới: |
+| ngaydem-gapthu.js | 6 | NGAYDEM-GAPTHU.JS — 🌙 Sáng/Tối thời gian thực (nt/cv/ps/bn) + 🧸 Máy gắp thú bên phải Thái tử Ba Tư |
 | nhanvien.js | 20 | NHANVIEN.JS — 🏨 NHÂN VIÊN KHÁCH SẠN: Set + Tóc (chỉ có bản Nữ) |
 | nhuy.js | 6 | TINYLAND — HÀNH ĐỘNG MỚI: 🪄 GẬY NHƯ Ý — 💎 10 |
 | outfits.js | 51 | TINYLAND — Đồ mới: Hoodie, Áo dài, Bà ba, Tứ thân + Tóc & Khăn & Nón quai thao |
