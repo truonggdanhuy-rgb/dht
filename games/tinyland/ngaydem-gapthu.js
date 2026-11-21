@@ -63,7 +63,41 @@ const PS_LC=['#ff5a8a','#ffd23f','#5ee0ff','#9cff7a','#ffa24a'];
 const CV_LAMPS=[[676,900],[764,900],[676,810],[764,810],[684,300],[756,300],[684,520],[756,520],[1376,700],[560,700],[300,700],[100,700],[960,240],[430,240],[1280,240]];
 const CV_BOARDS=[{x:968,y:132,w:244,h:76},{x:1068,y:586,w:244,h:76}];
 
-const BN_BUOYS=[[560,300],[640,640],[900,860],[820,180],[1250,470],[1500,760],[1800,300],[2100,640],[2500,420],[2750,880]];
+const BN_BUOYS=[[540,290],[640,640],[830,860],[820,230],[1290,220],[1700,320],[1740,770],[1310,910],[1900,640]];
+
+// Đom đóm ban đêm (CHỈ ở Nông trại 'nt' & Công viên 'cv' — KHÔNG có ở Biển 'bn' hay Phố xá 'ps')
+const FIREFLY_N=14;
+let flyMap='',lastFlyT=0;
+const FIREFLIES=Array.from({length:FIREFLY_N},(_,i)=>({
+ x:0,y:0,vx:0,vy:0,ph:i*0.97,sp:1.6+(i%5)*0.45,gr:(i%3)===0
+}));
+function stepFireflies(mp,tm){
+ if(flyMap!==mp){
+  flyMap=mp;lastFlyT=tm;
+  const maxW=mp==='nt'?580:1320,maxH=mp==='nt'?740:880;
+  for(let i=0;i<FIREFLY_N;i++){
+   const f=FIREFLIES[i];
+   f.x=50+((i*173)%Math.max(120,maxW-80));
+   f.y=120+((i*229)%Math.max(120,maxH-160));
+   f.vx=Math.cos(i*1.7)*9;f.vy=Math.sin(i*2.3)*7;
+  }
+  return;
+ }
+ const dt=Math.min(0.08,Math.max(0.001,tm-lastFlyT));lastFlyT=tm;
+ const maxW=mp==='nt'?600:1360,maxH=mp==='nt'?780:910;
+ for(let i=0;i<FIREFLY_N;i++){
+  const f=FIREFLIES[i];
+  f.vx+=Math.cos(tm*1.4+f.ph)*14*dt;
+  f.vy+=Math.sin(tm*1.1+f.ph*1.3)*12*dt;
+  const spd=Math.hypot(f.vx,f.vy);
+  if(spd>16){f.vx*=16/spd;f.vy*=16/spd}
+  f.x+=f.vx*dt;f.y+=f.vy*dt;
+  if(f.x<36)f.x=maxW-36;else if(f.x>maxW)f.x=40;
+  if(f.y<90)f.y=maxH-50;else if(f.y>maxH)f.y=95;
+ }
+}
+
+const GLOW_WANDS=new Set(['scepter1','scepter2','scepter3','mushstaff','moon','nhuy','maspear']);
 
 function drawNightLights(mp,tm,low){
  const G=getGlows();
@@ -152,6 +186,10 @@ function drawNightLights(mp,tm,low){
     }
    }
   }
+  // Máy Trò Chơi Mini ở Công viên (AX=880, AY=772)
+  if(vis(880,742,70)){
+   stamp(G.cyan,880,734,38,0.78);stamp(G.pink,880,722,30,0.68);
+  }
  }
  else if(mp==='bn'){
   // 10 Phao đèn biển trôi ngoài biển — tự bật sáng rực rỡ
@@ -180,6 +218,18 @@ function drawNightLights(mp,tm,low){
      cx.fillRect(x-1,339,3,3);
     }
    }
+  }
+  // Đèn & Đuốc Tiki Ốc Đảo San Hô Lớn (OX=1280, OY=560)
+  if(vis(1240,560,440)){
+   for(const[lx,ly]of[[862,518],[862,548]])stamp(G.warm,lx,ly,28,0.72); // 2 đèn bến cầu tàu Ốc Đảo
+   for(const[tx,ty]of[[986,496],[1084,446],[1214,446],[1402,558]]){
+    const pu=0.78+0.18*Math.sin(tm*8+tx);
+    stamp(G.amber,tx,ty,42,0.82*pu);stamp(G.warm,tx,ty,18,0.92*pu);
+   }
+   stamp(G.warm,1113,430,34,0.74);stamp(G.warm,1183,430,34,0.74); // 2 đèn lồng Quán Bar Tiki
+   stamp(G.warm,1462,531,36,0.76);                               // đèn Vọng Lâu Hoàng Hôn
+   stamp(G.cyan,1228,530,22,0.48);                                // đôi mắt ngọc Tượng Tiki Cổ
+   if(!low)stamp(G.cyan,1320,494,62,0.42);                        // ánh suối ngọc hồ rộng ban đêm
   }
  }
  else if(mp==='nt'){
@@ -227,6 +277,31 @@ function drawNightLights(mp,tm,low){
      }
     }else if(id==='tetcong'||id==='caytreoco'||id==='bienhieu'){
      stamp(G.warm,cx0,cy0-16,34,0.62);
+    }else if(id==='mushlamp1'){
+     stamp(G.amber,cx0,cy0-12,34,0.82);stamp(G.warm,cx0,cy0-12,14,0.9);
+    }else if(id==='mushlamp2'){
+     stamp(G.cyan,cx0,cy0-26,38,0.8);stamp(G.violet,cx0-3,cy0-18,24,0.65);
+    }else if(id==='fairylamp'){
+     stamp(G.warm,cx0+5,cy0-34,48,0.92);stamp(G.amber,cx0+5,cy0-34,18,0.92);
+     if(!low)stamp(G.warm,cx0+5,cy0-2,30,0.22);
+    }else if(id==='fountain'){
+     stamp(G.cyan,tx*16+24,cy0-4,44,0.52);
+    }else if(id==='fencetb'){
+     const ftMask=typeof FMK!=='undefined'&&typeof ST!=='undefined'?0:0;
+     const hasN=placed.some(q=>q&&q[1]==='fencetb'&&q[2]===tx&&q[3]===ty-1);
+     const hasE=placed.some(q=>q&&q[1]==='fencetb'&&q[2]===tx+1&&q[3]===ty);
+     const hasS=placed.some(q=>q&&q[1]==='fencetb'&&q[2]===tx&&q[3]===ty+1);
+     const hasW=placed.some(q=>q&&q[1]==='fencetb'&&q[2]===tx-1&&q[3]===ty);
+     const m=(hasN?1:0)|(hasE?2:0)|(hasS?4:0)|(hasW?8:0);
+     if((m!==10&&m!==5)||(((tx+ty)&1)===0)){
+      stamp(G.amber,cx0+3,cy0-5,26,0.74);stamp(G.warm,cx0+3,cy0-5,11,0.88);
+     }
+    }else if(id==='gatew'){
+     stamp(G.warm,tx*16+6,cy0-47,26,0.75);stamp(G.warm,tx*16+58,cy0-47,26,0.75);
+    }else if(id==='greenhouse'){
+     stamp(G.warm,tx*16+24,cy0-16,44,0.68);stamp(G.amber,tx*16+24,cy0-4,32,0.48);
+    }else if(id==='greenhouselg'){
+     stamp(G.warm,tx*16+40,cy0-26,60,0.75);stamp(G.amber,tx*16+16,cy0-10,36,0.52);stamp(G.amber,tx*16+64,cy0-10,36,0.52);
     }
    }
   }
@@ -240,6 +315,69 @@ function drawNightLights(mp,tm,low){
   stamp(G.warm,526,224,30,0.62);stamp(G.warm,586,224,30,0.62);
   stamp(G.amber,456,725,36,0.74);
  }
+
+ // Đom đóm ban đêm (CHỈ trên Nông trại & Công viên, tự tắt khi lowfx)
+ if((mp==='nt'||mp==='cv')&&!low){
+  stepFireflies(mp,tm);
+  for(const f of FIREFLIES){
+   const glow=0.22+0.78*Math.max(0,Math.sin(tm*f.sp+f.ph));
+   if(glow<0.18||!vis(f.x,f.y,14))continue;
+   stamp(f.gr?G.green:G.warm,f.x,f.y,11,glow*0.62);
+   cx.globalAlpha=Math.min(1,glow*1.1);
+   cx.fillStyle=f.gr?'#d8ff8a':'#fff6a8';
+   cx.fillRect(Math.round(f.x)-1,Math.round(f.y)-1,2,2);
+  }
+ }
+
+ // Ánh sáng tự phát quanh Nhân vật / Bạn online / Pet (Đèn lồng, Đèn pin, Đũa phép, Cánh Bướm Đêm, Bóng ma đèn lồng)
+ const emitActorGlow=(x,y,d,accIx,wgIx,setIx,hairIx,hidAcc)=>{
+  if(!hidAcc&&typeof ACCS!=='undefined'){
+   if(accIx>=0&&ACCS[accIx]){
+    const ak=ACCS[accIx].k,hx=x+(d===2?-8:8),hy=y-17;
+    if(ak==='lanterncarp'){
+     stamp(G.amber,hx,hy,52,0.82);stamp(G.warm,hx,hy,20,0.92);
+    }else if(ak==='flashlight'){
+     const dx=d===2?-1:d===3?1:0,dy=d===1?-1:d===0?1:0;
+     stamp(G.warm,hx+dx*14,hy+dy*14,22,0.75);
+     stamp(G.warm,hx+dx*30,hy+dy*28,34,0.6);
+     stamp(G.amber,hx+dx*48,hy+dy*42,46,0.42);
+    }else if(GLOW_WANDS.has(ak)){
+     const sp=ak==='moon'?G.warm:ak==='scepter1'||ak==='scepter2'||ak==='scepter3'?G.cyan:G.violet;
+     stamp(sp,hx,hy-3,38,0.7);
+    }
+   }
+   const effW=(wgIx!=null&&wgIx>=0)?wgIx:(accIx>=0&&ACCS[accIx]&&ACCS[accIx].t==='wing'?accIx:-1);
+   if(effW>=0&&ACCS[effW]&&ACCS[effW].k==='nightbf'){
+    stamp(G.cyan,x,y-17,36,0.58);stamp(G.violet,x,y-17,22,0.52);
+   }
+  }
+  if(!low){
+   if(hairIx>=0&&typeof HAIRS!=='undefined'&&HAIRS[hairIx]&&HAIRS[hairIx].k==='diverh'){
+    stamp(G.cyan,x,y-22,18,0.42);
+   }
+   if(setIx>=0&&typeof SETS!=='undefined'&&SETS[setIx]&&(SETS[setIx].k==='astromini'||SETS[setIx].k==='merf'||SETS[setIx].k==='fox9')){
+    stamp(G.cyan,x,y-18,22,0.38);
+   }
+  }
+ };
+
+ const hidLocal=(typeof HMA!=='undefined'&&HMA&&HMA.hide)||(typeof CVON!=='undefined'&&CVON&&typeof CV!=='undefined'&&CV.boat);
+ if(!hidLocal&&typeof Pl!=='undefined'&&typeof ST!=='undefined'&&ST.av){
+  const A=ST.av,hidAcc=!!Pl.sit||(A.m>=0);
+  emitActorGlow(Math.round(Pl.x),Math.round(Pl.y),Pl.d,A.a,A.w,A.s,A.h,hidAcc);
+  if(A.p>=0&&typeof PET!=='undefined'&&typeof PETS!=='undefined'&&PETS[A.p]&&PETS[A.p].k==='ghostlantern'){
+   const gx=Math.round(PET.x)+(PET.d===2?-8:8),gy=Math.round(PET.y)-12;
+   stamp(G.amber,gx,gy,42,0.82);stamp(G.warm,gx,gy,16,0.92);
+  }
+ }
+ if((mp==='cv'||mp==='ps'||mp==='bn')&&typeof CV!=='undefined'&&CV.others&&typeof CV.others.values==='function'){
+  for(const o of CV.others.values()){
+   if(!o||o.bt)continue;
+   const hidAcc=(o.seat!=null&&o.seat>=0)||(o.m!=null&&o.m>=0);
+   emitActorGlow(Math.round(o.x),Math.round(o.y),o.d|0,o.acc==null?-1:o.acc,o.wg==null?-1:o.wg,o.set==null?-1:o.set,o.hair==null?-1:o.hair,hidAcc);
+  }
+ }
+
  cx.restore();
 }
 

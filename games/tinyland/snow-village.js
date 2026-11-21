@@ -224,6 +224,352 @@ LBL.push(['ÔNG GIÀ NOEL ▶',SGx+4,SGy-42]);
 WT.pos={x:130,y:402};
 })();
 
+/* ============================================================
+   NÂNG CẤP ĐỒ HỌA LÀNG TUYẾT (Bản Bắc Cực ấm áp — pre-bake 1 lần, 0 lag)
+   ============================================================ */
+(function(){
+ if(typeof WT==='undefined'||typeof mk!=='function'||typeof WW==='undefined')return;
+ const VX0=-512,VW=1664,VH=WH||432;
+ const ph=(a,b)=>{let h=Math.imul((a|0)*374761393+(b|0)*668265263+19,1274126177);h=Math.imul(h^h>>>13,1103515245);return((h^h>>>16)>>>0)/4294967296};
+ // Bayer 4x4 cho chuyển sắc bầu trời mịn như tranh pixel thủ công
+ const BAY=[0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5];
+ const bayer=(x,y)=>BAY[((y&3)<<2)|(x&3)]/16;
+
+ // Khóm thông tuyết nhiều tầng tự nhiên (chỉ đặt ở viền ngoài/bìa rừng, không chắn lối đi)
+ const pineTree=(r,x,by,sc)=>{
+  r('rgba(65,95,145,.18)',x-Math.round(8*sc),by-1,Math.round(17*sc),3);
+  r('#4a2c14',x-1,by-Math.round(6*sc),3,Math.round(6*sc));
+  const tiers=[[30,11,7],[21,12,9],[12,13,11]];
+  for(const [oy0,hh0,hw0] of tiers){
+   const y0=by-Math.round(oy0*sc),hh=Math.max(5,Math.round(hh0*sc)),hw=Math.max(3,Math.round(hw0*sc));
+   for(let k=0;k<hh;k++){
+    const f=k/hh,w=Math.max(1,Math.round(hw*(.18+.82*f)));
+    r('#15452c',x-w,y0+k,w*2+1,1);
+    r('#1f613f',x-w,y0+k,Math.max(1,(w*.9)|0),1);
+    r('#2e7d52',x-w+1,y0+k,Math.max(1,(w*.45)|0),1);
+    // Tuyết đọng tự nhiên trên đỉnh nhánh trái & mép dưới tầng lá
+    if(k<3){r('#f2f8ff',x-w,y0+k,Math.max(2,Math.round(w*1.35)),1)}
+    else if(k===hh-1){
+     for(let sx=-w;sx<=w;sx+=3)if(ph(x+sx,y0+k)<.65)r('#e6f0fc',x+sx,y0+k-1,2,1);
+    }
+   }
+  }
+ };
+
+ // Đường cong chiều cao dãy núi tuyết bất đối xứng (tự nhiên, không bị răng cưa lặp)
+ const mtnFar=x=>56-Math.round(17*Math.abs(Math.sin(x/89+.4))+7*Math.sin(x/37+1.9)+3*Math.cos(x/17));
+ const mtnMid=x=>61-Math.round(15*Math.abs(Math.sin(x/63+1.3))+5*Math.cos(x/29+.5)+2*Math.sin(x/13));
+
+ const WT_BG=mk(VW,VH,(g,r)=>{
+  g.save();g.translate(-VX0,0);
+
+  // 1) Bầu trời đêm Bắc Cực dither mịn (7 tầng sắc độ)
+  const SKY=['#060c24','#091334','#0d1c47','#13265b','#193270','#214186','#2b529c'];
+  for(let y=0;y<72;y++){
+   const t=(y/71)*(SKY.length-1),bi=Math.min(SKY.length-2,t|0),fr=t-bi;
+   for(let x=VX0;x<VX0+VW;x+=2){
+    const c=(fr>bayer(x>>1,y))?SKY[bi+1]:SKY[bi];
+    r(c,x,y,2,1);
+   }
+  }
+  // Sao trời nhỏ li ti
+  for(let i=0;i<185;i++){
+   const sx=VX0+Math.floor(ph(i,11)*VW),sy=2+Math.floor(ph(i,23)*44);
+   r('rgba(235,245,255,'+(.25+.55*ph(i,37)).toFixed(2)+')',sx,sy,1,1);
+  }
+  // Mặt trăng Bắc Cực sắc nét (hào quang dịu vừa phải, không loang trắng gắt)
+  E(r,'rgba(220,235,255,.10)',264,21,17,17);
+  E(r,'rgba(248,244,216,.18)',264,21,12,12);
+  E(r,'#e6e0be',264,21,9,9);
+  E(r,'#faf6e2',263,20,7,7);
+  r('#d4cea8',266,22,3,2);r('#dad4b2',259,19,2,2);r('#e0dab8',263,25,2,1);
+
+  // 2) Dãy núi tuyết trùng điệp 2 lớp (sườn sáng tuyết / sườn tối đá xanh)
+  for(let x=VX0;x<VX0+VW;x++){
+   const hf=mtnFar(x),hf1=mtnFar(x+1);
+   r('#162754',x,hf,1,70-hf);
+   if(hf1>=hf)r('#4a67a6',x,hf,1,2);
+   else r('#253c75',x,hf,1,2);
+  }
+  for(let x=VX0;x<VX0+VW;x++){
+   const hn=mtnMid(x),hn1=mtnMid(x+1),lit=hn1>=hn;
+   r(lit?'#26407d':'#1a2d5c',x,hn,1,72-hn);
+   const snowDepth=5+Math.round(3*Math.sin(x/14)+2*ph(x,9));
+   if(hn<57){
+    r(lit?'#f4f8ff':'#bccfe8',x,hn,1,snowDepth);
+    r(lit?'#dce9fa':'#8ca4cc',x,hn+snowDepth,1,2);
+   }else{
+    r(lit?'#c4d6ef':'#6d86b8',x,hn,1,2);
+   }
+  }
+
+  // 3) Đường rừng thông Bắc Cực hữu cơ liền mạch chân núi (y<=68)
+  for(let x=VX0;x<VX0+VW;x++){
+   const th=9+Math.round(5*Math.abs(Math.sin(x/19+.2))+4*Math.sin(x/7+1.1)+3*ph(x,3));
+   const ty=69-th;
+   r('#113026',x,ty,1,th+1);
+   if((x&1)===0)r('#194637',x,ty+1,1,th-1);
+   if(th>12&&x%3===0)r('#235d49',x,ty+2,1,4);
+   // Tuyết phủ ngọn thông tự nhiên
+   if(th>=11)r((x%4===0)?'#f2f8ff':'#cfe0f5',x,ty,1,2+(x%2));
+  }
+  // Hàng rào gỗ nhỏ xinh dọc chân đồi (lùi sát bìa núi y=69, tạo chiều sâu ngôi làng)
+  for(let x=VX0;x<VX0+VW;x+=2){
+   r('#5b381e',x,69,2,1);r('#7a4d2a',x,68,2,1);
+   if(x%16===0){
+    r('#4a2c14',x,65,3,6);r('#7a4d2a',x,65,1,5);
+    r('#f4f9ff',x-1,64,5,2);
+   }
+  }
+
+  // 4) Mặt tuyết làng tự nhiên mịn màng (uốn lượn nhẹ theo đồi tuyết, KHÔNG vẽ đường gạch xám)
+  const SN=['#d8e5f5','#e3eefb','#edf4fc','#f6faff'];
+  for(let y=68;y<VH;y+=2){
+   for(let x=VX0;x<VX0+VW;x+=2){
+    const wv=Math.sin(x/46+Math.sin(y/28)*.8)*.42+Math.sin((x*.6-y)/24)*.24+(ph(x,y)-.5)*.14;
+    const idx=Math.max(0,Math.min(3,Math.floor((wv+.62)*2.75)));
+    r(SN[idx],x,y,2,2);
+   }
+  }
+  // Bờ tuyết chuyển tiếp dưới chân hàng rào bìa rừng
+  for(let x=VX0;x<VX0+VW;x+=2){
+   const sy=71+Math.round(Math.sin(x/17)*1.2);
+   r('#cad9ee',x,70,2,sy-69);
+   r('#f7fbff',x,sy,2,2);
+  }
+  // Lấp lánh tuyết nhẹ (thưa và tinh tế)
+  for(let i=0;i<520;i++){
+   const x=VX0+Math.floor(ph(i,41)*(VW-4)),y=74+Math.floor(ph(i,43)*(VH-78));
+   r(ph(i,47)<.38?'#c7d9f0':'#ffffff',x,y,i%4?1:2,1);
+  }
+
+  // 5) Bệ đá nhỏ phủ tuyết ôm sát gốc Cây Thông Noel (cx=128, cy=202 — hòa mềm vào nền tuyết)
+  for(let dy=-22;dy<=22;dy++){
+   for(let dx=-62;dx<=62;dx++){
+    const d=(dx*dx)/(62*62)+(dy*dy)/(22*22);
+    if(d>1)continue;
+    const wx=Math.round(128+dx),wy=Math.round(202+dy);
+    if(d>.85){r('#d3e2f5',wx,wy,1,1);continue}
+    const row=Math.floor((wy+100)/4),col=Math.floor((wx+600+(row%2)*3)/6);
+    const edge=((wy+100)%4===0)||((wx+600+(row%2)*3)%6===0);
+    r(edge?'#93a5bf':ph(col,row)<.25?'#eef5ff':'#b9c7da',wx,wy,1,1);
+   }
+  }
+  for(let a=0;a<12;a++){
+   const an=a/12*6.283;
+   r('#e6c268',Math.round(128+Math.cos(an)*42),Math.round(202+Math.sin(an)*13),2,2);
+  }
+
+  // 6) Trường đua Tuần Lộc nâng cấp (WOFF=[14,64] -> x: 32..206, y: 316..388)
+  g.save();g.translate(14,64);
+  r('rgba(95,125,175,.16)',16,249,178,82);
+  for(let i=0;i<4;i++){
+   r(i%2?'#e2edfa':'#d5e3f4',18,252+i*18,174,18);
+   r('rgba(255,255,255,.42)',18,252+i*18,174,1);
+   if(i)for(let x=22;x<190;x+=10)r('#abc0dc',x,252+i*18,5,1);
+  }
+  r('#6b4423',18,250,174,2);r('#6b4423',18,324,174,2);
+  r('#c0392b',30,252,2,72);r('#f4f9ff',32,252,1,72);
+  for(let y=252;y<324;y+=4){r((y/4)%2?'#1d2436':'#fff',170,y,3,4);r((y/4)%2?'#fff':'#1d2436',173,y,3,4)}
+  for(let x=22;x<192;x+=16)for(const y of[246,326]){
+   r('#5a3418',x-1,y,4,7);r('#fff',x,y,2,6);r('#d9302a',x,y+1,2,2);r('#d9302a',x,y+4,2,2);
+  }
+  for(let x=18;x<192;x+=6){E(r,'#f4f9ff',x,250,4,2);E(r,'#f4f9ff',x,327,4,2)}
+  g.restore();
+
+  // 7) Hồ Băng Trượt Băng pha lê (WOFF=[136,16] -> center 282,241, mở rộng hài hòa)
+  g.save();g.translate(136,16);
+  E(r,'#c5d8ef',146,225,43,21);
+  E(r,'#f3f8ff',146,225,40,19);
+  E(r,'#66a6db',146,225,36,16);
+  E(r,'#88c7ed',145,224,32,13);
+  E(r,'#b6e3f8',143,222,25,10);
+  E(r,'#def3ff',138,220,12,4);
+  // Tia phản chiếu băng sáng chéo tự nhiên + bờ đá tuyết nhỏ góc hồ
+  for(let k=0;k<8;k++){r('#f4fbff',126+k*2,226-k,3,1);r('#f4fbff',154+k,229-k,2,1)}
+  E(r,'#8c98a8',115,213,5,3);E(r,'#f4f9ff',115,211,4,2);
+  E(r,'#8c98a8',176,216,4,3);E(r,'#f4f9ff',176,214,3,2);
+  g.restore();
+
+  // 8) Thông Bắc Cực viền 2 rìa Đông – Tây & dọc bìa rừng (TUYỆT ĐỐI không chắn đường/biển/nhà)
+  for(const[px,py,sc]of[[-148,108,1.02],[-114,88,.88],[-162,216,.92],[-152,390,.96],[-68,90,.85],[774,98,1.02],[814,148,.94],[792,398,1],[682,116,.90],[732,102,.82],[26,76,.92],[82,74,.86],[618,86,.92]]){
+   pineTree(r,px,py,sc);
+  }
+  g.restore();
+ });
+
+ // ---- 9) LỀU TUYẾT IGLOO + ĐỐNG LỬA TRẠI KHU ĐÔNG & KẸO GẬY + NGƯỜI TUYẾT KHU TÂY ----
+ const iglooI=outl(mk(72,48,(g,r)=>{
+  r('rgba(60,90,140,.22)',6,43,60,4);
+  // Mái vòm băng xanh trắng xếp gạch
+  for(let y=6;y<40;y++){
+   const ry=(y-40)/34,w=Math.round(31*Math.sqrt(Math.max(0,1-ry*ry)));
+   const col=y<14?'#f4f9ff':y<26?'#e1effc':'#cbe1f6';
+   r(col,36-w,y,w*2,1);
+   r('#b4cde9',36+Math.max(2,(w*.55)|0),y,Math.max(1,(w*.45)|0),1);
+   if(y%6===0)r('#9ebadc',36-w+1,y,w*2-2,1);
+  }
+  for(let x=12;x<60;x+=9)for(let y=12;y<36;y+=6){const ox=(y%12===0)?0:4;r('#9ebadc',x+ox,y,1,6)}
+  // Hiên cửa vòm + ánh sáng đèn lồng ấm tỏa ra từ bên trong
+  for(let y=22;y<44;y++){
+   const t=(y-22)/22,w=Math.round(13*(1-.15*(1-t)));
+   r('#d9eaf9',36-w,y,w*2,1);r('#9ebadc',36+w-3,y,3,1);
+  }
+  // Cửa vòm tối ấm
+  E(r,'#4a2a14',36,34,9,10);r('#4a2a14',27,34,18,10);
+  E(r,'#ffae42',36,36,6,6);E(r,'#ffe680',36,36,3,4);
+  r('#f5faff',24,22,24,2);
+  // Băng rủ trên nóc cửa & chóp tuyết
+  for(const ix of[26,31,36,41,45])r('#c2e4fb',ix,24,1,2+(ix%2));
+ }));
+ const IX=708,IY=184;
+ WT.sp.push({by:IY,d:()=>{
+  const t=performance.now()/1000,pu=.78+.22*Math.sin(t*3.1);
+  cx.drawImage(iglooI,IX-37,IY-47);
+  E(r,'rgba(255,190,85,'+(.22*pu).toFixed(2)+')',IX,IY-8,12,7);
+  r('rgba(255,240,160,'+(.55*pu).toFixed(2)+')',IX-2,IY-12,4,4);
+ }});
+ WT.rk.push([IX-30,IY-18,IX+30,IY-2]);
+ WT.hits.push([IX-34,IY-44,68,46,'🧊 Lều tuyết Igloo Bắc Cực — bên trong thắp đèn ấm áp lắm!']);
+
+ // Đống lửa trại + ghế khúc gỗ cạnh lều Igloo
+ const FX=714,FY=224;
+ const campI=outl(mk(34,20,(g,r)=>{
+  E(r,'rgba(60,90,140,.22)',17,17,15,3);
+  for(const[sx,sy]of[[6,13],[11,15],[17,16],[23,15],[27,13],[9,10],[25,10]]){r('#7b8696',sx-2,sy-1,5,3);r('#a8b3c2',sx-1,sy-1,3,1)}
+  r('#5e3418',10,11,14,3);r('#824b24',12,9,10,3);r('#42230f',14,12,6,2);
+ }));
+ WT.sp.push({by:FY,d:()=>{
+  const t=performance.now()/1000;
+  cx.drawImage(campI,FX-18,FY-19);
+  const f1=Math.round(Math.sin(t*13)*1),f2=Math.round(Math.cos(t*17)*1);
+  E(r,'rgba(255,160,55,.22)',FX,FY-7,12,6);
+  r('#ff5e1f',FX-3,FY-13-f1,7,6);r('#ffa826',FX-2,FY-15-f2,5,7);r('#fff280',FX-1,FY-13-f1,3,4);
+  for(let k=0;k<3;k++){const u=(t*.9+k*.33)%1;r('rgba(255,215,100,'+(1-u).toFixed(2)+')',Math.round(FX+Math.sin(t*4+k*2)*3),Math.round(FY-15-u*12),1,1)}
+ }});
+ WT.rk.push([FX-14,FY-7,FX+14,FY+1]);
+ WT.hits.push([FX-16,FY-20,32,22,'🔥 Lửa trại Bắc Cực — sưởi ấm tay giữa trời đông']);
+
+ // Cụm kẹo gậy & người tuyết khăn đỏ bên rìa Tây (-84, 248) cân xứng 2 bên làng
+ const candyDecI=outl(mk(36,42,(g,r)=>{
+  r('rgba(60,90,140,.22)',8,39,20,3);
+  // Cây kẹo gậy sọc đỏ trắng
+  for(let y=10;y<39;y++){r((y%4<2)?'#d9302a':'#ffffff',10,y,3,1);r((y%4<2)?'#b8221c':'#d8e6f5',12,y,1,1)}
+  r('#d9302a',11,6,7,4);r('#ffffff',13,6,3,4);r('#d9302a',17,8,3,4);
+  // Người tuyết mini khăn đỏ bên cạnh
+  E(r,'#dce8f8',24,33,7,6);E(r,'#ffffff',24,32,6,5);
+  E(r,'#dce8f8',24,24,5,5);E(r,'#ffffff',24,23,4,4);
+  r('#d9302a',20,28,9,2);r('#d9302a',26,30,2,4);
+  r('#222',22,22,1,1);r('#222',25,22,1,1);r('#ff8a1f',24,23,2,1);
+  r('#2c354a',20,18,8,2);r('#2c354a',21,14,6,4);r('#d9302a',21,17,6,1);
+ }));
+ WT.sp.push({by:248,d:()=>cx.drawImage(candyDecI,-84-18,248-41)});
+ WT.rk.push([-98,241,-70,249]);
+ WT.hits.push([-102,208,36,42,'🍭 Kẹo gậy khổng lồ & Người tuyết chào khách Làng Tuyết']);
+
+ // Đèn đường mở rộng ở rìa Tây & Đông (hài hòa với đèn gốc)
+ for(const[lx,ly]of[[-118,246],[766,232]]){
+  WT.sp.push({by:ly,d:()=>{
+   const t=performance.now()/1000,f=.5+.5*Math.sin(t*1.7+lx);
+   r('rgba(60,90,140,.24)',lx-3,ly,8,2);
+   E(r,'rgba(255,210,120,'+(.12+.04*f).toFixed(2)+')',lx+1,ly-25,7,6);
+   const a=[],z=ZZ(a);z('#3a3a44',lx,ly-22,2,22);z('#3a3a44',lx-1,ly-1,4,1);z('#3a3a44',lx-3,ly-25,8,2);z('#ffe08a',lx-2,ly-29,6,4);z('#4a4a56',lx-1,ly-31,4,2);z('#f4f9ff',lx-1,ly-32,4,1);OL(a);
+  }});
+  WT.rk.push([lx-5,ly-6,lx+5,ly+2]);
+  WT.hits.push([lx-9,ly-32,18,36,'🏮 Đèn đường Làng Tuyết — ánh vàng ấm áp giữa đêm đông']);
+ }
+
+ // Khói bếp ấm áp bay nhẹ lên từ ống khói Xưởng Noel (x=414, y=68)
+ WT.sp.push({by:150,d:()=>{
+  const t=performance.now()/1000;
+  for(let i=0;i<4;i++){
+   const u=(t*.34+i*.25)%1,sx=Math.round(414+Math.sin(u*5+i)*4+u*7),sy=Math.round(67-u*26),sz=2+Math.round(u*3);
+   r('rgba(235,244,255,'+(.48*(1-u)).toFixed(2)+')',sx,sy,sz,Math.max(2,sz-1));
+  }
+ }});
+
+ // Sprite ánh sáng pre-baked nhỏ gọn (KHÔNG đổ quầng trắng gắt lên tuyết)
+ let WG=null;
+ const getWG=()=>{
+  if(WG)return WG;
+  const mkG=(R,G,B)=>{const c=document.createElement('canvas');c.width=c.height=64;const k=c.getContext('2d'),gr=k.createRadialGradient(32,32,2,32,32,32);gr.addColorStop(0,'rgba('+R+','+G+','+B+',0.85)');gr.addColorStop(.35,'rgba('+R+','+G+','+B+',0.36)');gr.addColorStop(.75,'rgba('+R+','+G+','+B+',0.09)');gr.addColorStop(1,'rgba('+R+','+G+','+B+',0)');k.fillStyle=gr;k.fillRect(0,0,64,64);return c};
+  WG={warm:mkG(255,205,95),amber:mkG(255,165,55),cyan:mkG(80,235,255),pink:mkG(255,90,185),violet:mkG(185,130,255)};
+  return WG;
+ };
+ const STARS=Array.from({length:26},(_,i)=>({x:VX0+Math.floor(ph(i,91)*VW),y:3+Math.floor(ph(i,97)*38),ph:i*.85}));
+ const FLAKES=Array.from({length:30},(_,i)=>({x0:ph(i,61)*VW,y0:ph(i,67)*VH,sp:10+(i%5)*3,sz:i%7===0?2:1,ph:i*1.3}));
+
+ window.drawWExt=function(tm){
+  const x0=Math.floor(camX)-2,y0=Math.floor(camY)-2,x1=Math.ceil(camX+vw)+2,y1=Math.ceil(camY+vh)+2;
+  if(y0<0){cx.fillStyle='#060c24';cx.fillRect(x0,y0,x1-x0,-y0)}
+  if(y1>VH){cx.fillStyle='#d8e5f5';cx.fillRect(x0,VH,x1-x0,y1-VH)}
+  if(x0<VX0){cx.fillStyle='#060c24';cx.fillRect(x0,0,VX0-x0,68);cx.fillStyle='#d8e5f5';cx.fillRect(x0,68,VX0-x0,VH-68)}
+  if(x1>VX0+VW){cx.fillStyle='#060c24';cx.fillRect(VX0+VW,0,x1-(VX0+VW),68);cx.fillStyle='#d8e5f5';cx.fillRect(VX0+VW,68,x1-(VX0+VW),VH-68)}
+ };
+
+ window.drawWFx=function(tm){
+  const low=!!(window.lowfxOn&&window.lowfxOn());
+  const x0=Math.max(VX0,Math.floor(camX)-2),y0=Math.max(0,Math.floor(camY)-2);
+  const x1=Math.min(VX0+VW,Math.ceil(camX+vw)+2),y1=Math.min(VH,Math.ceil(camY+vh)+2);
+  const cw=x1-x0,ch=y1-y0;
+  // 1) Dán vùng ảnh pre-baked WT_BG khớp đúng camera
+  if(cw>0&&ch>0)cx.drawImage(WT_BG,x0-VX0,y0,cw,ch,x0,y0,cw,ch);
+
+  const G=getWG();
+  const stamp=(sp,x,y,rad,a)=>{
+   if(x+rad<camX||x-rad>camX+vw||y+rad<camY||y-rad>camY+vh)return;
+   cx.globalAlpha=a;cx.drawImage(sp,Math.round(x-rad),Math.round(y-rad),rad*2,rad*2);
+  };
+
+  cx.save();
+  // 2) Cực quang Bắc Cực mượt mà & sao lấp lánh trên bầu trời đêm (tắt khi lowfxOn)
+  if(!low&&y0<58){
+   cx.globalCompositeOperation='lighter';
+   const bands=[
+    {y:11,amp:4,h:10,sp:.42,col:'rgba(75,245,190,0.16)'},
+    {y:19,amp:3.5,h:9,sp:-.34,col:'rgba(95,205,255,0.13)'},
+    {y:25,amp:3,h:7,sp:.52,col:'rgba(185,115,255,0.10)'}
+   ];
+   for(const b of bands){
+    cx.fillStyle=b.col;
+    cx.beginPath();
+    cx.moveTo(x0,b.y+Math.sin(x0*.013+tm*b.sp)*b.amp);
+    for(let x=x0+24;x<=x1+24;x+=24)cx.lineTo(x,b.y+Math.sin(x*.013+tm*b.sp)*b.amp);
+    for(let x=x1+24;x>=x0;x-=24)cx.lineTo(x,b.y+b.h+Math.sin(x*.013+tm*b.sp)*b.amp);
+    cx.closePath();cx.fill();
+   }
+   for(const s of STARS){
+    if(s.x<x0||s.x>x1)continue;
+    cx.globalAlpha=.35+.65*Math.max(0,Math.sin(tm*2.2+s.ph));
+    cx.fillStyle='#ffffff';cx.fillRect(s.x,s.y,1,1);
+   }
+  }
+
+  // 3) Điểm sáng ấm tinh tế (tập trung ở biển hiệu, cửa sổ, ngọn đèn, lửa trại — không lóa trắng mặt tuyết)
+  cx.globalCompositeOperation='lighter';
+  stamp(G.amber,128,55,20,.30);             // ngôi sao cây thông
+  stamp(G.warm,372,100,24,.28);             // cửa sổ Xưởng Noel
+  stamp(G.pink,530,104,40,.22);             // bảng neon Trà Tuyết
+  stamp(G.cyan,530,106,30,.18);
+  stamp(G.amber,708,178,22,.28);            // cửa lều Igloo
+  stamp(G.amber,714,214,24,.26);            // lửa trại Bắc Cực
+  for(const[lx,ly]of[[-40,160],[372,220],[-30,350],[380,350],[-118,246],[766,232]]){
+   stamp(G.warm,lx+1,ly-27,18,.24);
+  }
+  cx.restore();
+
+  // 4) Hoa tuyết rơi nhẹ nhàng
+  const fn=low?12:FLAKES.length;
+  for(let i=0;i<fn;i++){
+   const f=FLAKES[i];
+   const fx=VX0+((f.x0+Math.sin(tm*.7+f.ph)*8+tm*5)%VW+VW)%VW;
+   const fy=(f.y0+tm*f.sp)%VH;
+   if(fx<x0-4||fx>x1+4||fy<y0-4||fy>y1+4)continue;
+   r(i%3?'rgba(255,255,255,.78)':'rgba(215,235,255,.55)',Math.round(fx),Math.round(fy),f.sz,f.sz);
+  }
+ };
+})();
+
 /* ---------------- panel + nhận huy hiệu ---------------- */
 function wChair(a){const q=a.split(':');if(Pl.sit)return;if(ST.av.m>=0)ST.av.m=-1;Pl.x=+q[1];Pl.y=+q[2];Pl.by=+q[3];Pl.d=0;Pl.sit=2;Pl.st=0;Pl.nt=0;Pl.bn=1;goal=null;toast('☕ Ngồi nghỉ bên góc trà ấm cúng... (di chuyển để đứng dậy)')}
 const SBSVG=z=>'<svg width="'+z+'" height="'+z+'" viewBox="0 0 40 40" style="flex:none"><defs><linearGradient id="sbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2faff"/><stop offset="1" stop-color="#a9cdf5"/></linearGradient></defs><circle cx="20" cy="20" r="18" fill="url(#sbg)" stroke="#7da3cc" stroke-width="2"/><g stroke="#5b86b8" stroke-width="2" stroke-linecap="round" fill="none"><path d="M20 7v26M8.7 13.5l22.6 13M8.7 26.5l22.6-13"/><path stroke-width="1.4" d="M16.5 9.5L20 12.5l3.5-3M16.5 30.5L20 27.5l3.5 3M7 17.5l4.2 1.2-.6-4.4M33 22.5l-4.2-1.2.6 4.4M7 22.5l4.2-1.2-.6 4.4M33 17.5l-4.2 1.2.6-4.4"/></g><circle cx="20" cy="20" r="2.6" fill="#fff" stroke="#5b86b8" stroke-width="1.2"/></svg>';

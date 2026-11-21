@@ -12,7 +12,7 @@ opt=opt||{};
 const K=opt.K||4,MX=opt.MX!=null?opt.MX:12,MY=opt.MY!=null?opt.MY:12,WU=opt.WU||44,HU=opt.HU||52,W=WU*K,H=HU*K;
 const sin=Math.sin,cos=Math.cos,PI=Math.PI,flr=Math.floor,rnd=Math.round,abs=Math.abs,min=Math.min,max=Math.max;
 let cur=null,RAS=null;
-const HX={};const rgb=h=>HX[h]||(HX[h]=[parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),parseInt(h.substr(5,2),16)]);
+const HX={};const rgb=h=>{if(!h)h='#000000';return HX[h]||(HX[h]=[parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),parseInt(h.substr(5,2),16)])};
 const newLayer=()=>({d:new Uint8ClampedArray(W*H*4),m:new Uint8Array(W*H),x0:W,y0:H,x1:0,y1:0});
 const put=(px,py,c)=>{if(px<0||py<0||px>=W||py>=H)return;const i=py*W+px,o=i*4;cur.m[i]=1;cur.d[o]=c[0];cur.d[o+1]=c[1];cur.d[o+2]=c[2];cur.d[o+3]=255;
  if(px<cur.x0)cur.x0=px;if(px>cur.x1)cur.x1=px;if(py<cur.y0)cur.y0=py;if(py>cur.y1)cur.y1=py};

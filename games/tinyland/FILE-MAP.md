@@ -22,6 +22,7 @@ outfits.js, congso.js, aulac.js, aulac2.js, park-map.js, pho-map.js, broomkit.js
 | baby.js | 66 | 🍼 BÉ BỎNG — HỆ THỐNG BABY HOÀN CHỈNH (file riêng: games/tinyland/baby.js) |
 | balo.js | 5 | BALO.JS — 🎒 3 BALO (phụ kiện đeo sau lưng, hoạt động giống CÁNH): |
 | batuoc.js | 15 | BATUOC.JS — Mascot BÁ TƯỚC ĐEN (Nam / Nữ) — bán ở Shop kim cương 💎15 / set |
+| bosiutap-dem.js | 15 | BOSIUTAP-DEM.JS — 5 Bộ sưu tập (Capybara Chill, Trà Sữa, Thám Tử, Biển Đêm, Phi Hành Gia & Cáo 9 Đuôi) |
 | boyboy.js | 14 | BOYBOY.JS — 🖤 SET BOYBOY (Nam) + TÓC BOYBOY — vẽ ĐỒ HỌA CAO (K=4) theo bộ máy hdkit.js |
 | broomkit.js | 13 | broomkit.js — 🧹 KIT CHỔI BAY (thú cưỡi bay lơ lửng, nhân vật NGỒI trên chổi) |
 | circus.js | 61 | XE HỀ XIẾC — đỗ ở vỉa hè dưới, cạnh ngõ vào PHỐ XÁ |
@@ -47,15 +48,18 @@ outfits.js, congso.js, aulac.js, aulac2.js, park-map.js, pho-map.js, broomkit.js
 | newitems2.js | 41 | NEWITEMS2.JS — Đồ mới: |
 | newitems3.js | 15 | NEWITEMS3.JS — Đồ mới: |
 | newitems4.js | 7 | NEWITEMS4.JS — Đồ mới: |
-| ngaydem-gapthu.js | 6 | NGAYDEM-GAPTHU.JS — 🌙 Sáng/Tối thời gian thực (nt/cv/ps/bn) + 🧸 Máy gắp thú bên phải Thái tử Ba Tư |
+| ngaydem-gapthu.js | 21 | NGAYDEM-GAPTHU.JS — 🌙 Sáng/Tối + Đom đóm (nt/cv) + Phát sáng nhân vật/pet/đèn mới + 🧸 Máy gắp thú |
 | nhanvien.js | 20 | NHANVIEN.JS — 🏨 NHÂN VIÊN KHÁCH SẠN: Set + Tóc (chỉ có bản Nữ) |
+| noithat-moi.js | 26 | NOITHAT-MOI.JS — 20 món nội thất nhà mới (Capybara/Mây, Bể cá, Lò sưởi, Cafe, Tủ sách thang, Kệ cây treo, Lò bánh, Đèn cây, Thảm cúc) |
 | nhuy.js | 6 | TINYLAND — HÀNH ĐỘNG MỚI: 🪄 GẬY NHƯ Ý — 💎 10 |
 | outfits.js | 51 | TINYLAND — Đồ mới: Hoodie, Áo dài, Bà ba, Tứ thân + Tóc & Khăn & Nón quai thao |
 | pajama.js | 15 | PAJAMA.JS — Đồ mới: |
 | park-map.js | 67 | CÔNG VIÊN — map mới (vẽ pixel-art bằng canvas, dựng 1 lần khi vào lần đầu) |
 | park-online.js | 43 | CÔNG VIÊN ONLINE — Supabase Realtime (không cần tạo bảng) |
 | perso.js | 36 | PERSO.JS — Thái tử Ba Tư + Thẻ cuốc + Quyền trượng Thủy Thần (Tinyland) |
+| pet-thucuoi-moi.js | 11 | PET-THUCUOI-MOI.JS — 3 Pet (Bóng ma đèn lồng, Rùa biển con, Capybara Mini) + 3 Thú cưỡi mới |
 | pho-map.js | 109 | PHỐ XÁ — map online thứ 2 (dùng chung hệ thống mạng của Công viên) |
+| phukien-moi.js | 6 | PHUKIEN-MOI.JS — Đèn lồng cá chép, Đèn pin, Ly trà sữa, Máy ảnh Retro, Cánh Bướm Đêm |
 | phuthuy.js | 11 | PHUTHUY.JS — 🔮 MASCOT PHÙ THỦY MỘNG MƠ (1 set chung, NAM + NỮ đều mặc được) |
 | pinkcool.js | 19 | PINKCOOL.JS — 🎀 BỘ PINKCOOL: Set Nữ / Set Nam + Tóc Nữ / Tóc Nam (4 món) |
 | sea-map.js | 63 | BIỂN — map online thứ 3 (dùng chung hệ thống mạng với Công viên / Phố xá) |
@@ -63,8 +67,11 @@ outfits.js, congso.js, aulac.js, aulac2.js, park-map.js, pho-map.js, broomkit.js
 | skater.js | 11 | SKATER.JS — 🛹 Mascot SKATER PHỐ (Nam / Nữ) — 2 set, THÂN GIỐNG HỆT NHAU, chỉ khác phần ĐẦU |
 | snow-village.js | 35 | LÀNG TUYẾT — mở rộng ngang (640×432) |
 | tetmount.js | 25 | TETMOUNT.JS — 🌸 Thú cưỡi "Bệ Xuân Tết" (cây mai + đào, hũ lộc, bánh chưng, nén vàng) |
+| thoitrang-moi.js | 18 | THOITRANG-MOI.JS — 4A..4E K=4 HD: Học Viện Phép Thuật, Đầu Bếp Bánh Ngọt, Cổ Phong Áo Lụa, Mascot Ong Mật & Gấu Trúc Trà Chanh |
 | thongbao.js | 13 | THONGBAO.JS — 🔔 BẢNG THÔNG BÁO do ADMIN đăng (cả server đều thấy) |
 | tieuacma.js | 21 | TIEUACMA.JS — 😈 MASCOT TIỂU ÁC MA (Nam / Nữ) — bán ở TIỆM CHÚ HỀ (circus.js → CL_ITEMS) |
+| trangtri-nongtrai-moi.js | 20 | TRANGTRI-NONGTRAI-MOI.JS — Hàng rào trắng/tre đèn lồng tự nối, Cổng hoa hồng, Nhà kính hoa, Lối đá, Bù nhìn, Đài phun nước, Đèn, Xích đu, Bàn trà |
+| trochoi-moi.js | 14 | TROCHOI-MOI.JS — 🎮 Máy Trò Chơi Mini ở Công viên: Đập Chuột Chũi & Hứng Dừa |
 | vitvang.js | 8 | VITVANG.JS — 🦆 SET VỊT VÀNG (nam/nữ đều mặc, 1 set chung) + MŨ VỊT VÀNG (bản Nam tóc ngắn / bản Nữ tóc dài) |
 | vothuong.js | 10 | VOTHUONG.JS — ⚫⚪ MASCOT HẮC VÔ THƯỜNG / BẠCH VÔ THƯỜNG (2 set, CHỈ KHÁC MÀU) |
 | winter.js | 7 | WINTER.JS — Đồ mới: |

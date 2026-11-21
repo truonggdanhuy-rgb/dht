@@ -13,7 +13,7 @@
 (()=>{
 'use strict';
 const SW=3200,SH=1100,CV=window.CV;
-const SEA_LIM=1300,BGW=1500;   // GIỚI HẠN BIỂN: thuyền chỉ đi được tới x=1300 (ngay sau đảo nhỏ thứ 2). Muốn mở rộng/thu hẹp: sửa SEA_LIM (BGW = bề rộng ảnh nền, nên lớn hơn SEA_LIM ~200)
+const SEA_LIM=1960,BGW=2160;   // GIỚI HẠN BIỂN: mở rộng để vòng quanh Ốc Đảo San Hô lớn
 const SEA={sp:[],hits:[],lb:[],seats:[],horses:[],tbls:[],pos:{x:96,y:446},fx:null,built:0,bg:null};
 (window.CVMAPS=window.CVMAPS||{}).bn={d:SEA,w:SEA_LIM+60,h:SH};
 SEA.fx=seaFx;   // gán NGAY khi đăng ký map (trước đây gán trong build() → lần vào Biển đầu tiên bị mất hải âu / thoại bạch tuộc)
@@ -26,18 +26,25 @@ const dyn=(by,fn)=>SEA.sp.push({by,d:fn});
 const hit=(x,y,w,h,msg,act,goal)=>SEA.hits.push(act?[x,y,w,h,msg,act,goal]:[x,y,w,h,msg]);
 const lbl=(t,x,y)=>SEA.lb.push([t,x,y]);
 
-// ---------- hình dạng bờ biển + vùng đi được ----------
+// ---------- hình dạng bờ biển + Ốc Đảo San Hô lớn + vùng đi được ----------
 const TOPY=150,BOTY=1004;                    // cát đi được từ y=150 đến y=1004 (trên/dưới là đụn cỏ)
 const BW=70;   // độ nới rộng bãi cát (px). Muốn bãi rộng/hẹp hơn thì sửa số này
 const shoreX=y=>{const t=Math.max(0,Math.min(1,(y-330)/160)),s=t*t*(3-2*t);   // bãi ~170px ở chỗ nhân vật xuất hiện, nở ra thành vịnh nhỏ ở chỗ tiệm
  return BW+168-70*s+9*Math.sin(y/70)+4*Math.sin(y/23+1.3)+50*Math.exp(-(((y-800)/85)**2))};
 const PIER={y0:548,y1:578,x0:0,x1:0};PIER.x0=Math.round(shoreX(563))-34;PIER.x1=PIER.x0+232;
+const OX=1280,OY=560,ORX=310,ORY=225;        // Ốc Đảo San Hô LỚN ngoài khơi (~620×450px)
+const LX=1320,LY=498,LRX=64,LRY=38;          // Hồ suối nước ngọt rộng trên Ốc Đảo
+const OPIER={x0:856,x1:1004,y0:540,y1:580};  // Cầu tàu Ốc Đảo (vươn sâu qua mép sóng lên bãi cát khô để đi ra/vào mượt mà)
+const oasisR=an=>1+0.055*Math.cos(2*an-0.4)+0.04*Math.sin(3*an+0.8)-0.025*Math.cos(5*an);
+const oasisDist=(x,y)=>{const dx=(x-OX)/ORX,dy=(y-OY)/ORY;return Math.hypot(dx,dy)/oasisR(Math.atan2(dy,dx))};
 const inPier=(x,y)=>x>=PIER.x0&&x<=PIER.x1&&y>=PIER.y0&&y<=PIER.y1;
+const inOasisPier=(x,y)=>x>=OPIER.x0&&x<=OPIER.x1&&y>=OPIER.y0&&y<=OPIER.y1;
+const inOasisWalk=(x,y)=>oasisDist(x,y)<=0.965;
 const bnSolid=(x,y)=>{
- if(inPier(x,y))return false;
+ for(const b of BL)if(x>=b[0]&&x<b[2]&&y>=b[1]&&y<b[3])return true;
+ if(inPier(x,y)||inOasisPier(x,y)||inOasisWalk(x,y))return false;
  if(x<6||y<TOPY||y>BOTY||x>SW-4)return true;
  if(x>shoreX(y)-7)return true;
- for(const b of BL)if(x>=b[0]&&x<b[2]&&y>=b[1]&&y<b[3])return true;
  return false};
 
 // ============================================================
@@ -245,8 +252,131 @@ const mkTuft=()=>mk(14,12,(g,r)=>{for(const[x,h]of[[2,7],[5,10],[8,8],[11,6]]){l
 const mkIsle=()=>mk(120,56,(g,r)=>{E(r,'#e8cf98',60,44,56,10);E(r,'#f3deae',60,42,52,8);E(r,'rgba(255,255,255,.7)',60,50,58,4);E(r,'#e8cf98',60,44,56,8)});
 const mkWood=()=>mk(34,10,(g,r)=>{E(r,'rgba(90,60,20,.2)',17,9,15,1);r('#a98a62',2,3,28,4);r('#c9aa80',2,3,28,1);r('#7a5f3c',2,6,28,1);r('#8a6f48',30,4,3,3);r('#c9aa80',4,2,2,1);r('#6b4e2a',12,4,3,1)});
 
+// --- Chòi Bar Tiki Ốc Đảo Lớn + Vọng Lâu Hoàng Hôn + Thác Đá Đôi + Tượng Tiki + Khóm Hoa Nhiệt Đới ---
+const mkTikiHut=()=>mk(114,90,(g,r)=>{
+ E(r,'rgba(0,0,0,.22)',57,86,52,4);
+ // Sàn gỗ rộng + bậc thềm
+ r('#6e4824',8,74,98,11);r('#b8844c',10,72,94,9);r('#d9a66c',10,72,94,2);
+ for(let x=14;x<102;x+=8)r('#8c5d32',x,72,1,9);
+ r('#c99258',32,81,50,5);r('#e6ba7e',32,81,50,1);
+ // Cột tre đôi chắc chắn
+ for(const x of[13,38,72,97]){r('#6b4a18',x,36,4,39);r('#a87e30',x,36,2,39);r('#d2a84a',x,36,1,39)}
+ // Quầy bar nhiệt đới rộng + bảng gỗ menu
+ r('#523418',17,44,80,22);r('#8f5f32',15,58,84,14);r('#c99258',13,55,88,4);r('#f0c88a',13,55,88,1);
+ for(let x=18;x<96;x+=9){r('#6e4824',x,59,7,11);r('#a8743c',x+1,60,5,9)}
+ r('#2c1c0e',44,44,26,10);r('#ffe27a',46,46,22,1);r('#8ef0dc',48,49,14,1);r('#ff9ab8',48,51,18,1);
+ // Dừa tươi, ly nước dứa, sinh tố cầu vồng trên quầy
+ for(const cx0 of[22,31,82,91]){E(r,'#4a7a2c',cx0,52,4,4);E(r,'#66a63c',cx0,51,3,3);r('#ff5a7a',cx0,46,1,4);r('#fff',cx0+1,46,2,1)}
+ for(const cx0 of[42,56,70]){r('#98ecff',cx0,49,5,6);r('#ff7ea8',cx0,49,5,2);r('#ffd23f',cx0+2,45,1,4)}
+ // Đèn lồng treo 2 bên hiên
+ for(const lx of[22,92]){r('#3d2410',lx,35,1,4);r('#ff9f2e',lx-2,39,5,7);r('#ffe97a',lx-1,40,3,5);r('#fff',lx,41,1,2)}
+ // Vòng hoa lei & lá dừa trang trí dưới hiên
+ for(let x=9;x<105;x+=4){const c=['#ff6a88','#ffd23f','#78f0c8','#ff9a4a','#ffffff'][(x>>2)%5];r(c,x,34+(x%8===0?1:0),3,3);r('#2d8242',x+1,36,2,2)}
+ // Mái lá cọ hai tầng ấm áp
+ for(let i=0;i<30;i++){
+  const w=Math.round(12+i*1.65),x0=Math.max(1,57-w),x1=Math.min(113,57+w);
+  const c=i%5===4?'#9c7022':i%2?'#c49434':'#dcb04a';
+  r(c,x0,6+i,x1-x0,1);
+  r('#f2cb66',x0+3,6+i,Math.min(16,Math.max(2,(x1-x0)>>2)),1);
+  if(i%4===0)for(let x=x0;x<x1;x+=7)r('#825c18',x,6+i,1,2);
+ }
+ r('#9c7022',51,2,12,5);r('#f2cb66',53,0,8,3);r('#ff5a7a',54,2,6,2);r('#ffd23f',56,2,2,1);
+});
+
+const mkGazebo=()=>mk(96,86,(g,r)=>{
+ E(r,'rgba(0,0,0,.22)',48,82,42,4);
+ // Sàn gỗ + lan can xung quanh vọng lâu
+ r('#6e4824',8,70,80,10);r('#c99258',10,66,76,10);r('#e6ba7e',10,66,76,2);
+ for(let x=14;x<84;x+=7)r('#8c5d32',x,66,1,10);
+ r('#c99258',32,76,32,4);r('#f0c88a',32,76,32,1);
+ // Băng ghế đệm êm hướng ra biển
+ r('#5e3f20',22,57,52,11);r('#ff8ab0',24,55,48,5);r('#ffb8d2',24,55,48,2);
+ r('#fff6e0',28,53,8,4);r('#7ce6d8',60,53,8,4);
+ // Cột tre 4 góc + vòng hoa
+ for(const x of[12,30,64,82]){r('#6b4a18',x,32,4,36);r('#a87e30',x,32,2,36);r('#d2a84a',x,32,1,36)}
+ r('#b8844c',10,60,18,2);r('#b8844c',68,60,18,2);
+ for(const lx of[48]){r('#3d2410',lx,32,1,4);r('#ffe066',lx-2,36,5,6);r('#fff8c8',lx-1,37,3,4)}
+ for(let x=8;x<88;x+=5){const c=['#ff6a88','#78f0c8','#ffd23f','#ffffff'][(x/5|0)%4];r(c,x,31+(x%2),3,2)}
+ // Mái lá cọ hình chóp lục giác
+ for(let i=0;i<28;i++){
+  const w=Math.round(9+i*1.48),x0=Math.max(2,48-w),x1=Math.min(94,48+w);
+  r(i%4===3?'#9c7022':i%2?'#c49434':'#e0b44c',x0,5+i,x1-x0,1);
+  r('#f4cf6a',x0+2,5+i,Math.min(12,Math.max(2,(x1-x0)>>2)),1);
+ }
+ r('#8a5a2a',44,1,8,5);r('#ffd23f',46,0,4,2);
+});
+
+const mkWaterfallRock=()=>mk(96,54,(g,r)=>{
+ E(r,'rgba(16,80,100,.24)',48,50,44,4);
+ // Khối vách đá vôi đôi nhiều tầng tự nhiên
+ E(r,'#66707a',48,34,40,17);E(r,'#848f9a',46,27,34,15);E(r,'#a3aeb8',39,19,21,9);
+ E(r,'#5b656e',20,38,16,11);E(r,'#848f9a',74,36,16,12);
+ // Thảm rêu xanh rì & hoa nhiệt đới mọc trên đỉnh đá
+ E(r,'#3e8a40',44,13,26,6);E(r,'#5fb858',46,11,18,4);E(r,'#7ed675',38,10,9,3);
+ for(const[fx,fy,fc]of[[24,20,'#ff6088'],[31,14,'#ffd23f'],[49,13,'#ff7aa8'],[64,18,'#ff6088'],[72,26,'#ff9a52']]){r(fc,fx,fy,3,3);r('#fff6b0',fx+1,fy+1,1,1)}
+ // Hai dòng thác ngọc lam đổ xuống hồ suối
+ for(const[wx0,ww0]of[[36,10],[58,8]]){
+  for(let y=19;y<50;y++){
+   const w=ww0+Math.round((y-19)*.26);
+   r('#4fd8e4',wx0-(w>>1),y,w,1);
+   r('#95f5fb',wx0-(w>>1)+2,y,Math.max(2,w-4),1);
+  }
+ }
+});
+
+const mkTikiTotem=()=>mk(34,58,(g,r)=>{
+ E(r,'rgba(0,0,0,.22)',17,55,13,3);
+ r('#5e3f20',9,14,16,41);r('#8a5f33',10,14,14,41);r('#a97644',11,15,4,39);r('#472c14',21,15,3,39);
+ r('#6b4220',8,12,18,4);r('#6b4220',8,28,18,3);r('#6b4220',7,51,20,4);
+ // Mặt nạ Tiki + mắt phát sáng ngọc + miệng cười răng nanh
+ r('#2c1c0e',12,19,4,3);r('#5ef5d0',13,20,2,1);
+ r('#2c1c0e',18,19,4,3);r('#5ef5d0',19,20,2,1);
+ r('#2c1c0e',12,24,10,3);r('#fff6e0',13,25,2,1);r('#fff6e0',19,25,2,1);
+ // Vòng hoa trên đỉnh đầu & mặt dưới
+ for(let x=9;x<25;x+=3){r(x%2?'#ff6088':'#ffd23f',x,9,3,3);r('#3e8a40',x+1,11,2,2)}
+ r('#2c1c0e',13,34,3,3);r('#ffd23f',14,35,1,1);r('#2c1c0e',18,34,3,3);r('#ffd23f',19,35,1,1);
+ r('#2c1c0e',12,41,10,4);r('#fff6e0',14,42,2,2);r('#fff6e0',18,42,2,2);
+});
+
+const mkTropBush=c=>mk(28,22,(g,r)=>{
+ E(r,'rgba(0,0,0,.18)',14,19,12,3);
+ E(r,'#2e7a36',14,13,12,7);E(r,'#4ca84e',14,11,10,6);E(r,'#6fd068',11,9,7,4);
+ for(const[fx,fy]of[[8,10],[15,7],[20,12],[12,14]]){r(c,fx,fy,3,3);r('#fff6b0',fx+1,fy+1,1,1)}
+});
+
+const mkLounger=(c1,c2)=>mk(54,50,(g,r)=>{
+ E(r,'rgba(0,0,0,.18)',27,47,23,3);
+ r('#c98a5a',6,36,36,8);r('#8a5a30',6,43,36,2);
+ r(c2,7,35,34,6);for(let x=9;x<39;x+=6)r(c1,x,35,3,6);
+ r(c1,4,29,9,9);r(c2,5,30,7,2);
+ r('#8a5a30',9,45,3,4);r('#8a5a30',36,45,3,4);
+ r('#8a6a3c',28,14,3,33);r('#b89058',28,14,1,33);
+ for(let y=0;y<14;y++){const w=Math.round(23*Math.sqrt(1-((y-14)/14)**2*.85));for(let x=-w;x<=w;x++){const k=Math.floor((x+23)/7)%2;r(k?c2:c1,29+x,y,1,1)}}
+ r(shade(c1,-.24),5,13,48,2);for(let x=5;x<53;x+=7)r(Math.floor(x/7)%2?c1:c2,x,15,7,2);
+ r('rgba(255,255,255,.35)',16,2,9,2);r('#8a6a3c',28,0,3,3);
+});
+
+const mkTikiPole=()=>mk(16,38,(g,r)=>{
+ E(r,'rgba(0,0,0,.2)',8,36,6,2);
+ r('#6b421c',6,14,4,22);r('#a87236',6,14,2,22);r('#4a2c10',9,14,1,22);
+ r('#4a2c10',5,22,6,2);r('#4a2c10',5,29,6,2);
+ r('#8c5a28',4,10,8,5);r('#c98e46',5,10,6,2);r('#4a2c10',4,14,8,1);
+});
+
+const mkPierLamp=()=>mk(14,34,(g,r)=>{
+ E(r,'rgba(0,0,0,.2)',7,32,5,2);
+ r('#4a2c14',5,11,4,21);r('#8a5a30',6,11,2,21);
+ r('#3d2410',3,8,8,3);r('#ffd23f',4,4,6,5);r('#fff6b0',5,5,4,3);r('#3d2410',3,3,8,2);
+});
+
+const mkOasisSign=()=>mk(56,64,(g,r)=>{E(r,'rgba(0,0,0,.2)',28,62,14,2);
+ r(WDK,26,18,5,44);r(WD,26,18,2,44);
+ r('#2c1c0e',2,2,52,30);r('#f6e7b4',4,4,48,26);r('#d9c28a',4,26,48,4);
+ g.textAlign='center';g.font='900 8.5px Nunito, "Segoe UI", sans-serif';g.fillStyle='#136f7d';g.fillText('BẾN ỐC ĐẢO',28,15,44);
+ g.font='900 8px Nunito, "Segoe UI", sans-serif';g.fillStyle='#e0584a';g.fillText('RA BIỂN ⛵',28,26,44)});
+
 // ============================================================
-//  NỀN (vẽ 1 lần): cát • biển • cầu tàu • đụn cỏ
+//  NỀN (vẽ 1 lần): cát • biển • cầu tàu • Ốc Đảo San Hô LỚN • đụn cỏ
 // ============================================================
 function buildBG(){return mk(BGW,SH,(g,r)=>{
  const B=[[0,'#c6f2e8'],[6,'#92e4d8'],[30,'#6fd3d2'],[68,'#4fbad0'],[130,'#3da2ca'],[230,'#2f88be'],[400,'#2573ae'],[660,'#1e609c'],[1000,'#194f88'],[1600,'#144278']];
@@ -254,9 +384,9 @@ function buildBG(){return mk(BGW,SH,(g,r)=>{
   r('#f3deae',0,y,s,1);r('#e8cf9a',s-18,y,8,1);r('#dcc088',s-10,y,6,1);r('#cfb07a',s-4,y,4,1);
   for(let i=0;i<B.length;i++){const x0=s+B[i][0],x1=i+1<B.length?s+B[i+1][0]:BGW;r(B[i][1],x0,y,x1-x0,1)}}
  // hoà trộn các dải nước (dither)
- for(let n=0;n<42000;n++){const y=Math.floor(rn()*SH),s=shoreX(y),d=rn()*1700,j=d+(rn()-.5)*(30+d*.28);let k=0;while(k+1<B.length&&j>=B[k+1][0])k++;r(B[k][1],Math.round(s+d),y,2,1)}
+ for(let n=0;n<56000;n++){const y=Math.floor(rn()*SH),s=shoreX(y),d=rn()*2200,j=d+(rn()-.5)*(30+d*.28);let k=0;while(k+1<B.length&&j>=B[k+1][0])k++;r(B[k][1],Math.round(s+d),y,2,1)}
  // sóng nhẹ trên mặt nước
- for(let n=0;n<2400;n++){const y=Math.floor(rn()*SH),x=Math.round(shoreX(y)+40+rn()*(BGW-340));r(rn()<.6?'rgba(255,255,255,.10)':'rgba(8,40,96,.12)',x,y,4+Math.floor(rn()*8),1)}
+ for(let n=0;n<3400;n++){const y=Math.floor(rn()*SH),x=Math.round(shoreX(y)+40+rn()*(BGW-340));r(rn()<.6?'rgba(255,255,255,.10)':'rgba(8,40,96,.12)',x,y,4+Math.floor(rn()*8),1)}
  // cát: hạt + gợn
  for(let n=0;n<7000;n++){const y=Math.floor(rn()*SH),x=Math.floor(rn()*Math.max(1,shoreX(y)-22));r(pk(['#e8cf98','#fbecc4','#dfc185','#f8e6b4','#d9bb7e']),x,y,rn()<.3?2:1,1)}
  for(let n=0;n<260;n++){const y=140+Math.floor(rn()*850),x=Math.floor(rn()*Math.max(1,shoreX(y)-40));const w=8+Math.floor(rn()*14);r('#eed7a2',x,y,w,1);r('#fff2d0',x+1,y-1,w-3,1)}
@@ -264,18 +394,81 @@ function buildBG(){return mk(BGW,SH,(g,r)=>{
  const gy=x=>128+7*Math.sin(x/37)+3*Math.sin(x/13+1),gy2=x=>1008+7*Math.sin(x/31+2)+3*Math.sin(x/11);
  for(let y=0;y<140;y++){const s=Math.round(shoreX(y))-3;for(let x=0;x<s;x++){const e=gy(x);if(y<e){r(y>e-2?'#6fa84e':rn()<.12?pk(['#a4d97a','#76b055']):'#8dc767',x,y,1,1)}else if(y<e+3&&y>=e)r('#d9c088',x,y,1,1)}}
  for(let y=996;y<SH;y++){const s=Math.round(shoreX(y))-3;for(let x=0;x<s;x++){const e=gy2(x);if(y>e){r(y<e+2?'#6fa84e':rn()<.12?pk(['#a4d97a','#76b055']):'#8dc767',x,y,1,1)}else if(y>e-3&&y<=e)r('#d9c088',x,y,1,1)}}
- // CẦU TÀU gỗ (đi được)
- const{x0,x1,y0,y1}=PIER;
- r('rgba(0,30,70,.22)',x0+6,y1+3,x1-x0,8);                         // bóng xuống nước
- for(let x=x0+14;x<x1-4;x+=26){r(WDK,x,y1,5,10);r('rgba(255,255,255,.35)',x-1,y1+9,7,2)}  // cọc đỡ
- r(WDK,x0,y0-1,x1-x0+3,y1-y0+3);
- for(let x=x0;x<x1;x+=7){const c=(x/7|0)%2?WD:WDL;r(c,x,y0,6,y1-y0);r(WDD,x+6,y0,1,y1-y0)}
- r('#f0c88a',x0,y0,x1-x0,1);r(WDD,x0,y1-2,x1-x0,2);
- for(let x=x0+8;x<x1-6;x+=7)if(((x/7)|0)%3==0){r('#3a2412',x+1,y0+4,1,1);r('#3a2412',x+1,y1-5,1,1)}
- // cọc buộc dây ở đầu cầu
- for(const y of[y0+2,y1-6]){r('#3a2412',x1-6,y,5,5);r('#8a6a3c',x1-5,y+1,3,2)}
- // đá + dây buộc thuyền
- line(r,'#d9c28a',x1-22,y1+1,x1-22,y1+9,1)
+
+ // ---- ỐC ĐẢO SAN HÔ LỚN NGOÀI KHƠI (OX=1280, OY=560, ORX=310, ORY=225) ----
+ const xMin=OX-ORX-110,xMax=OX+ORX+110,yMin=OY-ORY-85,yMax=OY+ORY+85;
+ for(let y=yMin;y<=yMax;y+=2){
+  for(let x=xMin;x<=xMax;x+=2){
+   const d=oasisDist(x,y);
+   if(d>1.34)continue;
+   if(d>1.23){r('#2894c4',x,y,2,2);continue}
+   if(d>1.14){r('#3cb9ce',x,y,2,2);continue}
+   if(d>1.05){r('#6eddd8',x,y,2,2);continue}
+   if(d>1.00){r('#b6f1e6',x,y,2,2);continue}
+   if(d>0.97){r('#cca86e',x,y,2,2);continue}
+   if(d>0.74){r(d>0.91?'#e5c990':'#f5e2b2',x,y,2,2);continue}
+   // Lòng đảo: thảm cỏ nhiệt đới xanh mướt
+   const md=Math.hypot((x-(OX+12))/(ORX*0.72),(y-(OY-14))/(ORY*0.70));
+   r(md<0.55?'#9cd974':md<0.82?'#7ec058':'#63a246',x,y,2,2);
+  }
+ }
+ // Rạn san hô sắc màu lấp lánh dưới làn nước cạn quanh đảo
+ for(let i=0;i<260;i++){
+  const an=rn()*6.283,rr=1.03+rn()*0.23,sc=oasisR(an);
+  const cx0=Math.round(OX+Math.cos(an)*ORX*sc*rr),cy0=Math.round(OY+Math.sin(an)*ORY*sc*rr);
+  r(pk(['#ff8c80','#ffd478','#64dcd0','#f6b8e0','#96b8ff']),cx0,cy0,i%3?2:3,2);
+ }
+ // Hạt cát mịn & gợn cát vàng trên bãi tắm rộng
+ for(let i=0;i<2200;i++){
+  const an=rn()*6.283,rr=0.68+Math.sqrt(rn())*0.30,sc=oasisR(an);
+  const sx0=Math.round(OX+Math.cos(an)*ORX*sc*rr),sy0=Math.round(OY+Math.sin(an)*ORY*sc*rr);
+  r(pk(['#e6c88e','#fbecc4','#dfc185','#fff3d4']),sx0,sy0,1,1);
+ }
+ // Hoa cỏ nhiệt đới trên thảm xanh lòng đảo
+ for(let i=0;i<360;i++){
+  const an=rn()*6.283,rr=Math.sqrt(rn())*0.66,sc=oasisR(an);
+  const gx=Math.round(OX+Math.cos(an)*ORX*sc*rr),gy0=Math.round(OY-8+Math.sin(an)*ORY*sc*rr);
+  r(i%10===0?pk(['#ff7ea8','#ffe66d','#ffffff']):pk(['#6eb050','#a8e080']),gx,gy0,2,1);
+ }
+ // Lối đá san hô tròn uốn lượn kết nối cầu tàu -> Bar Tiki -> Hồ Suối -> Vọng Lâu -> Bãi Tắm Nam
+ const stonePath=(pts)=>{
+  for(let k=0;k+1<pts.length;k++){
+   const[ax,ay]=pts[k],[bx,by]=pts[k+1],n=Math.max(1,Math.round(Math.hypot(bx-ax,by-ay)/13));
+   for(let i=0;i<=n;i++){
+    const px=Math.round(ax+(bx-ax)*i/n+Math.sin(i*1.7)*2),py=Math.round(ay+(by-ay)*i/n+Math.cos(i*1.3)*2);
+    E(r,'#cbb998',px,py+1,5,3);E(r,'#ede1cb',px,py,4,3);
+   }
+  }
+ };
+ stonePath([[1002,560],[1120,560],[1148,492]]);
+ stonePath([[1120,560],[1230,582],[1320,560],[1445,582]]);
+ stonePath([[1230,582],[1150,672]]);
+ stonePath([[1320,560],[1375,672]]);
+
+ // Hồ suối nước ngọt rộng trong vắt giữa Ốc Đảo (LX=1320, LY=498, LRX=64, LRY=38)
+ E(r,'#cbb68a',LX,LY,LRX+4,LRY+4);
+ E(r,'#e7d8b8',LX,LY,LRX+2,LRY+2);
+ E(r,'#45c2b8',LX,LY,LRX,LRY);
+ E(r,'#239db0',LX,LY+2,LRX-10,LRY-6);
+ E(r,'#6ee6e2',LX-8,LY-4,LRX-28,LRY-15);
+ for(const[lx0,ly0]of[[LX-34,LY+14],[LX+28,LY+16],[LX+36,LY-6],[LX-26,LY-12],[LX+8,LY+22]]){
+  E(r,'#4f9c4a',lx0,ly0,5,3);r('#ff9ac0',lx0,ly0-1,2,2);
+ }
+
+ // ---- CẦU TÀU GỖ BỜ CHÍNH & CẦU TÀU ỐC ĐẢO (đi được) ----
+ const drawPier=(px0,px1,py0,py1,dirEnd)=>{
+  r('rgba(0,30,70,.22)',px0+4,py1+3,px1-px0,8);
+  for(let x=px0+14;x<px1-4;x+=26){r(WDK,x,py1,5,10);r('rgba(255,255,255,.35)',x-1,py1+9,7,2)}
+  r(WDK,px0,py0-1,px1-px0+3,py1-py0+3);
+  for(let x=px0;x<px1;x+=7){const c=(x/7|0)%2?WD:WDL;r(c,x,py0,6,py1-py0);r(WDD,x+6,py0,1,py1-py0)}
+  r('#f0c88a',px0,py0,px1-px0,1);r(WDD,px0,py1-2,px1-px0,2);
+  for(let x=px0+8;x<px1-6;x+=7)if(((x/7)|0)%3===0){r('#3a2412',x+1,py0+4,1,1);r('#3a2412',x+1,py1-5,1,1)}
+  const bx=dirEnd>0?px1-6:px0+2;
+  for(const y of[py0+2,py1-6]){r('#3a2412',bx,y,5,5);r('#8a6a3c',bx+1,y+1,3,2)}
+  line(r,'#d9c28a',dirEnd>0?px1-22:px0+18,py1+1,dirEnd>0?px1-22:px0+18,py1+9,1);
+ };
+ drawPier(PIER.x0,PIER.x1,PIER.y0,PIER.y1,1);
+ drawPier(OPIER.x0,OPIER.x1,OPIER.y0,OPIER.y1,-1);
 })}
 
 // ============================================================
@@ -283,14 +476,23 @@ function buildBG(){return mk(BGW,SH,(g,r)=>{
 // ============================================================
 function build(){
  SEA.built=1;SEA.bg=buildBG();
- // --- nước: chạm vào nước (không bấm được thì nhắc cần thuyền) — các lát theo bờ, chừa cầu tàu ---
- const wm='🌊 Mặt biển — phải LÊN THUYỀN mới câu được! Ra cuối cầu tàu, bấm "RA BIỂN" nhé.',hw=(x,y,w,h)=>hit(x,y,w,h,wm);
+ // --- nước: chạm vào nước (chừa cầu tàu & vùng Ốc Đảo) — các lát theo bờ ---
+ const wm='🌊 Mặt biển — phải LÊN THUYỀN mới câu được! Bấm vào Bến thuyền ("RA BIỂN") nhé.',hw=(x,y,w,h)=>{
+  if(w<=0||h<=0)return;
+  if(y+h>OY-ORY-32&&y<OY+ORY+32&&x<OX+ORX+40&&x+w>OPIER.x0-8){
+   const lx=Math.max(x,OPIER.x0-8),rx=Math.min(x+w,OX+ORX+40);
+   if(lx>x)hw(x,y,lx-x,h);
+   if(x+w>rx)hw(rx,y,(x+w)-rx,h);
+   return;
+  }
+  hit(x,y,w,h,wm);
+ };
  for(let y=0;y<SH;y+=60){const y1=y+60,sx=Math.round(shoreX(y+30))+16;
   if(y1>PIER.y0-2&&y<PIER.y1+4){
-   if(y<PIER.y0-2)hw(sx,y,BGW,PIER.y0-2-y);
-   hw(PIER.x1+4,Math.max(y,PIER.y0-2),BGW,Math.min(y1,PIER.y1+4)-Math.max(y,PIER.y0-2));
-   if(y1>PIER.y1+4)hw(sx,PIER.y1+4,BGW,y1-PIER.y1-4)}
-  else hw(sx,y,BGW,60)}
+   if(y<PIER.y0-2)hw(sx,y,BGW-sx,PIER.y0-2-y);
+   hw(PIER.x1+4,Math.max(y,PIER.y0-2),BGW-(PIER.x1+4),Math.min(y1,PIER.y1+4)-Math.max(y,PIER.y0-2));
+   if(y1>PIER.y1+4)hw(sx,PIER.y1+4,BGW-sx,y1-PIER.y1-4)}
+  else hw(sx,y,BGW-sx,60)}
  // --- SHOP QUÁI VẬT (to, có neon chạy chữ + dù nghỉ mát bên cạnh) ---
  const SX=96,SY=402;
  put(mkShop(),SX,SY,[SX-82,SY-24,SX+82,SY-2]);
@@ -301,17 +503,100 @@ function build(){
  OCT.x=Math.round(shoreX(SY+30))+16;OCT.y=SY+30;
  dyn(OCT.y+.5,()=>drawOcto(tmNow()));
  hit(OCT.x-40,OCT.y-52,64,58,'🐙 Bạch tuộc: "Đồ câu quái vật đây! Vào tiệm xem thử nha!"','cv:bn:shop',[SX,SY+16]);
-  // --- cầu tàu + bến thuyền: bấm RA BIỂN để lên thuyền của bạn ---
+  // --- cầu tàu + bến thuyền chính ---
  {const ex=PIER.x1,my=Math.round((PIER.y0+PIER.y1)/2),SG=[ex-40,my];
   put(mkSignPost(),ex-14,PIER.y0-4,[ex-30,PIER.y0-8,ex-2,PIER.y0-2]);
-  hit(ex-44,PIER.y0-70,56,68,'⛵ Bến thuyền — bấm để RA BIỂN','cv:bn:sail',SG);
-  const bm=mkBoat(),bo=outl(bm);dyn(PIER.y1+22,()=>{if(CV.boat)return;const t=tmNow(),bb=Math.round(Math.sin(t*1.6)*1);cx.drawImage(bo,Math.round(ex-84)-1,PIER.y1+4+bb-1)});
-  hit(ex-84,PIER.y1+4,64,26,'⛵ Thuyền buộc ở bến — bấm để RA BIỂN','cv:bn:sail',SG);
+  hit(ex-44,PIER.y0-70,56,68,'⛵ Bến thuyền — bấm để RA BIỂN','cv:bn:sail:main',SG);
+  const bm=mkBoat(),bo=outl(bm);dyn(PIER.y1+22,()=>{if(CV.boat||SEAB.at==='oasis')return;const t=tmNow(),bb=Math.round(Math.sin(t*1.6)*1);cx.drawImage(bo,Math.round(ex-84)-1,PIER.y1+4+bb-1)});
+  hit(ex-84,PIER.y1+4,64,26,'⛵ Thuyền buộc ở bến — bấm để RA BIỂN','cv:bn:sail:main',SG);
   dyn(PIER.y1+300,()=>{if(CV.boat||camX>ex+120||camX+vw<ex-200)return;const tm=tmNow(),bx=ex-14,by=PIER.y0-86+Math.round(Math.sin(tm*2.4)*2),t='⛵ RA BIỂN';
    cx.save();cx.font='800 9px Nunito, sans-serif';cx.textAlign='center';const w=Math.round(cx.measureText(t).width)+16;
    cx.fillStyle='#0d6a76';cx.fillRect(bx-(w>>1)-1,by-10,w+2,16);cx.fillStyle='#e8fbff';cx.fillRect(bx-(w>>1),by-9,w,14);
    cx.fillStyle='#0d6a76';cx.fillRect(bx-3,by+6,6,2);cx.fillRect(bx-1,by+8,2,2);cx.fillText(t,bx,by+2);cx.restore()});
-  hit(ex-44,PIER.y0-98,60,24,'⛵ Bấm để RA BIỂN','cv:bn:sail',SG)}
+  hit(ex-44,PIER.y0-98,60,24,'⛵ Bấm để RA BIỂN','cv:bn:sail:main',SG)}
+
+ // --- ỐC ĐẢO SAN HÔ LỚN (Cầu tàu + 2 đèn bến, Thác đá đôi & Hồ suối, Bar Tiki, Vọng lâu Hoàng Hôn, Tượng Tiki, 8 dừa, 4 đuốc, 3 ghế nằm) ---
+ {const oex=OPIER.x0,omy=Math.round((OPIER.y0+OPIER.y1)/2),OSG=[oex+38,omy];
+  put(mkOasisSign(),oex+18,OPIER.y0-4,[oex+4,OPIER.y0-8,oex+32,OPIER.y0-2]);
+  hit(oex-12,OPIER.y0-70,56,68,'🏝️ Bến Ốc Đảo — bấm để RA BIỂN','cv:bn:sail:oasis',OSG);
+  for(const ly of[OPIER.y0+4,OPIER.y1-2])put(mkPierLamp(),oex+6,ly,[oex+1,ly-6,oex+11,ly+1]);
+  const obm=mkBoat(),obo=outl(obm);
+  dyn(OPIER.y1+22,()=>{if(CV.boat||SEAB.at!=='oasis')return;const t=tmNow(),bb=Math.round(Math.sin(t*1.6)*1);cx.drawImage(obo,Math.round(oex+16)-1,OPIER.y1+4+bb-1)});
+  hit(oex+16,OPIER.y1+4,64,26,'⛵ Thuyền đang neo tại Ốc Đảo — bấm để RA BIỂN','cv:bn:sail:oasis',OSG);
+  dyn(OPIER.y1+300,()=>{if(CV.boat||camX>oex+200||camX+vw<oex-140)return;const tm=tmNow(),bx=oex+18,by=OPIER.y0-86+Math.round(Math.sin(tm*2.4)*2),t='⛵ RA BIỂN';
+   cx.save();cx.font='800 9px Nunito, sans-serif';cx.textAlign='center';const w=Math.round(cx.measureText(t).width)+16;
+   cx.fillStyle='#0d6a76';cx.fillRect(bx-(w>>1)-1,by-10,w+2,16);cx.fillStyle='#e8fbff';cx.fillRect(bx-(w>>1),by-9,w,14);
+   cx.fillStyle='#0d6a76';cx.fillRect(bx-3,by+6,6,2);cx.fillRect(bx-1,by+8,2,2);cx.fillText(t,bx,by+2);cx.restore()});
+  hit(oex-12,OPIER.y0-98,60,24,'⛵ Bấm để RA BIỂN','cv:bn:sail:oasis',OSG);
+  lbl('ỐC ĐẢO SAN HÔ',OX,OY-ORY-14);
+
+  // Hồ suối nước ngọt + Thác đá vôi đôi
+  put(mkWaterfallRock(),LX,LY-6,[LX-58,LY-26,LX+58,LY+28]);
+  dyn(LY+2,()=>{
+   if(LX+75<camX||LX-75>camX+vw)return;
+   const t=tmNow();
+   for(const wx0 of[LX-12,LX+10])for(let k=0;k<4;k++){
+    const u=(t*1.45+k*.25)%1,fy=Math.round(LY-34+u*22);
+    r('rgba(255,255,255,'+(.78*(1-u*.55)).toFixed(2)+')',wx0-2+(k%3)*2,fy,2,3);
+   }
+   for(let k=0;k<3;k++){
+    const a=(t*.75+k*.33)%1;
+    E(r,'rgba(220,255,255,'+(.48*(1-a)).toFixed(2)+')',LX,LY-8,Math.round(12+a*20),Math.round(3+a*6));
+   }
+  });
+  hit(LX-60,LY-56,120,86,'🏞️ Suối nước ngọt & Thác Đôi Ốc Đảo — nước trong veo mát lạnh!');
+
+  // Quán Bar Tiki Ốc Đảo Lớn
+  const TX=1148,TY=478;
+  put(mkTikiHut(),TX,TY,[TX-46,TY-22,TX+46,TY-2]);
+  hit(TX-52,TY-88,104,88,'🥥 Quán Bar Tiki Ốc Đảo — sinh tố dứa dừa & không khí lễ hội!');
+
+  // Vọng Lâu Hoàng Hôn (ngồi nghỉ ngắm biển)
+  const GX=1462,GY=578;
+  put(mkGazebo(),GX,GY,[GX-38,GY-22,GX+38,GY-2]);
+  hit(GX-44,GY-84,88,84,'🏝️ Vọng Lâu Hoàng Hôn — bấm để ngồi ngắm đại dương xanh','cv:bn:sit:'+GX+':'+(GY-16)+':'+(GY+6),[GX,GY+6]);
+
+  // Tượng Tiki Cổ Nhiệt Đới ở quảng trường trung tâm đảo
+  const TTX=1228,TTY=568;
+  put(mkTikiTotem(),TTX,TTY,[TTX-11,TTY-12,TTX+11,TTY+1]);
+  hit(TTX-16,TTY-58,32,58,'🗿 Tượng Tiki Cổ Ốc Đảo — đôi mắt phát sáng ngọc ban đêm!');
+
+  // 8 Cây dừa cao rợp bóng quanh Ốc Đảo
+  for(const[px,py,lean]of[[1014,458,-.35],[1056,668,-.30],[1216,384,-.25],[1418,392,.35],[1528,472,.40],[1536,642,.36],[1338,738,.28],[1130,730,-.28]]){
+   put(mkPalm(lean),px,py,[px-7,py-9,px+7,py+1]);
+   hit(px-22,py-88,44,88,'🥥 Dừa Ốc Đảo — trái sum suê, bóng mát rượi');
+  }
+
+  // Khóm hoa nhiệt đới dâm bụt & lan rừng
+  for(const[bx,by,col]of[[1082,534,'#ff6088'],[1250,468,'#ffd23f'],[1414,486,'#ff6088'],[1404,638,'#ff8eb8'],[1202,650,'#ffd23f'],[1078,618,'#ff6088']]){
+   put(mkTropBush(col),bx,by,[bx-10,by-6,bx+10,by+1]);
+  }
+
+  // 4 Đuốc Tiki cháy bập bùng quanh đảo
+  const TP=outl(mkTikiPole());
+  for(const[fx,fy]of[[986,526],[1084,476],[1214,476],[1402,588]]){
+   SEA.sp.push({by:fy,d:()=>{
+    cx.drawImage(TP,fx-9,fy-37);
+    const t=tmNow(),fl=Math.round(Math.sin(t*11+fx)*1);
+    E(r,'rgba(255,170,60,.26)',fx,fy-30,8,7);
+    r('#ff6a22',fx-2,fy-31-fl,5,4);r('#ffd23f',fx-1,fy-30-fl,3,3);r('#fff8c0',fx,fy-29,1,2);
+   }});
+   blk(fx-4,fy-6,fx+4,fy+1);
+   hit(fx-8,fy-38,16,40,'🔥 Đuốc Tiki — thắp sáng lối dạo Ốc Đảo');
+  }
+
+  // 3 Ghế nằm bãi biển + Dù sọc ở Bãi Tắm Nam (ngồi nghỉ được!)
+  for(const[ux,uy,c1,c2,sgY]of[[1136,682,'#ff6a5a','#fff6e0',692],[1262,704,'#1fa6b4','#fff6e0',714],[1388,682,'#f0a830','#fff6e0',692]]){
+   put(mkLounger(c1,c2),ux,uy,[ux-22,uy-10,ux+14,uy-1]);
+   hit(ux-25,uy-48,50,50,'🏖️ Ghế bãi biển Ốc Đảo — bấm để nằm hóng gió!','cv:bn:sit:'+(ux-6)+':'+(uy-6)+':'+sgY,[ux-6,sgY]);
+  }
+
+  // Vỏ sò, sao biển & chú cua đỏ trên bãi cát Ốc Đảo
+  for(const[sx,sy,k]of[[1030,582,0],[1190,602,2],[1094,724,1],[1330,740,4],[1470,694,0],[1494,522,3],[1178,412,2]]){
+   const o=SHELL[k];SEA.sp.push({by:sy,d:()=>cx.drawImage(o,sx-8,sy-12)});
+  }
+  {const ic={y:736,x0:1200,x1:1295,ph:1.8};dyn(ic.y+.5,()=>drawCrab(ic,tmNow()));hit(1196,722,106,22,'🦀 Chú cua Ốc Đảo đang phơi nắng bãi cát vàng')}
+ }
  // --- đụn cỏ trên / dưới + dừa ---
  for(const[x,lean]of[[34,.4],[112,-.5]]){const p=mkPalm(lean);put(p,x,176,[x-6,166,x+6,176])}
  for(const[x,lean]of[[36,-.4],[92,.3]]){put(mkPalm(lean),x,1036,[x-6,1016,x+6,1036])}
@@ -338,21 +623,21 @@ function build(){
  // --- hai chú cua chạy ngang ---
  for(const c of[{y:610,x0:22,x1:78,ph:0},{y:850,x0:26,x1:92,ph:4}])dyn(c.y+.5,()=>drawCrab(c,tmNow()));
  hit(10,596,76,22,'🦀 Chú cua nhỏ đang đi ngang — tách tách tách');hit(14,836,88,22,'🦀 Cua đồng chạy ngang bờ cát');
- // --- thả phao + đá ngoài biển + thuyền buồm xa xa + đảo nhỏ ---
- for(const[x,y]of[[560,300],[640,640],[900,860],[820,180],[1250,470],[1500,760],[1800,300],[2100,640],[2500,420],[2750,880]].filter(p=>p[0]<BGW)){const bo=outl(mkBuoy()),ph=x*.013;dyn(y,()=>{const t=tmNow();cx.drawImage(bo,x-9,Math.round(y-22+Math.sin(t*1.7+ph)*1.5));
+ // --- thả phao + đá ngoài biển + thuyền buồm xa xa + đảo nhỏ (tránh vùng Ốc Đảo lớn) ---
+ for(const[x,y]of[[540,290],[640,640],[830,860],[820,230],[1290,220],[1700,320],[1740,770],[1310,910],[1900,640]].filter(p=>p[0]<BGW)){const bo=outl(mkBuoy()),ph=x*.013;dyn(y,()=>{const t=tmNow();cx.drawImage(bo,x-9,Math.round(y-22+Math.sin(t*1.7+ph)*1.5));
   const a=.2+.12*Math.sin(t*1.7+ph);r('rgba(255,255,255,'+a.toFixed(2)+')',x-9,y+1,18,1)});hit(x-10,y-24,20,26,'🏮 Phao đèn biển — tự bật sáng rực rỡ vào ban đêm')}
- // --- đảo nhỏ có dừa (thay cho ghềnh đá cũ; chỉ là vật cản, không bấm được) ---
+ // --- đảo nhỏ có dừa (chỉ là vật cản, nằm ngoài vùng Ốc Đảo) ---
  {const ik=mkIslet();BROCK.forEach(([x,y,w,h],i)=>{if(x>BGW)return;const cx0=Math.round(x+w/2),cy0=Math.round(y+h/2)+2,ph=i*1.7;
   dyn(cy0-6,()=>{const t=tmNow(),a=.35+.2*Math.sin(t*1.8+ph);
    cx.drawImage(ik,cx0-46,cy0-34);r('rgba(255,255,255,'+a.toFixed(2)+')',cx0-44,cy0+12,88,1);r('rgba(255,255,255,'+(a*.6).toFixed(2)+')',cx0-48,cy0+14,96,1)});
   put(mkPalm(i%2?-.3:.3),cx0-4,cy0+3)})}
- for(const[x,y,sp,ph]of[[1300,600,5,0],[2200,300,4,60],[2700,700,3,120]].filter(p=>p[0]<BGW)){const m=mkSail(),o=outl(m);dyn(y+34,()=>{const t=tmNow(),px=x+((t*sp+ph*10)%520)-260;cx.drawImage(o,Math.round(px),Math.round(y+Math.sin(t*1.2+x)*1.2))})}
- for(const[x,y]of[[1900,150],[1000,980]].filter(p=>p[0]<BGW))put(mkIsle(),x+60,y+56);
- for(const[x,y,l]of[[1946,128,.3],[1030,950,-.3]].filter(p=>p[0]<BGW))put(mkPalm(l),x,y+36);
+ for(const[x,y,sp,ph]of[[1760,865,5,0],[1820,150,4,60],[2700,700,3,120]].filter(p=>p[0]<BGW)){const m=mkSail(),o=outl(m);dyn(y+34,()=>{const t=tmNow(),px=x+((t*sp+ph*10)%360)-180;cx.drawImage(o,Math.round(px),Math.round(y+Math.sin(t*1.2+x)*1.2))})}
+ for(const[x,y]of[[1920,165],[960,975]].filter(p=>p[0]<BGW))put(mkIsle(),x+60,y+56);
+ for(const[x,y,l]of[[1966,143,.3],[990,945,-.3]].filter(p=>p[0]<BGW))put(mkPalm(l),x,y+36);
  SEA.fx=seaFx;
  tcBuild();   // hòm kho báu trôi gần ốc đảo (xem khối HÒM KHO BÁU TRÔI bên dưới)
- // sóng lấp lánh trên mặt biển
- for(let i=0;i<240;i++)SPK.push({x:shoreX(100)+60+rn()*(BGW-420),y:rn()*SH,ph:rn()*6.3});
+ // sóng lấp lánh trên mặt biển (né bãi cát & rạn Ốc Đảo)
+ for(let i=0;i<260;i++){const sx=shoreX(100)+60+rn()*(BGW-300),sy=rn()*SH;if(oasisDist(sx,sy)>1.08)SPK.push({x:sx,y:sy,ph:rn()*6.3})}
  for(let i=0;i<14;i++)GULL.push({y:60+rn()*(SH-120),sp:20+rn()*18,ph:rn()*BGW,dir:rn()<.5?1:-1,fl:rn()*6});
  // người chơi mới vào: bãi biển nằm ở góc TRÁI màn hình
  SEA.pos.x=96;SEA.pos.y=446}
@@ -401,6 +686,23 @@ window.cvDrawBG=tm=>{if(MAP!='bn')return pBG(tm);
   r('rgba(150,232,222,.55)',Math.round(s-5+a),y,Math.round(7-a),1);
   if(y%2==0)r('rgba(255,255,255,.92)',Math.round(s+1+a*1.2),y,3+((y>>1)%3),1);
   if(y%3==0)r('rgba(255,255,255,.4)',Math.round(s+8+a*1.6),y,2+((y>>2)%4),1)}
+ // sóng bọt uốn theo đường bờ tự nhiên của Ốc Đảo (khi nằm trong màn hình)
+ if(OX+ORX+50>camX&&OX-ORX-50<camX+vw&&OY+ORY+40>camY&&OY-ORY-40<camY+vh){
+  cx.save();
+  const s=Math.sin(tm*1.5)*2.8;
+  const traceShore=(padX,padY)=>{
+   cx.beginPath();
+   for(let i=0;i<=48;i++){
+    const an=i/48*6.283,sc=oasisR(an);
+    const px=OX+Math.cos(an)*(ORX*sc+padX),py=OY+Math.sin(an)*(ORY*sc+padY);
+    if(i===0)cx.moveTo(px,py);else cx.lineTo(px,py);
+   }
+   cx.closePath();cx.stroke();
+  };
+  cx.strokeStyle='rgba(255,255,255,0.46)';cx.lineWidth=2;traceShore(5+s,4+s*.7);
+  cx.strokeStyle='rgba(175,248,242,0.34)';cx.lineWidth=1.5;traceShore(14-s*.6,10-s*.5);
+  cx.restore();
+ }
  // gợn sóng + lấp lánh
  for(const k of SPK){if(k.y<camY-2||k.y>camY+vh+2||k.x<camX-4||k.x>camX+vw+4)continue;
   const a=Math.sin(tm*2.3+k.ph);if(a>.62){r('rgba(255,255,255,'+((a-.5)*1.6).toFixed(2)+')',Math.round(k.x),Math.round(k.y),2,1);if(a>.85)r('rgba(255,255,255,.6)',Math.round(k.x)-1,Math.round(k.y),4,1)}}
@@ -421,8 +723,8 @@ window.cvSetup=()=>{
  if(MAP!='bn')return pSetup();
  window.cvUseMap('bn');if(!SEA.built)build();CV.fx=seaFx;
  CVON=1;setA(SP,CV.sp);setA(hits,CV.hits);setA(LB,CV.lb);
- Pl.x=SEA.pos.x;Pl.y=SEA.pos.y;Pl.d=1;CV.seat=-1;CV.hz=-1;CV.boat=0;CV.bk=0;CV.dock=null;SEAB.dock=0;ZN.z=null;ZN.next=0;
- toast('🌊 Chào mừng tới Biển! Ra cuối cầu tàu, bấm RA BIỂN để lên thuyền rồi mới câu quái vật được nhé');
+ Pl.x=SEA.pos.x;Pl.y=SEA.pos.y;Pl.d=1;CV.seat=-1;CV.hz=-1;CV.boat=0;CV.bk=0;CV.dock=null;SEAB.dock=0;SEAB.dockTarget='main';SEAB.at='main';SEAB.wp=null;ZN.z=null;ZN.next=0;
+ toast('🌊 Chào mừng tới Biển! Ra cầu tàu bấm RA BIỂN — ngoài khơi phía Đông có Ốc Đảo San Hô có thể cập bến!');
  if(window.PKO)PKO.onEnter()};
 window.cvSolid=(x,y)=>MAP=='bn'?bnSolid(x,y):pSolid(x,y);
 const pLeave=window.cvLeave,pBS=window.cvBoatSolid,pBT=window.cvBoatTap,pBM=window.cvBoatMe;
@@ -437,17 +739,19 @@ window.cvAct=(a,h)=>a.startsWith('bn:')?bnAct(a.slice(3),h):pAct(a,h);
 // ============================================================
 const SB_MINI=1000,SB_SWAN=3000,SB_BAMBOO=5000;   // swan ≈ 15–30 phút câu liên tục
 const BNAME={mini:'Thuyền mini',swan:'Thuyền thiên nga',bamboo:'Thuyền tre đom đóm'},BKIND={mini:2,swan:3,bamboo:4};
-const SEAB={dock:0},ZN={z:null,next:0};
+const SEAB={dock:0,dockTarget:'main',at:'main',wp:null},ZN={z:null,next:0};
 const sbs=()=>{const o=ST.boats=(ST.boats&&typeof ST.boats=='object')?ST.boats:{};o.mini=o.mini?1:0;o.swan=o.swan?1:0;o.bamboo=o.bamboo?1:0;
  if(!(o.use&&BKIND[o.use]&&o[o.use]))o.use=o.swan?'swan':o.bamboo?'bamboo':o.mini?'mini':'';return o};
-const BROCK=[[700,520,60,36],[1150,250,70,40],[1450,950,64,38],[2000,420,70,40],[2350,820,60,34]],BISLE=[[1900,150],[1000,980]];
-const nearLand=(x,y)=>x<shoreX(y)+36||(x<=PIER.x1+10&&y>=PIER.y0-12&&y<=PIER.y1+34);
+const BROCK=[[660,480,60,36],[1160,175,70,40],[1560,940,64,38],[1920,420,70,40],[2350,820,60,34]],BISLE=[[1920,165],[960,975]];
+const nearMainLand=(x,y)=>x<shoreX(y)+36||(x<=PIER.x1+10&&y>=PIER.y0-12&&y<=PIER.y1+34);
+const nearOasisLand=(x,y)=>oasisDist(x,y)<=1.15||(x>=OPIER.x0-20&&x<=OPIER.x1+14&&y>=OPIER.y0-20&&y<=OPIER.y1+28);
+const nearLand=(x,y)=>nearMainLand(x,y)||nearOasisLand(x,y);
 const boatSolid=(x,y)=>{
  if(nearLand(x,y)||x>SEA_LIM||y<30||y>SH-30)return true;
  for(const b of BROCK)if(x>b[0]-18&&x<b[0]+b[2]+18&&y>b[1]-14&&y<b[1]+b[3]+16)return true;
  for(const q of BISLE)if(Math.hypot((x-q[0]-60)/72,(y-q[1]-40)/26)<1)return true;
  return false};
-const dockSpot=()=>({x:PIER.x1+44,y:Math.round((PIER.y0+PIER.y1)/2)});
+const dockSpot=t=>t==='oasis'?{x:OPIER.x0-44,y:Math.round((OPIER.y0+OPIER.y1)/2)}:{x:PIER.x1+44,y:Math.round((PIER.y0+PIER.y1)/2)};
 const mirror=(x,dir,fn)=>{cx.save();cx.translate(x,0);if(dir<0)cx.scale(-1,1);cx.translate(-x,0);fn();cx.restore()};
 
 // cần câu cắm bên cạnh mạn thuyền (chỉ để trang trí — không có món "cần câu")
@@ -539,34 +843,64 @@ window.cvBoatMe=()=>{if(MAP!='bn')return pBM();const A=ST.av,tm=performance.now(
 
 // lên thuyền / cập bến
 function noBoatUI(){openUI(head('⛵ Bến thuyền')+'<div class="mut" style="text-align:center">🐙 <i>"Chưa có thuyền thì chưa ra biển được nha! Ghé tiệm tôi mua Thuyền mini giá '+fmtXu(SB_MINI)+' xu vàng đi~"</i></div><button class="b w" style="font-size:14px;padding:9px" onclick="bnShop()">🛒 Tới Shop quái vật mua thuyền</button>')}
-function sail(){
+function sail(from){
  if(CV.boat||MAP!='bn'||Pl.sit||CVLOCK||CV.seat>=0||CV.hz>=0)return;
  const o=sbs();if(!o.use)return noBoatUI();
  if(ST.av.m>=0){ST.av.m=-1;toast('🐃 Bạn xuống khỏi thú cưỡi để lên thuyền')}
  try{if(ACT&&typeof actStop=='function')actStop()}catch(e){}
  if(window.MQ)MQ.clear();
- const d=dockSpot();
- CV.boat=1;CV.bk=BKIND[o.use]||2;CV.bdir=1;CV.dock=null;SEAB.dock=0;Pl.x=d.x;Pl.y=d.y;Pl.d=3;Pl.mv=0;Pl.pend=0;goal=null;pa=null;
+ const side=from==='oasis'?'oasis':(from==='main'?'main':(Pl.x>600?'oasis':'main'));
+ const d=dockSpot(side);
+ CV.boat=1;CV.bk=BKIND[o.use]||2;CV.bdir=side==='oasis'?-1:1;CV.dock=null;SEAB.dock=0;SEAB.wp=null;SEAB.at=side;Pl.x=d.x;Pl.y=d.y;Pl.d=side==='oasis'?2:3;Pl.mv=0;Pl.pend=0;goal=null;pa=null;
  if(window.PKO)PKO.onBoat();
  toast('⛵ Bấm giữ mặt nước để di chuyển'+(tcReady()?'\n🧰 Hôm nay có hòm kho báu trôi gần ốc đảo!':''))}
-function landSea(){
- const d=dockSpot();CV.boat=0;CV.bk=0;CV.dock=null;SEAB.dock=0;
- Pl.x=PIER.x1-26;Pl.y=d.y;Pl.d=2;Pl.mv=0;goal=null;pa=null;
- if(window.PKO)PKO.onBoat();toast('⚓ Đã cập bến — bạn bước lên cầu tàu')}
-function dockNow(){if(!CV.boat||MAP!='bn')return;const d=dockSpot();SEAB.dock=1;goal={x:d.x,y:d.y,t:-14};Pl.pend=0;toast('⚓ Đang chèo về bến...')}
+function landSea(target){
+ const t=target||SEAB.dockTarget||'main',d=dockSpot(t);
+ CV.boat=0;CV.bk=0;CV.dock=null;SEAB.dock=0;SEAB.wp=null;SEAB.at=t;
+ if(t==='oasis'){Pl.x=OPIER.x0+26;Pl.y=d.y;Pl.d=3}
+ else{Pl.x=PIER.x1-26;Pl.y=d.y;Pl.d=2}
+ Pl.mv=0;goal=null;pa=null;
+ if(window.PKO)PKO.onBoat();
+ toast(t==='oasis'?'🏝️ Đã cập bến Ốc Đảo San Hô — chúc bạn dạo chơi vui vẻ!':'⚓ Đã cập bến — bạn bước lên cầu tàu')}
+function dockNow(target){
+ if(!CV.boat||MAP!='bn')return;
+ const do_=dockSpot('oasis'),dm=dockSpot('main');
+ const t=target||(Math.hypot(Pl.x-do_.x,Pl.y-do_.y)<Math.hypot(Pl.x-dm.x,Pl.y-dm.y)?'oasis':'main');
+ const d=dockSpot(t);
+ SEAB.dock=1;SEAB.dockTarget=t;Pl.pend=0;
+ if(t==='oasis'&&Pl.x>OPIER.x0+20&&Math.abs(Pl.y-OY)<ORY+54){
+  const wx=OX,wy=Pl.y<OY?OY-ORY-58:OY+ORY+58;
+  SEAB.wp={x:wx,y:wy};
+  goal={x:wx,y:wy,t:-14};
+ }else{
+  SEAB.wp=null;
+  goal={x:d.x,y:d.y,t:-14};
+ }
+ toast(t==='oasis'?'🏝️ Đang chèo về bến Ốc Đảo...':'⚓ Đang chèo về bến...')}
 function boatTick(){
  if(!CV.boat||!SEAB.dock)return;
- const d=dockSpot();if(Math.hypot(Pl.x-d.x,Pl.y-d.y)<9)return landSea();
- if(!goal){if(Pl.mv)SEAB.dock=0;else landSea()}}   // tự lái tay → hủy cập bến; kẹt → lên bờ luôn
+ const d=dockSpot(SEAB.dockTarget);
+ if(SEAB.wp){
+  if(Math.hypot(Pl.x-SEAB.wp.x,Pl.y-SEAB.wp.y)<18){SEAB.wp=null;goal={x:d.x,y:d.y,t:-14}}
+  else if(!goal&&Pl.mv){SEAB.dock=0;SEAB.wp=null}
+  return;
+ }
+ if(Math.hypot(Pl.x-d.x,Pl.y-d.y)<12)return landSea(SEAB.dockTarget);
+ if(!goal){if(Pl.mv)SEAB.dock=0;else landSea(SEAB.dockTarget)}}   // tự lái tay → hủy cập bến; kẹt → lên bờ luôn
 window.cvBoatTap=(wx,wy)=>{
  if(MAP!='bn')return pBT(wx,wy);
  if(!CV.boat)return;
  if(tcTap(wx,wy))return;   // bấm trúng hòm kho báu trôi → khui (nếu thuyền đủ gần)
- if(boatSolid(wx,wy)){if(nearLand(wx,wy))return dockNow();if(wx>SEA_LIM)return toast('🌊 Ngoài kia sóng lớn quá, không ra xa hơn được');return toast('🏝️ Có đảo nhỏ chắn đường — lái thuyền vòng qua nhé')}
- SEAB.dock=0;goal=null;fishHere()};   // bấm mặt nước = câu
+ if(boatSolid(wx,wy)){
+  if(nearOasisLand(wx,wy))return dockNow('oasis');
+  if(nearMainLand(wx,wy))return dockNow('main');
+  if(wx>SEA_LIM)return toast('🌊 Ngoài kia sóng lớn quá, không ra xa hơn được');
+  return toast('🏝️ Có đảo nhỏ chắn đường — lái thuyền vòng qua nhé');
+ }
+ SEAB.dock=0;SEAB.wp=null;goal=null;fishHere()};   // bấm mặt nước = câu
 function fishHere(){if(window.MQ)MQ.open({boat:CV.bk})}
-window.cvLeave=()=>{if(DB)DB.style.display='none';SEAB.dock=0;
- if(MAP=='bn'&&CV.boat){const d=dockSpot();CV.boat=0;CV.dock=null;Pl.x=PIER.x1-26;Pl.y=d.y}
+window.cvLeave=()=>{if(DB)DB.style.display='none';SEAB.dock=0;SEAB.wp=null;
+ if(MAP=='bn'&&CV.boat){const d=dockSpot(SEAB.at);CV.boat=0;CV.dock=null;Pl.x=SEAB.at==='oasis'?OPIER.x0+26:PIER.x1-26;Pl.y=d.y}
  CV.bk=0;return pLeave()};
 
 // nút nổi ⚓ Cập bến (chỉ hiện khi đang ở trên thuyền)
@@ -575,7 +909,12 @@ function hud(){
  if(!DB){DB=document.createElement('button');DB.textContent='⚓ Cập bến';
   DB.style.cssText='position:fixed;left:10px;top:54px;z-index:25;display:none;padding:7px 14px;font:800 13px Nunito,"Segoe UI",Arial,sans-serif;background:#fff6d0;border:2px solid #7a4a26;border-radius:8px;color:#3a2412;box-shadow:0 2px 0 #7a4a26;cursor:pointer';
   DB.onpointerdown=e=>{e.preventDefault();e.stopPropagation();dockNow()};document.body.appendChild(DB)}
- DB.style.display=(MAP=='bn'&&CV.boat&&!UI&&!SEAB.dock)?'block':'none'}
+ const show=(MAP=='bn'&&CV.boat&&!UI&&!SEAB.dock);
+ DB.style.display=show?'block':'none';
+ if(show){
+  const do_=dockSpot('oasis'),dm=dockSpot('main');
+  DB.textContent=(Math.hypot(Pl.x-do_.x,Pl.y-do_.y)<Math.hypot(Pl.x-dm.x,Pl.y-dm.y))?'🏝️ Cập bến Ốc Đảo':'⚓ Cập bến';
+ }}
 
 // VÙNG NƯỚC TỐI: thỉnh thoảng xuất hiện ngoài khơi (chỉ khi bạn đang ở trên thuyền), tồn tại ~100 giây
 window.seaZoneHere=()=>{const z=ZN.z;if(!z||!CV.boat||MAP!='bn'||performance.now()>z.until)return null;return Math.hypot(Pl.x-z.x,Pl.y-z.y)<z.r-6?z:null};
@@ -585,7 +924,7 @@ function zoneTick(){
  if(!ZN.z&&CV.boat){
   if(!ZN.next)ZN.next=n+(15+Math.random()*20)*1000;
   if(n>=ZN.next){
-   for(let k=0;k<40;k++){const x=PIER.x1+200+Math.random()*1000,y=190+Math.random()*700;
+   for(let k=0;k<40;k++){const x=PIER.x1+200+Math.random()*1350,y=190+Math.random()*700;
     if(!boatSolid(x,y)&&!boatSolid(x+80,y)&&!boatSolid(x-80,y)&&!boatSolid(x,y+60)&&!boatSolid(x,y-60)){ZN.z={x,y,r:96,t0:n,until:n+100000};toast('🌑 Vùng tối đã xuất hiện, câu ở đó sẽ nhận thêm quà');break}}
    if(!ZN.z)ZN.next=n+5000}}}
 function zoneArrow(){ // mũi tên chỉ hướng vùng nước tối khi nó nằm ngoài màn hình
@@ -600,10 +939,16 @@ function zoneArrow(){ // mũi tên chỉ hướng vùng nước tối khi nó n�
 //  TƯƠNG TÁC
 // ============================================================
 
-function bnAct(a){const t=a.split(':')[0];
+function bnSit(x,y,by){
+ if(Pl.sit)return;if(ST.av.m>=0)ST.av.m=-1;
+ Pl.x=+x;Pl.y=+y;Pl.by=+by;Pl.d=0;Pl.sit=2;Pl.st=0;Pl.nt=0;Pl.bn=1;goal=null;
+ toast('🏖️ Ngồi nghỉ hóng gió trên Ốc Đảo... (di chuyển để đứng dậy)');
+}
+function bnAct(a){const p=a.split(':'),t=p[0];
  if(t=='chest')return chestClaim();
- if(t=='shop'){return bnShop()}   // vào Shop quái vật (Biển): nhắc 2 giây
- if(t=='sail')return sail()}
+ if(t=='shop')return bnShop();   // vào Shop quái vật (Biển): nhắc 2 giây
+ if(t=='sail')return sail(p[1]);
+ if(t=='sit')return bnSit(p[1],p[2],p[3])}
 window.bnShop=()=>bnShop();
 const qvImg=()=>'<img src="'+QVI+'" style="width:15px;height:15px;vertical-align:-3px;image-rendering:pixelated">';
 window.qvImg=qvImg;
@@ -628,7 +973,7 @@ function chestClaim(){if(!chestReady())return;const n=CH_MIN+Math.floor(Math.ran
 //  - Muốn đổi: TC_AX/TC_AY = tâm quỹ đạo trôi • TC_MIN/TC_MAX = số kim cương • TC_R = khoảng cách khui
 //  - Quỹ đạo nằm trong vùng thuyền đi được (x ≤ SEA_LIM=1300, không đè đảo/đá). Nếu đổi chỗ nhớ kiểm tra boatSolid
 // ============================================================
-const TC_AX=1205,TC_AY=352,TC_R=80,TC_MIN=2,TC_MAX=4,TC={dk:'',dn:0,fx:0};
+const TC_AX=1230,TC_AY=264,TC_R=80,TC_MIN=2,TC_MAX=4,TC={dk:'',dn:0,fx:0};
 function tcDay(){const n=performance.now();if(n>TC.dn){const d=new Date();TC.dk=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();TC.dn=n+20000}return TC.dk}
 function tcReady(){return ST.tcD!==tcDay()}
 function tcPos(t){return{x:Math.round(TC_AX+Math.sin(t*.21)*34+Math.sin(t*.09+1)*10),y:Math.round(TC_AY+Math.sin(t*.33)*9+Math.sin(t*.13)*3)}}

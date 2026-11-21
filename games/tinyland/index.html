@@ -2598,7 +2598,7 @@ const SVGI=b=>'<svg class="ci" viewBox="0 0 24 24" aria-hidden="true">'+b+'</svg
  'Nếp':SVGI('<path d="M14 22C13.5 15 13.5 11 11.5 8.5C9.5 6 6 6.5 5 10.5C4.6 12.4 4.8 14 5 15.5" fill="none" stroke="#8a6aa8" stroke-width="1.5" stroke-linecap="round"/><path d="M13.7 21C17 19.6 19 16.5 19.6 12.5C16 13.3 14 16.3 13.7 21Z" fill="#7fae6a"/>'+GR([[11.4,8.2,25],[8.8,6.9,-25],[6.4,8.2,-55],[5.1,10.8,-80],[4.8,13.6,-95]],2,2.5,'#fbf3dc','#c9b88a')+'<circle cx="4.8" cy="16.6" r=".9" fill="#8a6aa8"/>'),
  'Lúa mì':SVGI('<path d="M12 22V8" stroke="#b8922e" stroke-width="1.5" stroke-linecap="round"/><path d="M12 20C8 18.5 6.5 15.5 6.5 12.5C10 13.3 11.8 16 12 20Z" fill="#8fb04a"/>'+GR([[10.3,14,-25],[13.7,14,25],[10.3,10.8,-25],[13.7,10.8,25],[10.4,7.6,-25],[13.6,7.6,25],[12,4.6,0]],1.5,2.4,'#d9a83a','#a8761c')+'<path d="M10 4.8L8.4 1.6M14 4.8L15.6 1.6M12 2.4V0.6" stroke="#b8862a" stroke-width=".7" stroke-linecap="round"/>')
 },ic=(e,n)=>CIC[n]||e;
-const POTS=[['Xương rồng','🌵',20,5,8,'#5aa83c'],['Lưỡi hổ hồng','🪴',25,6,9,'#ff8fb5'],['Hoa sen','🪷',30,7,12,'#ff9fc2'],['Hướng dương','🌻',35,8,14,'#ffd23f'],['Oải hương','🪻',40,8,15,'#9a6ad8'],['Hồng nhung','������',45,10,18,'#d9302a'],['Nhài trắng','🤍',30,9,16,'#ffffff'],['Cúc cam','🌼',35,9,17,'#ff9f45']];
+const POTS=[['Xương rồng','🌵',20,5,8,'#5aa83c'],['Lưỡi hổ hồng','🪴',25,6,9,'#ff8fb5'],['Hoa sen','🪷',30,7,12,'#ff9fc2'],['Hướng dương','🌻',35,8,14,'#ffd23f'],['Oải hương','🪻',40,8,15,'#9a6ad8'],['Hồng nhung','🌹',45,10,18,'#d9302a'],['Nhài trắng','🤍',30,9,16,'#ffffff'],['Cúc cam','🌼',35,9,17,'#ff9f45']];
 const FRUITS={xoai:['Xoài','🥭',25,3,18],dua:['Dừa','🥥',35,3,22],mit:['Mít','🍈',40,3,25],sr:['Sầu riêng','🌰',45,2,50]};
 const VPI=[['trung','🥚','Trứng gà',12],['heo','🥓','Thịt heo',35],['sua','🥛','Sữa',28],['bo','🥩','Thịt bò',50],['ca','🐟','Cá đồng',15],['tom','🦐','Tôm',18],['cua','🦀','Cua',20],['luon','🐍','Lươn',22],['bac','🥈','Quặng bạc',18],['vang','🥇','Quặng vàng',30],['mat','🍯','Mật ong',30]];
 const NETS=[['Lưới thường',25,4,45],['Lưới lớn',60,10,60]],MIN=60000,now=()=>Date.now();
@@ -7314,12 +7314,12 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
 <script src="pho-map.js?v=20261219b"></script>
 <script src="broomkit.js?v=20261118"></script>
 <script src="circus.js?v=20261219"></script>
-<script src="sea-map.js?v=20261221a"></script>
+<script src="sea-map.js?v=20261224"></script>
 <script src="fishing.js?v=20261207"></script>
 <script src="park-online.js?v=20261219"></script>
 <script src="frames.js?v=20261116b"></script>
 <script src="idcard.js?v=20261116b"></script>
-<script src="snow-village.js?v=20261117n"></script>
+<script src="snow-village.js?v=20261223"></script>
 <script src="food-icons.js?v=20261119"></script>
 <script src="actions2.js?v=20261116"></script>
 <script src="nhuy.js?v=20261117"></script>
@@ -7374,5 +7374,12 @@ function diaBuy(id){const a=ACTS[actIdx(id)];if(!a||a.bd||ST.acts[id])return;
   <script src="alien.js?v=1"></script>   <!-- Mascot Khách Lạ Vũ Trụ (Shop Phố xá 5.000 Xu) -->
   <script src="girlkho.js?v=1"></script>   <!-- Mascot Girl Khờ (Tiệm Chú Hề: 2.000 Xu + 400 Xu quái vật + 5 Kim cương) -->
   <script src="hoaibao.js?v=1"></script>   <!-- Set Hoài bão (4 món: Set Nam/Nữ + Tóc Nam/Nữ, 2.000 Xu/món ở Shop Phố xá) -->
-  <script src="ngaydem-gapthu.js?v=1"></script>   <!-- Sáng/Tối thời gian thực + Máy gắp thú bên phải Thái tử Ba Tư -->
+  <script src="ngaydem-gapthu.js?v=4"></script>   <!-- Sáng/Tối thời gian thực + Đom đóm + Phát sáng nhân vật + Máy gắp thú -->
+  <script src="bosiutap-dem.js?v=1"></script>     <!-- 5 Bộ sưu tập mới: Capybara Chill, Trà Sữa, Thám Tử, Biển Đêm, Phi Hành Gia & Cáo 9 Đuôi -->
+  <script src="pet-thucuoi-moi.js?v=1"></script>   <!-- 3 Pet (Bóng ma đèn lồng, Rùa biển con, Capybara Mini) + 3 Thú cưỡi mới -->
+  <script src="phukien-moi.js?v=1"></script>       <!-- Phụ kiện phát sáng & mới: Đèn lồng cá chép, Đèn pin, Trà sữa, Máy ảnh, Cánh Bướm Đêm -->
+  <script src="noithat-moi.js?v=2"></script>       <!-- 20 món nội thất nhà mới (Capybara/Mây, Thủy cung/Sò, Cafe/Thư viện/Lò bánh/Đèn cây/Thảm cúc) -->
+  <script src="trangtri-nongtrai-moi.js?v=4"></script> <!-- Trang trí nông trại mới (Hàng rào trắng/tre đèn lồng, Nhà kính hoa/lớn, Đài phun nước, Đèn nấm/cổ tích, Xích đu, Bàn trà) -->
+  <script src="thoitrang-moi.js?v=2"></script>       <!-- Bộ 4A..4E vẽ K=4 HD: Học Viện Phép Thuật, Đầu Bếp Bánh Ngọt, Cổ Phong Áo Lụa, Mascot Ong Mật & Gấu Trúc Trà Chanh -->
+  <script src="trochoi-moi.js?v=2"></script>         <!-- Tủ Máy Trò Chơi Mini ở Công viên: Đập Chuột Chũi & Hứng Dừa -->
 </body></html>
